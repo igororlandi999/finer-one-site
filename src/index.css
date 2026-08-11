@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  * {
+    border-color: rgb(255 255 255 / 0.08);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    /* O corte horizontal vive só aqui, no elemento raiz.
+       clip em vez de hidden: não cria contentor de scroll.
+       O body NÃO pode repetir esta regra — com o html já não-visível, o
+       overflow do body deixa de propagar para a viewport e o body passa a
+       ser ele próprio um contentor de scroll, o que quebra position: sticky
+       em toda a página. */
+    overflow-x: clip;
+  }
+
+  body {
+    @apply bg-navy font-sans text-white antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: rgb(0 82 255 / 0.35);
+    color: #ffffff;
+  }
+
+  :focus-visible {
+    outline: 2px solid #1e90ff;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* Números financeiros com largura fixa — evita "dança" de dígitos. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  /* Fila de navegação deslizável em ecrãs estreitos, sem barra visível.
+     O deslocamento por toque, roda e teclado continua a funcionar. */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
