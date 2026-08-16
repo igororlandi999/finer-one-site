@@ -1,8 +1,10 @@
 import { ArrowRight, TrendingDown } from 'lucide-react'
-import { demoInsight } from '@/data/demoDashboard'
+import { useDemoDashboardData } from '@/data/demoDashboard'
 
 /** Alerta interpretado — o que distingue a Finer One de um dashboard de BI. */
 export function InsightCard() {
+  const { demoInsight } = useDemoDashboardData()
+
   return (
     <article className="rounded-xl border border-white/[0.07] border-l-2 border-l-signal/70 bg-white/[0.025] p-3.5">
       <div className="flex items-start gap-2.5">

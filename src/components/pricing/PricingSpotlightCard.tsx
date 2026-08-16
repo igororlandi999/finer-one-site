@@ -1,8 +1,9 @@
-import { PlanMicroVisual } from '@/components/pricing/PlanMicroVisual'
+import { ExcludedFeature, IncludedFeature } from '@/components/pricing/PricingFeature'
 import { Button } from '@/components/ui/Button'
 import { useSpotlight } from '@/hooks/useSpotlight'
-import { pricingCopy } from '@/data/pricing'
+import { usePricingData } from '@/data/pricing'
 import type { Plan } from '@/data/pricing'
+import { useLanguage } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
 
 /**
@@ -11,7 +12,8 @@ import { cn } from '@/lib/utils'
  * São três camadas independentes:
  *
  *  1. ambiente — só no plano recomendado, sempre visível, muito ténue. É o
- *     que faz o Pro parecer recomendado antes de qualquer interação.
+ *     que faz o Plus parecer disponível/recomendado antes de qualquer
+ *     interação.
  *  2. interior — halo localizado que segue o cursor.
  *  3. borda — o mesmo halo recortado por máscara, de forma a acender apenas
  *     o troço de borda junto ao cursor, nunca o contorno inteiro.
@@ -26,6 +28,8 @@ import { cn } from '@/lib/utils'
  */
 export function PricingSpotlightCard({ plan, recommended }: { plan: Plan; recommended: boolean }) {
   const { ref, onPointerMove } = useSpotlight<HTMLDivElement>()
+  const { pricingCopy } = usePricingData()
+  const { lang } = useLanguage()
 
   return (
     <div
@@ -109,20 +113,19 @@ export function PricingSpotlightCard({ plan, recommended }: { plan: Plan; recomm
           {plan.description}
         </p>
 
-        <div className="mt-7">
+        <div className="mt-6 border-t border-white/[0.08] pt-6">
           <p className="text-[10px] uppercase tracking-[0.18em] text-mist">{plan.priceNote}</p>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="font-display text-[28px] font-semibold leading-none tabular text-white/[0.85]">
-              {plan.price ?? '€—'}
+              {plan.price ?? '€ —'}
             </span>
             <span className="text-[12.5px] text-mist">{plan.period}</span>
           </div>
         </div>
 
         {/*
-          Um plano que ainda não existe não recebe botão. Um <button disabled>
-          seria igualmente enganador — sugere uma ação que vai destrancar. Aqui
-          é uma legenda, sem foco nem cursor de ação.
+          Pro/Team ainda não existem: o botão fica desativado, sem foco nem
+          cursor de ação, em vez de esconder a via de contratação.
         */}
         <div className="mt-6">
           {plan.available ? (
@@ -130,43 +133,45 @@ export function PricingSpotlightCard({ plan, recommended }: { plan: Plan; recomm
               variant={recommended ? 'primary' : 'outline'}
               size="lg"
               className="w-full"
-              aria-label={`${plan.cta} — plano ${plan.name}`}
+              aria-label={lang === 'pt' ? `${plan.cta} — plano ${plan.name}` : `${plan.cta} — ${plan.name} plan`}
             >
               {plan.cta}
             </Button>
           ) : (
-            <p className="flex h-12 w-full items-center justify-center rounded-lg border border-dashed border-white/[0.12] px-5 text-[13px] text-mist">
-              {pricingCopy.unavailableLabel}
-            </p>
+            <button
+              type="button"
+              disabled
+              className="flex h-12 w-full cursor-not-allowed items-center justify-center rounded-lg border border-white/[0.1] bg-white/[0.02] px-5 text-[13px] text-mist disabled:opacity-100"
+            >
+              {pricingCopy.unavailableCta}
+            </button>
           )}
         </div>
 
         <div className="mt-7 border-t border-white/[0.07] pt-6">
-          {plan.inherits ? (
-            <p className="mb-5 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.14em] text-glow">
-              <span aria-hidden="true" className="h-px w-4 bg-glow/60" />
-              {plan.inherits}
-            </p>
-          ) : null}
-
-          <ul className="space-y-4">
-            {plan.capabilities.map((capability) => (
-              <li key={capability.group}>
-                <p className="text-[10px] uppercase tracking-[0.16em] text-mist/70">
-                  {capability.group}
-                </p>
-                <p className="mt-1 text-[13.5px] leading-snug text-white">{capability.label}</p>
-              </li>
+          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-mist">
+            {pricingCopy.includedLabel}
+            <span aria-hidden="true" className="h-px flex-1 bg-white/[0.1]" />
+          </p>
+          <ul className="mt-4 space-y-3">
+            {plan.included.map((label) => (
+              <IncludedFeature key={label} label={label} />
             ))}
           </ul>
 
-          {plan.footnote ? (
-            <p className="mt-5 text-[11.5px] leading-snug text-mist/70">{plan.footnote}</p>
+          {plan.excluded.length > 0 ? (
+            <>
+              <p className="mt-6 flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-mist/70">
+                {pricingCopy.excludedLabel}
+                <span aria-hidden="true" className="h-px flex-1 bg-white/[0.06]" />
+              </p>
+              <ul className="mt-4 space-y-3">
+                {plan.excluded.map((label) => (
+                  <ExcludedFeature key={label} label={label} />
+                ))}
+              </ul>
+            </>
           ) : null}
-        </div>
-
-        <div className="mt-8 pt-2 lg:mt-auto">
-          <PlanMicroVisual id={plan.id} />
         </div>
       </article>
     </div>

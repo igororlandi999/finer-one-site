@@ -1,4 +1,4 @@
-import { solutionSteps } from '@/data/solutionSection'
+import { useSolutionSectionData } from '@/data/solutionSection'
 import { cn } from '@/lib/utils'
 
 /**
@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils'
  * de 1px e os números. É decorativo — o progresso real já está no conteúdo.
  */
 export function SolutionProgress({ active }: { active: number }) {
+  const { solutionSteps } = useSolutionSectionData()
+
   return (
     <ol aria-hidden="true" className="mt-8 grid grid-cols-4 gap-3">
       {solutionSteps.map((step, index) => (

@@ -1,6 +1,12 @@
 import { LogoMark } from '@/components/brand/Logo'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
+import { useLanguage } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
+
+const copy = {
+  pt: { scattered: 'Informação dispersa', organized: 'Inteligência organizada' },
+  en: { scattered: 'Scattered information', organized: 'Organized intelligence' },
+}
 
 /**
  * Faixa de transição entre o CTA final e o rodapé.
@@ -43,6 +49,8 @@ const outputPath = (y: number) => `M644,60 C800,60 830,${y} 1010,${y}`
 
 export function FooterVisual() {
   const prefersReduced = usePrefersReducedMotion()
+  const { lang } = useLanguage()
+  const t = copy[lang]
 
   return (
     <div className="relative border-y border-white/[0.06]">
@@ -142,10 +150,10 @@ export function FooterVisual() {
 
         {/* Leitura explícita, só onde há largura para ela respirar */}
         <span className="pointer-events-none absolute left-8 top-1/2 hidden -translate-y-1/2 text-[10px] uppercase tracking-[0.18em] text-mist/60 lg:block">
-          Informação dispersa
+          {t.scattered}
         </span>
         <span className="pointer-events-none absolute right-8 top-1/2 hidden -translate-y-1/2 text-[10px] uppercase tracking-[0.18em] text-mist/60 lg:block">
-          Inteligência organizada
+          {t.organized}
         </span>
       </div>
     </div>

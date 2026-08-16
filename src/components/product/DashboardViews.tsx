@@ -1,43 +1,145 @@
-import { AlertTriangle, ArrowRight, FileText } from 'lucide-react'
-import { LogoMark } from '@/components/brand/Logo'
+import { useState } from 'react'
+import {
+  ArrowRight,
+  Building2,
+  ChartNoAxesColumnIncreasing,
+  Info,
+  Shield,
+  ShieldCheck,
+  TrendingDown,
+  TrendingUp,
+  Wallet,
+} from 'lucide-react'
+import { AlertFilters } from '@/components/product/alerts/AlertFilters'
+import type { AlertCounts, AlertFilterId } from '@/components/product/alerts/AlertFilters'
+import { FinancialAlertCard } from '@/components/product/alerts/FinancialAlertCard'
 import { CashflowChart } from '@/components/product/CashflowChart'
+import { ChatInput } from '@/components/product/chat/ChatInput'
+import { ChatUserMessage } from '@/components/product/chat/ChatUserMessage'
+import { FinerAIResponse } from '@/components/product/chat/FinerAIResponse'
+import { QuickActions } from '@/components/product/chat/QuickActions'
+import { SmartInsights } from '@/components/product/chat/SmartInsights'
+import { SuggestedQuestions } from '@/components/product/chat/SuggestedQuestions'
 import { ChatPreview } from '@/components/product/ChatPreview'
+import { DiagnosticHealthCard } from '@/components/product/diagnostic/DiagnosticHealthCard'
+import { DiagnosticMetricCard } from '@/components/product/diagnostic/DiagnosticMetricCard'
+import { DiagnosticProblems } from '@/components/product/diagnostic/DiagnosticProblems'
+import { ExecutiveSummary } from '@/components/product/diagnostic/ExecutiveSummary'
+import { RecommendedAction } from '@/components/product/diagnostic/RecommendedAction'
 import { ForecastCard } from '@/components/product/ForecastCard'
 import { InsightCard } from '@/components/product/InsightCard'
 import { KpiCard } from '@/components/product/KpiCard'
-import {
-  demoAlerts,
-  demoCashflow,
-  demoChatThread,
-  demoDiagnostic,
-  demoDocuments,
-  demoExpenses,
-  demoKpis,
-  demoPerformance,
-  demoRelations,
-  demoRevenue,
-} from '@/data/demoDashboard'
-import type { DashboardTabId, DemoRow } from '@/data/demoDashboard'
+import { derivePerformanceMetrics } from '@/components/product/performance/derivePerformanceMetrics'
+import { FinancialSummaryTable } from '@/components/product/performance/FinancialSummaryTable'
+import { PerformanceAnalysis } from '@/components/product/performance/PerformanceAnalysis'
+import { PerformanceKpiCard } from '@/components/product/performance/PerformanceKpiCard'
+import { PerformanceTabs } from '@/components/product/performance/PerformanceTabs'
+import type { PerformanceTabId } from '@/components/product/performance/PerformanceTabs'
+import { useDemoDashboardData } from '@/data/demoDashboard'
+import type { ChatSuggestionId, DashboardTabId, FinancialAlert, FinancialLineItem } from '@/data/demoDashboard'
+import { useLanguage } from '@/i18n/LanguageContext'
+import type { Lang } from '@/i18n/LanguageContext'
+import { formatEuro, formatPercent, formatPercentPlain, formatPercentagePoints } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 /**
  * Vistas demonstrativas de cada área do plano Plus.
  *
  * São MOCKS. Não há backend, router, pedidos de rede nem estado partilhado:
- * cada vista é uma composição estática alimentada por src/data/demoDashboard.
- * O objetivo é dar ao visitante uma ideia fiel do que cada área mostra, não
- * reproduzir a plataforma.
+ * cada vista é uma composição estática alimentada por src/data/demoDashboard
+ * (via useDemoDashboardData, que devolve a fatia PT ou EN conforme o idioma
+ * ativo). O objetivo é dar ao visitante uma ideia fiel do que cada área
+ * mostra, não reproduzir a plataforma.
  *
  * Todas reutilizam as mesmas primitivas visuais — moldura, rótulo, valor,
  * barra de proporção — para que trocar de aba pareça a mesma aplicação e não
  * seis desenhos diferentes.
  */
 
-const toneText = {
-  good: 'text-glow',
-  bad: 'text-signal',
-  neutral: 'text-mist',
-} as const
+const viewCopy = {
+  pt: {
+    cashflowTitle: 'Evolução da tesouraria',
+    realized: 'Realizado',
+    forecastLegend: 'Previsão',
+    marginTooltip: 'Evolução da rentabilidade operacional no período selecionado.',
+    treasuryTooltip: 'Estimativa da posição de tesouraria nos próximos 30 dias.',
+    riskTooltip: 'Avaliação consolidada dos principais fatores de risco financeiro.',
+    marginLabel: 'Margem operacional',
+    treasuryLabel: 'Tesouraria a 30 dias',
+    riskLabel: 'Nível de risco',
+    /** Chave do 4º item de demoDiagnostic.metrics (ver demoDashboard.ts) — distinta do riskLabel acima, que é o rótulo deste card. */
+    overallRiskMetricLabel: 'Risco global',
+    riskCaption: 'sob pressão',
+    forecastCaption: 'previsão',
+    pnlTitle: 'P&L (Resumo)',
+    pnlTooltip: 'Resumo da demonstração de resultados da empresa no período.',
+    balanceTitle: 'Balanço (Resumo)',
+    balanceTooltip: 'Resumo da posição patrimonial e financeira da empresa.',
+    cashflowStatementTitle: 'Cashflow (Resumo)',
+    cashflowStatementTooltip: 'Resumo das entradas e saídas de caixa por atividade.',
+    revenueLabel: 'Receitas',
+    revenueTooltip: 'Receita total faturada no período selecionado.',
+    ebitdaLabel: 'EBITDA',
+    ebitdaTooltip: 'Resultado antes de juros, impostos, depreciações e amortizações.',
+    netProfitLabel: 'Lucro Líquido',
+    netProfitTooltip: 'Resultado líquido da empresa após juros e impostos.',
+    totalAssetsLabel: 'Ativo Total',
+    totalAssetsTooltip: 'Total de bens e direitos da empresa registados no balanço.',
+    solvencyLabel: 'Solvabilidade',
+    solvencyTooltip: 'Peso do capital próprio no financiamento do ativo total.',
+    marginCaption: (value: string) => `Margem: ${value}`,
+    sortOptions: [
+      { id: 'critical', label: 'Mais críticos' },
+      { id: 'recent', label: 'Mais recentes' },
+      { id: 'impact', label: 'Maior impacto' },
+    ] as const,
+    sortBy: 'Ordenar por',
+    noAlerts: 'Nenhum alerta financeiro identificado para os filtros selecionados.',
+    seeAll: (n: number) => `Ver todos os ${n} alertas`,
+    alertsNote:
+      'Os alertas são gerados com base na análise dos seus dados financeiros e servem como apoio à tomada de decisão.',
+  },
+  en: {
+    cashflowTitle: 'Cash flow trend',
+    realized: 'Actual',
+    forecastLegend: 'Forecast',
+    marginTooltip: 'Trend in operating profitability over the selected period.',
+    treasuryTooltip: 'Estimated cash position over the next 30 days.',
+    riskTooltip: 'Consolidated assessment of the main financial risk factors.',
+    marginLabel: 'Operating margin',
+    treasuryLabel: '30-day cash',
+    riskLabel: 'Risk level',
+    overallRiskMetricLabel: 'Overall risk',
+    riskCaption: 'under pressure',
+    forecastCaption: 'forecast',
+    pnlTitle: 'P&L (Summary)',
+    pnlTooltip: "Summary of the company's income statement for the period.",
+    balanceTitle: 'Balance Sheet (Summary)',
+    balanceTooltip: "Summary of the company's financial position.",
+    cashflowStatementTitle: 'Cash Flow (Summary)',
+    cashflowStatementTooltip: 'Summary of cash inflows and outflows by activity.',
+    revenueLabel: 'Revenue',
+    revenueTooltip: 'Total revenue billed in the selected period.',
+    ebitdaLabel: 'EBITDA',
+    ebitdaTooltip: 'Earnings before interest, taxes, depreciation and amortization.',
+    netProfitLabel: 'Net Profit',
+    netProfitTooltip: "Company's net result after interest and taxes.",
+    totalAssetsLabel: 'Total Assets',
+    totalAssetsTooltip: "Total of the company's assets recorded on the balance sheet.",
+    solvencyLabel: 'Solvency',
+    solvencyTooltip: "Weight of equity in financing the company's total assets.",
+    marginCaption: (value: string) => `Margin: ${value}`,
+    sortOptions: [
+      { id: 'critical', label: 'Most critical' },
+      { id: 'recent', label: 'Most recent' },
+      { id: 'impact', label: 'Highest impact' },
+    ] as const,
+    sortBy: 'Sort by',
+    noAlerts: 'No financial alerts found for the selected filters.',
+    seeAll: (n: number) => `See all ${n} alerts`,
+    alertsNote: "Alerts are generated based on your financial data and support decision-making.",
+  },
+} satisfies Record<Lang, unknown>
 
 /** Moldura comum a todos os blocos das vistas. */
 function Panel({
@@ -66,55 +168,13 @@ function Panel({
   )
 }
 
-/** Valor grande com rótulo por cima — o bloco mais repetido das vistas. */
-function Figure({ label, value, note, tone = 'neutral' }: DemoRow) {
-  return (
-    <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
-      <p className="text-[10px] uppercase tracking-wider text-mist">{label}</p>
-      <p className="mt-1.5 text-[15px] font-semibold tabular leading-none text-white">{value}</p>
-      {note ? <p className={cn('mt-1.5 text-[10.5px]', toneText[tone])}>{note}</p> : null}
-    </div>
-  )
-}
-
-/** Linha com barra de proporção. A barra é a leitura, o número é a confirmação. */
-function ShareRow({ label, value, note, tone = 'neutral', share = 0 }: DemoRow) {
-  return (
-    <li>
-      <div className="flex items-baseline justify-between gap-3">
-        <span className="min-w-0 truncate text-[12px] text-white">{label}</span>
-        <span className="shrink-0 text-[12px] font-semibold tabular text-white">{value}</span>
-      </div>
-      <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-white/[0.06]">
-        <span
-          className={cn(
-            'block h-full rounded-full',
-            tone === 'bad' ? 'bg-signal/70' : tone === 'good' ? 'bg-glow' : 'bg-accent/70',
-          )}
-          style={{ width: `${share}%` }}
-        />
-      </div>
-      {note ? <p className={cn('mt-1 text-[10.5px]', toneText[tone])}>{note}</p> : null}
-    </li>
-  )
-}
-
-/** Linha simples rótulo / valor / nota, sem barra. */
-function PlainRow({ label, value, note, tone = 'neutral' }: DemoRow) {
-  return (
-    <li className="flex items-center justify-between gap-3 border-b border-white/[0.05] py-2 last:border-0">
-      <div className="min-w-0">
-        <p className="truncate text-[12px] text-white">{label}</p>
-        {note ? <p className={cn('mt-0.5 text-[10.5px]', toneText[tone])}>{note}</p> : null}
-      </div>
-      <span className="shrink-0 text-[12px] font-semibold tabular text-white">{value}</span>
-    </li>
-  )
-}
-
 /* ---------------------------------------------------------------- */
 
 function ResumoView() {
+  const { lang } = useLanguage()
+  const t = viewCopy[lang]
+  const { demoKpis, demoCashflow } = useDemoDashboardData()
+
   return (
     <div className="grid gap-3 lg:grid-cols-3">
       <div className="min-w-0 space-y-3 lg:col-span-2">
@@ -126,18 +186,18 @@ function ResumoView() {
 
         <Panel>
           <header className="mb-1 flex flex-wrap items-center justify-between gap-2">
-            <h3 className="text-[13px] font-semibold text-white">Evolução da tesouraria</h3>
+            <h3 className="text-[13px] font-semibold text-white">{t.cashflowTitle}</h3>
             <div className="flex items-center gap-3 text-[10px] text-mist">
               <span className="inline-flex items-center gap-1.5">
                 <span className="h-px w-4 bg-glow" aria-hidden="true" />
-                Realizado
+                {t.realized}
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <span
                   className="h-px w-4 bg-[repeating-linear-gradient(to_right,#0052FF_0_4px,transparent_4px_8px)]"
                   aria-hidden="true"
                 />
-                Previsão
+                {t.forecastLegend}
               </span>
             </div>
           </header>
@@ -157,292 +217,266 @@ function ResumoView() {
 }
 
 function DiagnosticoView() {
-  return (
-    <div className="grid gap-3 lg:grid-cols-3">
-      <Panel className="min-w-0" title="Estado financeiro" aside="Jul 2026">
-        <div className="flex items-end gap-3">
-          <p className="text-[34px] font-semibold tabular leading-none text-white">
-            {demoDiagnostic.score}
-            <span className="text-[15px] text-mist">/100</span>
-          </p>
-          <span className="mb-1 rounded-full border border-signal/[0.35] bg-signal/[0.12] px-2 py-0.5 text-[10px] font-medium text-signal">
-            {demoDiagnostic.state}
-          </span>
-        </div>
+  const { lang } = useLanguage()
+  const t = viewCopy[lang]
+  const { demoKpis, demoForecast, demoDiagnostic, demoDiagnosticSummary, demoDiagnosticProblems, demoDiagnosticAction } =
+    useDemoDashboardData()
+  const margin = demoKpis.find((kpi) => kpi.id === 'margem')
+  const riskLevel =
+    demoDiagnostic.metrics.find((metric) => metric.label === t.overallRiskMetricLabel)?.value ?? demoDiagnostic.state
 
-        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
-          <span
-            className="block h-full rounded-full bg-gradient-to-r from-accent to-glow"
-            style={{ width: `${demoDiagnostic.score}%` }}
+  return (
+    <div className="space-y-2.5">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <DiagnosticHealthCard score={demoDiagnostic.score} state={demoDiagnostic.state} />
+
+        <DiagnosticMetricCard
+          icon={TrendingDown}
+          tone="signal"
+          label={t.marginLabel}
+          tooltip={t.marginTooltip}
+          value={margin?.delta !== undefined ? formatPercent(margin.delta) : '—'}
+          animate={margin?.delta !== undefined ? { value: margin.delta, format: formatPercent, delay: 90 } : undefined}
+          caption={lang === 'pt' ? 'vs período anterior' : 'vs. prior period'}
+        />
+
+        <DiagnosticMetricCard
+          icon={Wallet}
+          tone="accent"
+          label={t.treasuryLabel}
+          tooltip={t.treasuryTooltip}
+          value={formatEuro(demoForecast.value)}
+          animate={{ value: demoForecast.value, format: formatEuro, delay: 180 }}
+          caption={t.forecastCaption}
+        />
+
+        <DiagnosticMetricCard
+          icon={Shield}
+          tone="signal"
+          label={t.riskLabel}
+          tooltip={t.riskTooltip}
+          value={riskLevel}
+          caption={t.riskCaption}
+        />
+      </div>
+
+      <ExecutiveSummary parts={demoDiagnosticSummary} />
+
+      <div className="grid items-start gap-2.5 lg:grid-cols-5">
+        <div className="lg:col-span-2">
+          <DiagnosticProblems problems={demoDiagnosticProblems} />
+        </div>
+        <div className="lg:col-span-3">
+          <RecommendedAction
+            title={demoDiagnosticAction.title}
+            description={demoDiagnosticAction.description}
+            cta={demoDiagnosticAction.cta}
           />
         </div>
-
-        <p className="mt-3 text-[11.5px] leading-relaxed text-mist">{demoDiagnostic.summary}</p>
-      </Panel>
-
-      <div className="min-w-0 space-y-3 lg:col-span-2">
-        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-          {demoDiagnostic.metrics.map((metric) => (
-            <Figure key={metric.label} {...metric} />
-          ))}
-        </div>
-
-        <Panel title="Leitura Finer One">
-          <ul className="space-y-2">
-            {demoDiagnostic.readings.map((reading) => (
-              <li key={reading} className="flex items-start gap-2">
-                <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-glow" aria-hidden="true" />
-                <p className="text-[12px] leading-relaxed text-mist">{reading}</p>
-              </li>
-            ))}
-          </ul>
-        </Panel>
       </div>
     </div>
-  )
-}
-
-function ReceitasView() {
-  return (
-    <div className="grid gap-3 lg:grid-cols-3">
-      <div className="min-w-0 space-y-3 lg:col-span-2">
-        <Panel title="Evolução das receitas" aside={demoRevenue.caption}>
-          <div className="flex items-baseline gap-2.5">
-            <p className="text-[22px] font-semibold tabular leading-none text-white">
-              {demoRevenue.total}
-            </p>
-            <span className="text-[12px] font-medium text-glow">{demoRevenue.delta}</span>
-          </div>
-
-          <div className="mt-3.5 flex h-20 items-end gap-1.5" aria-hidden="true">
-            {demoRevenue.months.map((height, index) => (
-              <span
-                key={index}
-                className={cn(
-                  'flex-1 origin-bottom animate-grow-up rounded-sm',
-                  index === demoRevenue.months.length - 1 ? 'bg-glow' : 'bg-accent/50',
-                )}
-                style={{ height: `${height}%`, animationDelay: `${index * 45}ms` }}
-              />
-            ))}
-          </div>
-        </Panel>
-
-        <Panel title="Origem das receitas">
-          <ul className="space-y-3">
-            {demoRevenue.origin.map((row) => (
-              <ShareRow key={row.label} {...row} />
-            ))}
-          </ul>
-        </Panel>
-      </div>
-
-      <Panel className="min-w-0" title="Principais clientes">
-        <ul>
-          {demoRevenue.topClients.map((row) => (
-            <PlainRow key={row.label} {...row} />
-          ))}
-        </ul>
-      </Panel>
-    </div>
-  )
-}
-
-function DespesasView() {
-  return (
-    <div className="grid gap-3 lg:grid-cols-3">
-      <div className="min-w-0 space-y-3 lg:col-span-2">
-        <Panel title="Despesas por categoria" aside={demoExpenses.caption}>
-          <div className="flex items-baseline gap-2.5">
-            <p className="text-[22px] font-semibold tabular leading-none text-white">
-              {demoExpenses.total}
-            </p>
-            <span className="text-[12px] font-medium text-glow">{demoExpenses.delta}</span>
-          </div>
-
-          <ul className="mt-3.5 space-y-3">
-            {demoExpenses.categories.map((row) => (
-              <ShareRow key={row.label} {...row} />
-            ))}
-          </ul>
-        </Panel>
-      </div>
-
-      <Panel className="min-w-0" title="Maiores desvios">
-        <ul>
-          {demoExpenses.categories
-            .filter((category) => category.tone === 'bad')
-            .map((row) => (
-              <PlainRow key={row.label} {...row} />
-            ))}
-        </ul>
-        <p className="mt-3 text-[11.5px] leading-relaxed text-mist">{demoExpenses.reading}</p>
-      </Panel>
-    </div>
-  )
-}
-
-function RelacoesView() {
-  return (
-    <div className="grid gap-3 lg:grid-cols-3">
-      <div className="min-w-0 space-y-3">
-        <Panel title="Concentração">
-          <div className="grid grid-cols-2 gap-2.5">
-            {demoRelations.concentration.map((row) => (
-              <Figure key={row.label} {...row} />
-            ))}
-          </div>
-        </Panel>
-
-        <Panel title="Atrasos">
-          <p className="text-[22px] font-semibold tabular leading-none text-signal">
-            {demoRelations.overdue.value}
-          </p>
-          <p className="mt-1.5 text-[11px] text-mist">{demoRelations.overdue.note}</p>
-        </Panel>
-      </div>
-
-      <Panel className="min-w-0 lg:col-span-2" title="Exposição por entidade">
-        <ul>
-          {demoRelations.ranking.map((row) => (
-            <PlainRow key={row.label} {...row} />
-          ))}
-        </ul>
-      </Panel>
-    </div>
-  )
-}
-
-function DocumentosView() {
-  const stateTone = { good: 'text-glow', bad: 'text-signal', neutral: 'text-mist' } as const
-
-  return (
-    <Panel title="Documentos financeiros" aside="Jul 2026">
-      <ul>
-        {demoDocuments.map((document) => (
-          <li
-            key={document.name}
-            className="flex items-center gap-3 border-b border-white/[0.05] py-2.5 last:border-0"
-          >
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-white/[0.05] text-mist">
-              <FileText size={13} aria-hidden="true" />
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-[12px] text-white">{document.name}</p>
-              <p className="mt-0.5 text-[10.5px] text-mist">{document.kind}</p>
-            </div>
-            <span
-              className={cn(
-                'hidden shrink-0 text-[11px] sm:block',
-                stateTone[document.tone],
-              )}
-            >
-              {document.state}
-            </span>
-            <span className="w-[54px] shrink-0 text-right text-[11px] tabular text-mist">
-              {document.date}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </Panel>
   )
 }
 
 function PerformanceView() {
-  return (
-    <div className="grid gap-3 lg:grid-cols-3">
-      <Panel className="min-w-0 lg:col-span-2" title="Performance financeira" aside="Últimos 12 meses">
-        <ul className="space-y-3.5">
-          {demoPerformance.rows.map((row) => (
-            <ShareRow key={row.label} {...row} />
-          ))}
-        </ul>
-      </Panel>
+  const { lang } = useLanguage()
+  const t = viewCopy[lang]
+  const { demoPnl, demoBalance, demoCashflowStatement } = useDemoDashboardData()
+  const performanceMetrics = derivePerformanceMetrics(demoPnl, demoBalance, demoCashflowStatement)
+  const { receitas, ebitda, lucroLiquido, ativoTotal, solvabilidade } = performanceMetrics
+  const [activeTable, setActiveTable] = useState<PerformanceTabId>('pnl')
 
-      <Panel className="min-w-0" title="Margem operacional">
-        <p className="text-[28px] font-semibold tabular leading-none text-white">
-          {demoPerformance.margin.value}
-        </p>
-        <p className="mt-2 text-[11.5px] leading-relaxed text-signal">
-          {demoPerformance.margin.note}
-        </p>
-      </Panel>
+  const performanceTableByTab: Record<PerformanceTabId, { title: string; tooltip: string; rows: FinancialLineItem[] }> = {
+    pnl: { title: t.pnlTitle, tooltip: t.pnlTooltip, rows: demoPnl },
+    balance: { title: t.balanceTitle, tooltip: t.balanceTooltip, rows: demoBalance },
+    cashflow: { title: t.cashflowStatementTitle, tooltip: t.cashflowStatementTooltip, rows: demoCashflowStatement },
+  }
+  const table = performanceTableByTab[activeTable]
+
+  return (
+    <div className="space-y-2">
+      <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 lg:grid-cols-5">
+        <PerformanceKpiCard
+          icon={TrendingUp}
+          label={t.revenueLabel}
+          tooltip={t.revenueTooltip}
+          value={receitas.current}
+          format={formatEuro}
+          delay={0}
+          deltaLabel={formatPercent(receitas.deltaPct)}
+          deltaGood={receitas.deltaPct >= 0}
+        />
+        <PerformanceKpiCard
+          icon={ChartNoAxesColumnIncreasing}
+          label={t.ebitdaLabel}
+          tooltip={t.ebitdaTooltip}
+          value={ebitda.current}
+          format={formatEuro}
+          delay={70}
+          deltaLabel={formatPercent(ebitda.deltaPct)}
+          deltaGood={ebitda.deltaPct >= 0}
+          caption={t.marginCaption(formatPercentPlain(ebitda.marginPct))}
+        />
+        <PerformanceKpiCard
+          icon={Wallet}
+          label={t.netProfitLabel}
+          tooltip={t.netProfitTooltip}
+          value={lucroLiquido.current}
+          format={formatEuro}
+          delay={140}
+          deltaLabel={formatPercent(lucroLiquido.deltaPct)}
+          deltaGood={lucroLiquido.deltaPct >= 0}
+          caption={t.marginCaption(formatPercentPlain(lucroLiquido.marginPct))}
+        />
+        <PerformanceKpiCard
+          icon={Building2}
+          label={t.totalAssetsLabel}
+          tooltip={t.totalAssetsTooltip}
+          value={ativoTotal.current}
+          format={formatEuro}
+          delay={210}
+          deltaLabel={formatPercent(ativoTotal.deltaPct)}
+          deltaGood={ativoTotal.deltaPct >= 0}
+        />
+        <PerformanceKpiCard
+          icon={ShieldCheck}
+          label={t.solvencyLabel}
+          tooltip={t.solvencyTooltip}
+          value={solvabilidade.current}
+          format={formatPercentPlain}
+          delay={280}
+          deltaLabel={formatPercentagePoints(solvabilidade.deltaPP)}
+          deltaGood={solvabilidade.deltaPP >= 0}
+        />
+      </div>
+
+      <PerformanceTabs active={activeTable} onChange={setActiveTable} />
+
+      <FinancialSummaryTable title={table.title} tooltip={table.tooltip} rows={table.rows} />
+
+      <PerformanceAnalysis metrics={performanceMetrics} />
     </div>
   )
 }
 
+const severityRank: Record<FinancialAlert['severity'], number> = { critical: 0, warning: 1, info: 2 }
+
+const ALERTS_PAGE_SIZE = 5
+
 function AlertasView() {
-  const levelClass = {
-    Alta: 'border-signal/[0.35] bg-signal/[0.12] text-signal',
-    Média: 'border-white/[0.14] bg-white/[0.05] text-white',
-    Baixa: 'border-white/[0.1] bg-white/[0.03] text-mist',
-  } as const
+  const { lang } = useLanguage()
+  const t = viewCopy[lang]
+  const { demoAlerts } = useDemoDashboardData()
+  const [filter, setFilter] = useState<AlertFilterId>('all')
+  const [sortBy, setSortBy] = useState<(typeof t.sortOptions)[number]['id']>('critical')
+  const [showAll, setShowAll] = useState(false)
+
+  const counts: AlertCounts = {
+    all: demoAlerts.length,
+    critical: demoAlerts.filter((alert) => alert.severity === 'critical').length,
+    warning: demoAlerts.filter((alert) => alert.severity === 'warning').length,
+    info: demoAlerts.filter((alert) => alert.severity === 'info').length,
+  }
+
+  const filtered = filter === 'all' ? demoAlerts : demoAlerts.filter((alert) => alert.severity === filter)
+
+  const sorted = [...filtered].sort((a, b) => {
+    if (sortBy === 'recent') return a.recencyRank - b.recencyRank
+    if (sortBy === 'impact') return b.impactMagnitude - a.impactMagnitude
+    return severityRank[a.severity] - severityRank[b.severity]
+  })
+
+  const visible = showAll ? sorted : sorted.slice(0, ALERTS_PAGE_SIZE)
+  const hiddenCount = sorted.length - visible.length
 
   return (
-    <Panel title="Alertas financeiros" aside={`${demoAlerts.length} ativos`}>
-      <ul className="space-y-2.5">
-        {demoAlerts.map((alert) => (
-          <li
-            key={alert.title}
-            className="flex items-start gap-2.5 rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5"
+    <div className="space-y-2">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <AlertFilters
+          counts={counts}
+          active={filter}
+          onChange={(next) => {
+            setFilter(next)
+            setShowAll(false)
+          }}
+        />
+
+        <label className="flex items-center gap-1.5 text-[10px] text-mist">
+          {t.sortBy}
+          <select
+            value={sortBy}
+            onChange={(event) => setSortBy(event.target.value as (typeof t.sortOptions)[number]['id'])}
+            className="rounded-md border border-white/[0.1] bg-white/[0.03] px-1.5 py-0.5 text-[10px] text-white"
           >
-            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white/[0.05] text-mist">
-              <AlertTriangle size={12} aria-hidden="true" />
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="text-[12.5px] font-medium leading-snug text-white">{alert.title}</p>
-              <p className="mt-1 text-[11px] leading-relaxed text-mist">{alert.context}</p>
-            </div>
-            <span
-              className={cn(
-                'shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium',
-                levelClass[alert.level],
-              )}
-            >
-              {alert.level}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </Panel>
+            {t.sortOptions.map((option) => (
+              <option key={option.id} value={option.id} className="bg-navy text-white">
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      {visible.length > 0 ? (
+        <ul className="space-y-1.5">
+          {visible.map((alert) => (
+            <FinancialAlertCard key={alert.id} alert={alert} />
+          ))}
+        </ul>
+      ) : (
+        <p className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-4 text-center text-[11px] text-mist">
+          {t.noAlerts}
+        </p>
+      )}
+
+      {hiddenCount > 0 ? (
+        <button
+          type="button"
+          onClick={() => setShowAll(true)}
+          className="mx-auto flex items-center gap-1 text-[11px] font-medium text-glow"
+        >
+          {t.seeAll(sorted.length)}
+          <ArrowRight size={11} aria-hidden="true" />
+        </button>
+      ) : null}
+
+      <p className="flex items-center gap-1.5 text-[10px] text-mist">
+        <Info size={11} className="shrink-0" aria-hidden="true" />
+        {t.alertsNote}
+      </p>
+    </div>
   )
 }
 
 function ChatView() {
+  const { demoChatSuggestions, demoChatAnswer } = useDemoDashboardData()
+  const [selectedSuggestion, setSelectedSuggestion] = useState<ChatSuggestionId>(demoChatSuggestions[0].id)
+  const [input, setInput] = useState('')
+
   return (
-    <Panel title="Chat Financeiro" aside="Baseado nos dados da empresa">
-      <div className="space-y-2.5">
-        {demoChatThread.messages.map((message) =>
-          message.role === 'user' ? (
-            <div key={message.text} className="flex justify-end">
-              <p className="max-w-[80%] rounded-lg rounded-br-sm bg-accent/[0.15] px-2.5 py-1.5 text-[12px] leading-snug text-white">
-                {message.text}
-              </p>
-            </div>
-          ) : (
-            <div key={message.text} className="flex items-start gap-2">
-              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-white/[0.06] text-white">
-                <LogoMark className="h-2.5" />
-              </span>
-              <p className="text-[12px] leading-relaxed text-mist">{message.text}</p>
-            </div>
-          ),
-        )}
+    <div className="grid gap-2.5 lg:grid-cols-[1fr_212px] lg:items-start">
+      <div className="min-w-0 space-y-2.5">
+        <SuggestedQuestions
+          selected={selectedSuggestion}
+          onSelect={(suggestion) => {
+            setSelectedSuggestion(suggestion.id)
+            setInput(suggestion.question)
+          }}
+        />
+
+        <div className="space-y-2">
+          <ChatUserMessage text={demoChatAnswer.question} time={demoChatAnswer.time} />
+          <FinerAIResponse answer={demoChatAnswer} />
+        </div>
+
+        <ChatInput value={input} onChange={setInput} />
       </div>
 
-      <div className="mt-3.5 flex flex-wrap gap-2 border-t border-white/[0.06] pt-3">
-        {demoChatThread.suggestions.map((suggestion) => (
-          <span
-            key={suggestion}
-            className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.09] bg-white/[0.02] px-2.5 py-1 text-[11px] text-mist"
-          >
-            {suggestion}
-            <ArrowRight size={11} aria-hidden="true" />
-          </span>
-        ))}
+      <div className="space-y-2.5">
+        <QuickActions onSelect={setInput} />
+        <SmartInsights />
       </div>
-    </Panel>
+    </div>
   )
 }
 
@@ -451,10 +485,6 @@ function ChatView() {
 const views: Record<DashboardTabId, () => React.ReactElement> = {
   resumo: ResumoView,
   diagnostico: DiagnosticoView,
-  receitas: ReceitasView,
-  despesas: DespesasView,
-  relacoes: RelacoesView,
-  documentos: DocumentosView,
   performance: PerformanceView,
   alertas: AlertasView,
   chat: ChatView,

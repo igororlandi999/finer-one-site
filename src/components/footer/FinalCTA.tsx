@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/Button'
 import { Reveal } from '@/components/ui/Reveal'
-import { footerCopy } from '@/data/footer'
+import { useFooterData } from '@/data/footer'
 
 /**
  * Encerramento da narrativa.
@@ -17,6 +17,8 @@ import { footerCopy } from '@/data/footer'
  * nesta fase, por isso não são ligados a nenhum fluxo.
  */
 export function FinalCTA() {
+  const { footerCopy } = useFooterData()
+
   return (
     <section
       aria-labelledby="cta-final-titulo"

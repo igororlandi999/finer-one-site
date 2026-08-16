@@ -2,9 +2,21 @@ import { useMemo, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import { useElementSize } from '@/hooks/useElementSize'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
+import { useLanguage } from '@/i18n/LanguageContext'
 import { formatEuro, formatEuroShort } from '@/lib/format'
 import type { CashflowPoint } from '@/data/demoDashboard'
 import { cn } from '@/lib/utils'
+
+const copy = {
+  pt: {
+    ariaLabel: 'Evolução da tesouraria: dez meses realizados e três meses de previsão. Valores demonstrativos.',
+    forecastSuffix: ' · Previsão',
+  },
+  en: {
+    ariaLabel: 'Cash flow trend: ten months actual and three months forecast. Demonstration values.',
+    forecastSuffix: ' · Forecast',
+  },
+}
 
 type Props = {
   data: CashflowPoint[]
@@ -52,6 +64,8 @@ function smoothPath(points: { x: number; y: number }[]): string {
 export function CashflowChart({ data, className }: Props) {
   const { ref, size } = useElementSize<HTMLDivElement>()
   const prefersReduced = usePrefersReducedMotion()
+  const { lang } = useLanguage()
+  const t = copy[lang]
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
 
   const compact = size.width > 0 && size.width < 440
@@ -126,7 +140,7 @@ export function CashflowChart({ data, className }: Props) {
             width={size.width}
             height={height}
             role="img"
-            aria-label="Evolução da tesouraria: dez meses realizados e três meses de previsão. Valores demonstrativos."
+            aria-label={t.ariaLabel}
             className="absolute inset-0 block touch-none"
             onPointerMove={handlePointer}
             onPointerDown={handlePointer}
@@ -263,7 +277,7 @@ export function CashflowChart({ data, className }: Props) {
             >
               <p className="text-[10px] uppercase tracking-wider text-mist">
                 {activePoint.label}
-                {activePoint.forecast ? ' · Previsão' : ''}
+                {activePoint.forecast ? t.forecastSuffix : ''}
               </p>
               <p className="mt-0.5 text-sm font-semibold tabular text-white">
                 {formatEuro(activePoint.value)}

@@ -1,8 +1,11 @@
 import { useCountUp } from '@/hooks/useCountUp'
 import { formatEuro } from '@/lib/format'
-import { demoForecast } from '@/data/demoDashboard'
+import { useDemoDashboardData } from '@/data/demoDashboard'
+import { useLanguage } from '@/i18n/LanguageContext'
 
 export function ForecastCard() {
+  const { demoForecast } = useDemoDashboardData()
+  const { lang } = useLanguage()
   const animated = useCountUp(demoForecast.value, 1300, 500)
 
   return (
@@ -12,7 +15,7 @@ export function ForecastCard() {
           {demoForecast.label}
         </p>
         <span className="rounded-full border border-accent/[0.35] bg-accent/[0.12] px-2 py-0.5 text-[10px] font-medium text-glow">
-          Previsão
+          {lang === 'pt' ? 'Previsão' : 'Forecast'}
         </span>
       </div>
       <p className="mt-2 text-xl font-semibold tabular leading-none text-white">

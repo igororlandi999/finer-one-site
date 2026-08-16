@@ -2,17 +2,65 @@ import { useEffect, useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import { Logo } from '@/components/brand/Logo'
 import { Button } from '@/components/ui/Button'
+import { useLanguage } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
 
-const links = [
-  { label: 'Produto', href: '#produto' },
-  { label: 'Soluções', href: '#solucoes' },
-  { label: 'Preços', href: '#precos' },
-]
+/**
+ * "Produto" leva ao dashboard interativo da Hero (#produto-demo — o próprio
+ * produto). "Como funciona" leva à narrativa Conectar/Organizar/Interpretar/
+ * Decidir da SolutionSection (#produto — mesmo destino do CTA "Ver como
+ * funciona" da Hero, para não haver dois links com significados diferentes
+ * para o mesmo sítio). Os hrefs não mudam com o idioma — são âncoras internas.
+ */
+const links = {
+  pt: [
+    { label: 'Produto', href: '#produto-demo' },
+    { label: 'Como funciona', href: '#produto' },
+    { label: 'Preços', href: '#precos' },
+  ],
+  en: [
+    { label: 'Product', href: '#produto-demo' },
+    { label: 'How it works', href: '#produto' },
+    { label: 'Pricing', href: '#precos' },
+  ],
+}
+
+const copy = {
+  pt: { skip: 'Saltar para o conteúdo', home: 'Finer One — página inicial', signIn: 'Entrar', cta: 'Agendar Demo', open: 'Abrir menu', close: 'Fechar menu' },
+  en: { skip: 'Skip to content', home: 'Finer One — homepage', signIn: 'Sign In', cta: 'Book a Demo', open: 'Open menu', close: 'Close menu' },
+}
+
+/** Botão "PT"/"EN": troca para o idioma que ainda NÃO está ativo. */
+function LanguageToggle({ className }: { className?: string }) {
+  const { lang, toggleLang } = useLanguage()
+  const next = lang === 'pt' ? 'en' : 'pt'
+
+  return (
+    <button
+      type="button"
+      onClick={toggleLang}
+      aria-label={lang === 'pt' ? 'Switch language to English' : 'Mudar idioma para português'}
+      aria-pressed={lang === 'en'}
+      className={cn(
+        'inline-flex h-9 items-center justify-center gap-1 rounded-lg border border-white/[0.12] bg-white/[0.03] px-3 text-[12px] font-medium uppercase tracking-wide text-mist transition-colors duration-200 hover:border-white/25 hover:bg-white/[0.06] hover:text-white',
+        className,
+      )}
+    >
+      <span className={lang === 'pt' ? 'text-white' : undefined}>PT</span>
+      <span aria-hidden="true" className="text-white/25">/</span>
+      <span className={lang === 'en' ? 'text-white' : undefined}>EN</span>
+      <span className="sr-only">
+        {lang === 'pt' ? `— switch to ${next.toUpperCase()}` : `— mudar para ${next.toUpperCase()}`}
+      </span>
+    </button>
+  )
+}
 
 export function Navbar() {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const { lang } = useLanguage()
+  const t = copy[lang]
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12)
@@ -52,20 +100,20 @@ export function Navbar() {
           href="#conteudo"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:rounded-md focus:bg-accent focus:px-3 focus:py-2 focus:text-sm focus:text-white"
         >
-          Saltar para o conteúdo
+          {t.skip}
         </a>
 
         <nav
-          aria-label="Principal"
+          aria-label={lang === 'pt' ? 'Principal' : 'Main'}
           className="mx-auto flex h-16 max-w-content items-center justify-between px-5 sm:px-6 lg:px-8"
         >
-          <a href="/" aria-label="Finer One — página inicial" className="shrink-0 rounded-md">
+          <a href="/" aria-label={t.home} className="shrink-0 rounded-md">
             <Logo />
           </a>
 
           <ul className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-9 lg:flex">
-            {links.map((link) => (
-              <li key={link.href}>
+            {links[lang].map((link) => (
+              <li key={link.label}>
                 <a href={link.href} className="text-sm text-mist transition-colors hover:text-white">
                   {link.label}
                 </a>
@@ -74,22 +122,26 @@ export function Navbar() {
           </ul>
 
           <div className="hidden items-center gap-2 lg:flex">
+            <LanguageToggle />
             <Button variant="ghost" size="sm">
-              Entrar
+              {t.signIn}
             </Button>
-            <Button size="sm">Começar Agora</Button>
+            <Button size="sm">{t.cta}</Button>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setOpen((value) => !value)}
-            aria-label={open ? 'Fechar menu' : 'Abrir menu'}
-            aria-expanded={open}
-            aria-controls="menu-mobile"
-            className="flex h-10 w-10 items-center justify-center rounded-lg text-white transition-colors hover:bg-white/[0.06] lg:hidden"
-          >
-            {open ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
-          </button>
+          <div className="flex items-center gap-2 lg:hidden">
+            <LanguageToggle />
+            <button
+              type="button"
+              onClick={() => setOpen((value) => !value)}
+              aria-label={open ? t.close : t.open}
+              aria-expanded={open}
+              aria-controls="menu-mobile"
+              className="flex h-10 w-10 items-center justify-center rounded-lg text-white transition-colors hover:bg-white/[0.06]"
+            >
+              {open ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
+            </button>
+          </div>
         </nav>
       </header>
 
@@ -105,8 +157,8 @@ export function Navbar() {
         >
           <div className="mx-auto flex min-h-full max-w-content flex-col px-5 pb-8 pt-2 sm:px-6">
             <ul>
-              {links.map((link) => (
-                <li key={link.href}>
+              {links[lang].map((link) => (
+                <li key={link.label}>
                   <a
                     href={link.href}
                     onClick={() => setOpen(false)}
@@ -120,10 +172,10 @@ export function Navbar() {
 
             <div className="mt-auto flex flex-col gap-2 pt-8">
               <Button variant="outline" size="lg" onClick={() => setOpen(false)}>
-                Entrar
+                {t.signIn}
               </Button>
               <Button size="lg" onClick={() => setOpen(false)}>
-                Começar Agora
+                {t.cta}
               </Button>
             </div>
           </div>

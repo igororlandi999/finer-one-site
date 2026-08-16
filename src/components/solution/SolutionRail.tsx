@@ -1,4 +1,4 @@
-import { solutionSteps } from '@/data/solutionSection'
+import { useSolutionSectionData } from '@/data/solutionSection'
 import { cn } from '@/lib/utils'
 
 /**
@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils'
  * de fundo e pelo empilhamento natural das etapas.
  */
 export function SolutionRail({ active, className }: { active: number; className?: string }) {
+  const { solutionSteps } = useSolutionSectionData()
   const progress = ((active + 0.5) / solutionSteps.length) * 100
 
   return (

@@ -1,5 +1,5 @@
 import { ArrowUpRight } from 'lucide-react'
-import { linkedIn } from '@/data/footer'
+import { useFooterData } from '@/data/footer'
 
 /**
  * Faixa do LinkedIn.
@@ -20,6 +20,8 @@ function LinkedInGlyph() {
   )
 }
 export function LinkedInStrip() {
+  const { linkedIn } = useFooterData()
+
   return (
     <a
       href={linkedIn.href}

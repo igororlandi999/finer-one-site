@@ -2,7 +2,7 @@ import { FooterBrand } from '@/components/footer/FooterBrand'
 import { FooterLinks } from '@/components/footer/FooterLinks'
 import { FooterVisual } from '@/components/footer/FooterVisual'
 import { LinkedInStrip } from '@/components/footer/LinkedInStrip'
-import { footerCopy } from '@/data/footer'
+import { useFooterData } from '@/data/footer'
 
 /**
  * Rodapé institucional.
@@ -13,6 +13,8 @@ import { footerCopy } from '@/data/footer'
  * Fica fora do <main>, que é onde deve estar semanticamente.
  */
 export function SiteFooter() {
+  const { footerCopy } = useFooterData()
+
   return (
     <footer className="relative isolate bg-navy-deep">
       <FooterVisual />

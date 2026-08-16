@@ -1,22 +1,17 @@
 import { useState } from 'react'
-import {
-  Activity,
-  BarChart3,
-  Bell,
-  ChevronDown,
-  FileText,
-  LayoutGrid,
-  MessageSquare,
-  Receipt,
-  TrendingUp,
-  Users,
-} from 'lucide-react'
+import { Activity, BarChart3, Bell, ChevronDown, LayoutGrid, MessageSquare } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { LogoMark } from '@/components/brand/Logo'
 import { DashboardView } from '@/components/product/DashboardViews'
-import { dashboardTabs } from '@/data/demoDashboard'
+import { useDemoDashboardData } from '@/data/demoDashboard'
 import type { DashboardTabId } from '@/data/demoDashboard'
+import { useLanguage } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
+
+const copy = {
+  pt: { areasLabel: 'Áreas do plano Plus', period: 'Últimos 12 meses' },
+  en: { areasLabel: 'Plus plan areas', period: 'Last 12 months' },
+}
 
 /**
  * Ícone de cada área. Fica no componente e não nos dados para o ficheiro de
@@ -25,10 +20,6 @@ import { cn } from '@/lib/utils'
 const tabIcons: Record<DashboardTabId, LucideIcon> = {
   resumo: LayoutGrid,
   diagnostico: Activity,
-  receitas: TrendingUp,
-  despesas: Receipt,
-  relacoes: Users,
-  documentos: FileText,
   performance: BarChart3,
   alertas: Bell,
   chat: MessageSquare,
@@ -54,6 +45,9 @@ const tabIcons: Record<DashboardTabId, LucideIcon> = {
  */
 export function DashboardMock() {
   const [tab, setTab] = useState<DashboardTabId>('resumo')
+  const { lang } = useLanguage()
+  const t = copy[lang]
+  const { dashboardTabs } = useDemoDashboardData()
   const active = dashboardTabs.find((item) => item.id === tab) ?? dashboardTabs[0]
 
   return (
@@ -69,7 +63,7 @@ export function DashboardMock() {
 
         <div className="flex items-center gap-2">
           <span className="hidden items-center gap-1.5 rounded-md border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 text-[11px] text-mist sm:inline-flex">
-            Últimos 12 meses
+            {t.period}
             <ChevronDown size={12} aria-hidden="true" />
           </span>
           <span className="flex h-6 w-6 items-center justify-center rounded-full bg-accent/[0.18] text-[10px] font-semibold text-glow">
@@ -82,7 +76,7 @@ export function DashboardMock() {
       <div className="border-b border-white/[0.06] lg:hidden">
         <div
           role="group"
-          aria-label="Áreas do plano Plus"
+          aria-label={t.areasLabel}
           className="no-scrollbar flex gap-1.5 overflow-x-auto px-3 py-2 sm:px-4"
         >
           {dashboardTabs.map((item) => {
@@ -113,7 +107,7 @@ export function DashboardMock() {
       <div className="flex">
         {/* Navegação lateral do produto */}
         <nav
-          aria-label="Áreas do plano Plus"
+          aria-label={t.areasLabel}
           className="hidden w-[172px] shrink-0 border-r border-white/[0.06] p-2.5 lg:block"
         >
           {dashboardTabs.map((item) => {

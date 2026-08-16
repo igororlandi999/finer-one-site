@@ -1,5 +1,5 @@
 import { FAQItem } from '@/components/faq/FAQItem'
-import { faq } from '@/data/faq'
+import { useFaqData } from '@/data/faq'
 
 /**
  * Lista de perguntas.
@@ -14,6 +14,8 @@ export function FAQAccordion({
   open: number | null
   onToggle: (index: number) => void
 }) {
+  const { faq } = useFaqData()
+
   return (
     <div className="space-y-3">
       {faq.map((entry, index) => (

@@ -46,11 +46,10 @@ src/
       ProductShowcase.tsx      moldura e profundidade do produto
     problem/
       ProblemSection.tsx       segunda secção: o problema (Bento)
-      BentoCard.tsx            invólucro comum dos quatro cards
-      DataSourcesCard.tsx      dados dispersos por vários sistemas
+      BentoCard.tsx            invólucro comum dos três cards
       QuestionsCard.tsx        perguntas do empresário, em ciclo
       LateDecisionCard.tsx     degradação de margem e custo do atraso
-      FinerHubCard.tsx         convergência para a camada de inteligência
+      FinerHubCard.tsx         fontes convergindo numa pergunta e saídas
       sourceIcons.tsx          ícones genéricos por tipo de sistema
     solution/
       SolutionSection.tsx      terceira secção: a solução (sticky no desktop)

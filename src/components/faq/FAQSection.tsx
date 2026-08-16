@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { FAQAccordion } from '@/components/faq/FAQAccordion'
 import { Reveal } from '@/components/ui/Reveal'
-import { faqCopy } from '@/data/faq'
+import { useFaqData } from '@/data/faq'
 
 /**
  * Nona secção: perguntas frequentes.
@@ -13,13 +13,14 @@ import { faqCopy } from '@/data/faq'
  * O fundo mantém-se em navy e a luz do topo é a mais fraca de todo o site,
  * o que fecha a página sem introduzir mais um divisor.
  *
- * São seis perguntas num único accordion. As categorias existiam quando havia
- * dezasseis; com seis, um tablist só acrescentaria um passo antes da resposta.
+ * São cinco perguntas num único accordion. As categorias existiam quando havia
+ * dezasseis; com poucas, um tablist só acrescentaria um passo antes da resposta.
  *
  * Conteúdo em src/data/faq.ts, com as regras de claims documentadas lá.
  */
 export function FAQSection() {
   const [open, setOpen] = useState<number | null>(null)
+  const { faqCopy } = useFaqData()
 
   return (
     <section

@@ -7,6 +7,9 @@ type Props = {
   className?: string
   /** Atraso da entrada, em milissegundos. */
   delay?: number
+  /** Repete a animação sempre que o elemento volta a entrar na viewport,
+   *  em vez de disparar apenas na primeira vez. */
+  repeat?: boolean
 }
 
 /**
@@ -14,8 +17,8 @@ type Props = {
  * Usa a mesma animação `fade-up` da Hero, por isso é automaticamente
  * neutralizada por prefers-reduced-motion (ver index.css).
  */
-export function Reveal({ children, className, delay = 0 }: Props) {
-  const { ref, inView } = useInView<HTMLDivElement>()
+export function Reveal({ children, className, delay = 0, repeat = false }: Props) {
+  const { ref, inView } = useInView<HTMLDivElement>({ once: !repeat })
 
   return (
     <div

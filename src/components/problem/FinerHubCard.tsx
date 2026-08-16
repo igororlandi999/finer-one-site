@@ -3,30 +3,44 @@ import type { Ref } from 'react'
 import { LogoMark } from '@/components/brand/Logo'
 import { BentoCard } from '@/components/problem/BentoCard'
 import { systemIcons } from '@/components/problem/sourceIcons'
-import { hubInputs, hubOutputs } from '@/data/problemSection'
+import { useProblemSectionData } from '@/data/problemSection'
 import { useInView } from '@/hooks/useInView'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
+import { useLanguage } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
+
+const copy = {
+  pt: {
+    title: 'Decidir exige contexto',
+    description:
+      'Uma decisão não pode depender de um indicador isolado. É preciso cruzar informação, avaliar consequências e comparar alternativas.',
+  },
+  en: {
+    title: 'Deciding requires context',
+    description:
+      "A decision can't rely on a single indicator. It takes cross-referencing information, weighing consequences and comparing alternatives.",
+  },
+}
 
 // Coordenadas em percentagem do card. As colunas usam grelhas de linhas
 // iguais, por isso o centro de cada chip é previsível e os conectores
 // encaixam sem medições em JavaScript.
 const INPUT_EDGE = 34
-const OUTPUT_EDGE = 68
+const OUTPUT_EDGE = 62
 const HUB_LEFT = 45
 const HUB_RIGHT = 55
 
-const inputY = (index: number) => ((index + 0.5) / hubInputs.length) * 100
-const outputY = (index: number) => ((index + 0.5) / hubOutputs.length) * 100
+const inputY = (index: number, count: number) => ((index + 0.5) / count) * 100
+const outputY = (index: number, count: number) => ((index + 0.5) / count) * 100
 
-const inputPath = (index: number) => {
-  const y = inputY(index)
+const inputPath = (index: number, count: number) => {
+  const y = inputY(index, count)
   const mid = (INPUT_EDGE + HUB_LEFT) / 2
   return `M${INPUT_EDGE},${y} C${mid},${y} ${mid},50 ${HUB_LEFT},50`
 }
 
-const outputPath = (index: number) => {
-  const y = outputY(index)
+const outputPath = (index: number, count: number) => {
+  const y = outputY(index, count)
   const mid = (HUB_RIGHT + OUTPUT_EDGE) / 2
   return `M${HUB_RIGHT},50 C${mid},50 ${mid},${y} ${OUTPUT_EDGE},${y}`
 }
@@ -50,15 +64,11 @@ function Chip({
     <span
       ref={ref}
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-md border border-white/[0.08] bg-navy-soft/70 px-2 py-1 text-[11px] leading-none text-mist',
+        'inline-flex min-w-0 items-center gap-1 rounded-md border border-white/[0.08] bg-navy-soft/70 px-1.5 py-1 text-[10px] leading-none text-mist',
         className,
       )}
     >
-      <Icon
-        size={11}
-        aria-hidden="true"
-        className={tone === 'output' ? 'text-glow' : undefined}
-      />
+      <Icon size={11} aria-hidden="true" className={cn('shrink-0', tone === 'output' ? 'text-glow' : undefined)} />
       <span className="truncate">{label}</span>
     </span>
   )
@@ -83,14 +93,12 @@ export function FinerHubCard({ className }: { className?: string }) {
   const { ref, inView } = useInView<HTMLDivElement>({ threshold: 0.3 })
   const prefersReduced = usePrefersReducedMotion()
   const showPulses = inView && !prefersReduced
+  const { lang } = useLanguage()
+  const t = copy[lang]
+  const { hubInputs, hubOutputs } = useProblemSectionData()
 
   return (
-    <BentoCard
-      className={className}
-      delay={120}
-      title="Uma visão. Decisões mais claras."
-      description="A Finer One centraliza e interpreta informação financeira para transformar dados dispersos em inteligência acionável."
-    >
+    <BentoCard className={className} delay={120} repeat title={t.title} description={t.description}>
       <div ref={ref}>
         {/* Composição horizontal — tablet e desktop */}
         <div className="relative hidden h-[228px] sm:block">
@@ -103,7 +111,7 @@ export function FinerHubCard({ className }: { className?: string }) {
             {hubInputs.map((input, index) => (
               <path
                 key={input.label}
-                d={inputPath(index)}
+                d={inputPath(index, hubInputs.length)}
                 fill="none"
                 stroke="rgba(30,144,255,0.28)"
                 strokeWidth={1}
@@ -113,7 +121,7 @@ export function FinerHubCard({ className }: { className?: string }) {
             {hubOutputs.map((output, index) => (
               <path
                 key={output.label}
-                d={outputPath(index)}
+                d={outputPath(index, hubOutputs.length)}
                 fill="none"
                 stroke="rgba(0,82,255,0.3)"
                 strokeWidth={1}
@@ -126,7 +134,7 @@ export function FinerHubCard({ className }: { className?: string }) {
               ? hubInputs.map((input, index) => (
                   <path
                     key={`pulse-in-${input.label}`}
-                    d={inputPath(index)}
+                    d={inputPath(index, hubInputs.length)}
                     fill="none"
                     stroke="#1E90FF"
                     strokeWidth={1.5}
@@ -142,7 +150,7 @@ export function FinerHubCard({ className }: { className?: string }) {
               ? hubOutputs.map((output, index) => (
                   <path
                     key={`pulse-out-${output.label}`}
-                    d={outputPath(index)}
+                    d={outputPath(index, hubOutputs.length)}
                     fill="none"
                     stroke="#1E90FF"
                     strokeWidth={1.5}
@@ -158,7 +166,7 @@ export function FinerHubCard({ className }: { className?: string }) {
 
           <div className="absolute inset-y-0 left-0 grid w-[34%] grid-rows-5">
             {hubInputs.map((input) => (
-              <span key={input.label} className="flex items-center justify-end">
+              <span key={input.label} className="flex min-w-0 items-center justify-end">
                 <Chip label={input.label} icon={input.icon} className="max-w-full" />
               </span>
             ))}
@@ -168,9 +176,9 @@ export function FinerHubCard({ className }: { className?: string }) {
             <Hub />
           </div>
 
-          <div className="absolute inset-y-0 right-0 grid w-[30%] grid-rows-4">
+          <div className="absolute inset-y-0 right-0 grid w-[38%] grid-rows-4">
             {hubOutputs.map((output) => (
-              <span key={output.label} className="flex items-center justify-start">
+              <span key={output.label} className="flex min-w-0 items-center justify-start">
                 <Chip label={output.label} icon={output.icon} tone="output" className="max-w-full" />
               </span>
             ))}
@@ -196,6 +204,7 @@ export function FinerHubCard({ className }: { className?: string }) {
 type Link = { d: string; kind: 'in' | 'out' }
 
 function MobileHub({ showPulses }: { showPulses: boolean }) {
+  const { hubInputs, hubOutputs } = useProblemSectionData()
   const wrapperRef = useRef<HTMLDivElement>(null)
   const hubRef = useRef<HTMLSpanElement>(null)
   const inputRefs = useRef<(HTMLSpanElement | null)[]>([])

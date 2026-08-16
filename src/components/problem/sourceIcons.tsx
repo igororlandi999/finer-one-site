@@ -1,9 +1,38 @@
-import { Bell, Calculator, Boxes, CheckCircle2, LineChart, Landmark, Receipt, Table2, TrendingUp } from 'lucide-react'
+import {
+  AlertTriangle,
+  Bell,
+  Calculator,
+  Boxes,
+  CheckCircle2,
+  Eye,
+  Flag,
+  Info,
+  LineChart,
+  Landmark,
+  Megaphone,
+  PieChart,
+  Receipt,
+  ScanSearch,
+  Search,
+  ShieldCheck,
+  SlidersHorizontal,
+  Table2,
+  Target,
+  TrendingDown,
+  TrendingUp,
+  Users,
+  Wallet,
+  WalletCards,
+  Wrench,
+  Zap,
+} from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 /**
- * Ícones genéricos por tipo de sistema. Nunca logótipos de marcas reais.
- * Partilhado pelo card de dados dispersos e pelo hub da Finer One.
+ * Ícones genéricos por tipo de sistema ou conceito financeiro. Nunca
+ * logótipos de marcas reais. Partilhado pela secção de Positioning e pelos
+ * cards da secção do problema — não remover chaves sem confirmar que nenhum
+ * outro sítio as usa (ver grep antes de editar).
  */
 export const systemIcons: Record<string, LucideIcon> = {
   bank: Landmark,
@@ -15,4 +44,23 @@ export const systemIcons: Record<string, LucideIcon> = {
   forecast: TrendingUp,
   alert: Bell,
   decision: CheckCircle2,
+  revenue: TrendingUp,
+  expenses: Wallet,
+  margin: PieChart,
+  treasury: WalletCards,
+  clients: Users,
+  cause: Search,
+  impact: LineChart,
+  priority: Flag,
+  action: Zap,
+  trendDown: TrendingDown,
+  maintenance: Wrench,
+  advertising: Megaphone,
+  warning: AlertTriangle,
+  info: Info,
+  target: Target,
+  access: SlidersHorizontal,
+  privacy: Eye,
+  traceability: ScanSearch,
+  shield: ShieldCheck,
 }

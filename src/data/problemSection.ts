@@ -4,57 +4,99 @@
  * Os valores financeiros são ilustrativos e coerentes com o dashboard
  * demonstrativo da Hero. Não representam nenhuma empresa real.
  * Nenhum nome de banco, ERP ou software real é utilizado.
+ *
+ * BILINGUE: ver useDemoDashboardData em demoDashboard.ts para o padrão.
  */
 
-export type DataSource = {
-  /** Tipo genérico de sistema — nunca uma marca real. */
-  system: string
-  label: string
-  value: string
-  icon: 'bank' | 'invoice' | 'sheet' | 'accounting' | 'erp'
-}
-
-export const dataSources: DataSource[] = [
-  { system: 'Banco', label: 'Saldo', value: '€148.920', icon: 'bank' },
-  { system: 'Faturação', label: 'Faturas emitidas', value: '€327.420', icon: 'invoice' },
-  { system: 'Folha de cálculo', label: 'Margem', value: '35,3%', icon: 'sheet' },
-  { system: 'Contabilidade', label: 'Custos', value: '€211.870', icon: 'accounting' },
-  { system: 'ERP', label: 'Clientes ativos', value: '128', icon: 'erp' },
-]
-
-export const businessQuestions = [
-  'Porque caiu a margem?',
-  'Posso contratar?',
-  'Quanto terei em tesouraria daqui a 30 dias?',
-  'Onde estou a perder dinheiro?',
-  'Qual cliente é mais rentável?',
-]
+import { useLanguage } from '@/i18n/LanguageContext'
+import type { Lang } from '@/i18n/LanguageContext'
 
 export type MarginPoint = { month: string; value: number; label: string }
 
-/** Degradação de margem ao longo de quatro meses. */
-export const marginTimeline: MarginPoint[] = [
-  { month: 'Jan', value: 37, label: '37%' },
-  { month: 'Fev', value: 35, label: '35%' },
-  { month: 'Mar', value: 31, label: '31%' },
-  { month: 'Abr', value: 27, label: '27%' },
-]
+export type ProblemSectionContent = {
+  businessQuestions: string[]
+  /** Índice de destaque inicial em businessQuestions — "Posso contratar?" / "Can I hire?". */
+  highlightedQuestionIndex: number
+  /** Degradação de margem ao longo de quatro meses. */
+  marginTimeline: MarginPoint[]
+  /** Índices da timeline: onde o problema começa e onde costuma ser notado. */
+  problemStartIndex: number
+  discoveryIndex: number
+  /**
+   * Fontes que convergem para a pergunta central do card "Decidir exige
+   * contexto". Chaves de ícone próprias, partilhadas com systemIcons.
+   */
+  hubInputs: { label: string; icon: 'revenue' | 'expenses' | 'margin' | 'treasury' | 'clients' }[]
+  hubOutputs: { label: string; icon: 'cause' | 'impact' | 'priority' | 'action' }[]
+}
 
-/** Índices da timeline: onde o problema começa e onde costuma ser notado. */
-export const problemStartIndex = 1
-export const discoveryIndex = 3
+function buildContent(lang: Lang): ProblemSectionContent {
+  const pt = lang === 'pt'
 
-export const hubInputs = [
-  { label: 'Banco', icon: 'bank' as const },
-  { label: 'ERP', icon: 'erp' as const },
-  { label: 'Folha de cálculo', icon: 'sheet' as const },
-  { label: 'Faturação', icon: 'invoice' as const },
-  { label: 'Contabilidade', icon: 'accounting' as const },
-]
+  return {
+    businessQuestions: pt
+      ? [
+          'Porque caiu a margem?',
+          'Posso contratar?',
+          'Vou ter pressão de tesouraria?',
+          'Onde estou a perder dinheiro?',
+          'Que cliente exige atenção?',
+        ]
+      : [
+          'Why did margin drop?',
+          'Can I hire?',
+          'Will I face cash pressure?',
+          'Where am I losing money?',
+          'Which client needs attention?',
+        ],
+    highlightedQuestionIndex: 1,
+    marginTimeline: pt
+      ? [
+          { month: 'Jan', value: 37, label: '37%' },
+          { month: 'Fev', value: 35, label: '35%' },
+          { month: 'Mar', value: 31, label: '31%' },
+          { month: 'Abr', value: 27, label: '27%' },
+        ]
+      : [
+          { month: 'Jan', value: 37, label: '37%' },
+          { month: 'Feb', value: 35, label: '35%' },
+          { month: 'Mar', value: 31, label: '31%' },
+          { month: 'Apr', value: 27, label: '27%' },
+        ],
+    problemStartIndex: 1,
+    discoveryIndex: 3,
+    hubInputs: pt
+      ? [
+          { label: 'Receitas', icon: 'revenue' },
+          { label: 'Despesas', icon: 'expenses' },
+          { label: 'Margem', icon: 'margin' },
+          { label: 'Tesouraria', icon: 'treasury' },
+          { label: 'Clientes', icon: 'clients' },
+        ]
+      : [
+          { label: 'Revenue', icon: 'revenue' },
+          { label: 'Expenses', icon: 'expenses' },
+          { label: 'Margin', icon: 'margin' },
+          { label: 'Cash', icon: 'treasury' },
+          { label: 'Clients', icon: 'clients' },
+        ],
+    hubOutputs: pt
+      ? [
+          { label: 'Causa', icon: 'cause' },
+          { label: 'Impacto', icon: 'impact' },
+          { label: 'Prioridade', icon: 'priority' },
+          { label: 'Recomendação', icon: 'action' },
+        ]
+      : [
+          { label: 'Cause', icon: 'cause' },
+          { label: 'Impact', icon: 'impact' },
+          { label: 'Priority', icon: 'priority' },
+          { label: 'Recommendation', icon: 'action' },
+        ],
+  }
+}
 
-export const hubOutputs = [
-  { label: 'Análise', icon: 'analysis' as const },
-  { label: 'Previsão', icon: 'forecast' as const },
-  { label: 'Alerta', icon: 'alert' as const },
-  { label: 'Decisão', icon: 'decision' as const },
-]
+export function useProblemSectionData(): ProblemSectionContent {
+  const { lang } = useLanguage()
+  return buildContent(lang)
+}

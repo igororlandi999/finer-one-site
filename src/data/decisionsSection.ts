@@ -1,170 +1,223 @@
 /**
- * Conteúdo da quinta secção — decisões.
+ * Conteúdo da quinta secção — segurança e confiança, em quatro perguntas.
  *
- * TODOS OS NÚMEROS SÃO MOCK DATA. Não pertencem a nenhuma empresa real, não
- * vêm de nenhuma integração e não representam resultados obtidos.
+ * TODOS OS TEXTOS SÃO DECLARAÇÃO DE PRINCÍPIO, não garantia técnica ou
+ * jurídica. Nada aqui afirma arquitetura, conformidade ou compromisso
+ * contratual específico (RGPD, retenção, eliminação, lineage, etc.).
  *
- * Esta secção demonstra o TIPO de leitura financeira que a Finer One
- * pretende oferecer. As interpretações são exemplos escritos à mão, não
- * saídas de nenhum motor de análise, scoring ou modelo probabilístico. Ao
- * editar este ficheiro, manter a linguagem descritiva e sem promessas:
- * descrever o que os números mostram, nunca afirmar uma recomendação
- * financeira absoluta.
+ * DELIBERADAMENTE AUSENTES — não voltar a introduzir sem base formal:
+ * encriptação nomeada, ISO 27001, SOC 2, RGPD compliant, zero knowledge,
+ * logs imutáveis, "dados nunca alterados/armazenados", servidores europeus,
+ * backups, MFA, certificações, auditoria. Isto vale também para a versão EN.
  *
- * Alguns valores são derivados por aritmética simples a partir dos valores
- * base (está assinalado onde acontece). Nada aqui é estimado ou inferido.
+ * BILINGUE: ver useDemoDashboardData em demoDashboard.ts para o padrão.
  */
 
-export type DecisionId = 'contratar' | 'investir' | 'margem' | 'tesouraria' | 'clientes'
+import { useLanguage } from '@/i18n/LanguageContext'
+
+export type DecisionId = 'acesso' | 'origem' | 'relevancia' | 'responsabilidade'
+
+export type PrincipleGridItem = {
+  eyebrow: string
+  title: string
+  /** O quarto item de cada grelha é sempre o destaque azul. */
+  highlight?: boolean
+}
+
+export type PrincipleFlowStep = { label: string; subtitle: string }
+
+export type PrincipleFlow = {
+  eyebrow: string
+  note?: string
+  steps: PrincipleFlowStep[]
+}
 
 export type Decision = {
   id: DecisionId
-  /** Ordinal mostrado no topo do card. */
   ordinal: string
   question: string
   context: string
-  /** Leitura demonstrativa. Descritiva, nunca prescritiva. */
   insight: string
-  /** Elemento visual de demonstração. Não navega. */
   cta?: string
+  grid: PrincipleGridItem[]
+  flow?: PrincipleFlow
 }
 
-export const decisions: Decision[] = [
-  {
-    id: 'contratar',
-    ordinal: '01',
-    question: 'Posso contratar mais uma pessoa?',
-    context:
-      'Antes de aumentar custos fixos, perceba o impacto na margem e na tesouraria.',
-    insight:
-      'Com base na margem atual e na previsão de tesouraria, a contratação é financeiramente viável, mas reduz a folga financeira prevista para os próximos 60 dias.',
-    cta: 'Ver fatores considerados',
-  },
-  {
-    id: 'investir',
-    ordinal: '02',
-    question: 'Tenho margem para investir agora?',
-    context:
-      'Veja o impacto de uma decisão de investimento antes de comprometer a liquidez da empresa.',
-    insight:
-      'O investimento mantém uma posição de tesouraria positiva no cenário base, mas reduz a margem de segurança financeira nos próximos 90 dias.',
-  },
-  {
-    id: 'margem',
-    ordinal: '03',
-    question: 'Porque caiu a minha margem?',
-    context:
-      'Perceba onde a margem se perdeu antes de decidir preços, custos ou fornecedores.',
-    insight:
-      'A redução de margem está concentrada no aumento dos custos operacionais, especialmente logística e fornecedores.',
-  },
-  {
-    id: 'tesouraria',
-    ordinal: '04',
-    question: 'Vou ter pressão de tesouraria?',
-    context:
-      'Antecipe períodos de menor folga antes de a falta de liquidez se tornar urgente.',
-    insight:
-      'A tesouraria permanece confortável no curto prazo, mas a folga financeira diminui significativamente no horizonte de 90 dias.',
-  },
-  {
-    id: 'clientes',
-    ordinal: '05',
-    question: 'Estou demasiado dependente de poucos clientes?',
-    context: 'Perceba quanto do negócio depende dos seus maiores clientes.',
-    insight:
-      'Os cinco maiores clientes representam 47% das receitas analisadas. Uma alteração significativa num destes clientes terá impacto relevante na faturação.',
-  },
-]
-
-/* ---------------------------------------------------------------- 01 */
-
-export const hiringMetrics = [
-  { label: 'Margem atual', value: '35,3%', variable: false },
-  { label: 'Tesouraria', value: '€148.920', variable: false },
-  { label: 'Previsão a 60 dias', value: '€162.800', variable: false },
-  { label: 'Novo custo fixo', value: '+€4.200/mês', variable: true },
-]
-
-/**
- * Peso do novo custo fixo dentro da previsão a 60 dias.
- * Aritmética direta: 4.200 × 2 = 8.400; 8.400 / 162.800 = 5,2%.
- */
-export const hiringImpact = {
-  baseLabel: 'Previsão a 60 dias',
-  baseValue: '€162.800',
-  costLabel: 'Custo acumulado a 60 dias',
-  costValue: '€8.400',
-  share: 5.2,
-  note: '5,2% da previsão a 60 dias',
+function buildDecisions(pt: boolean): Decision[] {
+  return pt
+    ? [
+        {
+          id: 'acesso',
+          ordinal: '01',
+          question: 'Quem pode aceder à informação financeira?',
+          context:
+            'A informação financeira deve estar disponível para análise, mas apenas para as pessoas certas, com clareza sobre o acesso, a origem dos dados e o papel da plataforma.',
+          insight:
+            'A plataforma interpreta informação, apresenta contexto e apoia a decisão, mas não decide pela empresa. O controlo sobre quem acede à informação continua do lado da empresa.',
+          cta: 'Como protegemos a informação',
+          grid: [
+            { eyebrow: 'ACESSO CONTROLADO', title: 'Por perfil e responsabilidade' },
+            { eyebrow: 'PRIVACIDADE', title: 'Apenas o necessário' },
+            { eyebrow: 'ORIGEM RASTREÁVEL', title: 'Fonte de dados identificada' },
+            { eyebrow: 'CONTROLO', title: 'Acesso definido pela empresa', highlight: true },
+          ],
+          flow: {
+            eyebrow: 'CAMADA DE PROTEÇÃO NA ANÁLISE',
+            note: 'Contexto e controlo',
+            steps: [
+              { label: 'Origem dos dados', subtitle: 'Banco / ERP / Faturação' },
+              { label: 'Permissões', subtitle: 'Acesso autorizado' },
+              { label: 'Análise', subtitle: 'Informação relevante' },
+              { label: 'Decisão', subtitle: 'Responsabilidade humana' },
+            ],
+          },
+        },
+        {
+          id: 'origem',
+          ordinal: '02',
+          question: 'De onde vem a informação usada nas análises?',
+          context:
+            'A análise ganha valor quando existe contexto sobre a informação que a sustenta. A Finer One reúne dados de diferentes sistemas e procura manter clara a relação entre a análise apresentada e as respetivas fontes.',
+          insight:
+            'Saber de onde vem a informação ajuda a compreender melhor uma análise, validar o seu contexto e tomar decisões com maior confiança.',
+          cta: 'Perceber como os dados se ligam',
+          grid: [
+            { eyebrow: 'FONTES CONECTADAS', title: 'Informação dos sistemas da empresa' },
+            { eyebrow: 'ORIGEM', title: 'Contexto sobre a fonte dos dados' },
+            { eyebrow: 'CONSISTÊNCIA', title: 'Informação organizada para análise' },
+            { eyebrow: 'TRANSPARÊNCIA', title: 'Clareza sobre o que sustenta cada leitura', highlight: true },
+          ],
+        },
+        {
+          id: 'relevancia',
+          ordinal: '03',
+          question: 'Que informação é efetivamente utilizada?',
+          context:
+            'Nem toda a informação disponível tem o mesmo peso em todas as decisões. A Finer One organiza o contexto de cada análise em torno dos dados mais relevantes para a questão em causa.',
+          insight:
+            'Mais dados não significam necessariamente uma melhor decisão. O objetivo é reduzir o ruído e destacar a informação que realmente ajuda a perceber o cenário.',
+          cta: 'Perceber o que entra em cada análise',
+          grid: [
+            { eyebrow: 'OBJETIVO', title: 'A análise parte da questão em causa' },
+            { eyebrow: 'RELEVÂNCIA', title: 'Foco na informação útil para o contexto' },
+            { eyebrow: 'CONTEXTO', title: 'Indicadores relacionados analisados em conjunto' },
+            { eyebrow: 'CLAREZA', title: 'Menos ruído, mais informação acionável', highlight: true },
+          ],
+        },
+        {
+          id: 'responsabilidade',
+          ordinal: '04',
+          question: 'Quem responde pela decisão final?',
+          context:
+            'A plataforma apresenta contexto, cenários e recomendações. A escolha, o momento de agir e o risco assumido continuam do lado de quem conhece o negócio.',
+          insight:
+            'A decisão final não é automatizada. A plataforma não executa ações financeiras nem aprova decisões em nome da empresa.',
+          cta: 'Como apresentamos as recomendações',
+          grid: [
+            { eyebrow: 'PLATAFORMA', title: 'Interpreta e apresenta contexto' },
+            { eyebrow: 'RECOMENDAÇÃO', title: 'Orienta a decisão, não a substitui' },
+            { eyebrow: 'LIMITE', title: 'Sem decisão automática' },
+            { eyebrow: 'EMPRESA', title: 'Decide e assume o risco', highlight: true },
+          ],
+          flow: {
+            eyebrow: 'DA ANÁLISE À DECISÃO',
+            steps: [
+              { label: 'Informação', subtitle: 'Dados' },
+              { label: 'Contexto', subtitle: 'Interpretação' },
+              { label: 'Recomendação', subtitle: 'Apoio' },
+              { label: 'Decisão', subtitle: 'Empresa' },
+            ],
+          },
+        },
+      ]
+    : [
+        {
+          id: 'acesso',
+          ordinal: '01',
+          question: 'Who can access the financial information?',
+          context:
+            'Financial information should be available for analysis, but only to the right people, with clarity about access, data origin and the role of the platform.',
+          insight:
+            'The platform interprets information, presents context and supports the decision, but does not decide for the company. Control over who accesses the information stays with the company.',
+          cta: 'How we protect the information',
+          grid: [
+            { eyebrow: 'CONTROLLED ACCESS', title: 'By role and responsibility' },
+            { eyebrow: 'PRIVACY', title: 'Only what is necessary' },
+            { eyebrow: 'TRACEABLE ORIGIN', title: 'Data source identified' },
+            { eyebrow: 'CONTROL', title: 'Access defined by the company', highlight: true },
+          ],
+          flow: {
+            eyebrow: 'PROTECTION LAYER IN THE ANALYSIS',
+            note: 'Context and control',
+            steps: [
+              { label: 'Data origin', subtitle: 'Bank / ERP / Invoicing' },
+              { label: 'Permissions', subtitle: 'Authorized access' },
+              { label: 'Analysis', subtitle: 'Relevant information' },
+              { label: 'Decision', subtitle: 'Human responsibility' },
+            ],
+          },
+        },
+        {
+          id: 'origem',
+          ordinal: '02',
+          question: 'Where does the information used in the analyses come from?',
+          context:
+            'Analysis gains value when there is context about the information behind it. Finer One brings together data from different systems and works to keep the link between each analysis and its sources clear.',
+          insight:
+            'Knowing where the information comes from helps you better understand an analysis, validate its context and decide with more confidence.',
+          cta: 'Understand how the data connects',
+          grid: [
+            { eyebrow: 'CONNECTED SOURCES', title: "Information from the company's systems" },
+            { eyebrow: 'ORIGIN', title: 'Context about the data source' },
+            { eyebrow: 'CONSISTENCY', title: 'Information organized for analysis' },
+            { eyebrow: 'TRANSPARENCY', title: 'Clarity about what backs each reading', highlight: true },
+          ],
+        },
+        {
+          id: 'relevancia',
+          ordinal: '03',
+          question: 'What information is actually used?',
+          context:
+            'Not all available information carries the same weight in every decision. Finer One organizes the context of each analysis around the data most relevant to the question at hand.',
+          insight:
+            'More data does not necessarily mean a better decision. The goal is to reduce noise and highlight the information that truly helps understand the situation.',
+          cta: 'Understand what goes into each analysis',
+          grid: [
+            { eyebrow: 'GOAL', title: 'The analysis starts from the question at hand' },
+            { eyebrow: 'RELEVANCE', title: 'Focus on information useful to the context' },
+            { eyebrow: 'CONTEXT', title: 'Related indicators analyzed together' },
+            { eyebrow: 'CLARITY', title: 'Less noise, more actionable information', highlight: true },
+          ],
+        },
+        {
+          id: 'responsabilidade',
+          ordinal: '04',
+          question: 'Who is accountable for the final decision?',
+          context:
+            'The platform presents context, scenarios and recommendations. The choice, the timing to act and the risk taken stay with whoever knows the business.',
+          insight:
+            'The final decision is not automated. The platform does not execute financial actions nor approve decisions on behalf of the company.',
+          cta: 'How we present recommendations',
+          grid: [
+            { eyebrow: 'PLATFORM', title: 'Interprets and presents context' },
+            { eyebrow: 'RECOMMENDATION', title: 'Guides the decision, does not replace it' },
+            { eyebrow: 'LIMIT', title: 'No automatic decision-making' },
+            { eyebrow: 'COMPANY', title: 'Decides and takes on the risk', highlight: true },
+          ],
+          flow: {
+            eyebrow: 'FROM ANALYSIS TO DECISION',
+            steps: [
+              { label: 'Information', subtitle: 'Data' },
+              { label: 'Context', subtitle: 'Interpretation' },
+              { label: 'Recommendation', subtitle: 'Support' },
+              { label: 'Decision', subtitle: 'Company' },
+            ],
+          },
+        },
+      ]
 }
 
-/* ---------------------------------------------------------------- 02 */
-
-/**
- * Cenários de liquidez. O valor pós-investimento é aritmética direta:
- * 148.920 − 45.000 = 103.920.
- */
-export const investmentScenarios = [
-  { label: 'Caixa disponível', value: '€148.920', share: 100, highlight: false },
-  { label: 'Liquidez após investimento', value: '€103.920', share: 69.8, highlight: true },
-]
-
-export const investmentFigures = [
-  { label: 'Investimento considerado', value: '€45.000' },
-  { label: 'Cashflow previsto 90 dias', value: '€126.400' },
-]
-
-export const investmentLeverage = {
-  label: 'Endividamento',
-  value: '28%',
-  share: 28,
+export function useDecisionsSectionData(): { decisions: Decision[] } {
+  const { lang } = useLanguage()
+  return { decisions: buildDecisions(lang === 'pt') }
 }
-
-/* ---------------------------------------------------------------- 03 */
-
-/** Margem por mês. `share` é a posição no eixo (30%–38%), já normalizada. */
-export const marginSeries = [
-  { month: 'Jan', value: '37,4%', share: 92.5 },
-  { month: 'Mar', value: '35,8%', share: 72.5 },
-  { month: 'Mai', value: '33,9%', share: 48.8 },
-  { month: 'Jul', value: '31,7%', share: 21.3 },
-]
-
-/** `share` é o peso relativo ao maior fator, só para desenhar a barra. */
-export const marginFactors = [
-  { label: 'Custos logísticos', value: '+14%', share: 100, adverse: true },
-  { label: 'Fornecedores', value: '+9%', share: 64, adverse: true },
-  { label: 'Preço médio', value: '+1%', share: 7, adverse: false },
-]
-
-/* ---------------------------------------------------------------- 04 */
-
-/** `share` é a altura relativa ao valor mais alto do horizonte (€184.200). */
-export const treasuryHorizon = [
-  { label: 'Hoje', value: '€148.920', share: 81, tight: false },
-  { label: '30 dias', value: '€184.200', share: 100, tight: false },
-  { label: '60 dias', value: '€162.800', share: 88, tight: false },
-  { label: '90 dias', value: '€91.400', share: 50, tight: true },
-]
-
-export const treasuryNote = 'Zona de menor folga'
-
-/* ---------------------------------------------------------------- 05 */
-
-/**
- * Composição da faturação analisada. Os três segmentos somam 100%:
- * o maior cliente (18%), os restantes quatro do top 5 (29%) e todos os
- * outros clientes (53%).
- */
-export const concentrationBands = [
-  { label: 'Maior cliente', share: 18, tone: 'primary' as const },
-  { label: '2.º ao 5.º cliente', share: 29, tone: 'secondary' as const },
-  { label: 'Restantes clientes', share: 53, tone: 'rest' as const },
-]
-
-export const concentrationFigures = [
-  { label: 'Maior cliente', value: '18%' },
-  { label: 'Top 5 clientes', value: '47%' },
-  { label: 'Restantes clientes', value: '53%' },
-]

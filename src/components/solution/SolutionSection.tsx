@@ -2,15 +2,26 @@ import { SolutionStep } from '@/components/solution/SolutionStep'
 import { SolutionVisual } from '@/components/solution/SolutionVisual'
 import { SolutionProgress } from '@/components/solution/SolutionProgress'
 import { SolutionRail } from '@/components/solution/SolutionRail'
-import { Reveal } from '@/components/ui/Reveal'
 import { useActiveStep } from '@/hooks/useActiveStep'
-import { solutionSteps } from '@/data/solutionSection'
+import { useSolutionSectionData } from '@/data/solutionSection'
+import { useLanguage } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
+
+const copy = {
+  pt: {
+    title: 'Da informação à decisão',
+    note: 'As composições acima são representações conceptuais do funcionamento da plataforma.',
+  },
+  en: {
+    title: 'From information to decision',
+    note: 'The compositions above are conceptual representations of how the platform works.',
+  },
+}
 
 /**
  * Terceira secção: como a Finer One transforma dados em decisões.
  *
- * Conectar -> Organizar -> Interpretar -> Decidir.
+ * Ligamos -> Interpretamos -> Antecipamos -> Recomendamos.
  *
  * Desktop: o texto das quatro etapas corre normalmente à esquerda e o painel
  * visual fica fixo à direita, trocando de cena conforme a etapa que cruza o
@@ -30,6 +41,9 @@ import { cn } from '@/lib/utils'
  * scroll e o Chrome ignoraria o scroll-margin-top.
  */
 export function SolutionSection() {
+  const { lang } = useLanguage()
+  const t = copy[lang]
+  const { solutionSteps } = useSolutionSectionData()
   const { register, active } = useActiveStep(solutionSteps.length)
 
   return (
@@ -45,22 +59,11 @@ export function SolutionSection() {
       />
 
       <div className="relative mx-auto max-w-content px-5 sm:px-6 lg:px-8">
-        <Reveal className="flex flex-col items-center text-center">
-          <h2
-            id="solucao-titulo"
-            className="max-w-[720px] text-balance font-display text-[28px] font-semibold leading-[1.12] tracking-[-0.03em] text-white sm:text-[36px] lg:text-[42px]"
-          >
-            Da informação à decisão.
-            <span className="mt-1 block text-white/[0.7]">Num único lugar.</span>
-          </h2>
+        <h2 id="solucao-titulo" className="sr-only">
+          {t.title}
+        </h2>
 
-          <p className="mt-5 max-w-2xl text-balance text-[15px] leading-relaxed text-mist">
-            A Finer One liga, organiza e interpreta a informação financeira da sua empresa para
-            transformar dados em decisões mais claras.
-          </p>
-        </Reveal>
-
-        <div className="mt-14 lg:mt-24 lg:grid lg:grid-cols-2 lg:gap-14 xl:gap-20">
+        <div className="lg:grid lg:grid-cols-2 lg:gap-14 xl:gap-20">
           <div className="relative min-w-0 lg:pl-12 xl:pl-16">
             <SolutionRail active={active} className="hidden lg:block" />
 
@@ -99,9 +102,7 @@ export function SolutionSection() {
           </div>
         </div>
 
-        <p className="mt-16 text-center text-[12px] leading-relaxed text-mist/70 lg:mt-20">
-          As composições acima são representações conceptuais do funcionamento da plataforma.
-        </p>
+        <p className="mt-16 text-center text-[12px] leading-relaxed text-mist/70 lg:mt-20">{t.note}</p>
       </div>
     </section>
   )

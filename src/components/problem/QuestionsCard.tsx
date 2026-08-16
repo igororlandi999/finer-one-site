@@ -1,16 +1,25 @@
 import { useEffect, useState } from 'react'
 import { BentoCard } from '@/components/problem/BentoCard'
-import { businessQuestions } from '@/data/problemSection'
+import { useProblemSectionData } from '@/data/problemSection'
 import { useInView } from '@/hooks/useInView'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
+import { useLanguage } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
 
 const INTERVAL = 2600
 
+const copy = {
+  pt: { title: 'Números não são respostas', description: 'Os indicadores mostram o que aconteceu. Decidir exige perceber causas, impacto e prioridade.' },
+  en: { title: 'Numbers are not answers', description: 'Indicators show what happened. Deciding requires understanding causes, impact and priority.' },
+}
+
 export function QuestionsCard({ className }: { className?: string }) {
   const { ref, inView } = useInView<HTMLUListElement>({ threshold: 0.35 })
   const prefersReduced = usePrefersReducedMotion()
-  const [active, setActive] = useState(0)
+  const { lang } = useLanguage()
+  const t = copy[lang]
+  const { businessQuestions, highlightedQuestionIndex } = useProblemSectionData()
+  const [active, setActive] = useState(highlightedQuestionIndex)
 
   useEffect(() => {
     // O ciclo só corre com o card visível e com movimento permitido.
@@ -21,15 +30,10 @@ export function QuestionsCard({ className }: { className?: string }) {
     }, INTERVAL)
 
     return () => window.clearInterval(timer)
-  }, [inView, prefersReduced])
+  }, [inView, prefersReduced, businessQuestions.length])
 
   return (
-    <BentoCard
-      className={className}
-      delay={80}
-      title="Números não são respostas"
-      description="Relatórios mostram o que aconteceu. Decidir exige perceber porquê e o que fazer a seguir."
-    >
+    <BentoCard className={className} delay={80} repeat title={t.title} description={t.description}>
       <ul ref={ref} className="space-y-1.5">
         {businessQuestions.map((question, index) => {
           const isActive = index === active

@@ -1,46 +1,58 @@
 import { BentoCard } from '@/components/problem/BentoCard'
-import { discoveryIndex, marginTimeline, problemStartIndex } from '@/data/problemSection'
+import { useProblemSectionData } from '@/data/problemSection'
 import { useInView } from '@/hooks/useInView'
+import { useLanguage } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
+
+const copy = {
+  pt: {
+    title: 'Descobrir tarde custa dinheiro',
+    description: 'Problemas de margem, tesouraria e cobranças começam antes de se tornarem urgentes.',
+    marginLabel: 'Margem operacional',
+    problemStarts: 'problema começa',
+    discovered: 'descoberto aqui',
+  },
+  en: {
+    title: 'Finding out late costs money',
+    description: 'Margin, cash and collections problems start before they become urgent.',
+    marginLabel: 'Operating margin',
+    problemStarts: 'problem begins',
+    discovered: 'discovered here',
+  },
+}
 
 // Geometria em percentagem: o SVG escala com o card sem distorcer o traço
 // (vector-effect="non-scaling-stroke") e as etiquetas ficam em HTML, sempre
 // com o tamanho de letra correto em qualquer largura.
-const COLUMN_COUNT = marginTimeline.length
-const columnX = (index: number) => ((index + 0.5) / COLUMN_COUNT) * 100
-
-const values = marginTimeline.map((point) => point.value)
-const top = Math.max(...values) + 1
-const bottom = Math.min(...values) - 2
-const columnY = (value: number) => ((top - value) / (top - bottom)) * 100
-
-const points = marginTimeline.map((point, index) => ({
-  x: columnX(index),
-  y: columnY(point.value),
-}))
+function columnXFor(count: number) {
+  return (index: number) => ((index + 0.5) / count) * 100
+}
 
 const toPath = (segment: { x: number; y: number }[]) =>
   segment.map((point, index) => `${index === 0 ? 'M' : 'L'}${point.x},${point.y}`).join(' ')
 
-// Dois segmentos sem sobreposição: saudável até ao início do problema,
-// em risco a partir daí.
-const healthyPath = toPath(points.slice(0, problemStartIndex + 1))
-const riskPath = toPath(points.slice(problemStartIndex))
-
 export function LateDecisionCard({ className }: { className?: string }) {
   const { ref, inView } = useInView<HTMLDivElement>({ threshold: 0.35 })
+  const { lang } = useLanguage()
+  const t = copy[lang]
+  const { marginTimeline, discoveryIndex, problemStartIndex } = useProblemSectionData()
+
+  const columnX = columnXFor(marginTimeline.length)
+  const values = marginTimeline.map((point) => point.value)
+  const top = Math.max(...values) + 1
+  const bottom = Math.min(...values) - 2
+  const columnY = (value: number) => ((top - value) / (top - bottom)) * 100
+
+  const points = marginTimeline.map((point, index) => ({ x: columnX(index), y: columnY(point.value) }))
+
+  // Dois segmentos sem sobreposição: saudável até ao início do problema, em risco a partir daí.
+  const healthyPath = toPath(points.slice(0, problemStartIndex + 1))
+  const riskPath = toPath(points.slice(problemStartIndex))
 
   return (
-    <BentoCard
-      className={className}
-      delay={40}
-      title="Descobrir tarde custa dinheiro"
-      description="Problemas de margem, tesouraria e cobranças precisam de ser identificados antes de se tornarem urgentes."
-    >
+    <BentoCard className={className} delay={40} repeat title={t.title} description={t.description}>
       <div ref={ref}>
-        <p className="text-[10px] font-medium uppercase tracking-wider text-mist">
-          Margem operacional
-        </p>
+        <p className="text-[10px] font-medium uppercase tracking-wider text-glow">{t.marginLabel}</p>
 
         {/* Meses e valores */}
         <div className="mt-2.5 grid grid-cols-4">
@@ -69,8 +81,7 @@ export function LateDecisionCard({ className }: { className?: string }) {
               left: `${columnX(problemStartIndex)}%`,
               width: `${columnX(discoveryIndex) - columnX(problemStartIndex)}%`,
               maskImage: 'linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent)',
-              WebkitMaskImage:
-                'linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent)',
+              WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent)',
             }}
           />
 
@@ -130,14 +141,12 @@ export function LateDecisionCard({ className }: { className?: string }) {
         {/* Legendas do momento */}
         <div className="relative mt-2 h-4">
           <span
-            className="absolute -translate-x-1/2 whitespace-nowrap text-[10px] text-signal"
+            className="absolute -translate-x-1/2 whitespace-nowrap text-[10px] text-glow"
             style={{ left: `${columnX(problemStartIndex)}%` }}
           >
-            problema começa
+            {t.problemStarts}
           </span>
-          <span className="absolute right-0 whitespace-nowrap text-[10px] text-mist">
-            descoberto aqui
-          </span>
+          <span className="absolute right-0 whitespace-nowrap text-[10px] text-mist">{t.discovered}</span>
         </div>
       </div>
     </BentoCard>

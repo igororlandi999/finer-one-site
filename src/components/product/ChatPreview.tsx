@@ -1,7 +1,9 @@
 import { LogoMark } from '@/components/brand/Logo'
-import { demoChat } from '@/data/demoDashboard'
+import { useDemoDashboardData } from '@/data/demoDashboard'
 
 export function ChatPreview() {
+  const { demoChat } = useDemoDashboardData()
+
   return (
     <article className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-3.5">
       <div className="flex justify-end">

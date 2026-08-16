@@ -1,66 +1,88 @@
-import { interpretations } from '@/data/solutionSection'
-import type { InterpretationTone } from '@/data/solutionSection'
+import { systemIcons } from '@/components/problem/sourceIcons'
+import { useSolutionSectionData } from '@/data/solutionSection'
 import { cn } from '@/lib/utils'
 
 /**
- * 03 — Interpretar.
+ * 03 — Antecipamos.
  *
- * Cada linha é literalmente NÚMERO → SIGNIFICADO: o valor à esquerda, uma
- * régua a atravessar, a leitura à direita. O tom é maioritariamente neutro;
- * `signal` aparece só onde existe risco real e a previsão usa Glow Blue,
- * para o painel não se ler como um painel de alarmes.
+ * Previsão de tesouraria por horizonte: barras horizontais cujo comprimento
+ * é o próprio valor, sem eixo nem grelha. O horizonte de 90 dias, o único em
+ * risco, é o único que rompe a paleta azul. Fecha com uma leitura curta,
+ * separada por régua subtil, no mesmo padrão do resto da secção.
  */
-const figureTone: Record<InterpretationTone, string> = {
-  neutral: 'text-white',
-  forecast: 'text-glow',
-  risk: 'text-signal',
-}
-
-const ruleTone: Record<InterpretationTone, string> = {
-  neutral: 'bg-white/15',
-  forecast: 'bg-glow/45',
-  risk: 'bg-signal/45',
-}
+const AnalysisIcon = systemIcons.analysis
+const WarningIcon = systemIcons.warning
+const InfoIcon = systemIcons.info
 
 export function InterpretVisual({ active }: { active: boolean }) {
+  const { treasuryForecast, treasuryHorizons } = useSolutionSectionData()
+
   return (
-    <ul className="w-full space-y-px">
-      {interpretations.map((item, index) => (
-        <li
-          key={item.meaning}
-          className={cn(
-            'flex items-center gap-3 border-b border-white/[0.06] py-3 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] sm:gap-4',
-            active ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0',
-          )}
-          style={{ transitionDelay: `${index * 110}ms` }}
-        >
-          <span
+    <div className="w-full">
+      <div
+        className={cn(
+          'flex items-center gap-2.5 transition-opacity duration-500',
+          active ? 'opacity-100' : 'opacity-0',
+        )}
+      >
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-accent/[0.4] bg-navy">
+          <AnalysisIcon size={18} aria-hidden="true" className="text-glow" />
+        </span>
+        <span className="min-w-0">
+          <span className="block truncate text-[13px] font-semibold text-white">
+            {treasuryForecast.title}
+          </span>
+          <span className="block truncate text-[11px] text-mist">{treasuryForecast.subtitle}</span>
+        </span>
+      </div>
+
+      <div className="mt-5 space-y-3">
+        {treasuryHorizons.map((horizon, index) => (
+          <div
+            key={horizon.label}
             className={cn(
-              'w-[88px] shrink-0 text-right text-[14px] font-semibold tabular leading-none sm:w-[96px] sm:text-[16px] xl:text-[17px]',
-              figureTone[item.tone],
+              'transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]',
+              active ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0',
             )}
+            style={{ transitionDelay: `${160 + index * 110}ms` }}
           >
-            {item.figure}
-          </span>
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="text-[11px] text-mist">{horizon.label}</span>
+              <span
+                className={cn(
+                  'text-[13px] font-semibold tabular',
+                  horizon.highlightValue ? 'text-glow' : 'text-white',
+                )}
+              >
+                {horizon.value}
+              </span>
+            </div>
 
-          <span
-            aria-hidden="true"
-            className={cn(
-              'h-px w-5 shrink-0 origin-left transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] sm:w-7',
-              ruleTone[item.tone],
-              active ? 'scale-x-100' : 'scale-x-0',
+            <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-white/[0.06]">
+              <div
+                className={cn(
+                  'h-full origin-left rounded-full transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]',
+                  horizon.risk ? 'bg-signal/80' : 'bg-glow/70',
+                  active ? 'scale-x-100' : 'scale-x-0',
+                )}
+                style={{ width: `${horizon.share}%`, transitionDelay: `${220 + index * 110}ms` }}
+              />
+            </div>
+
+            {horizon.risk && (
+              <span className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-signal/30 bg-signal/10 px-2 py-0.5 text-[10px] text-signal">
+                <WarningIcon size={14} aria-hidden="true" />
+                {treasuryForecast.alertLabel}
+              </span>
             )}
-            style={{ transitionDelay: `${140 + index * 110}ms` }}
-          />
+          </div>
+        ))}
+      </div>
 
-          <span className="min-w-0">
-            <span className="block text-[10px] uppercase tracking-[0.16em] text-mist">
-              {item.kind}
-            </span>
-            <span className="mt-0.5 block text-[13px] leading-snug text-white">{item.meaning}</span>
-          </span>
-        </li>
-      ))}
-    </ul>
+      <div className="mt-5 flex items-start gap-2.5 border-t border-white/[0.06] pt-4">
+        <InfoIcon size={17} aria-hidden="true" className="mt-0.5 shrink-0 text-glow" />
+        <p className="text-[12px] leading-relaxed text-mist">{treasuryForecast.note}</p>
+      </div>
+    </div>
   )
 }

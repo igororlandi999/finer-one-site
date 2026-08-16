@@ -1,23 +1,28 @@
-import type { CSSProperties, ComponentType } from 'react'
+import type { CSSProperties } from 'react'
 import { DecisionCard } from '@/components/decisions/DecisionCard'
-import { HiringDecision } from '@/components/decisions/visuals/HiringDecision'
-import { InvestmentDecision } from '@/components/decisions/visuals/InvestmentDecision'
-import { MarginDecision } from '@/components/decisions/visuals/MarginDecision'
-import { CashflowDecision } from '@/components/decisions/visuals/CashflowDecision'
-import { ClientConcentrationDecision } from '@/components/decisions/visuals/ClientConcentrationDecision'
+import { PrincipleVisual } from '@/components/decisions/visuals/PrincipleVisual'
 import { Reveal } from '@/components/ui/Reveal'
-import { decisions } from '@/data/decisionsSection'
-import type { DecisionId } from '@/data/decisionsSection'
+import { useDecisionsSectionData } from '@/data/decisionsSection'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 import { useStackedCards } from '@/hooks/useStackedCards'
+import { useLanguage } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
 
-const registry: Record<DecisionId, ComponentType> = {
-  contratar: HiringDecision,
-  investir: InvestmentDecision,
-  margem: MarginDecision,
-  tesouraria: CashflowDecision,
-  clientes: ClientConcentrationDecision,
+const copy = {
+  pt: {
+    headlineFirst: 'Informação financeira exige proteção.',
+    headlineSecond: 'Decisões exigem clareza.',
+    subheadline:
+      'A Finer One foi concebida para tratar informação financeira com controlo, privacidade e rastreabilidade, mantendo claro que a plataforma apoia a decisão — não substitui quem conhece o negócio.',
+    note: 'Os cenários e valores apresentados nesta secção são demonstrativos e servem para ilustrar o tipo de leitura financeira que a Finer One pretende oferecer.',
+  },
+  en: {
+    headlineFirst: 'Financial information requires protection.',
+    headlineSecond: 'Decisions require clarity.',
+    subheadline:
+      "Finer One is designed to handle financial information with control, privacy and traceability, while making clear that the platform supports the decision — it doesn't replace whoever knows the business.",
+    note: 'The scenarios and values shown in this section are for demonstration and illustrate the kind of financial reading Finer One aims to offer.',
+  },
 }
 
 /**
@@ -40,13 +45,16 @@ const PEEK = 8
  * A mecânica é empilhamento por scroll: cada card sobe e cobre o anterior,
  * deixando uma fatia à vista. Feita só com position: sticky e um
  * IntersectionObserver — sem biblioteca de animação, sem scroll hijacking e
- * sem cálculos por evento de scroll. O conteúdo dos cinco cards existe
+ * sem cálculos por evento de scroll. O conteúdo dos quatro cards existe
  * inteiro no DOM e é legível sem qualquer animação.
  *
  * id="decisoes": âncora interna. A Navbar não foi alterada.
  */
 export function DecisionsSection() {
   const prefersReduced = usePrefersReducedMotion()
+  const { lang } = useLanguage()
+  const t = copy[lang]
+  const { decisions } = useDecisionsSectionData()
 
   const { setItem, active, sticky } = useStackedCards({
     count: decisions.length,
@@ -77,13 +85,11 @@ export function DecisionsSection() {
             id="decisoes-titulo"
             className="text-balance font-display text-[30px] font-semibold leading-[1.1] tracking-[-0.03em] text-white sm:text-[40px] lg:text-[48px]"
           >
-            As decisões mais importantes não deviam depender de intuição.
+            <span className="block">{t.headlineFirst}</span>
+            <span className="block">{t.headlineSecond}</span>
           </h2>
 
-          <p className="mt-6 max-w-[58ch] text-[15px] leading-relaxed text-mist sm:text-[16px]">
-            Veja como a Finer One transforma informação financeira em contexto para decisões reais
-            do dia a dia.
-          </p>
+          <p className="mt-6 max-w-[58ch] text-[15px] leading-relaxed text-mist sm:text-[16px]">{t.subheadline}</p>
         </Reveal>
       </div>
 
@@ -91,15 +97,13 @@ export function DecisionsSection() {
         className={cn(
           'relative mx-auto mt-14 max-w-content px-5 sm:px-6 lg:mt-16 lg:px-8',
           // Prolonga o bloco de contenção do sticky para lá do último card,
-          // senão o 05 chegava ao topo e saía no mesmo instante. É o tempo em
-          // que o card 05 fica pousado: abaixo de ~12vh a leitura fica curta,
-          // acima de ~16vh sobra ecrã vazio por baixo dele.
+          // senão ele chegava ao topo e saía no mesmo instante. É o tempo em
+          // que o último card fica pousado: abaixo de ~12vh a leitura fica
+          // curta, acima de ~16vh sobra ecrã vazio por baixo dele.
           sticky && 'pb-[12vh] lg:pb-[14vh]',
         )}
       >
         {decisions.map((decision, index) => {
-          const Visual = registry[decision.id]
-
           return (
             <div
               key={decision.id}
@@ -121,7 +125,7 @@ export function DecisionsSection() {
                 shift={index * 14}
                 stacked={sticky}
               >
-                <Visual />
+                <PrincipleVisual decision={decision} />
               </DecisionCard>
             </div>
           )
@@ -129,10 +133,7 @@ export function DecisionsSection() {
       </div>
 
       <div className="relative mx-auto mt-16 max-w-content px-5 sm:px-6 lg:mt-12 lg:px-8">
-        <p className="max-w-[62ch] text-[12px] leading-relaxed text-mist/70">
-          Os cenários e valores apresentados nesta secção são demonstrativos e servem para ilustrar
-          o tipo de leitura financeira que a Finer One pretende oferecer.
-        </p>
+        <p className="max-w-[62ch] text-[12px] leading-relaxed text-mist/70">{t.note}</p>
       </div>
     </section>
   )

@@ -1,5 +1,5 @@
 import { systemIcons } from '@/components/problem/sourceIcons'
-import { connectSources } from '@/data/solutionSection'
+import { useSolutionSectionData } from '@/data/solutionSection'
 import { cn } from '@/lib/utils'
 
 /**
@@ -17,15 +17,11 @@ import { cn } from '@/lib/utils'
  * movimento de encaixe passa a ser da esquerda para a espinha — mais
  * coerente com a leitura.
  */
-const offsets = [
-  '-translate-x-6',
-  '-translate-x-3',
-  '-translate-x-8',
-  '-translate-x-4',
-  '-translate-x-7',
-]
+const offsets = ['-translate-x-6', '-translate-x-3', '-translate-x-8']
 
 export function ConnectVisual({ active }: { active: boolean }) {
+  const { connectSources } = useSolutionSectionData()
+
   return (
     <div className="relative w-full">
       {/* Espinha comum */}
@@ -57,8 +53,8 @@ export function ConnectVisual({ active }: { active: boolean }) {
               )}
               style={{ transitionDelay: `${index * 90}ms` }}
             >
-              <span className="flex min-w-0 flex-1 items-center gap-2.5 rounded-lg border border-white/[0.08] bg-navy-soft/70 px-3 py-2.5">
-                <Icon size={13} aria-hidden="true" className="shrink-0 text-mist" />
+              <span className="flex min-w-0 flex-1 items-center gap-3 rounded-lg border border-white/[0.08] bg-navy-soft/70 px-3 py-2.5">
+                <Icon size={18} aria-hidden="true" className="shrink-0 text-mist" />
                 <span className="min-w-0">
                   <span className="block truncate text-[12px] font-medium text-white">
                     {source.label}

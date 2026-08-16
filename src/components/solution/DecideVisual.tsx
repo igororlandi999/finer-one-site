@@ -1,15 +1,24 @@
 import { LogoMark } from '@/components/brand/Logo'
-import { decision } from '@/data/solutionSection'
+import { systemIcons } from '@/components/problem/sourceIcons'
+import { useSolutionSectionData } from '@/data/solutionSection'
+import { useLanguage } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
 
 /**
- * 04 — Decidir.
+ * 04 — Recomendamos.
  *
  * O fecho da secção. A pergunta é o elemento tipograficamente mais forte de
  * toda a composição; a resposta e a recomendação entram a seguir. Sem
  * moldura de chat, para não repetir o ChatPreview da Hero.
  */
+const TargetIcon = systemIcons.target
+
+const questionLabel = { pt: 'Pergunta', en: 'Question' }
+
 export function DecideVisual({ active }: { active: boolean }) {
+  const { lang } = useLanguage()
+  const { decision } = useSolutionSectionData()
+
   return (
     <div className="relative w-full">
       <div
@@ -27,7 +36,7 @@ export function DecideVisual({ active }: { active: boolean }) {
             active ? 'opacity-100' : 'opacity-0',
           )}
         >
-          Pergunta
+          {questionLabel[lang]}
         </p>
 
         <p
@@ -65,6 +74,17 @@ export function DecideVisual({ active }: { active: boolean }) {
             {decision.recommendationLabel}
           </p>
           <p className="mt-2 text-[13px] leading-snug text-white">{decision.recommendation}</p>
+        </div>
+
+        <div
+          className={cn(
+            'mt-4 flex items-start gap-2.5 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]',
+            active ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0',
+          )}
+          style={{ transitionDelay: '620ms' }}
+        >
+          <TargetIcon size={17} aria-hidden="true" className="mt-0.5 shrink-0 text-glow" />
+          <p className="text-[12px] leading-relaxed text-mist">{decision.impact}</p>
         </div>
       </div>
     </div>

@@ -8,15 +8,16 @@ type Props = {
   children: ReactNode
   className?: string
   delay?: number
+  repeat?: boolean
 }
 
 /**
  * Invólucro comum dos cards do Bento. Reutiliza a mesma linguagem de
  * superfície dos cards do dashboard da Hero (borda, fundo, raio).
  */
-export function BentoCard({ title, description, children, className, delay }: Props) {
+export function BentoCard({ title, description, children, className, delay, repeat }: Props) {
   return (
-    <Reveal delay={delay} className={cn('flex', className)}>
+    <Reveal delay={delay} repeat={repeat} className={cn('flex', className)}>
       <article className="relative flex w-full flex-col overflow-hidden rounded-xl border border-white/[0.07] bg-white/[0.025]">
         <header className="p-5 sm:p-6">
           <h3 className="font-display text-[17px] font-semibold leading-snug tracking-[-0.01em] text-white sm:text-lg">

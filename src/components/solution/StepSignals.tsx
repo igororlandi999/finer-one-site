@@ -1,13 +1,13 @@
-import { stepSignals } from '@/data/solutionSection'
+import { useSolutionSectionData } from '@/data/solutionSection'
 import type { InterpretationTone, SolutionStepId } from '@/data/solutionSection'
 import { cn } from '@/lib/utils'
 
 /**
  * Microinformação abaixo da descrição de cada etapa.
  *
- * Cada etapa tem uma forma diferente — lista, fluxo, sinais, pergunta — para
- * a coluna não se ler como quatro blocos iguais. Nada aqui é um card: são
- * elementos tipográficos com réguas e pontos.
+ * Cada etapa tem uma forma diferente — lista, sinais, fluxo — para a coluna
+ * não se ler como quatro blocos iguais. Nada aqui é um card: são elementos
+ * tipográficos com réguas e pontos.
  */
 const dotTone: Record<InterpretationTone, string> = {
   neutral: 'bg-white/40',
@@ -33,6 +33,7 @@ function enter(active: boolean, index: number) {
 }
 
 export function StepSignals({ id, active }: { id: SolutionStepId; active: boolean }) {
+  const { stepSignals } = useSolutionSectionData()
   const signal = stepSignals[id]
 
   if (signal.kind === 'tags') {
@@ -54,67 +55,53 @@ export function StepSignals({ id, active }: { id: SolutionStepId; active: boolea
 
   if (signal.kind === 'flow') {
     return (
-      <div className="mt-7 flex max-w-[380px] items-center gap-3">
-        <span
-          className={cn('shrink-0 text-[12px] text-white', enter(active, 0).className)}
-          style={enter(active, 0).style}
-        >
-          {signal.from}
-        </span>
-        <span
-          aria-hidden="true"
-          className={cn(
-            'h-px flex-1 origin-left bg-gradient-to-r from-white/20 to-glow/70 transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] [transition-delay:220ms]',
-            active ? 'scale-x-100' : 'scale-x-0',
-          )}
-        />
-        <span
-          className={cn('shrink-0 text-[12px] text-white', enter(active, 3).className)}
-          style={enter(active, 3).style}
-        >
-          {signal.to}
-        </span>
+      <div className="mt-7 flex max-w-[480px] flex-wrap items-center gap-x-3 gap-y-2">
+        {signal.items.map((item, index) => (
+          <div key={item} className="flex items-center gap-3">
+            {index > 0 && (
+              <span
+                aria-hidden="true"
+                className={cn(
+                  'h-px w-6 origin-left bg-gradient-to-r from-white/20 to-glow/70 transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]',
+                  active ? 'scale-x-100' : 'scale-x-0',
+                )}
+                style={{ transitionDelay: `${140 + index * 160}ms` }}
+              />
+            )}
+            <span
+              className={cn('shrink-0 text-[12px] text-white', enter(active, index).className)}
+              style={enter(active, index).style}
+            >
+              {item}
+            </span>
+            {index === signal.items.length - 1 && (
+              <span
+                aria-hidden="true"
+                className={cn(
+                  'h-1 w-1 shrink-0 rounded-full bg-glow transition-opacity duration-700',
+                  active ? 'opacity-100' : 'opacity-0',
+                )}
+                style={{ transitionDelay: '620ms' }}
+              />
+            )}
+          </div>
+        ))}
       </div>
     )
   }
 
-  if (signal.kind === 'metrics') {
-    return (
-      <ul className="mt-7 flex flex-wrap gap-x-6 gap-y-2.5">
-        {signal.items.map((item, index) => (
-          <li
-            key={item.text}
-            className={cn('flex items-center gap-2', enter(active, index).className)}
-            style={enter(active, index).style}
-          >
-            <span
-              aria-hidden="true"
-              className={cn('h-1.5 w-1.5 rounded-full', dotTone[item.tone])}
-            />
-            <span className={cn('text-[12px] tabular', textTone[item.tone])}>{item.text}</span>
-          </li>
-        ))}
-      </ul>
-    )
-  }
-
   return (
-    <div className="mt-7">
-      <p
-        className={cn(
-          'font-display text-[16px] font-semibold tracking-[-0.01em] text-white',
-          enter(active, 0).className,
-        )}
-        style={enter(active, 0).style}
-      >
-        {signal.question}
-      </p>
-      <p
-        className={cn('mt-2 text-[12px] text-mist', enter(active, 2).className)}
-        style={enter(active, 2).style}
-      >
-        {signal.reasoning}
-      </p>
-    </div>
+    <ul className="mt-7 flex flex-wrap gap-x-6 gap-y-2.5">
+      {signal.items.map((item, index) => (
+        <li
+          key={item.text}
+          className={cn('flex items-center gap-2', enter(active, index).className)}
+          style={enter(active, index).style}
+        >
+          <span aria-hidden="true" className={cn('h-1.5 w-1.5 rounded-full', dotTone[item.tone])} />
+          <span className={cn('text-[12px] tabular', textTone[item.tone])}>{item.text}</span>
+        </li>
+      ))}
+    </ul>
   )
 }
