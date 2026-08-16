@@ -10,11 +10,15 @@ import { useFooterData } from '@/data/footer'
  * a existir, falta o passo seguinte.
  *
  * Depois de nove secções densas, o final é deliberadamente vazio: sem cards,
- * sem gráficos, sem composição de produto. Só a frase, duas ações e muito ar.
+ * sem gráficos, sem composição de produto. Só a frase, uma ação e muito ar.
  * A página abre espaço em vez de acrescentar mais um elemento.
  *
- * Os CTAs usam o mesmo componente Button do resto do site. Não há backend
- * nesta fase, por isso não são ligados a nenhum fluxo.
+ * Um único CTA de propósito: "Começar Agora" duplicava "Agendar Demo" sem
+ * levar a lugar nenhum (não há fluxo de self-service nesta fase), e no fecho
+ * da página duas ações competindo só gera indecisão.
+ *
+ * O CTA usa o mesmo componente Button do resto do site. Não há backend
+ * nesta fase, por isso não está ligado a nenhum fluxo.
  */
 export function FinalCTA() {
   const { footerCopy } = useFooterData()
@@ -48,12 +52,9 @@ export function FinalCTA() {
             {footerCopy.ctaSubheadline}
           </p>
 
-          <div className="mt-10 flex w-full flex-col items-center gap-3 sm:mt-12 sm:w-auto sm:flex-row sm:justify-center">
+          <div className="mt-10 flex justify-center">
             <Button size="lg" className="w-full sm:w-auto">
               {footerCopy.ctaPrimary}
-            </Button>
-            <Button variant="outline" size="lg" className="w-full sm:w-auto">
-              {footerCopy.ctaSecondary}
             </Button>
           </div>
         </Reveal>

@@ -32,7 +32,6 @@ export type FooterContent = {
     ctaHeadlineSecond: string
     ctaSubheadline: string
     ctaPrimary: string
-    ctaSecondary: string
     tagline: string
     copyright: string
   }
@@ -112,7 +111,6 @@ function buildContent(lang: Lang): FooterContent {
         ctaHeadlineSecond: 'Falta transformá‑los em decisões.',
         ctaSubheadline: 'Veja a sua empresa com mais clareza e transforme informação financeira em contexto para decidir o que vem a seguir.',
         ctaPrimary: 'Agendar Demo',
-        ctaSecondary: 'Começar Agora',
         tagline: 'Inteligência financeira para decisões mais claras.',
         copyright: '© 2026 Finer One. Todos os direitos reservados.',
       }
@@ -121,7 +119,6 @@ function buildContent(lang: Lang): FooterContent {
         ctaHeadlineSecond: "What's missing is turning them into decisions.",
         ctaSubheadline: 'See your company with more clarity and turn financial information into context for deciding what comes next.',
         ctaPrimary: 'Book a Demo',
-        ctaSecondary: 'Get Started',
         tagline: 'Financial intelligence for clearer decisions.',
         copyright: '© 2026 Finer One. All rights reserved.',
       }
