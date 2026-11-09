@@ -10,10 +10,12 @@ type Props = {
   /** false = só imagem (Hero): sem foco nem cliques. */
   interactive?: boolean
   onOpenAdvisor?: () => void
+  /** false = só o Finer Brief e os indicadores (pré-visualizações compactas). */
+  showAsk?: boolean
 }
 
 /** Finer Home recriada a partir da captura real, com dados fictícios. */
-export function FinerHomeView({ interactive = true, onOpenAdvisor }: Props) {
+export function FinerHomeView({ interactive = true, onOpenAdvisor, showAsk = true }: Props) {
   const { lang } = useLanguage()
   const { home } = getUiData(lang)
   const reduced = usePrefersReducedMotion()
@@ -61,6 +63,7 @@ export function FinerHomeView({ interactive = true, onOpenAdvisor }: Props) {
       </div>
 
       {/* Pergunte à Finer */}
+      {showAsk && (
       <div className={cn('mt-6 rounded-2xl border border-[#0B1030]/[0.07] bg-white p-5 shadow-[0_12px_40px_-24px_rgba(11,16,48,0.35)] @xl:p-7')}>
         <p className={cn('text-center font-display text-[18px] font-bold @xl:text-[22px]')}>
           {home.askTitle[0]}
@@ -123,6 +126,7 @@ export function FinerHomeView({ interactive = true, onOpenAdvisor }: Props) {
           )}
         </div>
       </div>
+      )}
 
       {/* Brief + indicadores */}
       <div className={cn('mt-5 grid gap-5 @6xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]')}>

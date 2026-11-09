@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Navbar } from '@/components/layout/Navbar'
-import { HeroV2 } from '@/components/v2/HeroV2'
+import { HeroStory } from '@/components/v2/HeroStory'
 import { ProblemSection } from '@/components/problem/ProblemSection'
 import { PillarsScrolly } from '@/components/v2/PillarsScrolly'
 import { ProductTour } from '@/components/v2/ProductTour'
@@ -40,7 +40,7 @@ export default function App() {
     <div className="min-h-screen bg-navy">
       <Navbar />
       <main id="conteudo">
-        <HeroV2 />
+        <HeroStory />
         <ProblemSection />
         <PillarsScrolly />
         {/* Folha clara contínua: demonstração, benefícios e funcionamento.
