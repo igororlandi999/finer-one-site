@@ -1,20 +1,22 @@
 import type { ReactNode } from 'react'
-import { ArrowUpDown, Bell, Building2, ChevronDown, CircleCheck, Home, Lightbulb, LogOut, Moon, SlidersHorizontal, TrendingDown, TrendingUp, Users } from 'lucide-react'
+import { ArrowUpDown, Bell, Building2, ChevronDown, CircleCheck, Home, Lightbulb, LogOut, MessageSquare, Moon, SlidersHorizontal, TrendingDown, TrendingUp, Users } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
 import { getUiData } from './data'
 
-export type View = 'home' | 'advisor'
+export type View = 'home' | 'cashflow' | 'receitas' | 'despesas' | 'clientes' | 'advisor' | 'alertas'
 
-const icons: LucideIcon[] = [Home, ArrowUpDown, TrendingUp, TrendingDown, Users, Lightbulb, Bell, CircleCheck]
+const icons: LucideIcon[] = [Home, ArrowUpDown, TrendingUp, TrendingDown, Users, Lightbulb, MessageSquare, Bell, CircleCheck]
 /** Índices do menu que correspondem às vistas demonstradas. */
-const viewIndex: Record<View, number> = { home: 0, advisor: 5 }
-const groups = [[0, 1, 2, 3], [4, 5], [6, 7]]
+const viewIndex: Record<View, number> = { home: 0, cashflow: 1, receitas: 2, despesas: 3, clientes: 4, advisor: 5, alertas: 7 }
+const groups = [[0, 1, 2, 3], [4, 5, 6], [7, 8]]
 
 type Props = {
   view: View
   onNavigate?: (view: View) => void
+  /** Vistas que o menu permite abrir (as restantes aparecem só como referência). */
+  navigable?: View[]
   children: ReactNode
 }
 
@@ -22,7 +24,7 @@ type Props = {
  * Moldura da aplicação Finer One recriada a partir das capturas reais:
  * menu lateral claro, cabeçalho com textura azul-gelo e área de conteúdo.
  */
-export function AppShell({ view, onNavigate, children }: Props) {
+export function AppShell({ view, onNavigate, navigable = ['home', 'advisor'], children }: Props) {
   const { lang } = useLanguage()
   const { shell } = getUiData(lang)
 
@@ -54,7 +56,7 @@ export function AppShell({ view, onNavigate, children }: Props) {
                 const base = 'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[13px]'
                 return (
                   <li key={i}>
-                    {target && onNavigate ? (
+                    {target && onNavigate && navigable.includes(target) ? (
                       <button
                         type="button"
                         onClick={() => onNavigate(target)}

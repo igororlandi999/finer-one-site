@@ -31,7 +31,9 @@ const copy = {
   },
 }
 
-const views: { id: View; Icon: typeof Home }[] = [
+type TourView = Extract<View, 'home' | 'advisor'>
+
+const views: { id: TourView; Icon: typeof Home }[] = [
   { id: 'home', Icon: Home },
   { id: 'advisor', Icon: Lightbulb },
 ]
@@ -40,7 +42,7 @@ const views: { id: View; Icon: typeof Home }[] = [
 export function ProductTour() {
   const { lang } = useLanguage()
   const t = copy[lang]
-  const [view, setView] = useState<View>('home')
+  const [view, setView] = useState<TourView>('home')
 
   return (
     <section id="demo" aria-labelledby="demo-titulo" className="relative scroll-mt-24 pb-20 pt-20 text-navy lg:pb-28 lg:pt-28">
@@ -97,7 +99,7 @@ export function ProductTour() {
               <span className="w-[42px]" aria-hidden="true" />
             </div>
             <div id="tour-panel" role="tabpanel" aria-labelledby={`tour-tab-${view}`}>
-              <AppShell view={view} onNavigate={setView}>
+              <AppShell view={view} onNavigate={(v) => (v === 'home' || v === 'advisor') && setView(v)}>
                 <div key={view} className="fo-rise">
                   {view === 'home' ? <FinerHomeView onOpenAdvisor={() => setView('advisor')} /> : <FinerAdvisorView />}
                 </div>

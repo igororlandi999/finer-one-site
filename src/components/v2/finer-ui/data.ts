@@ -48,8 +48,8 @@ export function getUiData(lang: Lang) {
 
   const shell = {
     nav: pt
-      ? ['Finer Home', 'Cashflow', 'Receitas', 'Despesas', 'Clientes e Fornecedores', 'Finer Advisor', 'Alertas', 'Por confirmar']
-      : ['Finer Home', 'Cash flow', 'Revenue', 'Expenses', 'Customers & Suppliers', 'Finer Advisor', 'Alerts', 'To confirm'],
+      ? ['Finer Home', 'Cashflow', 'Receitas', 'Despesas', 'Clientes e Fornecedores', 'Finer Advisor', 'Chat Financeiro', 'Alertas', 'Por confirmar']
+      : ['Finer Home', 'Cash flow', 'Revenue', 'Expenses', 'Customers & Suppliers', 'Finer Advisor', 'Financial Chat', 'Alerts', 'To confirm'],
     settings: pt ? 'Definições' : 'Settings',
     user: pt ? 'Utilizador Demo' : 'Demo User',
     role: pt ? 'Proprietário' : 'Owner',
