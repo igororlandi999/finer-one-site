@@ -15,16 +15,16 @@ import { cn } from '@/lib/utils'
  */
 const links = {
   pt: [
-    { label: 'Produto', href: '#demo' },
-    { label: 'Como funciona', href: '#como-funciona' },
-    { label: 'Segurança', href: '#seguranca' },
-    { label: 'Preços', href: '#precos' },
+    { label: 'Produto', href: '/#demo' },
+    { label: 'Como funciona', href: '/#como-funciona' },
+    { label: 'Segurança', href: '/#seguranca' },
+    { label: 'Preços', href: '/#precos' },
   ],
   en: [
-    { label: 'Product', href: '#demo' },
-    { label: 'How it works', href: '#como-funciona' },
-    { label: 'Security', href: '#seguranca' },
-    { label: 'Pricing', href: '#precos' },
+    { label: 'Product', href: '/#demo' },
+    { label: 'How it works', href: '/#como-funciona' },
+    { label: 'Security', href: '/#seguranca' },
+    { label: 'Pricing', href: '/#precos' },
   ],
 }
 
@@ -126,10 +126,10 @@ export function Navbar() {
 
           <div className="hidden items-center gap-2 lg:flex">
             <LanguageToggle />
-            <a href="#lista-espera" className={buttonClasses({ variant: "ghost", size: "sm", className: "text-white/85" })}>
+            <a href="/lista-espera/" className={buttonClasses({ variant: "ghost", size: "sm", className: "text-white/85" })}>
               {t.signIn}
             </a>
-            <a href="#pioneers" className={buttonClasses({ size: "sm", className: "font-semibold" })}>{t.cta}</a>
+            <a href="/pioneers/" className={buttonClasses({ size: "sm", className: "font-semibold" })}>{t.cta}</a>
           </div>
 
           <div className="flex items-center gap-2 lg:hidden">
@@ -174,10 +174,10 @@ export function Navbar() {
             </ul>
 
             <div className="mt-auto flex flex-col gap-2 pt-8">
-              <a href="#lista-espera" className={buttonClasses({ variant: "outline", size: "lg" })} onClick={() => setOpen(false)}>
+              <a href="/lista-espera/" className={buttonClasses({ variant: "outline", size: "lg" })} onClick={() => setOpen(false)}>
                 {t.signIn}
               </a>
-              <a href="#pioneers" className={buttonClasses({ size: "lg", className: "font-semibold" })} onClick={() => setOpen(false)}>
+              <a href="/pioneers/" className={buttonClasses({ size: "lg", className: "font-semibold" })} onClick={() => setOpen(false)}>
                 {t.cta}
               </a>
             </div>

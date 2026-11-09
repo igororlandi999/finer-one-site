@@ -78,7 +78,7 @@ export function HeroV2() {
             {t.eyebrow}
           </p>
 
-          <h1 className="mt-7 max-w-[980px] text-balance font-display text-[34px] font-bold leading-[1.08] tracking-[-0.03em] text-white sm:text-[50px] lg:text-[64px]">
+          <h1 className="mt-7 max-w-[1180px] text-balance font-display text-[34px] font-bold leading-[1.08] tracking-[-0.03em] text-white sm:text-[48px] lg:text-[58px]">
             <span className="block animate-fade-up [animation-delay:80ms]">{t.first}</span>
             <span className="mt-1 block animate-fade-up [animation-delay:200ms]">
               {t.secondPrefix}
@@ -96,7 +96,7 @@ export function HeroV2() {
               {t.primary}
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true" />
             </a>
-            <a href="#pioneers" className={buttonClasses({ variant: 'outline', size: 'lg', className: 'group w-full sm:w-auto' })}>
+            <a href="/pioneers/" className={buttonClasses({ variant: 'outline', size: 'lg', className: 'group w-full sm:w-auto' })}>
               {t.secondary}
               <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />
             </a>

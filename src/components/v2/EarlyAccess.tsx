@@ -1,5 +1,3 @@
-import { useState } from 'react'
-import type { FormEvent } from 'react'
 import { ArrowUpRight, Check, Users } from 'lucide-react'
 import { buttonClasses } from '@/components/ui/Button'
 import { Reveal } from '@/components/ui/Reveal'
@@ -12,7 +10,7 @@ const copy = {
     sub: 'Duas formas de fazer parte do nosso início.',
     pioneers: {
       tag: 'Finer Pioneers',
-      title: 'As melhores soluções constroem-se com quem vive os desafios.',
+      title: 'As melhores soluções constroem‑se com quem vive os desafios.',
       text: '10 empresários. Acesso antecipado. Uma voz na construção. Teste o MVP, partilhe o seu feedback e ajude a definir as próximas melhorias.',
       perks: ['Acesso antecipado', 'Participação ativa', 'Proximidade com a equipa'],
       cta: 'Candidatar-me ao Finer Pioneers',
@@ -22,11 +20,8 @@ const copy = {
       tag: 'Lista de espera',
       title: 'Uma nova forma de gerir o seu negócio está a chegar.',
       text: 'Acompanhe a evolução da Finer One e receba novidades sobre o acesso à plataforma.',
-      label: 'O seu email profissional',
-      consent: 'Aceito receber comunicações da Finer One sobre o acesso à plataforma.',
       cta: 'Quero entrar na lista de espera',
       fine: 'A inscrição não exige ligação bancária nem partilha de dados financeiros.',
-      preview: 'Pré-visualização: o envio será ativado quando o serviço de formulários estiver escolhido. Nenhum dado foi enviado.',
     },
   },
   en: {
@@ -45,11 +40,8 @@ const copy = {
       tag: 'Waitlist',
       title: 'A new way to run your business is coming.',
       text: 'Follow Finer One as it evolves and get news about platform access.',
-      label: 'Your work email',
-      consent: 'I agree to receive communications from Finer One about platform access.',
       cta: 'Join the waitlist',
       fine: 'Signing up does not require a bank connection or sharing financial data.',
-      preview: 'Preview: submission will be enabled once the form service is chosen. No data was sent.',
     },
   },
 }
@@ -57,19 +49,12 @@ const copy = {
 /**
  * Finer Pioneers + Lista de Espera.
  *
- * O formulário NÃO envia dados: ainda não foi escolhido o serviço que os
- * recebe (decisão dos fundadores). Ao submeter mostra apenas um aviso de
- * pré-visualização. A candidatura Pioneers abre o email geral da empresa.
+ * Cartões de entrada para as páginas próprias /pioneers/ e /lista-espera/,
+ * onde estão os formulários.
  */
 export function EarlyAccess() {
   const { lang } = useLanguage()
   const t = copy[lang]
-  const [submitted, setSubmitted] = useState(false)
-
-  const onSubmit = (event: FormEvent) => {
-    event.preventDefault()
-    setSubmitted(true)
-  }
 
   return (
     <section id="acesso" aria-labelledby="acesso-titulo" className="relative isolate scroll-mt-24 overflow-hidden bg-navy-deep py-24 text-white lg:py-32">
@@ -111,7 +96,7 @@ export function EarlyAccess() {
                 </ul>
                 <div className="mt-auto pt-8">
                   <a
-                    href={`mailto:geral.finerone@gmail.com?subject=${encodeURIComponent(t.pioneers.tag)}`}
+                    href="/pioneers/"
                     className={buttonClasses({ size: 'lg', className: 'group h-auto min-h-12 w-full whitespace-normal py-3 text-center font-semibold sm:w-auto' })}
                   >
                     {t.pioneers.cta}
@@ -132,32 +117,13 @@ export function EarlyAccess() {
               <h3 className="mt-6 text-balance font-display text-[24px] font-bold leading-tight tracking-[-0.02em] sm:text-[28px]">{t.waitlist.title}</h3>
               <p className="mt-4 text-[15px] leading-relaxed text-navy/75">{t.waitlist.text}</p>
 
-              <form onSubmit={onSubmit} className="mt-auto pt-8">
-                <label htmlFor="waitlist-email" className="text-[13px] font-semibold">
-                  {t.waitlist.label}
-                </label>
-                <input
-                  id="waitlist-email"
-                  type="email"
-                  required
-                  autoComplete="email"
-                  placeholder="nome@empresa.pt"
-                  className="mt-2 h-12 w-full rounded-xl border border-navy/15 bg-white px-4 text-[15px] text-navy outline-none transition-shadow placeholder:text-navy/75 focus:border-accent focus:shadow-[0_0_0_4px_rgba(0,82,255,0.15)]"
-                />
-                <label className="mt-4 flex items-start gap-2.5 text-[13px] leading-snug text-navy/70">
-                  <input type="checkbox" required className="mt-0.5 h-4 w-4 shrink-0 accent-[#0052FF]" />
-                  {t.waitlist.consent}
-                </label>
-                <button type="submit" className={buttonClasses({ size: 'lg', className: 'mt-5 h-auto min-h-12 w-full whitespace-normal py-3 text-center font-semibold' })}>
+              <div className="mt-auto pt-8">
+                <a href="/lista-espera/" className={buttonClasses({ size: 'lg', className: 'group h-auto min-h-12 w-full whitespace-normal py-3 text-center font-semibold' })}>
                   {t.waitlist.cta}
-                </button>
-                <p className="mt-3 text-[12px] text-navy/70">{t.waitlist.fine}</p>
-                {submitted && (
-                  <p role="status" className="fo-rise mt-4 rounded-xl border border-accent/25 bg-white p-3 text-[12.5px] text-navy/75">
-                    {t.waitlist.preview}
-                  </p>
-                )}
-              </form>
+                  <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />
+                </a>
+                <p className="mt-3 text-[12px] text-navy/75">{t.waitlist.fine}</p>
+              </div>
             </div>
           </Reveal>
         </div>

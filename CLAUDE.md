@@ -40,3 +40,13 @@ Contexto obrigatório para qualquer sessão que trabalhe neste repositório.
 
 Ver README.md (stack, estrutura, notas de overflow/sticky). Componentes da
 homepage v2 em `src/components/v2/`. Validar com `npm run build`.
+
+## Páginas e formulários (fase 2)
+
+- Páginas independentes (multi-page Vite): `/pioneers/`, `/lista-espera/`,
+  `/privacidade/` — cada uma com `index.html` próprio e entrada em `src/entries/`.
+- Envio: `src/lib/forms.ts`. Sem `VITE_FORMS_ENDPOINT` = modo de
+  pré-visualização (nada é enviado). Recetor previsto: Google Apps Script +
+  Folha Google da conta da empresa (`backend/google-apps-script/`). Só ativar
+  com autorização dos fundadores.
+- O aviso de privacidade é um RASCUNHO — não publicar sem validação.

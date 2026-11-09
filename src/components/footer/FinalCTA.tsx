@@ -53,7 +53,7 @@ export function FinalCTA() {
           </p>
 
           <div className="mt-10 flex justify-center">
-            <a href="#pioneers" className={buttonClasses({ size: "lg", className: "w-full font-semibold sm:w-auto" })}>
+            <a href="/pioneers/" className={buttonClasses({ size: "lg", className: "w-full font-semibold sm:w-auto" })}>
               {footerCopy.ctaPrimary}
             </a>
           </div>

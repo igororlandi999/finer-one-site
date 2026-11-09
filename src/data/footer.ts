@@ -45,42 +45,42 @@ function buildContent(lang: Lang): FooterContent {
         {
           title: 'Produto',
           links: [
-            { label: 'Produto', href: '#demo' },
-            { label: 'Como funciona', href: '#como-funciona' },
-            { label: 'Planos', href: '#precos' },
+            { label: 'Produto', href: '/#demo' },
+            { label: 'Como funciona', href: '/#como-funciona' },
+            { label: 'Planos', href: '/#precos' },
           ],
         },
         {
           title: 'Descobrir',
           links: [
-            { label: 'O problema', href: '#problema' },
-            { label: 'Segurança e confiança', href: '#seguranca' },
+            { label: 'O problema', href: '/#problema' },
+            { label: 'Segurança e confiança', href: '/#seguranca' },
           ],
         },
         {
           title: 'Ajuda',
-          links: [{ label: 'Perguntas frequentes', href: '#faq' }],
+          links: [{ label: 'Perguntas frequentes', href: '/#faq' }],
         },
       ]
     : [
         {
           title: 'Product',
           links: [
-            { label: 'Product', href: '#demo' },
-            { label: 'How it works', href: '#como-funciona' },
-            { label: 'Plans', href: '#precos' },
+            { label: 'Product', href: '/#demo' },
+            { label: 'How it works', href: '/#como-funciona' },
+            { label: 'Plans', href: '/#precos' },
           ],
         },
         {
           title: 'Discover',
           links: [
-            { label: 'The problem', href: '#problema' },
-            { label: 'Security & trust', href: '#seguranca' },
+            { label: 'The problem', href: '/#problema' },
+            { label: 'Security & trust', href: '/#seguranca' },
           ],
         },
         {
           title: 'Help',
-          links: [{ label: 'FAQ', href: '#faq' }],
+          links: [{ label: 'FAQ', href: '/#faq' }],
         },
       ]
 
