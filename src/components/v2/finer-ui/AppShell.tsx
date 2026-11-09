@@ -17,6 +17,8 @@ type Props = {
   onNavigate?: (view: View) => void
   /** Vistas que o menu permite abrir (as restantes aparecem só como referência). */
   navigable?: View[]
+  /** Classes extra para a raiz (ex.: altura mínima no vídeo). */
+  className?: string
   children: ReactNode
 }
 
@@ -24,16 +26,16 @@ type Props = {
  * Moldura da aplicação Finer One recriada a partir das capturas reais:
  * menu lateral claro, cabeçalho com textura azul-gelo e área de conteúdo.
  */
-export function AppShell({ view, onNavigate, navigable = ['home', 'advisor'], children }: Props) {
+export function AppShell({ view, onNavigate, navigable = ['home', 'advisor'], className, children }: Props) {
   const { lang } = useLanguage()
   const { shell } = getUiData(lang)
 
   return (
-    <div className={cn('@container flex bg-[#F7F9FE] text-[#0B1030]')}>
+    <div className={cn('@container flex bg-[#F7F9FE] text-[#0B1030]', className)}>
       <aside className={cn('w-[232px] shrink-0 flex-col border-r border-[#0B1030]/[0.08] bg-white px-4 pb-4 pt-6', 'hidden @4xl:flex')}>
         <div className={cn('flex items-center gap-2.5 px-2')}>
           <span className={cn('flex h-7 w-7 items-center justify-center rounded-[5px] bg-[#0B1030]')}>
-            <img src="/brand/finer-one-icon.svg" alt="" className={cn('h-4 w-3')} />
+            <svg viewBox="0 0 326 445" className="h-4 w-3" aria-hidden="true"><path fill="#FFFFFF" d="M326 0H0v445l99-99v-92h109l86-87H99V79h227z" /></svg>
           </span>
           <span className={cn('text-[12px] font-bold tracking-[0.3em]')}>
             FINER <span className={cn('font-normal text-[#0B1030]/60')}>ONE</span>

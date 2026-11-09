@@ -1,0 +1,18 @@
+{
+  "name": "finer-one-video",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Vídeo de demonstração da plataforma Finer One (Remotion). Reutiliza os componentes do site em ../src.",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render FinerOneDemo out/finer-one-demo.mp4 --codec=h264 --crf=24",
+    "render:sample": "remotion render FinerOneSample out/finer-one-amostra.mp4 --codec=h264 --crf=22",
+    "still": "remotion still FinerOneDemo out/poster.jpg --frame=0 --image-format=jpeg --jpeg-quality=88"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.542",
+    "@remotion/google-fonts": "4.0.542",
+    "@remotion/tailwind": "4.0.542",
+    "remotion": "4.0.542"
+  }
+}
