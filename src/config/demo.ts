@@ -13,3 +13,15 @@
 export const DEMO_VIDEO: { src: string; webm?: string; poster?: string } = {
   src: '',
 }
+
+/**
+ * Fundo cinematográfico da Hero (Terra vista do espaço). Recurso próprio,
+ * gerado em video/ (composição HeroEarth) a partir da fotografia oficial da
+ * Finer One. Loop de 14 s sem corte.
+ * O vídeo só é usado em ecrãs ≥ 768px, sem poupança de dados e sem
+ * preferência por movimento reduzido; caso contrário mostra-se o poster.
+ */
+export const HERO_BACKGROUND = {
+  video: '/video/hero-earth.mp4',
+  poster: '/images/hero-earth.jpg',
+}

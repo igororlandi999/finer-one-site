@@ -6,7 +6,8 @@ import { LuminousLine } from '@/components/v2/LuminousLine'
 import { AppShell } from '@/components/v2/finer-ui/AppShell'
 import { FinerHomeView } from '@/components/v2/finer-ui/FinerHomeView'
 import { ScaledCanvas } from '@/components/v2/finer-ui/ScaledCanvas'
-import { DEMO_VIDEO } from '@/config/demo'
+import { DEMO_VIDEO, HERO_BACKGROUND } from '@/config/demo'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useInView } from '@/hooks/useInView'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 import { useLanguage } from '@/i18n/LanguageContext'
@@ -107,18 +108,15 @@ export function HeroDemo() {
         </div>
 
         {/* Vídeo da plataforma */}
-        <div className="relative animate-fade-up pb-8 pr-4 [animation-delay:350ms] sm:pb-10 sm:pr-8 lg:pb-12 lg:pr-10">
+        <div className="relative pb-8 pr-4 opacity-0 [animation:fo-enter-right_1s_cubic-bezier(0.22,1,0.36,1)_450ms_forwards] sm:pb-10 sm:pr-8 lg:pb-12 lg:pr-10">
           {/* Painel de fundo com a fotografia oficial, desencontrado da moldura */}
-          <div aria-hidden="true" className="absolute bottom-0 left-8 right-0 top-10 overflow-hidden rounded-[24px] border border-white/10 sm:left-12 lg:left-16">
-            <img src="/images/mountain-line.jpg" alt="" className="h-full w-full object-cover object-[70%_30%] opacity-90" />
-            <div className="absolute inset-0 bg-gradient-to-tr from-[#040817]/90 via-[#040817]/40 to-transparent" />
-          </div>
+          <div aria-hidden="true" className="absolute bottom-0 left-8 right-0 top-10 rounded-[24px] border border-white/[0.12] bg-[linear-gradient(140deg,rgba(11,26,74,0.55),rgba(3,6,15,0.35))] backdrop-blur-[2px] sm:left-12 lg:left-16" />
           <LuminousLine
             viewBox="0 0 1000 600"
             d="M -80 560 C 220 560, 380 500, 520 430 S 800 220, 1080 170"
             className="absolute -bottom-6 -left-24 h-[75%] w-[calc(100%+6rem)] max-w-none opacity-60"
-            delay={800}
-            sparkDuration={12}
+            delay={900}
+            spark={false}
           />
           <div className="relative">{DEMO_VIDEO.src ? <DemoVideo t={t} /> : <Poster t={t} />}</div>
         </div>
@@ -127,20 +125,40 @@ export function HeroDemo() {
   )
 }
 
+/**
+ * Fundo cinematográfico: a Terra vista do espaço em movimento muito lento.
+ * Os gradientes navy mantêm o texto e a plataforma legíveis; a Terra fica
+ * visível sobretudo em baixo e nas extremidades.
+ */
 function Backdrop() {
+  const reduced = usePrefersReducedMotion()
+  const wide = useMediaQuery('(min-width: 768px)')
+  const saveData = typeof navigator !== 'undefined' && Boolean((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData)
+  const useVideo = wide && !reduced && !saveData
+
   return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-[#040817]">
-      <div className="absolute right-[-15%] top-[-25%] h-[120%] w-[85%] bg-[radial-gradient(50%_50%_at_55%_45%,rgba(0,82,255,0.18),rgba(0,82,255,0.04)_55%,transparent_75%)]" />
-      <div
-        className="absolute inset-0 opacity-[0.16]"
-        style={{
-          backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)',
-          backgroundSize: '88px 88px',
-          maskImage: 'radial-gradient(55% 60% at 25% 40%, #000, transparent)',
-          WebkitMaskImage: 'radial-gradient(55% 60% at 25% 40%, #000, transparent)',
-        }}
-      />
-      <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-navy-deep" />
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-[#03060F]">
+      {useVideo ? (
+        <video
+          className="absolute inset-0 h-full w-full translate-y-[16%] scale-[1.12] object-cover object-[50%_60%] animate-fade-in"
+          src={HERO_BACKGROUND.video}
+          poster={HERO_BACKGROUND.poster}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          tabIndex={-1}
+        />
+      ) : (
+        <img src={HERO_BACKGROUND.poster} alt="" className="absolute inset-0 h-full w-full translate-y-[16%] scale-[1.12] object-cover object-[50%_60%]" />
+      )}
+      {/* Leitura: navy forte à esquerda (texto), aliviando para a direita */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(3,6,15,0.94)_0%,rgba(3,6,15,0.78)_36%,rgba(3,6,15,0.35)_68%,rgba(3,6,15,0.45)_100%)]" />
+      {/* Topo limpo por baixo da navegação; centro sem competir com o título */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(3,6,15,0.95)_0%,rgba(3,6,15,0.55)_28%,rgba(3,6,15,0.1)_60%,transparent_100%)]" />
+      {/* Transição para a secção seguinte */}
+      <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent to-navy-deep" />
     </div>
   )
 }

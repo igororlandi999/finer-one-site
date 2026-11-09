@@ -118,3 +118,8 @@
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
 }
+
+@keyframes fo-enter-right {
+  from { opacity: 0; transform: translate3d(28px, 0, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
