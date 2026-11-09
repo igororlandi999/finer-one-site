@@ -23,6 +23,8 @@ export default {
           hover: '#1C63FF',
         },
         glow: '#1E90FF', // Glow Blue
+        /** Branco azulado das secções claras (degradê branco→azul das apresentações). */
+        ice: '#F3F6FD',
         mist: '#A6A6A6', // Light Gray
         /**
          * Token semântico, NÃO faz parte da identidade principal da marca.
@@ -32,8 +34,8 @@ export default {
         signal: '#F0B429',
       },
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        display: ['"Inter Tight"', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['Montserrat', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['Montserrat', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       maxWidth: {
         content: '1200px',

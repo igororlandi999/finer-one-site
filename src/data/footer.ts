@@ -45,8 +45,8 @@ function buildContent(lang: Lang): FooterContent {
         {
           title: 'Produto',
           links: [
-            { label: 'Produto', href: '#produto-demo' },
-            { label: 'Como funciona', href: '#produto' },
+            { label: 'Produto', href: '#demo' },
+            { label: 'Como funciona', href: '#como-funciona' },
             { label: 'Planos', href: '#precos' },
           ],
         },
@@ -54,7 +54,7 @@ function buildContent(lang: Lang): FooterContent {
           title: 'Descobrir',
           links: [
             { label: 'O problema', href: '#problema' },
-            { label: 'Segurança e confiança', href: '#decisoes' },
+            { label: 'Segurança e confiança', href: '#seguranca' },
           ],
         },
         {
@@ -66,8 +66,8 @@ function buildContent(lang: Lang): FooterContent {
         {
           title: 'Product',
           links: [
-            { label: 'Product', href: '#produto-demo' },
-            { label: 'How it works', href: '#produto' },
+            { label: 'Product', href: '#demo' },
+            { label: 'How it works', href: '#como-funciona' },
             { label: 'Plans', href: '#precos' },
           ],
         },
@@ -75,7 +75,7 @@ function buildContent(lang: Lang): FooterContent {
           title: 'Discover',
           links: [
             { label: 'The problem', href: '#problema' },
-            { label: 'Security & trust', href: '#decisoes' },
+            { label: 'Security & trust', href: '#seguranca' },
           ],
         },
         {
