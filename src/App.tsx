@@ -3,7 +3,8 @@ import { Navbar } from '@/components/layout/Navbar'
 import { HeroV2 } from '@/components/v2/HeroV2'
 import { ProblemSection } from '@/components/problem/ProblemSection'
 import { PillarsScrolly } from '@/components/v2/PillarsScrolly'
-import { DemoAdvisor } from '@/components/v2/DemoAdvisor'
+import { ProductTour } from '@/components/v2/ProductTour'
+import { CinematicBand } from '@/components/v2/CinematicBand'
 import { Benefits } from '@/components/v2/Benefits'
 import { HowItWorks } from '@/components/v2/HowItWorks'
 import { Security } from '@/components/v2/Security'
@@ -16,9 +17,10 @@ import { SiteFooter } from '@/components/footer/SiteFooter'
 /**
  * Homepage v2 (branch dev/homepage-v2).
  *
- * Narrativa: Hero → problema → Compreender/Antecipar/Decidir (scroll) →
- * demonstração → benefícios → como funciona → segurança → planos →
- * acesso antecipado → FAQ → encerramento.
+ * Narrativa: Hero (Finer Home) → problema → Compreender/Antecipar/Decidir
+ * (scroll) → [folha clara: demonstração Finer Home/Advisor → benefícios →
+ * como funciona] → faixa cinematográfica → segurança → planos → acesso
+ * antecipado → FAQ → encerramento.
  *
  * As secções da v1 que esta substitui (SolutionSection, DecisionsSection,
  * Hero) continuam no repositório, sem uso, até a v2 ser aprovada.
@@ -41,9 +43,15 @@ export default function App() {
         <HeroV2 />
         <ProblemSection />
         <PillarsScrolly />
-        <DemoAdvisor />
-        <Benefits />
-        <HowItWorks />
+        {/* Folha clara contínua: demonstração, benefícios e funcionamento.
+            Cantos arredondados sobre o navy, em vez de cortes retos entre
+            secções escuras e claras. */}
+        <div className="relative z-10 rounded-[28px] bg-gradient-to-b from-ice via-white to-ice sm:mx-3 sm:rounded-[40px]">
+          <ProductTour />
+          <Benefits />
+          <HowItWorks />
+        </div>
+        <CinematicBand />
         <Security />
         <PricingSection />
         <EarlyAccess />

@@ -35,7 +35,7 @@ export function LinkedInStrip() {
       </span>
 
       <span className="min-w-0 flex-1">
-        <span className="block text-[10px] uppercase tracking-[0.18em] text-mist/70">
+        <span className="block text-[10px] uppercase tracking-[0.18em] text-mist">
           {linkedIn.network}
         </span>
         <span className="mt-1.5 block text-[15.5px] font-medium leading-snug text-white">

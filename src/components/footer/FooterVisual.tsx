@@ -149,10 +149,10 @@ export function FooterVisual() {
         </div>
 
         {/* Leitura explícita, só onde há largura para ela respirar */}
-        <span className="pointer-events-none absolute left-8 top-1/2 hidden -translate-y-1/2 text-[10px] uppercase tracking-[0.18em] text-mist/60 lg:block">
+        <span className="pointer-events-none absolute left-8 top-1/2 hidden -translate-y-1/2 text-[10px] uppercase tracking-[0.18em] text-mist lg:block">
           {t.scattered}
         </span>
-        <span className="pointer-events-none absolute right-8 top-1/2 hidden -translate-y-1/2 text-[10px] uppercase tracking-[0.18em] text-mist/60 lg:block">
+        <span className="pointer-events-none absolute right-8 top-1/2 hidden -translate-y-1/2 text-[10px] uppercase tracking-[0.18em] text-mist lg:block">
           {t.organized}
         </span>
       </div>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import { Logo } from '@/components/brand/Logo'
-import { Button, buttonClasses } from '@/components/ui/Button'
+import { buttonClasses } from '@/components/ui/Button'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
 
@@ -19,20 +19,18 @@ const links = {
     { label: 'Como funciona', href: '#como-funciona' },
     { label: 'Segurança', href: '#seguranca' },
     { label: 'Preços', href: '#precos' },
-    { label: 'Pioneers', href: '#acesso' },
   ],
   en: [
     { label: 'Product', href: '#demo' },
     { label: 'How it works', href: '#como-funciona' },
     { label: 'Security', href: '#seguranca' },
     { label: 'Pricing', href: '#precos' },
-    { label: 'Pioneers', href: '#acesso' },
   ],
 }
 
 const copy = {
-  pt: { skip: 'Saltar para o conteúdo', home: 'Finer One — página inicial', signIn: 'Entrar', cta: 'Lista de Espera', open: 'Abrir menu', close: 'Fechar menu' },
-  en: { skip: 'Skip to content', home: 'Finer One — homepage', signIn: 'Sign In', cta: 'Join Waitlist', open: 'Open menu', close: 'Close menu' },
+  pt: { skip: 'Saltar para o conteúdo', home: 'Finer One — página inicial', signIn: 'Lista de Espera', cta: 'Ser Finer Pioneer', open: 'Abrir menu', close: 'Fechar menu' },
+  en: { skip: 'Skip to content', home: 'Finer One — homepage', signIn: 'Join Waitlist', cta: 'Become a Finer Pioneer', open: 'Open menu', close: 'Close menu' },
 }
 
 /** Botão "PT"/"EN": troca para o idioma que ainda NÃO está ativo. */
@@ -128,10 +126,10 @@ export function Navbar() {
 
           <div className="hidden items-center gap-2 lg:flex">
             <LanguageToggle />
-            <Button variant="ghost" size="sm">
+            <a href="#lista-espera" className={buttonClasses({ variant: "ghost", size: "sm", className: "text-white/85" })}>
               {t.signIn}
-            </Button>
-            <a href="#acesso" className={buttonClasses({ size: "sm" })}>{t.cta}</a>
+            </a>
+            <a href="#pioneers" className={buttonClasses({ size: "sm", className: "font-semibold" })}>{t.cta}</a>
           </div>
 
           <div className="flex items-center gap-2 lg:hidden">
@@ -176,10 +174,10 @@ export function Navbar() {
             </ul>
 
             <div className="mt-auto flex flex-col gap-2 pt-8">
-              <Button variant="outline" size="lg" onClick={() => setOpen(false)}>
+              <a href="#lista-espera" className={buttonClasses({ variant: "outline", size: "lg" })} onClick={() => setOpen(false)}>
                 {t.signIn}
-              </Button>
-              <a href="#acesso" className={buttonClasses({ size: "lg" })} onClick={() => setOpen(false)}>
+              </a>
+              <a href="#pioneers" className={buttonClasses({ size: "lg", className: "font-semibold" })} onClick={() => setOpen(false)}>
                 {t.cta}
               </a>
             </div>

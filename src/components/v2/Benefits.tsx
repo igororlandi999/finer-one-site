@@ -36,7 +36,7 @@ export function Benefits() {
   const t = copy[lang]
 
   return (
-    <section id="beneficios" aria-labelledby="beneficios-titulo" className="relative scroll-mt-24 bg-white py-24 text-navy lg:py-32">
+    <section id="beneficios" aria-labelledby="beneficios-titulo" className="relative scroll-mt-24 py-16 text-navy lg:py-24">
       <div className="mx-auto max-w-content px-5 sm:px-6 lg:px-8">
         <Reveal className="max-w-2xl">
           <p className="text-[12px] font-semibold uppercase tracking-[0.24em] text-accent">{t.kicker}</p>
@@ -44,7 +44,7 @@ export function Benefits() {
             {t.title[0]}
             <span className="text-accent">{t.title[1]}</span>
           </h2>
-          <p className="mt-4 text-[16px] leading-relaxed text-navy/65">{t.sub}</p>
+          <p className="mt-4 text-[16px] leading-relaxed text-navy/75">{t.sub}</p>
         </Reveal>
 
         <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:mt-16 lg:grid-cols-4">
@@ -66,7 +66,7 @@ function BenefitCard({ n, name, text, Icon }: { n: string; name: string; text: s
     <div
       ref={ref}
       onPointerMove={onPointerMove}
-      className="group relative h-full overflow-hidden rounded-2xl border border-navy/[0.08] bg-ice/60 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-accent/30 hover:bg-white hover:shadow-[0_24px_60px_-30px_rgba(0,82,255,0.55)]"
+      className="group relative h-full overflow-hidden rounded-2xl border border-navy/[0.08] bg-white p-6 shadow-[0_10px_30px_-24px_rgba(7,13,43,0.45)] transition-all duration-300 hover:-translate-y-1 hover:border-accent/30 hover:bg-white hover:shadow-[0_24px_60px_-30px_rgba(0,82,255,0.55)]"
     >
       <div
         aria-hidden="true"
@@ -77,10 +77,10 @@ function BenefitCard({ n, name, text, Icon }: { n: string; name: string; text: s
       <div className="relative">
         <div className="flex items-center justify-between">
           <span className="font-display text-[13px] font-semibold tracking-[0.2em] text-accent">{n}</span>
-          <Icon className="h-5 w-5 text-navy/35 transition-colors duration-300 group-hover:text-accent" aria-hidden="true" />
+          <Icon className="h-5 w-5 text-navy/75 transition-colors duration-300 group-hover:text-accent" aria-hidden="true" />
         </div>
         <h3 className="mt-8 font-display text-[20px] font-bold tracking-[-0.01em]">{name}</h3>
-        <p className="mt-2 text-[15px] leading-relaxed text-navy/65">{text}</p>
+        <p className="mt-2 text-[15px] leading-relaxed text-navy/75">{text}</p>
       </div>
     </div>
   )

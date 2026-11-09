@@ -40,7 +40,7 @@ export function HowItWorks() {
   const lineRef = useScrollProgress<HTMLDivElement>({ mode: 'enter', endAt: 0.45 })
 
   return (
-    <section id="funcionamento" aria-labelledby="funcionamento-titulo" className="relative scroll-mt-24 bg-ice py-24 text-navy lg:py-32">
+    <section id="funcionamento" aria-labelledby="funcionamento-titulo" className="relative scroll-mt-24 pb-24 pt-16 text-navy lg:pb-32 lg:pt-24">
       <div className="mx-auto max-w-content px-5 sm:px-6 lg:px-8">
         <Reveal className="mx-auto max-w-2xl text-center">
           <p className="text-[12px] font-semibold uppercase tracking-[0.24em] text-accent">{t.kicker}</p>
@@ -48,7 +48,7 @@ export function HowItWorks() {
             {t.title[0]}
             <span className="text-accent">{t.title[1]}</span>
           </h2>
-          <p className="mt-4 text-[16px] leading-relaxed text-navy/65">{t.sub}</p>
+          <p className="mt-4 text-[16px] leading-relaxed text-navy/75">{t.sub}</p>
         </Reveal>
 
         <div ref={lineRef} className="relative mt-14 lg:mt-20">
@@ -69,11 +69,11 @@ export function HowItWorks() {
                     <Icon className="h-6 w-6" aria-hidden="true" />
                   </span>
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-navy/45">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-navy/75">
                       {step.n} · {t.who[i]}
                     </p>
                     <h3 className="mt-2 font-display text-[20px] font-bold tracking-[-0.01em]">{step.title}</h3>
-                    <p className="mt-2 max-w-xs text-[15px] leading-relaxed text-navy/65 md:mx-auto">{step.text}</p>
+                    <p className="mt-2 max-w-xs text-[15px] leading-relaxed text-navy/75 md:mx-auto">{step.text}</p>
                   </div>
                 </li>
               )
@@ -81,7 +81,7 @@ export function HowItWorks() {
           </ol>
         </div>
 
-        <p className="mx-auto mt-14 max-w-xl text-center text-[12.5px] text-navy/45">{t.note}</p>
+        <p className="mx-auto mt-14 max-w-xl text-center text-[12.5px] text-navy/75">{t.note}</p>
       </div>
     </section>
   )

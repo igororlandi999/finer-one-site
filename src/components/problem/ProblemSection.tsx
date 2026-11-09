@@ -7,7 +7,7 @@ import { useLanguage } from '@/i18n/LanguageContext'
 const copy = {
   pt: {
     headlineFirst: 'A informação existe.',
-    headlineSecond: 'O que falta é transformá-la em decisão.',
+    headlineSecond: 'O que falta é transformá‑la em decisão.',
     subheadline:
       'A maioria das empresas já tem banco, faturação, ERP, contabilidade e relatórios. O desafio é perceber o que os números significam, antecipar o impacto e saber o que fazer a seguir.',
     closing: 'É aqui que a Finer One começa.',

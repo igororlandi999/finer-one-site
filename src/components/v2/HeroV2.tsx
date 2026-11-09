@@ -1,6 +1,8 @@
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { buttonClasses } from '@/components/ui/Button'
-import { DashboardMock } from '@/components/product/DashboardMock'
+import { AppShell } from '@/components/v2/finer-ui/AppShell'
+import { FinerHomeView } from '@/components/v2/finer-ui/FinerHomeView'
+import { ScaledCanvas } from '@/components/v2/finer-ui/ScaledCanvas'
 import { LuminousLine } from '@/components/v2/LuminousLine'
 import { useScrollProgress } from '@/hooks/useScrollProgress'
 import { useLanguage } from '@/i18n/LanguageContext'
@@ -14,7 +16,7 @@ const copy = {
     sub: 'Compreenda a situação financeira da sua empresa, saiba quanto tem por receber, acompanhe a tesouraria e descubra onde precisa de agir.',
     primary: 'Conhecer a Finer One',
     secondary: 'Ser Finer Pioneer',
-    hint: 'Clique nas abas e explore a plataforma',
+    hint: 'Interface Finer Home · dados fictícios',
     signature: ['Where Finance ', 'Meets Strategy'],
   },
   en: {
@@ -25,7 +27,7 @@ const copy = {
     sub: "Understand your company's financial position, know what you're owed, keep track of cash and find out where you need to act.",
     primary: 'Discover Finer One',
     secondary: 'Become a Finer Pioneer',
-    hint: 'Click the tabs and explore the platform',
+    hint: 'Finer Home interface · fictitious data',
     signature: ['Where Finance ', 'Meets Strategy'],
   },
 }
@@ -85,7 +87,7 @@ export function HeroV2() {
             </span>
           </h1>
 
-          <p className="mt-6 max-w-2xl animate-fade-up text-balance text-[15px] leading-relaxed text-white/70 [animation-delay:320ms] sm:text-[17px]">
+          <p className="mt-6 max-w-2xl animate-fade-up text-balance text-[15px] leading-relaxed text-white/80 [animation-delay:320ms] sm:text-[17px]">
             {t.sub}
           </p>
 
@@ -94,13 +96,13 @@ export function HeroV2() {
               {t.primary}
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true" />
             </a>
-            <a href="#acesso" className={buttonClasses({ variant: 'outline', size: 'lg', className: 'group w-full sm:w-auto' })}>
+            <a href="#pioneers" className={buttonClasses({ variant: 'outline', size: 'lg', className: 'group w-full sm:w-auto' })}>
               {t.secondary}
               <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />
             </a>
           </div>
 
-          <p className="mt-8 animate-fade-up text-[11px] font-semibold uppercase tracking-[0.3em] text-white/45 [animation-delay:520ms]">
+          <p className="mt-8 animate-fade-up text-[11px] font-semibold uppercase tracking-[0.3em] text-white/75 [animation-delay:520ms]">
             {t.signature[0]}
             <span className="text-glow">{t.signature[1]}</span>.
           </p>
@@ -118,17 +120,19 @@ export function HeroV2() {
           >
             <div aria-hidden="true" className="absolute inset-x-0 -top-10 bottom-10 rounded-[40px] bg-[radial-gradient(70%_60%_at_50%_0%,rgba(0,82,255,0.35),transparent_70%)] blur-3xl" />
             <div className="relative mb-3 flex justify-center">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-navy-deep/90 px-3 py-1.5 text-[11px] font-medium text-glow">
-                <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-glow opacity-75" />
-                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-glow" />
-                </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-navy-deep/90 px-3 py-1.5 text-[11.5px] font-medium text-white/85">
+                <span className="h-1.5 w-1.5 rounded-full bg-glow" aria-hidden="true" />
                 {t.hint}
               </span>
             </div>
             <div className="relative rounded-2xl bg-gradient-to-b from-white/[0.18] via-white/[0.06] to-transparent p-px shadow-frame">
-              <div className="overflow-hidden rounded-[15px] bg-navy-deep">
-                <DashboardMock />
+              <div className="overflow-hidden rounded-[15px] bg-white" inert>
+                {/* Imagem viva da Finer Home; a versão interativa está em #demo. */}
+                <ScaledCanvas width={1320}>
+                  <AppShell view="home">
+                    <FinerHomeView interactive={false} />
+                  </AppShell>
+                </ScaledCanvas>
               </div>
             </div>
           </div>

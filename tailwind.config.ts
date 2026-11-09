@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+import containerQueries from '@tailwindcss/container-queries'
 
 /**
  * Tokens oficiais da marca Finer One.
@@ -133,5 +134,5 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [containerQueries],
 } satisfies Config

@@ -1,0 +1,127 @@
+import type { ReactNode } from 'react'
+import { ArrowUpDown, Bell, Building2, ChevronDown, CircleCheck, Home, Lightbulb, LogOut, Moon, SlidersHorizontal, TrendingDown, TrendingUp, Users } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import { useLanguage } from '@/i18n/LanguageContext'
+import { cn } from '@/lib/utils'
+import { getUiData } from './data'
+
+export type View = 'home' | 'advisor'
+
+const icons: LucideIcon[] = [Home, ArrowUpDown, TrendingUp, TrendingDown, Users, Lightbulb, Bell, CircleCheck]
+/** Índices do menu que correspondem às vistas demonstradas. */
+const viewIndex: Record<View, number> = { home: 0, advisor: 5 }
+const groups = [[0, 1, 2, 3], [4, 5], [6, 7]]
+
+type Props = {
+  view: View
+  onNavigate?: (view: View) => void
+  children: ReactNode
+}
+
+/**
+ * Moldura da aplicação Finer One recriada a partir das capturas reais:
+ * menu lateral claro, cabeçalho com textura azul-gelo e área de conteúdo.
+ */
+export function AppShell({ view, onNavigate, children }: Props) {
+  const { lang } = useLanguage()
+  const { shell } = getUiData(lang)
+
+  return (
+    <div className={cn('@container flex bg-[#F7F9FE] text-[#0B1030]')}>
+      <aside className={cn('w-[232px] shrink-0 flex-col border-r border-[#0B1030]/[0.08] bg-white px-4 pb-4 pt-6', 'hidden @4xl:flex')}>
+        <div className={cn('flex items-center gap-2.5 px-2')}>
+          <span className={cn('flex h-7 w-7 items-center justify-center rounded-[5px] bg-[#0B1030]')}>
+            <img src="/brand/finer-one-icon.svg" alt="" className={cn('h-4 w-3')} />
+          </span>
+          <span className={cn('text-[12px] font-bold tracking-[0.3em]')}>
+            FINER <span className={cn('font-normal text-[#0B1030]/60')}>ONE</span>
+          </span>
+        </div>
+
+        <nav className={cn('mt-7 flex-1')} aria-label={lang === 'pt' ? 'Menu da plataforma (demonstração)' : 'Platform menu (demo)'}>
+          {groups.map((group, g) => (
+            <ul key={g} className={cn('space-y-0.5', g > 0 && 'mt-3 border-t border-[#0B1030]/[0.08] pt-3')}>
+              {group.map((i) => {
+                const Icon = icons[i]
+                const target = (Object.keys(viewIndex) as View[]).find((v) => viewIndex[v] === i)
+                const isActive = viewIndex[view] === i
+                const content = (
+                  <>
+                    <Icon className={cn('h-4 w-4 shrink-0')} aria-hidden="true" />
+                    <span className={cn('truncate')}>{shell.nav[i]}</span>
+                  </>
+                )
+                const base = 'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[13px]'
+                return (
+                  <li key={i}>
+                    {target && onNavigate ? (
+                      <button
+                        type="button"
+                        onClick={() => onNavigate(target)}
+                        aria-current={isActive ? 'page' : undefined}
+                        className={cn(base, 'transition-colors', isActive ? 'bg-[#E6EEFF] font-semibold text-[#0B1030]' : 'text-[#0B1030]/75 hover:bg-[#F1F5FE]')}
+                      >
+                        {content}
+                      </button>
+                    ) : (
+                      <span className={cn(base, isActive ? 'bg-[#E6EEFF] font-semibold' : 'text-[#0B1030]/60')}>{content}</span>
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
+          ))}
+        </nav>
+
+        <div className={cn('space-y-3 border-t border-[#0B1030]/[0.08] pt-4 text-[12.5px]')}>
+          <div className={cn('flex items-center gap-3 px-2 text-[#0B1030]/75')}>
+            <SlidersHorizontal className={cn('h-4 w-4')} aria-hidden="true" />
+            <span className={cn('flex-1')}>{shell.settings}</span>
+            <Moon className={cn('h-3.5 w-3.5')} aria-hidden="true" />
+          </div>
+          <div className={cn('flex items-center gap-2.5 px-2')}>
+            <span className={cn('flex h-7 w-7 items-center justify-center rounded-full bg-[#E6EEFF] text-[10px] font-bold text-accent')}>UD</span>
+            <span className={cn('min-w-0 flex-1 leading-tight')}>
+              <span className={cn('block truncate font-semibold')}>{shell.user}</span>
+              <span className={cn('text-[11px] text-[#0B1030]/60')}>{shell.role}</span>
+            </span>
+            <LogOut className={cn('h-3.5 w-3.5 text-[#0B1030]/50')} aria-hidden="true" />
+          </div>
+          <div className={cn('flex items-center gap-2.5 px-2')}>
+            <span className={cn('flex h-7 w-7 items-center justify-center rounded-lg border border-[#0B1030]/10')}>
+              <Building2 className={cn('h-3.5 w-3.5 text-[#0B1030]/60')} aria-hidden="true" />
+            </span>
+            <span className={cn('min-w-0 flex-1 leading-tight')}>
+              <span className={cn('block truncate font-semibold')}>{shell.company}</span>
+              <span className={cn('mt-0.5 inline-block rounded bg-[#E6EEFF] px-1.5 text-[9.5px] font-bold text-accent')}>PLUS</span>
+            </span>
+            <ChevronDown className={cn('h-3.5 w-3.5 text-[#0B1030]/50')} aria-hidden="true" />
+          </div>
+        </div>
+      </aside>
+
+      <div className={cn('relative min-w-0 flex-1')}>
+        {/* Textura azul-gelo do cabeçalho (evoca a água/céu das capturas reais) */}
+        <div
+          aria-hidden="true"
+          className={cn('pointer-events-none absolute inset-x-0 top-0 h-[150px]')}
+          style={{
+            background:
+              'radial-gradient(40% 90% at 70% 0%, rgba(130,180,255,0.55), transparent 70%), radial-gradient(35% 80% at 30% 10%, rgba(190,215,255,0.7), transparent 70%), radial-gradient(30% 60% at 90% 30%, rgba(160,200,255,0.5), transparent 70%), linear-gradient(to bottom, #DCE8FF, #F7F9FE)',
+          }}
+        />
+        <div className={cn('relative')}>{children}</div>
+      </div>
+    </div>
+  )
+}
+
+/** Título de vista com o ponto azul característico. */
+export function ViewTitle({ children }: { children: ReactNode }) {
+  return (
+    <h3 className={cn('font-display text-[28px] font-bold tracking-[-0.02em] text-[#0B1030] @xl:text-[36px]')}>
+      {children}
+      <span className={cn('text-accent')}>.</span>
+    </h3>
+  )
+}

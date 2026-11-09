@@ -110,7 +110,7 @@ function buildContent(lang: Lang): FooterContent {
         ctaHeadlineFirst: 'Os números já existem.',
         ctaHeadlineSecond: 'Falta transformá‑los em decisões.',
         ctaSubheadline: 'Veja a sua empresa com mais clareza e transforme informação financeira em contexto para decidir o que vem a seguir.',
-        ctaPrimary: 'Agendar Demo',
+        ctaPrimary: 'Ser Finer Pioneer',
         tagline: 'Inteligência financeira para decisões mais claras.',
         copyright: '© 2026 Finer One. Todos os direitos reservados.',
       }
@@ -118,7 +118,7 @@ function buildContent(lang: Lang): FooterContent {
         ctaHeadlineFirst: 'The numbers already exist.',
         ctaHeadlineSecond: "What's missing is turning them into decisions.",
         ctaSubheadline: 'See your company with more clarity and turn financial information into context for deciding what comes next.',
-        ctaPrimary: 'Book a Demo',
+        ctaPrimary: 'Become a Finer Pioneer',
         tagline: 'Financial intelligence for clearer decisions.',
         copyright: '© 2026 Finer One. All rights reserved.',
       }

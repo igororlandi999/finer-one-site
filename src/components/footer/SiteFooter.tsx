@@ -28,7 +28,7 @@ export function SiteFooter() {
       {/* Alinhado com a grelha do rodapé, não centrado: fecha a coluna que
           começa no logótipo em vez de flutuar sob a marca gigante. */}
       <div className="mx-auto max-w-content px-5 pb-10 pt-8 sm:px-6 lg:px-8">
-        <p className="border-t border-white/[0.06] pt-6 text-[12px] text-mist/60">
+        <p className="border-t border-white/[0.06] pt-6 text-[12px] text-mist">
           {footerCopy.copyright}
         </p>
       </div>

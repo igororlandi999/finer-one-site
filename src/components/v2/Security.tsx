@@ -59,7 +59,7 @@ export function Security() {
               {t.title[0]}
               <span className="text-glow">{t.title[1]}</span>
             </h2>
-            <p className="mt-4 text-[16px] leading-relaxed text-white/60">{t.sub}</p>
+            <p className="mt-4 text-[16px] leading-relaxed text-white/75">{t.sub}</p>
           </Reveal>
 
           <div className="space-y-4">
@@ -71,15 +71,15 @@ export function Security() {
                     <Icon className="mt-0.5 h-5 w-5 shrink-0 text-glow" aria-hidden="true" />
                     <div>
                       <h3 className="font-display text-[17px] font-bold text-white">{block.title}</h3>
-                      <p className="mt-1.5 text-[14.5px] leading-relaxed text-white/60">{block.text}</p>
+                      <p className="mt-1.5 text-[14.5px] leading-relaxed text-white/75">{block.text}</p>
                     </div>
                   </div>
                 </Reveal>
               )
             })}
             <Reveal delay={320}>
-              <p className="flex items-center gap-3 px-2 pt-2 text-[13.5px] text-white/50">
-                <Lock className="h-4 w-4 shrink-0 text-white/40" aria-hidden="true" />
+              <p className="flex items-center gap-3 px-2 pt-2 text-[13.5px] text-white/75">
+                <Lock className="h-4 w-4 shrink-0 text-white/75" aria-hidden="true" />
                 {t.principle}
               </p>
             </Reveal>

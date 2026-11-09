@@ -72,21 +72,27 @@ export function EarlyAccess() {
   }
 
   return (
-    <section id="acesso" aria-labelledby="acesso-titulo" className="relative scroll-mt-24 bg-white py-24 text-navy lg:py-32">
+    <section id="acesso" aria-labelledby="acesso-titulo" className="relative isolate scroll-mt-24 overflow-hidden bg-navy-deep py-24 text-white lg:py-32">
+      {/* Fotografia oficial: a Terra com a Europa iluminada, a fundir-se no navy. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+        <img src="/images/earth-europe.jpg" alt="" loading="lazy" decoding="async" className="absolute inset-x-0 bottom-0 h-[75%] w-full object-cover object-top opacity-80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-navy-deep via-navy-deep/70 to-navy-deep/30" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-navy-deep" />
+      </div>
       <div className="mx-auto max-w-content px-5 sm:px-6 lg:px-8">
         <Reveal className="mx-auto max-w-2xl text-center">
-          <p className="text-[12px] font-semibold uppercase tracking-[0.24em] text-accent">{t.kicker}</p>
+          <p className="text-[12px] font-semibold uppercase tracking-[0.24em] text-glow">{t.kicker}</p>
           <h2 id="acesso-titulo" className="mt-4 text-balance font-display text-[30px] font-bold leading-[1.1] tracking-[-0.025em] sm:text-[44px]">
             {t.title[0]}
-            <span className="text-accent">{t.title[1]}</span>
+            <span className="text-glow">{t.title[1]}</span>
           </h2>
-          <p className="mt-4 text-[16px] text-navy/65">{t.sub}</p>
+          <p className="mt-4 text-[16px] text-white/80">{t.sub}</p>
         </Reveal>
 
         <div className="mt-12 grid gap-5 lg:mt-16 lg:grid-cols-2">
           {/* Pioneers (escuro) */}
           <Reveal>
-            <div className="relative flex h-full flex-col overflow-hidden rounded-3xl bg-navy p-7 text-white sm:p-9">
+            <div id="pioneers" className="relative flex h-full scroll-mt-28 flex-col overflow-hidden rounded-3xl border border-white/15 bg-navy/80 p-7 text-white backdrop-blur-md sm:p-9">
               <div aria-hidden="true" className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-accent/35 blur-3xl" />
               <div className="relative flex flex-1 flex-col">
                 <span className="inline-flex w-fit items-center gap-2 rounded-full border border-accent/40 bg-accent/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-glow">
@@ -94,7 +100,7 @@ export function EarlyAccess() {
                   {t.pioneers.tag}
                 </span>
                 <h3 className="mt-6 text-balance font-display text-[24px] font-bold leading-tight tracking-[-0.02em] sm:text-[28px]">{t.pioneers.title}</h3>
-                <p className="mt-4 text-[15px] leading-relaxed text-white/65">{t.pioneers.text}</p>
+                <p className="mt-4 text-[15px] leading-relaxed text-white/80">{t.pioneers.text}</p>
                 <ul className="mt-6 space-y-2.5">
                   {t.pioneers.perks.map((perk) => (
                     <li key={perk} className="flex items-center gap-2.5 text-[14px] text-white/85">
@@ -111,7 +117,7 @@ export function EarlyAccess() {
                     {t.pioneers.cta}
                     <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />
                   </a>
-                  <p className="mt-3 text-[12px] text-white/45">{t.pioneers.fine}</p>
+                  <p className="mt-3 text-[12px] text-white/70">{t.pioneers.fine}</p>
                 </div>
               </div>
             </div>
@@ -119,12 +125,12 @@ export function EarlyAccess() {
 
           {/* Lista de espera (claro) */}
           <Reveal delay={120}>
-            <div className="flex h-full flex-col rounded-3xl border border-navy/[0.08] bg-ice p-7 sm:p-9">
+            <div id="lista-espera" className="flex h-full scroll-mt-28 flex-col rounded-3xl bg-white p-7 text-navy shadow-[0_40px_100px_-40px_rgba(0,0,0,0.8)] sm:p-9">
               <span className="inline-flex w-fit rounded-full border border-navy/10 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-accent">
                 {t.waitlist.tag}
               </span>
               <h3 className="mt-6 text-balance font-display text-[24px] font-bold leading-tight tracking-[-0.02em] sm:text-[28px]">{t.waitlist.title}</h3>
-              <p className="mt-4 text-[15px] leading-relaxed text-navy/65">{t.waitlist.text}</p>
+              <p className="mt-4 text-[15px] leading-relaxed text-navy/75">{t.waitlist.text}</p>
 
               <form onSubmit={onSubmit} className="mt-auto pt-8">
                 <label htmlFor="waitlist-email" className="text-[13px] font-semibold">
@@ -136,7 +142,7 @@ export function EarlyAccess() {
                   required
                   autoComplete="email"
                   placeholder="nome@empresa.pt"
-                  className="mt-2 h-12 w-full rounded-xl border border-navy/15 bg-white px-4 text-[15px] text-navy outline-none transition-shadow placeholder:text-navy/35 focus:border-accent focus:shadow-[0_0_0_4px_rgba(0,82,255,0.15)]"
+                  className="mt-2 h-12 w-full rounded-xl border border-navy/15 bg-white px-4 text-[15px] text-navy outline-none transition-shadow placeholder:text-navy/75 focus:border-accent focus:shadow-[0_0_0_4px_rgba(0,82,255,0.15)]"
                 />
                 <label className="mt-4 flex items-start gap-2.5 text-[13px] leading-snug text-navy/70">
                   <input type="checkbox" required className="mt-0.5 h-4 w-4 shrink-0 accent-[#0052FF]" />
@@ -145,7 +151,7 @@ export function EarlyAccess() {
                 <button type="submit" className={buttonClasses({ size: 'lg', className: 'mt-5 h-auto min-h-12 w-full whitespace-normal py-3 text-center font-semibold' })}>
                   {t.waitlist.cta}
                 </button>
-                <p className="mt-3 text-[12px] text-navy/50">{t.waitlist.fine}</p>
+                <p className="mt-3 text-[12px] text-navy/70">{t.waitlist.fine}</p>
                 {submitted && (
                   <p role="status" className="fo-rise mt-4 rounded-xl border border-accent/25 bg-white p-3 text-[12.5px] text-navy/75">
                     {t.waitlist.preview}
