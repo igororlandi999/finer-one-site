@@ -7,6 +7,7 @@ import { FinancialStory } from '@/components/v2/story/FinancialStory'
 import { FinanceDemo } from '@/components/v2/story/FinanceDemo'
 import { ClarityShowcase } from '@/components/v2/story/ClarityShowcase'
 import { ClarityStage } from '@/components/v2/story/ClarityStage'
+import { ClarityMotion } from '@/components/v2/story/ClarityMotion'
 import { PillarsScrolly } from '@/components/v2/PillarsScrolly'
 import { ProductTour } from '@/components/v2/ProductTour'
 import { CinematicBand } from '@/components/v2/CinematicBand'
@@ -52,7 +53,7 @@ export default function App() {
       <Navbar />
       <main id="conteudo">
         <HeroDemo />
-        {SECOND === 'antiga' ? <ProblemSection /> : SECOND === 'desafios' ? <Challenges /> : SECOND === 'scroll' ? <FinancialStory /> : SECOND === 'exemplos' ? <FinanceDemo /> : SECOND === 'paineis' ? <ClarityShowcase /> : <ClarityStage />}
+        {SECOND === 'antiga' ? <ProblemSection /> : SECOND === 'desafios' ? <Challenges /> : SECOND === 'scroll' ? <FinancialStory /> : SECOND === 'exemplos' ? <FinanceDemo /> : SECOND === 'paineis' ? <ClarityShowcase /> : SECOND === 'etapas' ? <ClarityStage /> : <ClarityMotion />}
         {/* Os três pilares já são demonstrados na secção anterior; versão antiga em ?pilares=sim */}
         {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('pilares') === 'sim' && <PillarsScrolly />}
         {/* Folha clara contínua: demonstração, benefícios e funcionamento.
