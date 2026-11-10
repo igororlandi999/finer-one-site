@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Navbar } from '@/components/layout/Navbar'
 import { HeroDemo } from '@/components/v2/HeroDemo'
 import { ProblemSection } from '@/components/problem/ProblemSection'
+import { Challenges } from '@/components/v2/Challenges'
 import { PillarsScrolly } from '@/components/v2/PillarsScrolly'
 import { ProductTour } from '@/components/v2/ProductTour'
 import { CinematicBand } from '@/components/v2/CinematicBand'
@@ -13,6 +14,9 @@ import { EarlyAccess } from '@/components/v2/EarlyAccess'
 import { FAQSection } from '@/components/faq/FAQSection'
 import { FinalCTA } from '@/components/footer/FinalCTA'
 import { SiteFooter } from '@/components/footer/SiteFooter'
+
+// Comparação na versão de desenvolvimento: ?secao=antiga mostra a segunda secção anterior.
+const OLD_SECOND = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('secao') === 'antiga'
 
 /**
  * Homepage v2 (branch dev/homepage-v2).
@@ -41,7 +45,7 @@ export default function App() {
       <Navbar />
       <main id="conteudo">
         <HeroDemo />
-        <ProblemSection />
+        {OLD_SECOND ? <ProblemSection /> : <Challenges />}
         <PillarsScrolly />
         {/* Folha clara contínua: demonstração, benefícios e funcionamento.
             Cantos arredondados sobre o navy, em vez de cortes retos entre

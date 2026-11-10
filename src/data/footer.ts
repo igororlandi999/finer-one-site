@@ -53,7 +53,7 @@ function buildContent(lang: Lang): FooterContent {
         {
           title: 'Descobrir',
           links: [
-            { label: 'O problema', href: '/#problema' },
+            { label: 'Os desafios', href: '/#problema' },
             { label: 'Segurança e confiança', href: '/#seguranca' },
           ],
         },
@@ -74,7 +74,7 @@ function buildContent(lang: Lang): FooterContent {
         {
           title: 'Discover',
           links: [
-            { label: 'The problem', href: '/#problema' },
+            { label: 'The challenges', href: '/#problema' },
             { label: 'Security & trust', href: '/#seguranca' },
           ],
         },

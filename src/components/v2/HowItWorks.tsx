@@ -9,8 +9,8 @@ const icons: LucideIcon[] = [Building2, FileText, Sparkles]
 const copy = {
   pt: {
     kicker: 'Como funciona',
-    title: ['Da informação à ação. ', 'Sem complicações.'],
-    sub: 'Três passos para transformar dados financeiros em decisões.',
+    title: ['Comece em três passos. ', 'Sem complicações.'],
+    sub: 'Ligue as contas, envie as faturas e receba a análise do seu negócio.',
     who: ['O empresário', 'O empresário', 'A Finer One'],
     steps: [
       { n: '01', title: 'Liga a conta bancária', text: 'De forma simples e segura, através de Open Banking e apenas com a sua autorização.' },
@@ -21,8 +21,8 @@ const copy = {
   },
   en: {
     kicker: 'How it works',
-    title: ['From information to action. ', 'No hassle.'],
-    sub: 'Three steps to turn financial data into decisions.',
+    title: ['Get started in three steps. ', 'No hassle.'],
+    sub: 'Connect your accounts, send your invoices and get the analysis of your business.',
     who: ['You', 'You', 'Finer One'],
     steps: [
       { n: '01', title: 'Connect your bank account', text: 'Simply and securely, through Open Banking and only with your authorisation.' },

@@ -15,7 +15,7 @@ const copy = {
       { n: '01', name: 'Recebimentos', text: 'Saiba quem lhe deve e quanto.' },
       { n: '02', name: 'Tesouraria', text: 'Antecipe necessidades de caixa.' },
       { n: '03', name: 'Custos', text: 'Descubra onde pode poupar.' },
-      { n: '04', name: 'Prioridades', text: 'Saiba onde agir primeiro.' },
+      { n: '04', name: 'Prioridades', text: 'Concentre a energia no que tem mais impacto.' },
     ],
   },
   en: {
@@ -26,7 +26,7 @@ const copy = {
       { n: '01', name: 'Receivables', text: 'Know who owes you and how much.' },
       { n: '02', name: 'Cash', text: 'Anticipate cash needs.' },
       { n: '03', name: 'Costs', text: 'Find out where you can save.' },
-      { n: '04', name: 'Priorities', text: 'Know where to act first.' },
+      { n: '04', name: 'Priorities', text: 'Focus your energy where it matters most.' },
     ],
   },
 }
