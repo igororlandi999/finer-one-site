@@ -6,6 +6,7 @@ import { Challenges } from '@/components/v2/Challenges'
 import { FinancialStory } from '@/components/v2/story/FinancialStory'
 import { FinanceDemo } from '@/components/v2/story/FinanceDemo'
 import { PillarsScrolly } from '@/components/v2/PillarsScrolly'
+import { Pillars } from '@/components/v2/Pillars'
 import { ProductTour } from '@/components/v2/ProductTour'
 import { CinematicBand } from '@/components/v2/CinematicBand'
 import { Benefits } from '@/components/v2/Benefits'
@@ -49,7 +50,7 @@ export default function App() {
       <main id="conteudo">
         <HeroDemo />
         {SECOND === 'antiga' ? <ProblemSection /> : SECOND === 'desafios' ? <Challenges /> : SECOND === 'scroll' ? <FinancialStory /> : <FinanceDemo />}
-        <PillarsScrolly />
+        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('pilares') === 'antigo' ? <PillarsScrolly /> : <Pillars />}
         {/* Folha clara contínua: demonstração, benefícios e funcionamento.
             Cantos arredondados sobre o navy, em vez de cortes retos entre
             secções escuras e claras. */}
