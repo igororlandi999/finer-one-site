@@ -8,6 +8,7 @@ import { CashflowScene } from './scenes/CashflowScene'
 import { EarthBackground } from './scenes/EarthBackground'
 import { HeroPreview } from './scenes/HeroPreview'
 import { HeroSample } from './scenes/HeroSample'
+import { HeroSampleV2 } from './scenes/HeroSampleV2'
 import { ScreenStill } from './scenes/ScreenStill'
 import type { View } from '@/components/v2/finer-ui/AppShell'
 
@@ -15,6 +16,14 @@ function ScreenStillComp({ view }: { view: View }) {
   return (
     <LanguageProvider>
       <ScreenStill view={view} />
+    </LanguageProvider>
+  )
+}
+
+function HeroSampleV2Comp() {
+  return (
+    <LanguageProvider>
+      <HeroSampleV2 />
     </LanguageProvider>
   )
 }
@@ -49,6 +58,8 @@ export function Root() {
     <>
       {/* Amostra do Vídeo A (hero): pergunta → resposta → linha azul → Finer Advisor, 10 s. */}
       <Composition id="HeroSample" component={HeroSampleComp} durationInFrames={300} fps={FPS} width={WIDTH} height={HEIGHT} />
+      {/* Product Film 2.0: linha cometa, escrita humana, profundidade e loop sem corte, 10 s. */}
+      <Composition id="HeroSampleV2" component={HeroSampleV2Comp} durationInFrames={300} fps={FPS} width={WIDTH} height={HEIGHT} />
       {/* Ecrã estático para o storyboard (--props='{"view":"receitas"}'). */}
       <Composition id="ScreenStill" component={ScreenStillComp} durationInFrames={1} fps={FPS} width={WIDTH} height={HEIGHT} defaultProps={{ view: 'home' as View }} />
       {/* Amostra anterior: Finer Home → Cashflow, 17 s. */}

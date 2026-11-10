@@ -201,8 +201,16 @@ function ActionDetail({ action, labels, demo }: { action: AdvisorAction; labels:
             className="flex items-center gap-3 px-3.5 py-2.5"
             style={{
               opacity: reveal(demo?.recs, i),
-              transform: `translateY(${(1 - reveal(demo?.recs, i)) * 6}px)`,
-              ...(i === 0 && demo?.focus ? { backgroundColor: `rgba(0,82,255,${0.07 * demo.focus})`, boxShadow: `inset 3px 0 0 rgba(0,82,255,${demo.focus})` } : {}),
+              transform: `translateY(${(1 - reveal(demo?.recs, i)) * 6}px)${i === 0 && demo?.focus ? ` scale(${1 + 0.025 * demo.focus})` : ''}`,
+              ...(i === 0 && demo?.focus
+                ? {
+                    position: 'relative',
+                    zIndex: 1,
+                    borderRadius: 10,
+                    backgroundColor: `rgba(238,243,255,${demo.focus})`,
+                    boxShadow: `inset 3px 0 0 rgba(0,82,255,${demo.focus}), 0 14px 32px -14px rgba(0,82,255,${0.55 * demo.focus})`,
+                  }
+                : {}),
             }}
           >
             <span className="min-w-0 flex-1">

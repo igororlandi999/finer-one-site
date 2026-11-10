@@ -27,8 +27,22 @@ Referência visual (`previews/storyboard-video-A.jpg` e `-B.jpg`).
 | 9–10 s | Recomendação principal em destaque | contorno + barra azul |
 | 10–18 s | Plano de ação · recuo · linha regressa à Finer Home | loop sem corte |
 
-**Amostra produzida:** `HeroSample` (0–10 s) → `public/video/amostras/hero-a.mp4`
-(só visível com `?video=amostra`; remover antes de publicar).
+**Amostras produzidas** (remover `public/video/amostras/` antes de publicar):
+- V1 `HeroSample` → `hero-a.mp4` (referência; visível com `?video=v1`).
+- V2 `HeroSampleV2` (Product Film 2.0) → `hero-a-v2.mp4` + `hero-a-v2-720.mp4`
+  (telemóvel) — visível por defeito no hero de desenvolvimento.
+
+### V2 — Product Film 2.0 (10 s, loop sem corte)
+| Tempo | Momento | Linha azul |
+|---|---|---|
+| 0–1 s | Finer Home imediata, plano 1,55× | entra pela esquerda e acende o campo |
+| 1–2,7 s | Pergunta com ritmo humano; envio com pulso azul | — |
+| 2,9–4,7 s | Resposta curta palavra a palavra; resumo e indicadores entram em sequência | — |
+| 4,4–5,2 s | Prioridade € 18.640 em destaque (1,85×) | da resposta até à prioridade |
+| 5,5–6,9 s | Máscara circular abre o Finer Advisor (profundidade) | da prioridade até ao ponto de abertura |
+| 6,7–8,2 s | O que os dados mostram → Recomendações | do diagnóstico até à recomendação |
+| 8,2–9,4 s | Recomendação principal eleva-se (clímax) | transforma-se no contorno |
+| 9,4–10 s | Máscara a partir da recomendação devolve a Finer Home inicial | — |
 
 ## Vídeo B — Demonstração completa (≈ 55 s, abre em “Ver a Finer One em ação”)
 Finer Home → Cashflow → Receitas → Despesas → Clientes e Fornecedores →

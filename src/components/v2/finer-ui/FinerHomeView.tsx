@@ -16,7 +16,7 @@ type Props = {
    * Guião do vídeo de demonstração (Remotion): pergunta e resposta escritas
    * até ao carácter indicado, controladas pelo fotograma. Ignora o estado interno.
    */
-  script?: { question: string; typedQ: number; answer: string; typedA: number }
+  script?: { question: string; typedQ: number; answer: string; typedA: number; reveal?: number }
 }
 
 /** Finer Home recriada a partir da captura real, com dados fictícios. */
@@ -28,6 +28,13 @@ export function FinerHomeView({ interactive = true, onOpenAdvisor, showAsk = tru
   const [typed, setTyped] = useState(0)
 
   const scripted = Boolean(script && script.typedA > 0)
+  // Entrada progressiva dos blocos no vídeo (0 → escondidos; ≥ 3 → todos visíveis)
+  const enter = (at: number) => {
+    if (script?.reveal === undefined) return undefined
+    const t = Math.min(1, Math.max(0, script.reveal - at))
+    const e = 1 - Math.pow(1 - t, 3)
+    return { opacity: e, transform: `translateY(${(1 - e) * 14}px)` }
+  }
   const answer = script ? script.answer : selected === null ? '' : home.questions[selected].a
   const shown = script ? script.typedA : typed
 
@@ -122,7 +129,7 @@ export function FinerHomeView({ interactive = true, onOpenAdvisor, showAsk = tru
               </p>
             </>
           ) : (
-            <div aria-live="polite" className={cn('flex gap-3')}>
+            <div data-demo="answer" aria-live="polite" className={cn('flex gap-3')}>
               <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#0B1030] text-white')}>
                 <Sparkles className={cn('h-4 w-4')} aria-hidden="true" />
               </span>
@@ -144,7 +151,7 @@ export function FinerHomeView({ interactive = true, onOpenAdvisor, showAsk = tru
 
       {/* Brief + indicadores */}
       <div className={cn('mt-5 grid gap-5 @6xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]')}>
-        <div data-demo="brief" className={cn('rounded-2xl border border-[#0B1030]/[0.07] bg-white p-5 shadow-[0_12px_40px_-24px_rgba(11,16,48,0.35)] @xl:p-7')}>
+        <div data-demo="brief" style={enter(0)} className={cn('rounded-2xl border border-[#0B1030]/[0.07] bg-white p-5 shadow-[0_12px_40px_-24px_rgba(11,16,48,0.35)] @xl:p-7')}>
           <div className={cn('flex items-center justify-between gap-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#0B1030]/70')}>
             <span className={cn('inline-flex items-center gap-2')}>
               <span className={cn('h-px w-5 bg-accent')} aria-hidden="true" />
@@ -184,14 +191,14 @@ export function FinerHomeView({ interactive = true, onOpenAdvisor, showAsk = tru
           </div>
         </div>
 
-        <div data-demo="kpis" className={cn('rounded-2xl border border-[#0B1030]/[0.07] bg-white p-5 shadow-[0_12px_40px_-24px_rgba(11,16,48,0.35)] @xl:p-7')}>
+        <div data-demo="kpis" style={enter(0.4)} className={cn('rounded-2xl border border-[#0B1030]/[0.07] bg-white p-5 shadow-[0_12px_40px_-24px_rgba(11,16,48,0.35)] @xl:p-7')}>
           <div className={cn('flex items-baseline justify-between gap-3')}>
             <p className={cn('text-[16px] font-bold')}>{home.kpiTitle}</p>
             <p className={cn('text-[12px] text-[#0B1030]/65')}>{home.kpiMonth}</p>
           </div>
           <div className={cn('mt-4 grid grid-cols-1 border-t border-[#0B1030]/[0.08] @xl:grid-cols-2')}>
             {home.kpis.map((kpi, i) => (
-              <div key={kpi.label} data-demo={`kpi-${i}`} className={cn('py-4 @xl:px-1', i % 2 === 1 && '@xl:border-l @xl:pl-5', i > 1 && '@xl:border-t', i > 0 && 'border-t @xl:border-t-0', i > 1 && '@xl:border-t', 'border-[#0B1030]/[0.08]')}>
+              <div key={kpi.label} data-demo={`kpi-${i}`} style={enter(0.9 + i * 0.35)} className={cn('py-4 @xl:px-1', i % 2 === 1 && '@xl:border-l @xl:pl-5', i > 1 && '@xl:border-t', i > 0 && 'border-t @xl:border-t-0', i > 1 && '@xl:border-t', 'border-[#0B1030]/[0.08]')}>
                 <p className={cn('text-[12.5px] text-[#0B1030]/70')}>{kpi.label}</p>
                 <p className={cn('tabular mt-1 text-[20px] font-bold @xl:text-[22px]')}>{kpi.value}</p>
                 <p className={cn('mt-1 text-[12px]')}>

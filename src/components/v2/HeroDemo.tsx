@@ -7,6 +7,7 @@ import { AppShell } from '@/components/v2/finer-ui/AppShell'
 import { FinerHomeView } from '@/components/v2/finer-ui/FinerHomeView'
 import { ScaledCanvas } from '@/components/v2/finer-ui/ScaledCanvas'
 import { DEMO_VIDEO, DEMO_VIDEO_SAMPLES, HERO_BACKGROUND } from '@/config/demo'
+import type { DemoVideoSource } from '@/config/demo'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useInView } from '@/hooks/useInView'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
@@ -204,7 +205,7 @@ function Poster({ t }: { t: T }) {
 
 /* ---------------- Vídeo final ---------------- */
 
-function DemoVideo({ t, video: source }: { t: T; video: { src: string; webm?: string; poster?: string } }) {
+function DemoVideo({ t, video: source }: { t: T; video: DemoVideoSource }) {
   const reduced = usePrefersReducedMotion()
   const video = useRef<HTMLVideoElement>(null)
   const { ref, inView } = useInView<HTMLDivElement>({ once: false, threshold: 0.3, rootMargin: '0px' })
@@ -260,6 +261,7 @@ function DemoVideo({ t, video: source }: { t: T; video: { src: string; webm?: st
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
         >
+          {source.mobile && <source src={source.mobile} type="video/mp4" media="(max-width: 767px)" />}
           {source.webm && <source src={source.webm} type="video/webm" />}
           <source src={source.src} type="video/mp4" />
         </video>

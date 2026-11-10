@@ -10,11 +10,14 @@
  * construída a partir das capturas reais (Finer Home e Finer Advisor), com
  * dados fictícios.
  */
-// Versão de desenvolvimento: a amostra do Vídeo A fica visível no hero para avaliação.
-// Substituir pelo vídeo final aprovado antes de publicar.
-export const DEMO_VIDEO: { src: string; webm?: string; poster?: string } = {
-  src: '/video/amostras/hero-a.mp4',
-  poster: '/video/amostras/hero-a.jpg',
+export type DemoVideoSource = { src: string; mobile?: string; webm?: string; poster?: string }
+
+// Versão de desenvolvimento: a amostra V2 (Product Film 2.0) fica visível no hero
+// para avaliação. Substituir pelo vídeo final aprovado antes de publicar.
+export const DEMO_VIDEO: DemoVideoSource = {
+  src: '/video/amostras/hero-a-v2.mp4',
+  mobile: '/video/amostras/hero-a-v2-720.mp4',
+  poster: '/video/amostras/hero-a-v2.jpg',
 }
 
 /**
@@ -30,9 +33,10 @@ export const HERO_BACKGROUND = {
 }
 
 /**
- * Amostras para aprovação (não substituem o hero). Só aparecem com
- * ?video=amostra no endereço. Remover antes de publicar.
+ * Versões para comparação: ?video=v1 mostra a amostra original (referência).
+ * Remover antes de publicar.
  */
-export const DEMO_VIDEO_SAMPLES: Record<string, { src: string; poster: string }> = {
-  amostra: { src: '/video/amostras/hero-a.mp4', poster: '/video/amostras/hero-a.jpg' },
+export const DEMO_VIDEO_SAMPLES: Record<string, DemoVideoSource> = {
+  v1: { src: '/video/amostras/hero-a.mp4', poster: '/video/amostras/hero-a.jpg' },
+  v2: DEMO_VIDEO,
 }
