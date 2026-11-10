@@ -10,8 +10,11 @@
  * construída a partir das capturas reais (Finer Home e Finer Advisor), com
  * dados fictícios.
  */
+// Versão de desenvolvimento: a amostra do Vídeo A fica visível no hero para avaliação.
+// Substituir pelo vídeo final aprovado antes de publicar.
 export const DEMO_VIDEO: { src: string; webm?: string; poster?: string } = {
-  src: '',
+  src: '/video/amostras/hero-a.mp4',
+  poster: '/video/amostras/hero-a.jpg',
 }
 
 /**

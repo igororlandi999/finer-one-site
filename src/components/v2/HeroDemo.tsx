@@ -72,7 +72,7 @@ export function HeroDemo() {
   return (
     <section
       aria-labelledby="hero-titulo"
-      className="relative isolate overflow-hidden pb-20 pt-28 sm:pb-24 sm:pt-32 lg:flex lg:min-h-[max(720px,100svh)] lg:items-center lg:pb-20 lg:pt-28"
+      className="relative isolate overflow-hidden pb-20 pt-28 sm:pb-24 sm:pt-32 lg:flex lg:min-h-[max(600px,100svh)] lg:items-center lg:pb-14 lg:pt-24"
     >
       <Backdrop />
 
@@ -144,7 +144,7 @@ function Backdrop() {
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-[#03060F]">
       {useVideo ? (
         <video
-          className="absolute inset-0 h-full w-full translate-y-[18%] scale-[1.12] object-cover object-[50%_60%] opacity-80 animate-fade-in"
+          className="absolute inset-0 h-full w-full translate-y-[6%] scale-[1.1] object-cover object-[50%_70%] opacity-95 animate-fade-in"
           src={HERO_BACKGROUND.video}
           poster={HERO_BACKGROUND.poster}
           autoPlay
@@ -155,15 +155,15 @@ function Backdrop() {
           tabIndex={-1}
         />
       ) : (
-        <img src={HERO_BACKGROUND.poster} alt="" className="absolute inset-0 h-full w-full translate-y-[18%] scale-[1.12] object-cover object-[50%_60%] opacity-80" />
+        <img src={HERO_BACKGROUND.poster} alt="" className="absolute inset-0 h-full w-full translate-y-[6%] scale-[1.1] object-cover object-[50%_70%] opacity-95" />
       )}
       {/* Leitura: navy forte à esquerda (texto), aliviando para a direita */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(3,6,15,0.94)_0%,rgba(3,6,15,0.78)_36%,rgba(3,6,15,0.35)_68%,rgba(3,6,15,0.45)_100%)]" />
       {/* Topo limpo por baixo da navegação; centro sem competir com o título */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(3,6,15,0.95)_0%,rgba(3,6,15,0.55)_28%,rgba(3,6,15,0.1)_60%,transparent_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(3,6,15,0.9)_0%,rgba(3,6,15,0.35)_22%,transparent_45%)]" />
       {/* Transição para a secção seguinte */}
       {/* Acalma o brilho por trás dos botões (esquerda/baixo) e aprofunda o navy */}
-      <div className="absolute inset-0 bg-[radial-gradient(70%_60%_at_20%_75%,rgba(3,6,15,0.75),transparent_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(45%_40%_at_18%_80%,rgba(3,6,15,0.6),transparent_70%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(130%_100%_at_50%_30%,transparent_55%,rgba(2,4,10,0.7)_100%)]" />
       <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-navy-deep" />
     </div>
