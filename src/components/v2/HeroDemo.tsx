@@ -167,7 +167,7 @@ function Backdrop() {
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-[#03060F]">
       {useVideo ? (
         <video
-          className="absolute inset-0 h-full w-full translate-y-[5%] scale-[1.05] object-cover object-[50%_70%] animate-fade-in"
+          className="absolute inset-0 h-full w-full translate-y-[3%] scale-[1.03] object-cover object-[50%_72%] animate-fade-in"
           src={HERO_BACKGROUND.video}
           poster={HERO_BACKGROUND.poster}
           autoPlay
@@ -178,7 +178,7 @@ function Backdrop() {
           tabIndex={-1}
         />
       ) : (
-        <img src={HERO_BACKGROUND.poster} alt="" className="absolute inset-0 h-full w-full translate-y-[5%] scale-[1.05] object-cover object-[50%_70%]" />
+        <img src={HERO_BACKGROUND.poster} alt="" className="absolute inset-0 h-full w-full translate-y-[3%] scale-[1.03] object-cover object-[50%_72%]" />
       )}
       {/* Leitura: navy forte à esquerda (texto), aliviando para a direita */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(3,6,15,0.93)_0%,rgba(3,6,15,0.72)_34%,rgba(3,6,15,0.12)_66%,rgba(3,6,15,0.22)_100%)]" />
@@ -188,7 +188,7 @@ function Backdrop() {
       {/* Acalma o brilho por trás dos botões (esquerda/baixo) e aprofunda o navy */}
       <div className="absolute inset-0 bg-[radial-gradient(45%_40%_at_18%_80%,rgba(3,6,15,0.6),transparent_70%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(130%_100%_at_50%_30%,transparent_58%,rgba(2,4,10,0.6)_100%)]" />
-      <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-navy-deep" />
+      <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-b from-transparent to-navy-deep" />
     </div>
   )
 }

@@ -12,91 +12,121 @@ import { AbsoluteFill, Img, random, staticFile, useCurrentFrame, useVideoConfig 
  * Todo o movimento é periódico (seno de um ciclo completo), por isso o
  * último fotograma encaixa no primeiro e o loop não tem corte.
  */
-const STARS = Array.from({ length: 190 }, (_, i) => ({
+const STARS = Array.from({ length: 260 }, (_, i) => ({
   x: random(`x${i}`) * 100,
-  y: random(`y${i}`) * 60,
-  r: 0.6 + random(`r${i}`) * 1.3,
-  a: 0.25 + random(`a${i}`) * 0.6,
+  y: random(`y${i}`) * 58,
+  r: 0.5 + Math.pow(random(`r${i}`), 2.2) * 1.8,
+  a: 0.22 + random(`a${i}`) * 0.6,
   phase: random(`p${i}`) * Math.PI * 2,
 }))
+/** Algumas estrelas mais brilhantes, com halo — dão profundidade ao espaço. */
+const BRIGHT = Array.from({ length: 9 }, (_, i) => ({
+  x: 8 + random(`bx${i}`) * 88,
+  y: 4 + random(`by${i}`) * 42,
+  phase: random(`bp${i}`) * Math.PI * 2,
+}))
+
+/**
+ * Enquadramento inspirado no cartaz oficial da Finer One: o planeta inteiro
+ * de uma ponta à outra, horizonte a meio do ecrã e a Europa iluminada em
+ * baixo, à direita. A fotografia (2244 px, já tratada) é mostrada quase à
+ * escala natural — pouca ampliação = máxima nitidez.
+ */
+const EARTH_W = 1.04 // largura relativa ao ecrã
+const EARTH_TOP = 0.4 // topo da fotografia (fração da altura)
 
 export function EarthBackground() {
   const frame = useCurrentFrame()
-  const { durationInFrames } = useVideoConfig()
+  const { durationInFrames, width, height } = useVideoConfig()
   const t = (frame / durationInFrames) * Math.PI * 2 // um ciclo por loop
 
-  const driftX = Math.sin(t) * 22 // px
-  const driftY = Math.cos(t) * 6
-  const rotate = Math.sin(t) * 0.5 // graus
-  const scale = 1.06 + Math.sin(t + 1) * 0.008
-  const rim = 0.5 + Math.sin(t * 2) * 0.1
-  const dawn = 0.3 + Math.sin(t + 0.6) * 0.1
+  const driftX = Math.sin(t) * 14 // px
+  const driftY = Math.cos(t) * 4
+  const rotate = Math.sin(t) * 0.3 // graus
+  const scale = 1 + Math.sin(t + 1) * 0.005
+  const rim = 0.45 + Math.sin(t * 2) * 0.1
+  const dawn = 0.32 + Math.sin(t + 0.6) * 0.1
+
+  const earthW = width * EARTH_W
+  const earthH = earthW * (1120 / 2244)
+  const earthLeft = (width - earthW) / 2
+  const earthTop = height * EARTH_TOP
+  // Ponto mais alto do horizonte na fotografia: (1290, 165) em 2244×1120
+  const peakX = earthLeft + (1290 / 2244) * earthW
+  const peakY = earthTop + (165 / 1120) * earthH
 
   return (
     <AbsoluteFill style={{ backgroundColor: '#03060F' }}>
+      {/* Poeira estelar muito ténue (canto superior direito, como no cartaz) */}
+      <AbsoluteFill style={{ background: 'radial-gradient(40% 35% at 82% 18%, rgba(70,110,200,0.10), transparent 70%), radial-gradient(30% 25% at 20% 10%, rgba(60,90,170,0.06), transparent 70%)' }} />
 
       {/* Estrelas */}
       <svg width="100%" height="100%" style={{ position: 'absolute', inset: 0 }}>
         {STARS.map((s, i) => (
-          <circle key={i} cx={`${s.x}%`} cy={`${s.y}%`} r={s.r} fill="#CFE2FF" opacity={s.a * (0.7 + 0.3 * Math.sin(t * 3 + s.phase))} />
+          <circle key={i} cx={`${s.x}%`} cy={`${s.y}%`} r={s.r} fill="#D6E6FF" opacity={s.a * (0.7 + 0.3 * Math.sin(t * 3 + s.phase))} />
+        ))}
+        {BRIGHT.map((s, i) => (
+          <g key={`b${i}`} opacity={0.55 + 0.3 * Math.sin(t * 2 + s.phase)}>
+            <circle cx={`${s.x}%`} cy={`${s.y}%`} r={5} fill="#9CC8FF" opacity={0.18} />
+            <circle cx={`${s.x}%`} cy={`${s.y}%`} r={1.6} fill="#FFFFFF" />
+          </g>
         ))}
       </svg>
 
-      {/* Terra no terço inferior */}
+      {/* Terra: planeta inteiro na largura, horizonte a meio */}
       <div
         style={{
           position: 'absolute',
-          left: '-14%',
-          right: '-14%',
-          top: '44%',
-          bottom: '-22%',
+          left: earthLeft,
+          top: earthTop,
+          width: earthW,
+          height: earthH,
           transform: `translate(${driftX}px, ${driftY}px) rotate(${rotate}deg) scale(${scale})`,
           transformOrigin: '50% 100%',
         }}
       >
-        <Img
-          src={staticFile('images/earth-europe-sharp.jpg')}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 0%', }}
-        />
-        {/* Desvanece a parte superior da fotografia no espaço (sem aresta visível) */}
-        <div style={{ position: 'absolute', inset: '-2px', background: 'linear-gradient(to bottom, #03060F 0%, rgba(3,6,15,0.94) 4%, rgba(3,6,15,0.6) 9%, rgba(3,6,15,0.18) 14.5%, transparent 18.5%)' }} />
+        <Img src={staticFile('images/earth-europe-sharp.jpg')} style={{ width: '100%', height: '100%', display: 'block' }} />
+        {/* Desvanece só o céu da fotografia, acima do horizonte */}
+        <div style={{ position: 'absolute', inset: '-2px', background: 'linear-gradient(to bottom, #03060F 0%, rgba(3,6,15,0.9) 4%, rgba(3,6,15,0.5) 9%, rgba(3,6,15,0.12) 13.5%, transparent 17%)' }} />
+        {/* Esbate as margens laterais e a base para não haver arestas */}
+        <div style={{ position: 'absolute', inset: '-2px', background: 'linear-gradient(to right, #03060F 0%, transparent 3%, transparent 97%, #03060F 100%)' }} />
       </div>
 
-      {/* Orla atmosférica azul (respira lentamente) */}
+      {/* Atmosfera azul no horizonte (respira lentamente) */}
       <div
         style={{
           position: 'absolute',
-          left: '-10%',
-          right: '-10%',
-          top: '47%',
-          height: '28%',
-          background: 'radial-gradient(60% 38% at 52% 30%, rgba(30,144,255,0.42), rgba(0,82,255,0.14) 45%, transparent 70%)',
+          left: peakX - width * 0.45,
+          top: peakY - height * 0.09,
+          width: width * 0.9,
+          height: height * 0.2,
+          background: 'radial-gradient(closest-side, rgba(30,144,255,0.38), rgba(0,82,255,0.12) 55%, transparent)',
           opacity: rim,
+          filter: 'blur(10px)',
+          mixBlendMode: 'screen',
+        }}
+      />
+      {/* Nascer de luz no ponto mais alto do horizonte */}
+      <div
+        style={{
+          position: 'absolute',
+          left: peakX - width * 0.15,
+          top: peakY - height * 0.07,
+          width: width * 0.3,
+          height: height * 0.14,
+          background: 'radial-gradient(closest-side, rgba(210,232,255,0.6), rgba(30,144,255,0.18) 55%, transparent)',
+          opacity: dawn,
           filter: 'blur(12px)',
           mixBlendMode: 'screen',
         }}
       />
-      {/* Nascer de luz no ponto mais alto do horizonte — discreto, desperta curiosidade */}
-      <div
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: '50%',
-          width: '34%',
-          height: '16%',
-          transform: 'translate(-15%, 0)',
-          background: 'radial-gradient(closest-side, rgba(200,228,255,0.55), rgba(30,144,255,0.18) 55%, transparent)',
-          opacity: dawn,
-          filter: 'blur(14px)',
-          mixBlendMode: 'screen',
-        }}
-      />
 
-      {/* Vinheta navy */}
-      <AbsoluteFill style={{ background: 'radial-gradient(120% 90% at 50% 40%, transparent 58%, rgba(3,6,15,0.8) 100%)' }} />
+      {/* Vinheta navy discreta (deixa a Europa visível em baixo) */}
+      <AbsoluteFill style={{ background: 'radial-gradient(130% 100% at 50% 45%, transparent 62%, rgba(3,6,15,0.7) 100%)' }} />
     </AbsoluteFill>
   )
 }
+
 
 /**
  * Prepara a fotografia de origem uma única vez (fotograma único, 2244×1120):
