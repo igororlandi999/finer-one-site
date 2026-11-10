@@ -57,7 +57,8 @@ export default function App() {
             Cantos arredondados sobre o navy, em vez de cortes retos entre
             secções escuras e claras. */}
         <div className="relative z-10 rounded-[28px] bg-gradient-to-b from-ice via-white to-ice sm:mx-3 sm:rounded-[40px]">
-          <ProductTour />
+          {/* Demonstração interativa retirada: a plataforma já aparece no vídeo da hero. Versão antiga em ?tour=sim */}
+          {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('tour') === 'sim' && <ProductTour />}
           <Benefits />
           <HowItWorks />
         </div>

@@ -63,6 +63,8 @@ export function ClarityStage() {
   return (
     <section id="problema" aria-labelledby="clareza-titulo" className="relative z-10 -mt-4 scroll-mt-16 pb-4 sm:-mt-6 sm:pb-6">
       <div className="relative rounded-[28px] bg-[linear-gradient(180deg,#FFFFFF_0%,#F5F8FE_100%)] shadow-[0_-30px_80px_-40px_rgba(0,82,255,0.45)] sm:mx-3 sm:rounded-[40px]">
+        {/* Destino dos links "Ver a Finer One em ação" e "Produto" (#demo) */}
+        <span id="demo" aria-hidden="true" className="absolute -top-20" />
         {/* Orla superior com a linha azul: assinala a passagem da hero para a análise */}
         <span aria-hidden="true" className="pointer-events-none absolute inset-x-[18%] top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(30,144,255,0.9),transparent)]" />
 
