@@ -59,8 +59,8 @@ function content(lang: Lang): Record<Key, Copy> {
     },
     costs: {
       tab: pt ? 'Custos' : 'Costs',
-      title: pt ? ['Vender mais não é o mesmo que ', 'ganhar mais', '.'] : ['Selling more is not the same as ', 'earning more', '.'],
-      sub: pt ? 'Veja onde os custos crescem mais depressa do que as receitas e o que analisar primeiro.' : 'See where costs grow faster than revenue and what to look at first.',
+      title: pt ? ['As despesas crescem. ', 'E as receitas?', ''] : ['Expenses are growing. ', 'What about revenue?', ''],
+      sub: pt ? 'Compare o crescimento das despesas com o das receitas e veja o que analisar primeiro.' : 'Compare expense growth with revenue growth and see what to look at first.',
       indicatorLabel: pt ? 'Face ao mês anterior' : 'Versus last month',
       found: pt
         ? <>As despesas estão a crescer <Hl>mais depressa</Hl> do que as receitas.</>
@@ -69,11 +69,11 @@ function content(lang: Lang): Record<Key, Copy> {
       details: {
         data: pt ? 'Receitas e despesas operacionais do mês, comparadas com o mês anterior.' : 'Revenue and operating expenses for the month, compared with last month.',
         interpretation: pt
-          ? `As despesas subiram ${eur(opexDelta, lang, 0)} (+${pct(opexG, lang, 0)}) e as receitas ${eur(revDelta, lang, 0)} (+${pct(revG, lang, 0)}). A margem do período diminui.`
-          : `Expenses rose ${eur(opexDelta, lang, 0)} (+${pct(opexG, lang, 0)}) and revenue ${eur(revDelta, lang, 0)} (+${pct(revG, lang, 0)}). The period's margin shrinks.`,
+          ? `As despesas subiram ${eur(opexDelta, lang, 0)} (+${pct(opexG, lang, 0)}) e as receitas ${eur(revDelta, lang, 0)} (+${pct(revG, lang, 0)}). As despesas crescem mais de quatro vezes mais depressa.`
+          : `Expenses rose ${eur(opexDelta, lang, 0)} (+${pct(opexG, lang, 0)}) and revenue ${eur(revDelta, lang, 0)} (+${pct(revG, lang, 0)}). Expenses are growing more than four times faster.`,
         risks: pt
-          ? ['Se o ritmo se mantiver, a margem pode continuar a reduzir.', `Três categorias concentram o aumento: fornecedores (+${eur(4120, lang, 0)}), subscrições (+${eur(1385, lang, 0)}) e energia (+${eur(1230, lang, 0)}).`]
-          : ['If the pace continues, the margin may keep shrinking.', `Three categories account for the increase: suppliers (+${eur(4120, lang, 0)}), subscriptions (+${eur(1385, lang, 0)}) and energy (+${eur(1230, lang, 0)}).`],
+          ? ['Se o ritmo se mantiver, as despesas podem pressionar o resultado.', `Três categorias concentram o aumento: fornecedores (+${eur(4120, lang, 0)}), subscrições (+${eur(1385, lang, 0)}) e energia (+${eur(1230, lang, 0)}).`]
+          : ['If the pace continues, expenses may put pressure on results.', `Three categories account for the increase: suppliers (+${eur(4120, lang, 0)}), subscriptions (+${eur(1385, lang, 0)}) and energy (+${eur(1230, lang, 0)}).`],
         recs: pt
           ? ['Analisar as categorias que mais contribuíram.', 'Confirmar se o aumento é pontual ou recorrente.', 'Rever contratos e condições onde fizer sentido.']
           : ['Review the categories that contributed most.', 'Check whether the increase is one-off or recurring.', 'Review contracts and terms where it makes sense.'],
@@ -82,8 +82,8 @@ function content(lang: Lang): Record<Key, Copy> {
     },
     treasury: {
       tab: pt ? 'Tesouraria' : 'Cash',
-      title: pt ? ['Ter saldo não é o mesmo que ter ', 'folga', '.'] : ['Having a balance is not the same as having ', 'room', '.'],
-      sub: pt ? 'Compare o saldo com os compromissos que aí vêm e saiba o que rever primeiro.' : 'Compare your balance with upcoming commitments and know what to review first.',
+      title: pt ? ['Ter saldo não significa ter ', 'folga', '.'] : ['Having a balance does not mean having ', 'room', '.'],
+      sub: pt ? 'Compare o saldo com os compromissos dos próximos 15 dias e saiba o que rever primeiro.' : 'Compare your balance with the next 15 days of commitments and know what to review first.',
       indicatorLabel: pt ? 'Próximos 15 dias' : 'Next 15 days',
       found: pt
         ? <>Sem novas entradas, existe um desfasamento potencial de <Hl tone="neg">{eur(Math.abs(CASH_GAP), lang)}</Hl>.</>
@@ -174,20 +174,20 @@ export function FinanceDemo() {
   return (
     <section id="problema" aria-labelledby="demo-financeira-titulo" className="relative z-10 scroll-mt-16 bg-navy">
       <div className="relative rounded-[28px] bg-[linear-gradient(180deg,#FFFFFF_0%,#F4F7FD_100%)] sm:mx-3 sm:rounded-[40px]">
-        <div ref={ref} className={cn('relative mx-auto max-w-[1200px] px-5 py-20 sm:px-10 sm:py-24 lg:px-12 lg:py-28', inView ? 'animate-fade-up' : 'opacity-0')}>
-          {/* Cabeçalho: o título acompanha o exemplo escolhido */}
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-            <div className="min-h-[148px] sm:min-h-[168px] lg:min-h-[176px]">
-              <p className="inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent">
-                <span aria-hidden="true" className="h-px w-8 bg-gradient-to-r from-transparent to-accent" />
-                {pt ? 'Exemplos práticos · dados fictícios' : 'Practical examples · fictitious data'}
-              </p>
-              <h2 id="demo-financeira-titulo" key={`t-${key}`} className="fo-swap mt-5 max-w-[760px] text-balance font-display text-[32px] font-bold leading-[1.06] tracking-[-0.034em] text-[#070D2B] sm:text-[46px] lg:text-[54px]">
+        <div ref={ref} className={cn('relative mx-auto grid max-w-[1200px] gap-8 px-5 py-16 sm:px-10 sm:py-20 lg:grid-cols-[minmax(0,0.4fr)_minmax(0,0.6fr)] lg:items-center lg:gap-14 lg:px-12 lg:py-20', inView ? 'animate-fade-up' : 'opacity-0')}>
+          {/* Texto (≈40%): o título acompanha o exemplo escolhido */}
+          <div>
+            <p className="inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.26em] text-accent">
+              <span aria-hidden="true" className="h-px w-8 bg-gradient-to-r from-transparent to-accent" />
+              {pt ? 'Exemplos práticos · dados fictícios' : 'Practical examples · fictitious data'}
+            </p>
+            <div className="min-h-[76px] sm:min-h-[96px] lg:min-h-[150px]">
+              <h2 id="demo-financeira-titulo" key={`t-${key}`} className="fo-swap mt-4 text-balance font-display text-[30px] font-bold leading-[1.08] tracking-[-0.032em] text-[#070D2B] sm:text-[40px] lg:text-[42px] xl:text-[46px]">
                 {c.title[0]}<span className="text-accent">{c.title[1]}</span>{c.title[2]}
               </h2>
-              <p key={`s-${key}`} className="fo-swap mt-4 max-w-[560px] text-[16px] leading-[1.6] text-[#0B1030]/70 sm:text-[17.5px]">{c.sub}</p>
             </div>
-            <div role="tablist" aria-label={pt ? 'Escolha um exemplo' : 'Choose an example'} className="grid grid-cols-3 rounded-full border border-[#0B1030]/[0.08] bg-white p-1 shadow-[0_10px_30px_-20px_rgba(11,16,48,0.45)] lg:inline-grid">
+            <p key={`s-${key}`} className="fo-swap mt-3 min-h-[78px] max-w-[460px] text-[16px] leading-[1.6] text-[#0B1030]/70 sm:min-h-[56px] sm:text-[17px] lg:min-h-[82px]">{c.sub}</p>
+            <div role="tablist" aria-label={pt ? 'Escolha um exemplo' : 'Choose an example'} className="mt-6 grid grid-cols-3 rounded-full border border-[#0B1030]/[0.08] bg-white p-1 shadow-[0_10px_30px_-20px_rgba(11,16,48,0.45)] sm:max-w-[460px]">
               {KEYS.map((k, i) => (
                 <button
                   key={k}
@@ -201,7 +201,7 @@ export function FinanceDemo() {
                   onClick={() => select(k)}
                   onKeyDown={(e) => onTabKey(e, i)}
                   className={cn(
-                    'min-h-[44px] whitespace-nowrap rounded-full px-1.5 text-[13px] font-semibold sm:text-[14px] transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 sm:px-6 sm:text-[15px]',
+                    'min-h-[44px] whitespace-nowrap rounded-full px-1.5 text-[13px] font-semibold transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 sm:px-3 sm:text-[14.5px]',
                     key === k ? 'bg-[#070D2B] text-white shadow-[0_6px_16px_-8px_rgba(7,13,43,0.8)]' : 'text-[#0B1030]/60 hover:text-[#070D2B]',
                   )}
                 >
@@ -211,8 +211,8 @@ export function FinanceDemo() {
             </div>
           </div>
 
-          {/* Painel no estilo do Finer Advisor */}
-          <div id="demo-painel" role="tabpanel" aria-labelledby={`demo-tab-${key}`} className="mt-10 overflow-hidden rounded-[24px] bg-white shadow-[0_40px_100px_-50px_rgba(11,16,48,0.55),0_0_0_1px_rgba(11,16,48,0.06)] lg:mt-12">
+          {/* Painel (≈60%) no estilo do Finer Advisor */}
+          <div id="demo-painel" role="tabpanel" aria-labelledby={`demo-tab-${key}`} className="overflow-hidden rounded-[24px] bg-white shadow-[0_40px_100px_-50px_rgba(11,16,48,0.55),0_0_0_1px_rgba(11,16,48,0.06)]">
             <div className="flex h-[52px] items-center justify-between border-b border-[#0B1030]/[0.07] px-5">
               <div className="flex min-w-0 items-center gap-2.5">
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[8px] bg-[#070D2B]">
@@ -258,20 +258,20 @@ function Flow({ k, c, lang }: { k: Key; c: Copy; lang: Lang }) {
   const steps = pt ? ['Indicador', 'O que a Finer One identifica', 'Próximo passo'] : ['Indicator', 'What Finer One finds', 'Next step']
 
   return (
-    <div className="relative min-h-[722px] px-5 py-7 sm:min-h-[660px] sm:px-8 sm:py-9 lg:min-h-0">
+    <div className="relative min-h-[700px] px-5 py-6 sm:min-h-[600px] sm:px-7 sm:py-7">
       {/* Linha azul: liga o indicador à descoberta e à recomendação */}
-      <div aria-hidden="true" className="pointer-events-none absolute bottom-10 left-[29px] top-[38px] w-px bg-[#0B1030]/[0.08] sm:left-[37px] lg:bottom-auto lg:left-8 lg:right-8 lg:top-[44px] lg:h-px lg:w-auto">
+      <div aria-hidden="true" className="pointer-events-none absolute bottom-12 left-[25px] top-[34px] w-px bg-[#0B1030]/[0.08] sm:left-[33px] sm:top-[36px]">
         <span
-          className={cn('absolute inset-0 origin-top bg-gradient-to-b from-accent to-glow shadow-[0_0_10px_rgba(30,144,255,0.75)] transition-transform duration-[900ms] ease-[cubic-bezier(0.65,0,0.35,1)] lg:origin-left lg:bg-gradient-to-r', on ? 'scale-100' : 'scale-y-0 lg:scale-x-0 lg:scale-y-100')}
+          className={cn('absolute inset-0 origin-top bg-gradient-to-b from-accent to-glow shadow-[0_0_10px_rgba(30,144,255,0.75)] transition-transform duration-[900ms] ease-[cubic-bezier(0.65,0,0.35,1)]', on ? 'scale-y-100' : 'scale-y-0')}
         />
       </div>
 
-      <ol className="relative grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)_minmax(0,0.95fr)] lg:gap-10">
+      <ol className="relative grid gap-6">
         {steps.map((label, i) => (
-          <li key={label} className="relative pl-8 sm:pl-9 lg:pl-0 lg:pt-8">
+          <li key={label} className="relative pl-8">
             <span
               aria-hidden="true"
-              className="absolute left-[3px] top-[2px] h-[11px] w-[11px] rounded-full border-2 transition-all duration-500 sm:left-[3px] lg:left-0 lg:top-[7px]"
+              className="absolute left-0 top-[2px] h-[11px] w-[11px] rounded-full border-2 transition-all duration-500"
               style={{
                 borderColor: on ? '#0052FF' : 'rgba(11,16,48,0.2)',
                 backgroundColor: on ? '#0052FF' : '#fff',
@@ -279,10 +279,10 @@ function Flow({ k, c, lang }: { k: Key; c: Copy; lang: Lang }) {
                 transitionDelay: on ? `${i * 280}ms` : '0ms',
               }}
             />
-            <p className="text-[11.5px] font-bold uppercase tracking-[0.14em] text-[#0B1030]/45 lg:mt-3">
+            <p className="text-[11.5px] font-bold uppercase tracking-[0.14em] text-[#0B1030]/50">
               <span className="mr-1.5 text-accent">0{i + 1}</span>{label}
             </p>
-            <div key={`${k}-${i}`} className={cn("fo-swap mt-3 lg:min-h-[190px]", i === 0 && "min-h-[158px]", i === 1 && "min-h-[150px]")} style={{ animationDelay: `${i * 90}ms` }}>
+            <div key={`${k}-${i}`} className={cn('fo-swap mt-2.5', i === 0 && 'min-h-[132px] sm:min-h-[118px]', i === 1 && 'min-h-[118px] sm:min-h-[96px]')} style={{ animationDelay: `${i * 90}ms` }}>
               {i === 0 && <Indicator k={k} c={c} lang={lang} on={on} />}
               {i === 1 && <Discovery k={k} c={c} lang={lang} on={on} />}
               {i === 2 && <NextStep c={c} lang={lang} />}
@@ -300,11 +300,11 @@ function Indicator({ k, c, lang, on }: { k: Key; c: Copy; lang: Lang; on: boolea
   if (k === 'receivables') {
     return (
       <div>
-        <p className="text-[13px] font-semibold text-[#0B1030]/55">{c.indicatorLabel}</p>
+        <p className="text-[14px] font-semibold text-[#0B1030]/55">{c.indicatorLabel}</p>
         <p className="mt-1 font-display text-[34px] font-bold leading-none tracking-[-0.035em] text-[#070D2B] tabular-nums sm:text-[40px]">{eur(total, lang)}</p>
         <div className="mt-4 flex flex-wrap gap-2">
-          <span className="rounded-full bg-[#FFF1E6] px-3 py-1.5 text-[12.5px] font-semibold text-[#B4530A]">{pt ? `${OVERDUE_COUNT} faturas em atraso` : `${OVERDUE_COUNT} overdue invoices`}</span>
-          <span className="rounded-full bg-[#0B1030]/[0.05] px-3 py-1.5 text-[12.5px] font-semibold text-[#0B1030]/70">{pt ? `${AVG_DAYS_LATE} dias de atraso médio` : `${AVG_DAYS_LATE} days late on average`}</span>
+          <span className="rounded-full bg-[#FFF1E6] px-3 py-1.5 text-[13.5px] font-semibold text-[#B4530A]">{pt ? `${OVERDUE_COUNT} faturas em atraso` : `${OVERDUE_COUNT} overdue invoices`}</span>
+          <span className="rounded-full bg-[#0B1030]/[0.05] px-3 py-1.5 text-[13.5px] font-semibold text-[#0B1030]/70">{pt ? `${AVG_DAYS_LATE} dias de atraso médio` : `${AVG_DAYS_LATE} days late on average`}</span>
         </div>
       </div>
     )
@@ -312,7 +312,7 @@ function Indicator({ k, c, lang, on }: { k: Key; c: Copy; lang: Lang; on: boolea
   if (k === 'costs') {
     return (
       <div className="space-y-4">
-        <p className="text-[13px] font-semibold text-[#0B1030]/55">{c.indicatorLabel}</p>
+        <p className="text-[14px] font-semibold text-[#0B1030]/55">{c.indicatorLabel}</p>
         <GrowthRow label={pt ? 'Despesas' : 'Expenses'} value={`+${pct(opexG, lang, 0)}`} ratio={opexG / 0.2} tone="neg" on={on} />
         <GrowthRow label={pt ? 'Receitas' : 'Revenue'} value={`+${pct(revG, lang, 0)}`} ratio={revG / 0.2} on={on} delay={120} />
       </div>
@@ -320,7 +320,7 @@ function Indicator({ k, c, lang, on }: { k: Key; c: Copy; lang: Lang; on: boolea
   }
   return (
     <div className="space-y-4">
-      <p className="text-[13px] font-semibold text-[#0B1030]/55">{c.indicatorLabel}</p>
+      <p className="text-[14px] font-semibold text-[#0B1030]/55">{c.indicatorLabel}</p>
       <GrowthRow label={pt ? 'Saldo disponível' : 'Available balance'} value={eur(CASH.available, lang)} ratio={CASH.available / COMMITMENTS_TOTAL} on={on} big />
       <GrowthRow label={pt ? 'Compromissos' : 'Commitments'} value={eur(COMMITMENTS_TOTAL, lang)} ratio={1} tone="muted" on={on} delay={120} big />
     </div>
@@ -391,13 +391,13 @@ function Details({ c, lang }: { c: Copy; lang: Lang }) {
   const pt = lang === 'pt'
   const d = c.details
   return (
-    <div className="grid gap-4 bg-[#F7F9FE] px-5 pb-7 pt-2 sm:px-8 lg:grid-cols-3">
+    <div className="grid gap-3 bg-[#F7F9FE] px-5 pb-6 pt-2 sm:grid-cols-2 sm:px-7">
       <Block title={pt ? 'Dados utilizados' : 'Data used'}><p>{d.data}</p></Block>
       <Block title={pt ? 'Interpretação financeira' : 'Financial interpretation'}><p>{d.interpretation}</p></Block>
       <Block title={pt ? 'Riscos identificados' : 'Risks identified'}>
         <ul className="space-y-1.5">{d.risks.map((r) => <li key={r} className="flex gap-2"><span className="mt-[8px] h-1 w-1 shrink-0 rounded-full bg-[#D9480F]" />{r}</li>)}</ul>
       </Block>
-      <Block title={pt ? 'Recomendações Finer One' : 'Finer One recommendations'} className="lg:col-span-2">
+      <Block title={pt ? 'Recomendações Finer One' : 'Finer One recommendations'} className="sm:col-span-2">
         <ol className="grid gap-2 sm:grid-cols-3">
           {d.recs.map((r, i) => (
             <li key={r} className={cn('flex items-start gap-2.5 rounded-[12px] border px-3 py-2.5', i === 0 ? 'border-accent/40 bg-[#EEF3FF]' : 'border-[#0B1030]/[0.07] bg-white')}>
