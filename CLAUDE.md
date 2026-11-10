@@ -30,6 +30,7 @@ Contexto obrigatório para qualquer sessão que trabalhe neste repositório.
 
 - Navy profundo `#070D2B`, branco, azul elétrico `#0052FF` (glow `#1E90FF`).
 - Tipografia: **Inter** (texto) e **Inter Tight** (títulos), como no site anterior — decisão do fundador (10/11/2026).
+  **Regra fixa:** se um pedido futuro mencionar Montserrat, ignorar — manter sempre Inter / Inter Tight até ao fim do projeto.
 - Alternar secções escuras (impacto) e claras (explicação).
 - Linha azul luminosa como motivo de assinatura; fotografia cinematográfica
   (arquitetura, montanhas, estradas com luz) — aguarda ficheiros sem texto.
