@@ -11,23 +11,23 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
   pt: {
     eyebrow: 'Compreender · Antecipar · Decidir',
     title: ['Dos números ', 'à decisão.'],
-    sub: 'Os dados já existem. A Finer One mostra o que está a acontecer, o que vem aí e por onde começar.',
+    sub: 'Veja como a Finer One transforma informação financeira em prioridades concretas.',
     note: 'Exemplos com dados fictícios.',
     steps: [
-      { n: '01', name: 'Compreender', line: 'O que está a acontecer, num relance.' },
-      { n: '02', name: 'Antecipar', line: 'O que vem aí, antes de ser urgente.' },
-      { n: '03', name: 'Decidir', line: 'Por onde começar, por ordem de impacto.' },
+      { n: '01', name: 'O que está a acontecer', line: '' },
+      { n: '02', name: 'O que merece atenção', line: '' },
+      { n: '03', name: 'O próximo passo', line: '' },
     ],
   },
   en: {
     eyebrow: 'Understand · Anticipate · Decide',
     title: ['From numbers ', 'to decisions.'],
-    sub: 'The data already exists. Finer One shows what is happening, what is coming and where to start.',
+    sub: 'See how Finer One turns financial information into concrete priorities.',
     note: 'Examples with fictitious data.',
     steps: [
-      { n: '01', name: 'Understand', line: 'What is happening, at a glance.' },
-      { n: '02', name: 'Anticipate', line: 'What is coming, before it becomes urgent.' },
-      { n: '03', name: 'Decide', line: 'Where to start, ranked by impact.' },
+      { n: '01', name: 'What is happening', line: '' },
+      { n: '02', name: 'What deserves attention', line: '' },
+      { n: '03', name: 'The next step', line: '' },
     ],
   },
 }
@@ -61,10 +61,14 @@ export function ClarityShowcase() {
     return () => io.disconnect()
   }, [])
 
-  const goTo = (i: number) => cards.current[i]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  // Seleção direta: marca a etapa de imediato e leva o painel ao centro do ecrã.
+  const goTo = (i: number) => {
+    setActive(i)
+    cards.current[i]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
 
   return (
-    <section id="problema" aria-labelledby="clareza-titulo" className="relative z-10 scroll-mt-16 bg-navy">
+    <section id="problema" aria-labelledby="clareza-titulo" className="relative z-10 scroll-mt-16 bg-navy pb-4 sm:pb-6">
       <div className="relative rounded-[28px] bg-[linear-gradient(180deg,#FFFFFF_0%,#F4F7FD_100%)] sm:mx-3 sm:rounded-[40px]">
         <div className="mx-auto grid max-w-[1200px] gap-10 px-5 py-16 sm:px-10 sm:py-20 lg:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] lg:gap-16 lg:px-12 lg:py-24">
           {/* Esquerda: título fixo + índice com a linha azul */}
@@ -76,6 +80,21 @@ export function ClarityShowcase() {
                 <span className="text-accent">{t.title[1]}</span>
               </h2>
               <p className="mt-4 max-w-[420px] text-[16px] leading-[1.6] text-[#0B1030]/70 sm:text-[17px]">{t.sub}</p>
+            </div>
+
+            {/* Telemóvel/tablet: seleção direta das três etapas */}
+            <div className="mt-6 grid grid-cols-3 gap-1 rounded-[16px] border border-[#0B1030]/[0.08] bg-white p-1 lg:hidden" aria-label={t.eyebrow}>
+              {t.steps.map((s, i) => (
+                <button
+                  key={s.n}
+                  type="button"
+                  onClick={() => goTo(i)}
+                  aria-current={active === i ? 'step' : undefined}
+                  className={cn('min-h-[52px] rounded-[12px] px-1.5 text-[12.5px] font-semibold leading-tight transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent', active === i ? 'bg-[#070D2B] text-white' : 'text-[#0B1030]/60')}
+                >
+                  {s.name}
+                </button>
+              ))}
             </div>
 
             <ol className="relative mt-9 hidden space-y-1 lg:block" aria-label={t.eyebrow}>
@@ -119,11 +138,9 @@ export function ClarityShowcase() {
                   active === i && 'lg:shadow-[0_34px_80px_-40px_rgba(0,82,255,0.45),0_0_0_1px_rgba(0,82,255,0.18)]',
                 )}
               >
-                <header className="flex items-baseline justify-between gap-3 px-4 pb-3 pt-3">
-                  <div className="min-w-0">
-                    <p className="text-[12px] font-semibold tracking-[0.14em] text-accent">{s.n} · <span className="uppercase">{s.name}</span></p>
-                    <h3 className="mt-1 text-[17px] font-bold tracking-[-0.015em] text-[#070D2B] sm:text-[18px]">{s.line}</h3>
-                  </div>
+                <header className="flex items-center gap-3 px-4 pb-3 pt-4">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent/[0.08] font-display text-[12px] font-bold text-accent">{s.n}</span>
+                  <h3 className="text-[18px] font-bold tracking-[-0.015em] text-[#070D2B]">{s.name}</h3>
                 </header>
                 <Panel i={i} lang={lang} />
               </article>
@@ -148,7 +165,7 @@ function Frame({ title, children, innerRef }: { title: string; children: ReactNo
   return (
     <div ref={innerRef} className="overflow-hidden rounded-[16px] border border-[#0B1030]/[0.06] bg-[#F7F9FE]">
       <div className="flex h-10 items-center justify-between border-b border-[#0B1030]/[0.06] bg-white px-4">
-        <span className="flex items-center gap-2 text-[12.5px] font-bold text-[#070D2B]">
+        <span className="flex items-center gap-2 text-[13px] font-bold text-[#070D2B]">
           <span className="flex h-5 w-5 items-center justify-center rounded-[6px] bg-[#070D2B]">
             <svg viewBox="0 0 326 445" className="h-2.5 w-2.5 fill-white" aria-hidden="true"><path d="M326 0H0v445l99-99v-92h109l86-87H99V79h227z" /></svg>
           </span>
@@ -173,21 +190,21 @@ function Panel({ i, lang }: { i: number; lang: Lang }) {
       <Frame innerRef={ref} title={pt ? 'Finer Home · Recebimentos' : 'Finer Home · Receivables'}>
         <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:items-end">
           <div>
-            <p className="text-[13px] font-semibold text-[#0B1030]/55">{pt ? 'Faturas por receber' : 'Invoices receivable'}</p>
+            <p className="text-[14px] font-semibold text-[#0B1030]/60">{pt ? 'Faturas por receber' : 'Invoices receivable'}</p>
             <p className="mt-1 font-display text-[32px] font-bold leading-none tracking-[-0.035em] text-[#070D2B] tabular-nums">{eur(TOTAL_OVERDUE, lang)}</p>
             <div className="mt-3 flex flex-wrap gap-1.5">
-              <span className="rounded-full bg-[#FFF1E6] px-2.5 py-1 text-[12px] font-semibold text-[#B4530A]">{pt ? `${OVERDUE_COUNT} em atraso` : `${OVERDUE_COUNT} overdue`}</span>
-              <span className="rounded-full bg-white px-2.5 py-1 text-[12px] font-semibold text-[#0B1030]/65 ring-1 ring-[#0B1030]/[0.06]">{pt ? `${AVG_DAYS_LATE} dias em média` : `${AVG_DAYS_LATE} days on average`}</span>
+              <span className="rounded-full bg-[#FFF1E6] px-2.5 py-1 text-[13px] font-semibold text-[#B4530A]">{pt ? `${OVERDUE_COUNT} em atraso` : `${OVERDUE_COUNT} overdue`}</span>
+              <span className="rounded-full bg-white px-2.5 py-1 text-[13px] font-semibold text-[#0B1030]/65 ring-1 ring-[#0B1030]/[0.06]">{pt ? `${AVG_DAYS_LATE} dias em média` : `${AVG_DAYS_LATE} days on average`}</span>
             </div>
           </div>
           <div className="rounded-[12px] bg-white p-3.5 ring-1 ring-[#0B1030]/[0.05]">
-            <p className="text-[13px] leading-snug text-[#070D2B]">
+            <p className="text-[14px] leading-snug text-[#070D2B]">
               {pt ? 'Um cliente concentra ' : 'One customer holds '}<strong className="text-accent">{pct(MAIN_CLIENT_SHARE, lang)}</strong>{pt ? ' do valor em atraso.' : ' of the overdue amount.'}
             </p>
             <span className="mt-2.5 block h-[8px] overflow-hidden rounded-full bg-[#0B1030]/[0.07]">
               <span className={cn(barCls, 'bg-gradient-to-r from-accent to-glow shadow-[0_0_8px_rgba(30,144,255,0.6)]')} style={{ width: `${MAIN_CLIENT_SHARE * 100}%`, ...grow(on, 200) }} />
             </span>
-            <p className="mt-1.5 text-[11.5px] text-[#0B1030]/50">{pt ? 'Cliente A' : 'Customer A'} · {eur(MAIN_CLIENT_TOTAL, lang, 0)}</p>
+            <p className="mt-1.5 text-[13px] text-[#0B1030]/60">{pt ? 'Cliente A' : 'Customer A'} · {eur(MAIN_CLIENT_TOTAL, lang, 0)}</p>
           </div>
         </div>
       </Frame>
@@ -204,7 +221,7 @@ function Panel({ i, lang }: { i: number; lang: Lang }) {
             { l: pt ? 'Compromissos' : 'Commitments', v: COMMITMENTS_TOTAL, c: 'bg-[#94A3C8]' },
           ].map((r, k) => (
             <div key={r.l} className="grid grid-cols-[minmax(0,120px)_minmax(0,1fr)_auto] items-center gap-3">
-              <span className="text-[13px] text-[#0B1030]/65">{r.l}</span>
+              <span className="text-[14px] text-[#0B1030]/70">{r.l}</span>
               <span className="h-[8px] overflow-hidden rounded-full bg-[#0B1030]/[0.07]">
                 <span className={cn(barCls, r.c)} style={{ width: `${(r.v / max) * 100}%`, ...grow(on, k * 150) }} />
               </span>
@@ -213,7 +230,7 @@ function Panel({ i, lang }: { i: number; lang: Lang }) {
           ))}
         </div>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-[12px] border border-[#D9480F]/20 bg-[#FFF4EC] px-3.5 py-2.5 transition-opacity duration-500" style={{ opacity: on ? 1 : 0, transitionDelay: '500ms' }}>
-          <span className="text-[13px] text-[#9A3F0A]">{pt ? 'Sem novas entradas, faltariam' : 'With no new inflows, short by'}</span>
+          <span className="text-[14px] text-[#9A3F0A]">{pt ? 'Sem novas entradas, faltariam' : 'With no new inflows, short by'}</span>
           <strong className="font-display text-[18px] font-bold tracking-[-0.02em] text-[#D9480F] tabular-nums">{eur(Math.abs(CASH_GAP), lang)}</strong>
         </div>
       </Frame>
@@ -246,8 +263,8 @@ function Panel({ i, lang }: { i: number; lang: Lang }) {
             style={{ opacity: on ? 1 : 0, transform: on ? 'none' : 'translate3d(0,6px,0)', transitionDelay: `${150 + k * 130}ms` }}
           >
             <span className={cn('flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px] font-bold', k === 0 ? 'bg-accent text-white' : 'text-accent ring-1 ring-accent/25')}>{k + 1}</span>
-            <span className="min-w-0 flex-1 text-[13.5px] font-semibold leading-snug text-[#070D2B]">{r.t}</span>
-            <span className="hidden shrink-0 text-[12.5px] font-semibold text-[#0B1030]/55 tabular-nums sm:inline">{r.v}</span>
+            <span className="min-w-0 flex-1 text-[14px] font-semibold leading-snug text-[#070D2B]">{r.t}</span>
+            <span className="hidden shrink-0 text-[13.5px] font-semibold text-[#0B1030]/60 tabular-nums sm:inline">{r.v}</span>
           </li>
         ))}
       </ol>

@@ -16,13 +16,13 @@ import { cn } from '@/lib/utils'
 const links = {
   pt: [
     { label: 'Produto', href: '/#demo' },
-    { label: 'Como funciona', href: '/#como-funciona' },
+    { label: 'Como funciona', href: '/#funcionamento' },
     { label: 'Segurança', href: '/#seguranca' },
     { label: 'Preços', href: '/#precos' },
   ],
   en: [
     { label: 'Product', href: '/#demo' },
-    { label: 'How it works', href: '/#como-funciona' },
+    { label: 'How it works', href: '/#funcionamento' },
     { label: 'Security', href: '/#seguranca' },
     { label: 'Pricing', href: '/#precos' },
   ],

@@ -46,7 +46,7 @@ function buildContent(lang: Lang): FooterContent {
           title: 'Produto',
           links: [
             { label: 'Produto', href: '/#demo' },
-            { label: 'Como funciona', href: '/#como-funciona' },
+            { label: 'Como funciona', href: '/#funcionamento' },
             { label: 'Planos', href: '/#precos' },
           ],
         },
@@ -67,7 +67,7 @@ function buildContent(lang: Lang): FooterContent {
           title: 'Product',
           links: [
             { label: 'Product', href: '/#demo' },
-            { label: 'How it works', href: '/#como-funciona' },
+            { label: 'How it works', href: '/#funcionamento' },
             { label: 'Plans', href: '/#precos' },
           ],
         },

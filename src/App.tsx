@@ -50,7 +50,8 @@ export default function App() {
       <main id="conteudo">
         <HeroDemo />
         {SECOND === 'antiga' ? <ProblemSection /> : SECOND === 'desafios' ? <Challenges /> : SECOND === 'scroll' ? <FinancialStory /> : SECOND === 'exemplos' ? <FinanceDemo /> : <ClarityShowcase />}
-        <PillarsScrolly />
+        {/* Os três pilares já são demonstrados na secção anterior; versão antiga em ?pilares=sim */}
+        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('pilares') === 'sim' && <PillarsScrolly />}
         {/* Folha clara contínua: demonstração, benefícios e funcionamento.
             Cantos arredondados sobre o navy, em vez de cortes retos entre
             secções escuras e claras. */}
