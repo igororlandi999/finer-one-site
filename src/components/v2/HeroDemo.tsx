@@ -167,7 +167,7 @@ function Backdrop() {
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-[#03060F]">
       {useVideo ? (
         <video
-          className="absolute inset-0 h-full w-full translate-y-[6%] scale-[1.1] object-cover object-[50%_70%] opacity-95 animate-fade-in"
+          className="absolute inset-0 h-full w-full translate-y-[5%] scale-[1.05] object-cover object-[50%_70%] animate-fade-in"
           src={HERO_BACKGROUND.video}
           poster={HERO_BACKGROUND.poster}
           autoPlay
@@ -178,10 +178,10 @@ function Backdrop() {
           tabIndex={-1}
         />
       ) : (
-        <img src={HERO_BACKGROUND.poster} alt="" className="absolute inset-0 h-full w-full translate-y-[6%] scale-[1.1] object-cover object-[50%_70%] opacity-95" />
+        <img src={HERO_BACKGROUND.poster} alt="" className="absolute inset-0 h-full w-full translate-y-[5%] scale-[1.05] object-cover object-[50%_70%]" />
       )}
       {/* Leitura: navy forte à esquerda (texto), aliviando para a direita */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(3,6,15,0.93)_0%,rgba(3,6,15,0.74)_34%,rgba(3,6,15,0.22)_66%,rgba(3,6,15,0.32)_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(3,6,15,0.93)_0%,rgba(3,6,15,0.72)_34%,rgba(3,6,15,0.12)_66%,rgba(3,6,15,0.22)_100%)]" />
       {/* Topo limpo por baixo da navegação; centro sem competir com o título */}
       <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(3,6,15,0.9)_0%,rgba(3,6,15,0.35)_22%,transparent_45%)]" />
       {/* Transição para a secção seguinte */}

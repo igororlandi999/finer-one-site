@@ -29,8 +29,8 @@ export function EarthBackground() {
   const driftY = Math.cos(t) * 6
   const rotate = Math.sin(t) * 0.5 // graus
   const scale = 1.06 + Math.sin(t + 1) * 0.008
-  const rim = 0.72 + Math.sin(t * 2) * 0.12
-  const dawn = 0.5 + Math.sin(t + 0.6) * 0.18
+  const rim = 0.5 + Math.sin(t * 2) * 0.1
+  const dawn = 0.3 + Math.sin(t + 0.6) * 0.1
 
   return (
     <AbsoluteFill style={{ backgroundColor: '#03060F' }}>
@@ -59,7 +59,7 @@ export function EarthBackground() {
           style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 0%', }}
         />
         {/* Desvanece a parte superior da fotografia no espaço (sem aresta visível) */}
-        <div style={{ position: 'absolute', inset: '-2px', background: 'linear-gradient(to bottom, #03060F 0%, #03060F 5%, rgba(3,6,15,0.82) 11%, rgba(3,6,15,0.3) 21%, transparent 33%)' }} />
+        <div style={{ position: 'absolute', inset: '-2px', background: 'linear-gradient(to bottom, #03060F 0%, rgba(3,6,15,0.94) 4%, rgba(3,6,15,0.6) 9%, rgba(3,6,15,0.18) 14.5%, transparent 18.5%)' }} />
       </div>
 
       {/* Orla atmosférica azul (respira lentamente) */}
@@ -72,7 +72,7 @@ export function EarthBackground() {
           height: '28%',
           background: 'radial-gradient(60% 38% at 52% 30%, rgba(30,144,255,0.42), rgba(0,82,255,0.14) 45%, transparent 70%)',
           opacity: rim,
-          filter: 'blur(18px)',
+          filter: 'blur(12px)',
           mixBlendMode: 'screen',
         }}
       />
@@ -109,10 +109,14 @@ export function EarthSharpSource() {
     <AbsoluteFill style={{ backgroundColor: '#03060F' }}>
       <svg width="0" height="0" style={{ position: 'absolute' }}>
         <filter id="sharpen" colorInterpolationFilters="sRGB">
-          <feConvolveMatrix order="3" preserveAlpha="true" kernelMatrix="0 -0.45 0 -0.45 2.8 -0.45 0 -0.45 0" />
+          {/* Clareza: contraste local de raio largo (realça nuvens, relevo e atmosfera) */}
+          <feGaussianBlur in="SourceGraphic" stdDeviation="22" result="soft" />
+          <feComposite in="SourceGraphic" in2="soft" operator="arithmetic" k1="0" k2="1.5" k3="-0.5" k4="0" result="clear" />
+          {/* Nitidez fina */}
+          <feConvolveMatrix in="clear" order="3" preserveAlpha="true" kernelMatrix="0 -0.5 0 -0.5 3 -0.5 0 -0.5 0" />
         </filter>
       </svg>
-      <Img src={staticFile('images/earth-europe.jpg')} style={{ width: '100%', height: '100%', filter: 'url(#sharpen) saturate(1.12) contrast(1.1) brightness(1.08)' }} />
+      <Img src={staticFile('images/earth-europe.jpg')} style={{ width: '100%', height: '100%', filter: 'url(#sharpen) saturate(1.15) contrast(1.12) brightness(1.1)' }} />
     </AbsoluteFill>
   )
 }
