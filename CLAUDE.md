@@ -29,7 +29,7 @@ Contexto obrigatório para qualquer sessão que trabalhe neste repositório.
 ## Visual
 
 - Navy profundo `#070D2B`, branco, azul elétrico `#0052FF` (glow `#1E90FF`).
-- Tipografia: **Montserrat**.
+- Tipografia: **Inter** (texto) e **Inter Tight** (títulos), como no site anterior — decisão do fundador (10/11/2026).
 - Alternar secções escuras (impacto) e claras (explicação).
 - Linha azul luminosa como motivo de assinatura; fotografia cinematográfica
   (arquitetura, montanhas, estradas com luz) — aguarda ficheiros sem texto.
