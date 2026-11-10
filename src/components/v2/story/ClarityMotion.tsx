@@ -100,7 +100,7 @@ export function ClarityMotion() {
                 {t.sub}
               </motion.p>
 
-              <div role="tablist" aria-orientation="vertical" aria-label={t.title.join('')} className="mt-7 grid grid-cols-3 gap-1 rounded-[18px] border border-[#0B1030]/[0.08] bg-white p-1 lg:mt-8 lg:grid-cols-1 lg:gap-1.5 lg:p-1.5">
+              <div role="tablist" aria-orientation="vertical" aria-label={t.title.join('')} className="mt-7 grid grid-cols-3 gap-1.5 lg:mt-8 lg:grid-cols-1 lg:gap-2">
                 {t.steps.map((s, i) => {
                   const on = active === i
                   return (
@@ -115,7 +115,10 @@ export function ClarityMotion() {
                       tabIndex={on ? 0 : -1}
                       onClick={() => setActive(i)}
                       onKeyDown={(e) => onKey(e, i)}
-                      className="relative flex min-h-[52px] items-center justify-center gap-3 rounded-[14px] px-2 py-2.5 text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent lg:justify-start lg:px-4 lg:py-3.5 lg:text-left"
+                      className={cn(
+                        'group relative flex min-h-[52px] items-center justify-center gap-3 rounded-[14px] border px-2 py-2.5 text-center transition-[border-color,background-color,box-shadow] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent lg:justify-start lg:px-4 lg:py-3.5 lg:text-left',
+                        on ? 'border-transparent' : 'border-[#0B1030]/[0.1] bg-white hover:border-accent/45 hover:bg-[#F7F9FE] hover:shadow-[0_10px_24px_-18px_rgba(0,82,255,0.6)]',
+                      )}
                     >
                       {/* Indicador ativo partilhado: desloca-se entre etapas */}
                       {on && (
@@ -130,6 +133,10 @@ export function ClarityMotion() {
                         <span className={cn('block text-[13.5px] font-bold leading-tight tracking-[-0.01em] transition-colors duration-300 sm:text-[15px] lg:text-[17px]', on ? 'text-white' : 'text-[#070D2B]')}>{s.name}</span>
                         <span className={cn('hidden text-[14px] transition-colors duration-300 lg:block', on ? 'text-white/70' : 'text-[#0B1030]/60')}>{s.hint}</span>
                       </span>
+                      {/* Seta: sinaliza que a etapa se pode abrir */}
+                      <svg viewBox="0 0 16 16" aria-hidden="true" className={cn('relative ml-auto hidden h-4 w-4 shrink-0 transition-[transform,color] duration-300 lg:block', on ? 'translate-x-0.5 text-glow' : 'text-[#0B1030]/30 group-hover:translate-x-0.5 group-hover:text-accent')}>
+                        <path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
                     </button>
                   )
                 })}
@@ -151,10 +158,10 @@ export function ClarityMotion() {
                       <svg viewBox="0 0 326 445" className="h-3.5 w-3.5 fill-white" aria-hidden="true"><path d="M326 0H0v445l99-99v-92h109l86-87H99V79h227z" /></svg>
                     </span>
                     <span className="whitespace-nowrap text-[14px] font-bold text-[#070D2B]">Finer Advisor</span>
-                    <span className="hidden truncate text-[13.5px] text-[#0B1030]/50 md:inline">{t.window}</span>
+                    <span className="hidden whitespace-nowrap text-[13.5px] text-[#0B1030]/50 md:inline">{t.window}</span>
                   </span>
                   <span className="flex shrink-0 items-baseline gap-2" aria-live="polite">
-                    <span className="hidden text-[11.5px] font-semibold uppercase tracking-[0.12em] text-[#0B1030]/45 sm:inline">{t.focus}</span>
+                    <span className="sr-only">{t.focus}</span>
                     <RollingValue value={focusValue} />
                     <span className="hidden text-[12.5px] text-[#0B1030]/55 sm:inline">{focusLabel}</span>
                   </span>
@@ -163,7 +170,7 @@ export function ClarityMotion() {
                 <StepLine steps={t.steps} active={active} setActive={setActive} draw={inView} />
 
                 {/* Conteúdo da etapa: altura estável, troca com AnimatePresence */}
-                <div id="etapa-painel" role="tabpanel" aria-labelledby={`etapa-${active}`} className="relative min-h-[300px] px-5 pb-6 pt-2 sm:min-h-[268px] sm:px-7">
+                <div id="etapa-painel" role="tabpanel" aria-labelledby={`etapa-${active}`} className="relative min-h-[318px] px-5 pb-5 pt-2 sm:min-h-[236px] sm:px-7">
                   <AnimatePresence mode="wait" initial={false}>
                     <motion.div
                       key={active}
@@ -190,24 +197,22 @@ export function ClarityMotion() {
 
 /* ---------------- Linha Finer One a ligar as três etapas ---------------- */
 function StepLine({ steps, active, setActive, draw }: { steps: Step[]; active: number; setActive: (i: number) => void; draw: boolean }) {
-  // Posições dos nós em percentagem da largura (o SVG estica em largura).
-  const xs = [16.667, 50, 83.333] // centros das três colunas
+  // A linha vai do centro da 1.ª coluna (1/6) ao centro da 3.ª (5/6): contínua,
+  // desenhada da esquerda para a direita na entrada e preenchida até à etapa ativa.
   return (
     <div className="relative px-5 pb-1 pt-5 sm:px-7">
-      <svg viewBox="0 0 100 10" preserveAspectRatio="none" className="absolute inset-x-5 top-[22px] h-[10px] w-[calc(100%-40px)] overflow-visible sm:inset-x-7 sm:w-[calc(100%-56px)]" aria-hidden="true">
-        {/* Trilho e linha desenhada (pathLength), com brilho subtil */}
-        <line x1={xs[0]} x2={xs[2]} y1="5" y2="5" stroke="rgba(11,16,48,0.1)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-        <motion.line
-          x1={xs[0]} x2={xs[2]} y1="5" y2="5"
-          stroke="#0052FF" strokeOpacity="0.35" strokeWidth="1.5" vectorEffect="non-scaling-stroke"
-          initial={{ pathLength: 0 }} animate={{ pathLength: draw ? 1 : 0 }} transition={{ duration: 0.9, ease: EASE, delay: 0.5 }}
-        />
-        <motion.line
-          x1={xs[0]} x2={xs[2]} y1="5" y2="5"
-          stroke="#1E90FF" strokeWidth="2" vectorEffect="non-scaling-stroke" style={{ filter: 'drop-shadow(0 0 4px rgba(30,144,255,0.8))' }}
-          initial={{ pathLength: 0 }} animate={{ pathLength: draw ? active / 2 : 0 }} transition={{ duration: 0.45, ease: EASE }}
-        />
-      </svg>
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-5 top-[25.5px] h-[2px] sm:inset-x-7">
+        <div className="absolute left-[16.667%] right-[16.667%] top-0 h-full">
+          <motion.div
+            className="absolute inset-0 origin-left rounded-full bg-[#0B1030]/[0.1]"
+            initial={{ scaleX: 0 }} animate={{ scaleX: draw ? 1 : 0 }} transition={{ duration: 0.9, ease: EASE, delay: 0.5 }}
+          />
+          <motion.div
+            className="absolute inset-0 origin-left rounded-full bg-gradient-to-r from-accent to-glow shadow-[0_0_8px_rgba(30,144,255,0.8)]"
+            initial={{ scaleX: 0 }} animate={{ scaleX: draw ? active / 2 : 0 }} transition={{ duration: 0.45, ease: EASE }}
+          />
+        </div>
+      </div>
       <div className="relative grid grid-cols-3">
         {steps.map((s, i) => {
           const lit = draw && i <= active
@@ -229,7 +234,7 @@ function StepLine({ steps, active, setActive, draw }: { steps: Step[]; active: n
                 }}
                 transition={{ duration: 0.3, ease: EASE, delay: draw && i > 0 ? 0 : 0 }}
               />
-              <span className={cn('text-[9.5px] font-bold uppercase tracking-[0.06em] transition-colors duration-300 sm:text-[11.5px] sm:tracking-[0.13em]', i === active ? 'text-accent' : 'text-[#0B1030]/45')}>{s.tag}</span>
+              <span className={cn('text-[9.5px] font-bold uppercase tracking-[0.06em] transition-colors duration-300 sm:text-[11.5px] sm:tracking-[0.13em]', i === active ? 'text-accent' : 'text-[#0B1030]/45')}>{s.name}</span>
             </button>
           )
         })}
@@ -279,13 +284,37 @@ function Understand({ lang }: { lang: Lang }) {
   const pt = lang === 'pt'
   return (
     <div>
+      <div className="sm:flex sm:items-end sm:justify-between sm:gap-4">
       <Highlight className="-mx-3 px-3 py-3">
         <p className="text-[15px] font-medium text-[#0B1030]/70">{pt ? 'Faturas por receber' : 'Invoices receivable'}</p>
-        <p className="mt-1 font-display text-[40px] font-bold leading-none tracking-[-0.035em] text-[#070D2B] tabular-nums sm:text-[48px]">{eur(TOTAL_OVERDUE, lang)}</p>
+        <p className="mt-1 font-display text-[40px] font-bold leading-none tracking-[-0.035em] text-[#070D2B] tabular-nums sm:text-[44px]">{eur(TOTAL_OVERDUE, lang)}</p>
       </Highlight>
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-4 flex flex-wrap gap-2 sm:mt-0 sm:flex-col sm:items-end sm:pb-3">
         <span className="rounded-full bg-[#FFF1E6] px-3 py-1.5 text-[14px] font-semibold text-[#9A3F0A]">{pt ? `${OVERDUE_COUNT} faturas em atraso` : `${OVERDUE_COUNT} overdue invoices`}</span>
         <span className="rounded-full bg-white px-3 py-1.5 text-[14px] font-semibold text-[#0B1030]/75 ring-1 ring-[#0B1030]/[0.08]">{pt ? `${AVG_DAYS_LATE} dias de atraso médio` : `${AVG_DAYS_LATE} days late on average`}</span>
+      </div>
+      </div>
+      {/* Repartição por cliente: explica o número e prepara a descoberta seguinte */}
+      <div className="mt-5 grid gap-2">
+        <p className="text-[12px] font-bold uppercase tracking-[0.12em] text-[#0B1030]/50">{pt ? 'Valor em atraso por cliente' : 'Overdue amount by customer'}</p>
+        {[
+          { l: pt ? 'Cliente A' : 'Customer A', v: MAIN_CLIENT_TOTAL },
+          { l: pt ? `Outros ${OVERDUE_COUNT - 3} clientes` : `Other ${OVERDUE_COUNT - 3} customers`, v: TOTAL_OVERDUE - MAIN_CLIENT_TOTAL },
+        ].map((r, k) => (
+          <div key={r.l} className="grid grid-cols-[minmax(0,132px)_minmax(0,1fr)_auto] items-center gap-2.5 sm:gap-3 sm:grid-cols-[minmax(0,140px)_minmax(0,1fr)_auto]">
+            <span className="truncate text-[14px] text-[#0B1030]/75">{r.l}</span>
+            <span className="h-[8px] overflow-hidden rounded-full bg-[#0B1030]/[0.07]">
+              <motion.span
+                className="block h-full origin-left rounded-full bg-[#070D2B]/70"
+                style={{ width: `${(r.v / TOTAL_OVERDUE) * 100}%` }}
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.6, ease: EASE, delay: 0.2 + k * 0.08 }}
+              />
+            </span>
+            <span className="text-[14px] font-semibold text-[#070D2B] tabular-nums">{eur(r.v, lang)}</span>
+          </div>
+        ))}
       </div>
     </div>
   )
