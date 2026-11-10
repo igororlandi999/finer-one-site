@@ -6,6 +6,7 @@ import { Challenges } from '@/components/v2/Challenges'
 import { FinancialStory } from '@/components/v2/story/FinancialStory'
 import { FinanceDemo } from '@/components/v2/story/FinanceDemo'
 import { ClarityShowcase } from '@/components/v2/story/ClarityShowcase'
+import { ClarityStage } from '@/components/v2/story/ClarityStage'
 import { PillarsScrolly } from '@/components/v2/PillarsScrolly'
 import { ProductTour } from '@/components/v2/ProductTour'
 import { CinematicBand } from '@/components/v2/CinematicBand'
@@ -19,7 +20,7 @@ import { FinalCTA } from '@/components/footer/FinalCTA'
 import { SiteFooter } from '@/components/footer/SiteFooter'
 
 // Comparação na versão de desenvolvimento: ?secao=antiga mostra a segunda secção anterior.
-// ?secao=antiga · ?secao=desafios · ?secao=scroll · ?secao=exemplos (versões anteriores).
+// ?secao=antiga · desafios · scroll · exemplos · paineis (versões anteriores).
 const SECOND = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('secao') : null
 
 /**
@@ -49,7 +50,7 @@ export default function App() {
       <Navbar />
       <main id="conteudo">
         <HeroDemo />
-        {SECOND === 'antiga' ? <ProblemSection /> : SECOND === 'desafios' ? <Challenges /> : SECOND === 'scroll' ? <FinancialStory /> : SECOND === 'exemplos' ? <FinanceDemo /> : <ClarityShowcase />}
+        {SECOND === 'antiga' ? <ProblemSection /> : SECOND === 'desafios' ? <Challenges /> : SECOND === 'scroll' ? <FinancialStory /> : SECOND === 'exemplos' ? <FinanceDemo /> : SECOND === 'paineis' ? <ClarityShowcase /> : <ClarityStage />}
         {/* Os três pilares já são demonstrados na secção anterior; versão antiga em ?pilares=sim */}
         {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('pilares') === 'sim' && <PillarsScrolly />}
         {/* Folha clara contínua: demonstração, benefícios e funcionamento.
