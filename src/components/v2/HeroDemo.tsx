@@ -73,14 +73,14 @@ export function HeroDemo() {
     >
       <Backdrop />
 
-      <div className="mx-auto grid w-full max-w-[1280px] grid-cols-[minmax(0,1fr)] items-center gap-14 px-6 sm:px-10 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.18fr)] lg:gap-16 lg:px-12 xl:gap-[72px]">
+      <div className="mx-auto grid w-full max-w-[1280px] grid-cols-[minmax(0,1fr)] items-center gap-14 px-6 sm:px-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-16 lg:px-12 xl:gap-[72px] xl:px-14">
         {/* Mensagem */}
-        <div className="max-w-[580px]">
+        <div className="max-w-[600px]">
           <p className="inline-flex animate-fade-up items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.28em] text-[#7CB8FF]">
             <span className="h-px w-8 bg-gradient-to-r from-transparent to-glow" aria-hidden="true" />
             {t.eyebrow}
           </p>
-          <h1 id="hero-titulo" className="mt-7 font-display text-[38px] font-bold leading-[1.06] tracking-[-0.035em] text-white sm:text-[50px] lg:text-[46px] xl:text-[54px]">
+          <h1 id="hero-titulo" className="mt-7 font-display text-[38px] font-bold leading-[1.06] tracking-[-0.035em] text-white sm:text-[48px] lg:text-[43px] xl:text-[51px]">
             <span className="block text-balance animate-fade-up [animation-delay:90ms]">{t.first}</span>
             <span className="mt-1 block text-balance animate-fade-up [animation-delay:200ms]">
               {t.secondPrefix}
@@ -88,8 +88,8 @@ export function HeroDemo() {
               <span className="text-accent">.</span>
             </span>
           </h1>
-          <p className="mt-7 max-w-[520px] animate-fade-up text-[16.5px] leading-[1.65] text-white/80 [animation-delay:300ms] sm:text-[18px]">{t.sub}</p>
-          <div className="mt-10 flex animate-fade-up flex-col gap-3 [animation-delay:400ms] sm:flex-row sm:items-center sm:gap-4">
+          <p className="mt-9 max-w-[520px] animate-fade-up text-[16.5px] leading-[1.65] text-white/80 [animation-delay:300ms] sm:text-[18px]">{t.sub}</p>
+          <div className="mt-11 flex animate-fade-up flex-col gap-3 [animation-delay:400ms] sm:flex-row sm:items-center sm:gap-4">
             <a href="/pioneers/" className={buttonClasses({ size: 'lg', className: 'group px-7 font-semibold' })}>
               {t.primary}
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true" />
@@ -108,9 +108,10 @@ export function HeroDemo() {
         </div>
 
         {/* Vídeo da plataforma */}
-        <div className="relative pb-8 pr-4 opacity-0 [animation:fo-enter-right_1s_cubic-bezier(0.22,1,0.36,1)_450ms_forwards] sm:pb-10 sm:pr-8 lg:pb-12 lg:pr-10">
+        <div className="relative opacity-0 [animation:fo-enter-right_1s_cubic-bezier(0.22,1,0.36,1)_450ms_forwards]">
           {/* Painel de fundo com a fotografia oficial, desencontrado da moldura */}
-          <div aria-hidden="true" className="absolute bottom-0 left-8 right-0 top-10 rounded-[24px] border border-white/[0.12] bg-[linear-gradient(140deg,rgba(11,26,74,0.55),rgba(3,6,15,0.35))] backdrop-blur-[2px] sm:left-12 lg:left-16" />
+          {/* Profundidade subtil: halo azul muito suave por trás da janela */}
+          <div aria-hidden="true" className="absolute -inset-x-6 -inset-y-8 rounded-[40px] bg-[radial-gradient(closest-side,rgba(0,82,255,0.22),transparent)] blur-2xl" />
           <LuminousLine
             viewBox="0 0 1000 600"
             d="M -80 560 C 220 560, 380 500, 520 430 S 800 220, 1080 170"
@@ -140,7 +141,7 @@ function Backdrop() {
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-[#03060F]">
       {useVideo ? (
         <video
-          className="absolute inset-0 h-full w-full translate-y-[16%] scale-[1.12] object-cover object-[50%_60%] animate-fade-in"
+          className="absolute inset-0 h-full w-full translate-y-[18%] scale-[1.12] object-cover object-[50%_60%] opacity-80 animate-fade-in"
           src={HERO_BACKGROUND.video}
           poster={HERO_BACKGROUND.poster}
           autoPlay
@@ -151,14 +152,17 @@ function Backdrop() {
           tabIndex={-1}
         />
       ) : (
-        <img src={HERO_BACKGROUND.poster} alt="" className="absolute inset-0 h-full w-full translate-y-[16%] scale-[1.12] object-cover object-[50%_60%]" />
+        <img src={HERO_BACKGROUND.poster} alt="" className="absolute inset-0 h-full w-full translate-y-[18%] scale-[1.12] object-cover object-[50%_60%] opacity-80" />
       )}
       {/* Leitura: navy forte à esquerda (texto), aliviando para a direita */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(3,6,15,0.94)_0%,rgba(3,6,15,0.78)_36%,rgba(3,6,15,0.35)_68%,rgba(3,6,15,0.45)_100%)]" />
       {/* Topo limpo por baixo da navegação; centro sem competir com o título */}
       <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(3,6,15,0.95)_0%,rgba(3,6,15,0.55)_28%,rgba(3,6,15,0.1)_60%,transparent_100%)]" />
       {/* Transição para a secção seguinte */}
-      <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent to-navy-deep" />
+      {/* Acalma o brilho por trás dos botões (esquerda/baixo) e aprofunda o navy */}
+      <div className="absolute inset-0 bg-[radial-gradient(70%_60%_at_20%_75%,rgba(3,6,15,0.75),transparent_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(130%_100%_at_50%_30%,transparent_55%,rgba(2,4,10,0.7)_100%)]" />
+      <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-navy-deep" />
     </div>
   )
 }
@@ -166,8 +170,8 @@ function Backdrop() {
 /** Moldura de aplicação 16:9 — a mesma para o vídeo final e para o poster. */
 function Frame({ t, children, controls }: { t: T; children: ReactNode; controls?: ReactNode }) {
   return (
-    <div className="rounded-[16px] bg-gradient-to-b from-white/30 via-white/[0.08] to-white/[0.03] p-px shadow-[0_50px_110px_-40px_rgba(0,0,0,0.95),0_0_0_1px_rgba(255,255,255,0.03)]">
-      <div className="relative overflow-hidden rounded-[15px] bg-white">
+    <div className="rounded-[14px] p-px shadow-[0_40px_90px_-30px_rgba(0,0,0,0.9),0_0_0_1px_rgba(255,255,255,0.14),0_0_60px_-20px_rgba(30,144,255,0.35)]">
+      <div className="relative overflow-hidden rounded-[13px] bg-white">
         <div className="relative aspect-video bg-[#F7F9FE]">{children}</div>
         <span className="pointer-events-none absolute bottom-3 left-3 rounded-full bg-[#0B1030]/75 px-2.5 py-1 text-[10.5px] font-semibold text-white backdrop-blur">{t.badge}</span>
         {controls}
