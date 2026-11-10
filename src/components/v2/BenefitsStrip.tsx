@@ -41,33 +41,58 @@ export function BenefitsStrip() {
   const step = 260 // ms entre benefícios
 
   return (
-    <section id="beneficios" aria-labelledby="beneficios-titulo" className="relative scroll-mt-24 py-14 text-navy lg:py-16">
+    <section id="beneficios" aria-labelledby="beneficios-titulo" className="relative scroll-mt-24 py-12 text-navy lg:py-14">
       <div ref={ref} className="mx-auto max-w-content px-5 sm:px-6 lg:px-8">
         <p className="text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent">{t.eyebrow}</p>
-        <h2 id="beneficios-titulo" className="mt-3 font-display text-[32px] font-medium leading-[1.08] tracking-[-0.035em] text-[#070D2B] sm:text-[42px] lg:text-[50px]">
+        <h2 id="beneficios-titulo" className="mt-3 font-display text-[32px] font-bold leading-[1.05] tracking-[-0.035em] text-[#070D2B] sm:text-[42px] lg:text-[48px]">
           {t.title}
         </h2>
 
-        <ol className="mt-9 grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2 lg:mt-12 lg:grid-cols-4 lg:gap-5">
-          {t.items.map((item, i) => (
-            <li
-              key={item.n}
-              className={cn(
-                'group relative flex min-h-[220px] flex-col overflow-hidden rounded-[24px] border border-[#0B1030]/[0.09] bg-white p-6 transition-[border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-accent/35 lg:min-h-[260px] lg:p-7',
-                on ? 'animate-fade-up' : 'opacity-0',
-              )}
-              style={on && !reduced ? { animationDelay: `${i * step * 0.5}ms` } : undefined}
-            >
-              {/* Linha azul da marca: acende no topo do cartão ao passar o rato */}
-              <span aria-hidden="true" className="pointer-events-none absolute inset-x-6 top-0 h-px origin-left scale-x-0 bg-gradient-to-r from-transparent via-glow to-transparent shadow-[0_0_10px_rgba(30,144,255,0.8)] transition-transform duration-500 group-hover:scale-x-100" />
-              <p className="font-display text-[52px] font-light leading-none tracking-[-0.04em] text-[#0B1030]/[0.13] transition-colors duration-300 group-hover:text-accent/70 lg:text-[58px]">
-                {Number(item.n)}
-              </p>
-              <h3 className="mt-auto pt-10 font-display text-[21px] font-semibold tracking-[-0.02em] text-[#070D2B]">{item.name}</h3>
-              <p className="mt-2 text-[15.5px] leading-[1.55] text-[#0B1030]/65">{item.text}</p>
-            </li>
-          ))}
-        </ol>
+        <div className="relative mt-6 lg:mt-8">
+          {/* Trilho e linha azul que percorre os quatro benefícios */}
+          <div aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-[#0B1030]/[0.1]">
+            <span
+              className="absolute inset-0 origin-left bg-gradient-to-r from-accent via-glow to-accent shadow-[0_0_10px_rgba(30,144,255,0.8)] transition-transform ease-[cubic-bezier(0.65,0,0.35,1)]"
+              style={{ transform: `scaleX(${on ? 1 : 0})`, transitionDuration: reduced ? '0ms' : `${step * 4 + 200}ms` }}
+            />
+          </div>
+
+          <ol className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+            {t.items.map((item, i) => (
+              <li
+                key={item.n}
+                className={cn(
+                  'relative py-5 sm:pr-6 lg:px-6 lg:pb-1 lg:pt-6',
+                  i > 0 && 'border-t border-[#0B1030]/[0.08] sm:border-t-0',
+                  i % 2 === 1 && 'sm:border-l sm:border-[#0B1030]/[0.08] sm:pl-6',
+                  i > 1 && 'sm:border-t sm:border-[#0B1030]/[0.08] lg:border-t-0',
+                  i > 0 && 'lg:border-l lg:border-[#0B1030]/[0.08]',
+                  i === 0 && 'lg:pl-0',
+                )}
+              >
+                {/* Ponto que acende quando a linha passa (desktop) */}
+                <span
+                  aria-hidden="true"
+                  className={cn('absolute -top-[5px] hidden h-[9px] w-[9px] rounded-full border-2 transition-all duration-500 lg:block', i === 0 ? 'left-0' : '-left-[5px]')}
+                  style={{
+                    borderColor: on ? '#0052FF' : 'rgba(11,16,48,0.2)',
+                    backgroundColor: on ? '#0052FF' : '#FFFFFF',
+                    boxShadow: on ? '0 0 0 4px rgba(0,82,255,0.12), 0 0 10px rgba(30,144,255,0.7)' : 'none',
+                    transitionDelay: on && !reduced ? `${i * step}ms` : '0ms',
+                  }}
+                />
+                <p
+                  className="font-display text-[14px] font-bold tabular-nums tracking-[0.1em] transition-[text-shadow] duration-500"
+                  style={{ color: '#0052FF', textShadow: on ? '0 0 14px rgba(30,144,255,0.35)' : 'none', transitionDelay: on && !reduced ? `${i * step}ms` : '0ms' }}
+                >
+                  {item.n}
+                </p>
+                <h3 className="mt-2 font-display text-[21px] font-bold tracking-[-0.02em] text-[#070D2B] lg:text-[22px]">{item.name}</h3>
+                <p className="mt-1.5 max-w-[270px] text-[16px] leading-[1.55] text-[#0B1030]/75">{item.text}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
       </div>
     </section>
   )

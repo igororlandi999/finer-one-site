@@ -12,6 +12,7 @@ import { ProductTour } from '@/components/v2/ProductTour'
 import { CinematicBand } from '@/components/v2/CinematicBand'
 import { Benefits } from '@/components/v2/Benefits'
 import { BenefitsStrip } from '@/components/v2/BenefitsStrip'
+import { BenefitsCards } from '@/components/v2/BenefitsCards'
 import { HowItWorks } from '@/components/v2/HowItWorks'
 import { Security } from '@/components/v2/Security'
 import { PricingSection } from '@/components/pricing/PricingSection'
@@ -60,7 +61,7 @@ export default function App() {
         <div className="relative z-10 rounded-[28px] bg-gradient-to-b from-ice via-white to-ice sm:mx-3 sm:rounded-[40px]">
           {/* Demonstração interativa retirada: a plataforma já aparece no vídeo da hero. Versão antiga em ?tour=sim */}
           {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('tour') === 'sim' && <ProductTour />}
-          {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'antigo' ? <Benefits /> : <BenefitsStrip />}
+          {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'antigo' ? <Benefits /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'cartoes' ? <BenefitsCards /> : <BenefitsStrip />}
           <HowItWorks />
         </div>
         <CinematicBand />
