@@ -236,19 +236,23 @@ function DemoVideo({ t, video: source }: { t: T; video: DemoVideoSource }) {
   const { ref, inView } = useInView<HTMLDivElement>({ once: false, threshold: 0.3, rootMargin: '0px' })
   const [playing, setPlaying] = useState(false)
   const [userPaused, setUserPaused] = useState(false)
+  // Com movimento reduzido, o vídeo só corre se o visitante o pedir.
+  const [userStarted, setUserStarted] = useState(false)
+  const allowed = !reduced || userStarted
 
-  // Só reproduz quando visível, sem pausa do visitante e sem preferência por menos movimento.
+  // Só reproduz quando visível, sem pausa do visitante e (com movimento reduzido) só por pedido.
   useEffect(() => {
     const v = video.current
     if (!v) return
-    if (inView && !reduced && !userPaused) v.play().catch(() => setPlaying(false))
+    if (inView && allowed && !userPaused) v.play().catch(() => setPlaying(false))
     else v.pause()
-  }, [inView, reduced, userPaused])
+  }, [inView, allowed, userPaused])
 
   const toggle = () => {
     const v = video.current
     if (!v) return
     if (v.paused) {
+      setUserStarted(true)
       setUserPaused(false)
       v.play().catch(() => undefined)
     } else {
@@ -262,16 +266,29 @@ function DemoVideo({ t, video: source }: { t: T; video: DemoVideoSource }) {
       <Frame
         t={t}
         controls={
-          !reduced && (
-            <button
-              type="button"
-              onClick={toggle}
-              aria-label={playing ? t.pause : t.play}
-              className="absolute bottom-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#0B1030]/75 text-white backdrop-blur transition-colors hover:bg-[#0B1030]"
-            >
-              {playing ? <Pause className="h-3.5 w-3.5" aria-hidden="true" /> : <Play className="ml-0.5 h-3.5 w-3.5" aria-hidden="true" />}
-            </button>
-          )
+          <>
+            {/* Movimento reduzido: imagem estática com um botão claro para ver a demonstração */}
+            {reduced && !userStarted && (
+              <button
+                type="button"
+                onClick={toggle}
+                className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full bg-[#070D2B]/85 px-5 py-3 text-[14px] font-semibold text-white shadow-[0_12px_30px_-12px_rgba(7,13,43,0.9)] backdrop-blur transition-colors hover:bg-[#070D2B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-glow"
+              >
+                <Play className="h-4 w-4" aria-hidden="true" />
+                {t.play}
+              </button>
+            )}
+            {(!reduced || userStarted) && (
+              <button
+                type="button"
+                onClick={toggle}
+                aria-label={playing ? t.pause : t.play}
+                className="absolute bottom-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#0B1030]/75 text-white backdrop-blur transition-colors hover:bg-[#0B1030] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-glow"
+              >
+                {playing ? <Pause className="h-3.5 w-3.5" aria-hidden="true" /> : <Play className="ml-0.5 h-3.5 w-3.5" aria-hidden="true" />}
+              </button>
+            )}
+          </>
         }
       >
         <video
@@ -280,7 +297,7 @@ function DemoVideo({ t, video: source }: { t: T; video: DemoVideoSource }) {
           muted
           loop
           playsInline
-          preload={reduced ? 'none' : 'metadata'}
+          preload={reduced && !userStarted ? 'none' : 'metadata'}
           poster={source.poster}
           aria-label={t.videoLabel}
           onPlay={() => setPlaying(true)}

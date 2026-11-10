@@ -13,7 +13,7 @@ import { Cursor } from '../parts/Cursor'
 import { Highlight } from '../parts/Highlight'
 
 const QUESTION = 'Como está a tesouraria da minha empresa?'
-const ANSWER = 'A tesouraria está estável, mas € 18.640 em faturas em atraso merecem atenção.'
+const ANSWER = 'Há € 50.948,60 em faturas em atraso e um cliente concentra 88,3% deste valor.'
 const WORDS = ANSWER.split(' ')
 const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const
 const ease = Easing.bezier(0.45, 0, 0.2, 1)

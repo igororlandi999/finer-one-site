@@ -68,14 +68,14 @@ export function getUiData(lang: Lang) {
     answerBy: 'Finer One',
     questions: (pt
       ? [
-          { q: 'A minha empresa está saudável?', a: 'Sim, com um ponto de atenção. As receitas cresceram 8,1% face ao mês anterior e o resultado mantém-se positivo (€ 17.720). A tesouraria, no entanto, depende da cobrança de € 18.640 em faturas em atraso.' },
-          { q: 'Qual o maior risco financeiro agora?', a: 'A concentração de valores em atraso: 3 clientes representam 72% do total por receber. Se não forem cobrados nas próximas 6 semanas, o saldo pode ficar abaixo do mínimo de caixa definido.' },
+          { q: 'A minha empresa está saudável?', a: 'Sim, com um ponto de atenção. As receitas cresceram 8,1% face ao mês anterior e o resultado mantém-se positivo (€ 17.720). A tesouraria, no entanto, depende da cobrança de € 50.948,60 em faturas em atraso.' },
+          { q: 'Qual o maior risco financeiro agora?', a: 'A concentração de valores em atraso: um cliente representa 88,3% do total por receber. Se não forem cobrados nas próximas 6 semanas, o saldo pode ficar abaixo do mínimo de caixa definido.' },
           { q: 'Como está o resultado do mês?', a: 'O resultado do período é de € 17.720, menos 2,3% do que no mês anterior. A descida explica-se sobretudo pelo aumento de 11,6% nas saídas de caixa, com destaque para fornecedores.' },
           { q: 'Quais faturas estão por pagar?', a: 'Tem 9 faturas de fornecedores por pagar, no total de € 21.430. Duas vencem esta semana (€ 4.980). Nenhuma está em atraso.' },
         ]
       : [
-          { q: 'Is my company healthy?', a: 'Yes, with one point of attention. Revenue grew 8.1% on last month and the result remains positive (€17,720). Cash, however, depends on collecting €18,640 in overdue invoices.' },
-          { q: 'What is the biggest financial risk right now?', a: 'Concentration of overdue amounts: 3 customers account for 72% of receivables. If they are not collected within 6 weeks, the balance may fall below the defined cash minimum.' },
+          { q: 'Is my company healthy?', a: 'Yes, with one point of attention. Revenue grew 8.1% on last month and the result remains positive (€17,720). Cash, however, depends on collecting €50,948.60 in overdue invoices.' },
+          { q: 'What is the biggest financial risk right now?', a: 'Concentration of overdue amounts: one customer accounts for 88.3% of receivables. If they are not collected within 6 weeks, the balance may fall below the defined cash minimum.' },
           { q: 'How is this month’s result?', a: 'The period result is €17,720, 2.3% lower than last month. The drop is mainly explained by an 11.6% increase in cash outflows, especially suppliers.' },
           { q: 'Which invoices are due?', a: 'You have 9 supplier invoices due, totalling €21,430. Two are due this week (€4,980). None are overdue.' },
         ]) as HomeQuestion[],
@@ -83,11 +83,11 @@ export function getUiData(lang: Lang) {
     briefDate: pt ? '9 de novembro de 2026' : '9 November 2026',
     briefTitle: pt ? ['O negócio está a crescer.', 'A tesouraria merece atenção.'] : ['The business is growing.', 'Cash deserves attention.'],
     briefBody: pt
-      ? ['A atividade mantém uma evolução positiva, mas existem ', '7 faturas em atraso', ' no valor de ', '€ 18.640,00', '. A sua cobrança poderá reforçar a liquidez e reduzir a pressão sobre a tesouraria.']
-      : ['Activity keeps a positive trend, but there are ', '7 overdue invoices', ' worth ', '€18,640.00', '. Collecting them could strengthen liquidity and ease pressure on cash.'],
+      ? ['A atividade mantém uma evolução positiva, mas existem ', '6 faturas em atraso', ' no valor de ', '€ 50.948,60', '. Um cliente concentra 88,3% deste valor: a sua cobrança é decisiva para a tesouraria.']
+      : ['Activity keeps a positive trend, but there are ', '6 overdue invoices', ' worth ', '€50,948.60', '. One customer accounts for 88.3% of it: collecting it is decisive for cash.'],
     priorityLabel: pt ? 'Prioridade de hoje' : 'Today’s priority',
-    priority: pt ? 'Recuperar € 18.640,00 em faturas por receber.' : 'Recover €18,640.00 in outstanding invoices.',
-    priorityMeta: pt ? '7 faturas em atraso · Prazo sugerido: 15 dias' : '7 overdue invoices · Suggested deadline: 15 days',
+    priority: pt ? 'Recuperar € 50.948,60 em faturas por receber.' : 'Recover €50,948.60 in outstanding invoices.',
+    priorityMeta: pt ? '6 faturas em atraso · Prazo sugerido: 15 dias' : '6 overdue invoices · Suggested deadline: 15 days',
     priorityCta: pt ? 'Ver plano de ação' : 'View action plan',
     kpiTitle: pt ? 'Indicadores principais' : 'Key indicators',
     kpiMonth: pt ? 'Novembro de 2026' : 'November 2026',
@@ -114,7 +114,7 @@ export function getUiData(lang: Lang) {
       severity: pt ? 'Crítico' : 'Critical',
       level: 'critical',
       title: pt ? 'Cobrar as faturas em atraso' : 'Collect overdue invoices',
-      summary: pt ? '7 faturas em atraso por receber, no total de € 18.640,00.' : '7 overdue invoices to collect, totalling €18,640.00.',
+      summary: pt ? '6 faturas em atraso por receber, no total de € 50.948,60.' : '6 overdue invoices to collect, totalling €50,948.60.',
       value: eur(18640),
       valueNote: pt ? '(por receber)' : '(receivable)',
       valueTone: 'in',
@@ -129,14 +129,14 @@ export function getUiData(lang: Lang) {
         ],
       },
       shows: pt
-        ? ['7 faturas em atraso, no total de € 18.640,00 (≈ 30% das entradas mensais).', 'Atraso médio de 24 dias, a pressionar a liquidez de curto prazo.', '3 clientes concentram 72% do valor em atraso.', 'A fatura mais antiga venceu há 41 dias.']
-        : ['7 overdue invoices totalling €18,640.00 (≈ 30% of monthly inflows).', 'Average delay of 24 days, putting pressure on short-term liquidity.', '3 customers account for 72% of the overdue amount.', 'The oldest invoice fell due 41 days ago.'],
+        ? ['6 faturas em atraso, no total de € 50.948,60.', 'Atraso médio de 15 dias, a pressionar a liquidez de curto prazo.', 'Um cliente (Cliente A) concentra 88,3% do valor em atraso.', 'A fatura mais antiga venceu há 22 dias.']
+        : ['6 overdue invoices totalling €50,948.60.', 'Average delay of 15 days, putting pressure on short-term liquidity.', 'One customer (Customer A) accounts for 88.3% of the overdue amount.', 'The oldest invoice fell due 22 days ago.'],
       recs: pt
-        ? [['Contactar os 3 clientes com maior valor em atraso.', 'Enviar lembrete personalizado com a fatura em anexo.'], ['Propor planos de pagamento quando necessário.', 'Para os casos de maior valor.'], ['Acompanhar a evolução das cobranças.', 'Monitorizar semanalmente o estado das faturas.'], ['Rever as condições de crédito.', 'Ajustar prazos para reduzir o risco de novos atrasos.']]
-        : [['Contact the 3 customers with the largest overdue amounts.', 'Send a personalised reminder with the invoice attached.'], ['Offer payment plans where needed.', 'For the largest cases.'], ['Track collection progress.', 'Review invoice status weekly.'], ['Review credit terms.', 'Adjust terms to reduce the risk of new delays.']],
+        ? [['Contactar o Cliente A e confirmar uma data de pagamento.', 'Enviar lembrete personalizado com as faturas em anexo.'], ['Propor planos de pagamento quando necessário.', 'Para os casos de maior valor.'], ['Acompanhar a evolução das cobranças.', 'Monitorizar semanalmente o estado das faturas.'], ['Rever as condições de crédito.', 'Ajustar prazos para reduzir o risco de novos atrasos.']]
+        : [['Contact Customer A and confirm a payment date.', 'Send a personalised reminder with the invoices attached.'], ['Offer payment plans where needed.', 'For the largest cases.'], ['Track collection progress.', 'Review invoice status weekly.'], ['Review credit terms.', 'Adjust terms to reduce the risk of new delays.']],
       explain: pt
-        ? 'Esta recomendação surge porque o valor em atraso representa cerca de 30% das entradas mensais e está concentrado em poucos clientes. Cobrar uma parte nas próximas semanas afasta o risco de a tesouraria descer abaixo do mínimo.'
-        : 'This recommendation appears because the overdue amount is about 30% of monthly inflows and is concentrated in few customers. Collecting part of it in the coming weeks removes the risk of cash falling below the minimum.',
+        ? 'Esta recomendação surge porque quase todo o valor em atraso (88,3%) depende de um único cliente. Confirmar a data deste pagamento é o passo com mais impacto na tesouraria das próximas semanas.'
+        : 'This recommendation appears because almost all of the overdue amount (88.3%) depends on a single customer. Confirming the date of this payment is the step with the most impact on cash in the coming weeks.',
     },
     {
       id: 'payables',

@@ -1,5 +1,6 @@
 import { Composition, Series } from 'remotion'
-import { loadFont } from '@remotion/google-fonts/Montserrat'
+import { loadFont as loadInter } from '@remotion/google-fonts/Inter'
+import { loadFont as loadInterTight } from '@remotion/google-fonts/InterTight'
 import { LanguageProvider } from '@/i18n/LanguageContext'
 import '@/index.css'
 import { FPS, HEIGHT, WIDTH } from './lib/constants'
@@ -45,7 +46,9 @@ function HeroSampleComp() {
   )
 }
 
-loadFont('normal', { weights: ['400', '500', '600', '700', '800'], subsets: ['latin', 'latin-ext'] })
+// Tipografia oficial: Inter (texto) e Inter Tight (títulos).
+loadInter('normal', { weights: ['400', '500', '600', '700'], subsets: ['latin', 'latin-ext'] })
+loadInterTight('normal', { weights: ['500', '600', '700', '800'], subsets: ['latin', 'latin-ext'] })
 
 function Sample() {
   return (
