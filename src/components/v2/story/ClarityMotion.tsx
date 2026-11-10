@@ -37,6 +37,9 @@ const copy: Record<Lang, { title: [string, string]; sub: string; note: string; w
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
+/** Versão anterior dos fundos (contentor arredondado sobre navy) em ?fundo=antigo. */
+const OLD_BG = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('fundo') === 'antigo'
+
 /**
  * Segunda secção com Motion (motion.dev):
  * 1) revelação da janela por máscara (clip-path) ao entrar no ecrã, uma vez;
@@ -73,8 +76,8 @@ export function ClarityMotion() {
 
   return (
     <MotionConfig reducedMotion="user" transition={{ duration: 0.35, ease: EASE }}>
-      <section id="problema" aria-labelledby="clareza-titulo" className="relative z-10 -mt-4 scroll-mt-16 pb-4 sm:-mt-6 sm:pb-6">
-        <div className="relative rounded-[28px] bg-[linear-gradient(180deg,#FFFFFF_0%,#F5F8FE_100%)] shadow-[0_-30px_80px_-40px_rgba(0,82,255,0.45)] sm:mx-3 sm:rounded-[40px]">
+      <section id="problema" aria-labelledby="clareza-titulo" className={OLD_BG ? 'relative z-10 -mt-4 scroll-mt-16 pb-4 sm:-mt-6 sm:pb-6' : 'relative z-10 -mt-4 scroll-mt-16 bg-white sm:-mt-6'}>
+        <div className={OLD_BG ? 'relative rounded-[28px] bg-[linear-gradient(180deg,#FFFFFF_0%,#F5F8FE_100%)] shadow-[0_-30px_80px_-40px_rgba(0,82,255,0.45)] sm:mx-3 sm:rounded-[40px]' : 'relative bg-white shadow-[0_-30px_80px_-40px_rgba(0,82,255,0.45)]'}>
           <span id="demo" aria-hidden="true" className="absolute -top-20" />
           <span aria-hidden="true" className="pointer-events-none absolute inset-x-[18%] top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(30,144,255,0.9),transparent)]" />
 

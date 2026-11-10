@@ -60,7 +60,7 @@ export default function App() {
         {/* Folha clara contínua: demonstração, benefícios e funcionamento.
             Cantos arredondados sobre o navy, em vez de cortes retos entre
             secções escuras e claras. */}
-        <div className="relative z-10 rounded-[28px] bg-gradient-to-b from-ice via-white to-ice sm:mx-3 sm:rounded-[40px]">
+        <div className={typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('fundo') === 'antigo' ? 'relative z-10 rounded-[28px] bg-gradient-to-b from-ice via-white to-ice sm:mx-3 sm:rounded-[40px]' : 'relative z-10 rounded-b-[28px] bg-gradient-to-b from-[#F8FAFF] via-white to-ice sm:rounded-b-[40px]'}>
           {/* Demonstração interativa retirada: a plataforma já aparece no vídeo da hero. Versão antiga em ?tour=sim */}
           {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('tour') === 'sim' && <ProductTour />}
           {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'antigo' ? <Benefits /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'cartoes' ? <BenefitsCards /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'faixa' ? <BenefitsStrip /> : <BenefitsMotion />}

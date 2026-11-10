@@ -28,6 +28,9 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; items: { n:
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
+/** Versão anterior dos fundos em ?fundo=antigo. */
+const OLD_BG = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('fundo') === 'antigo'
+
 // Sequência: eyebrow → título → quatro benefícios (stagger 80 ms) → linha.
 const head: Variants = {
   hidden: { opacity: 0, y: 16 },
@@ -55,7 +58,7 @@ export function BenefitsMotion() {
 
   return (
     <MotionConfig reducedMotion="user">
-      <section id="beneficios" aria-labelledby="beneficios-titulo" className="relative scroll-mt-24 py-10 text-navy lg:py-12">
+      <section id="beneficios" aria-labelledby="beneficios-titulo" className={OLD_BG ? 'relative scroll-mt-24 py-10 text-navy lg:py-12' : 'relative scroll-mt-24 bg-[#F8FAFF] py-10 text-navy lg:py-12'}>
         {/* Separação editorial delicada da secção anterior */}
         <span aria-hidden="true" className="pointer-events-none absolute inset-x-[30%] top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(0,82,255,0.25),transparent)]" />
 
