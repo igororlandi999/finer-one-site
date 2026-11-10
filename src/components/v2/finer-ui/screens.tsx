@@ -87,8 +87,16 @@ const cashMonths = [
   { m: 'nov.', in: 61.9, out: 44.2 },
 ]
 
-export function CashflowView() {
+/**
+ * `progress` (0–1) faz as barras crescer em sequência e `tooltip` (0–1) mostra o
+ * detalhe de setembro — usados no vídeo; por omissão, tudo visível.
+ */
+export function CashflowView({ progress = 1, tooltip = 1 }: { progress?: number; tooltip?: number } = {}) {
   const max = 70
+  const grow = (i: number) => {
+    const t = Math.min(1, Math.max(0, progress * 1.7 - i * 0.14))
+    return 1 - Math.pow(1 - t, 3)
+  }
   return (
     <Page
       title="Cashflow"
@@ -115,7 +123,7 @@ export function CashflowView() {
       </div>
 
       <div className="mt-5 grid grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)] gap-5">
-        <div className={cn(card, 'p-7')}>
+        <div data-demo="cf-chart" className={cn(card, 'p-7')}>
           <p className="text-[17px] font-bold">Evolução do cashflow</p>
           <p className={cn('mt-1 text-[12.5px]', muted)}>jun. – nov. · Entradas e saídas liquidadas por mês · Valores em €</p>
           <div className="relative mt-6 h-[300px]">
@@ -128,17 +136,17 @@ export function CashflowView() {
               </span>
             ))}
             <div className="absolute inset-x-12 bottom-[1%] top-0 flex items-end justify-around">
-              {cashMonths.map((c) => (
-                <div key={c.m} className="flex h-full flex-col items-center justify-end">
+              {cashMonths.map((c, i) => (
+                <div key={c.m} data-demo={`cf-bar-${i}`} className="flex h-full flex-col items-center justify-end">
                   <div className="flex h-full items-end gap-1.5">
-                    <span className="w-6 rounded-t-[4px] bg-accent" style={{ height: `${(c.in / max) * 100}%` }} />
-                    <span className="w-6 rounded-t-[4px] bg-[#9DB7FF]" style={{ height: `${(c.out / max) * 100}%` }} />
+                    <span className="w-6 rounded-t-[4px] bg-accent" style={{ height: `${(c.in / max) * 100 * grow(i)}%` }} />
+                    <span className="w-6 rounded-t-[4px] bg-[#9DB7FF]" style={{ height: `${(c.out / max) * 100 * grow(i)}%` }} />
                   </div>
                   <span className={cn('mt-2 text-[11.5px]', muted)}>{c.m}</span>
                 </div>
               ))}
             </div>
-            <div className="absolute left-[56%] top-[6%] rounded-xl border border-[#0B1030]/10 bg-white px-4 py-3 text-[12px] shadow-lg">
+            <div data-demo="cf-tooltip" className="absolute left-[56%] top-[6%] rounded-xl border border-[#0B1030]/10 bg-white px-4 py-3 text-[12px] shadow-lg" style={{ opacity: tooltip, transform: `translateY(${(1 - tooltip) * 6}px)` }}>
               <p className={muted}>set.</p>
               <p className="mt-1 flex justify-between gap-6"><span className={muted}>Entradas</span><span className="tabular font-semibold">€ 63.900,00</span></p>
               <p className="flex justify-between gap-6"><span className={muted}>Saídas</span><span className="tabular font-semibold">€ 46.200,00</span></p>
@@ -150,7 +158,7 @@ export function CashflowView() {
           </div>
         </div>
 
-        <div className={cn(card, 'p-7')}>
+        <div data-demo="cf-activity" className={cn(card, 'p-7')}>
           <p className="text-[17px] font-bold">Cashflow por atividade</p>
           {[
             ['Operacional', '€ 81.000,35', 'text-emerald-700', [['Entradas', '€ 340.700,15'], ['Saídas', '€ 259.699,80'], ['Média mensal', '€ 13.500,06']]],
@@ -170,7 +178,7 @@ export function CashflowView() {
               ))}
             </div>
           ))}
-          <div className="mt-4 rounded-xl border border-accent/25 bg-[#EEF3FF] p-4">
+          <div data-demo="cf-net" className="mt-4 rounded-xl border border-accent/25 bg-[#EEF3FF] p-4">
             <p className="flex justify-between text-[14px] font-bold">
               Cashflow líquido <span className="tabular text-emerald-700">€ 70.800,35</span>
             </p>

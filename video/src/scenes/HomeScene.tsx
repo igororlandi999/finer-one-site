@@ -20,7 +20,7 @@ const SKEW = Math.tan((14 * Math.PI) / 180) * (HEIGHT / 2 + 100)
 /**
  * Cenas 1 e 2 do storyboard: abertura com a linha azul a revelar a Finer Home,
  * pergunta escrita no "Ask Finer", resposta da Finer One e aproximação aos
- * indicadores principais. 270 fotogramas (9 s a 30 fps).
+ * indicadores principais; termina em plano geral. 300 fotogramas (10 s a 30 fps).
  */
 export function HomeScene() {
   const frame = useCurrentFrame()
@@ -43,7 +43,9 @@ export function HomeScene() {
     { f: 168, s: 1.18, x: ask ? ask.cx : WIDE.x, y: ask ? ask.cy + 40 : WIDE.y },
     { f: 200, s: 1.14, x: ask ? ask.cx : WIDE.x, y: ask ? ask.cy + 90 : WIDE.y },
     { f: 236, s: 1.36, x: kpis ? kpis.cx : WIDE.x, y: kpis ? kpis.cy : WIDE.y },
-    { f: 270, s: 1.4, x: kpis ? kpis.cx : WIDE.x, y: kpis ? kpis.cy : WIDE.y },
+    { f: 266, s: 1.4, x: kpis ? kpis.cx : WIDE.x, y: kpis ? kpis.cy : WIDE.y },
+    // A câmara recua para o plano geral antes da passagem ao Cashflow
+    { f: 300, ...WIDE },
   ]
   const cam = cameraAt(frame, shots)
 
@@ -82,7 +84,7 @@ export function HomeScene() {
             <AppShell view="home" className="min-h-[900px]">
               <FinerHomeView interactive={false} script={{ question: QUESTION, typedQ, answer: ANSWER, typedA }} />
             </AppShell>
-            <Highlight frame={frame} rect={kpis} from={226} to={320} pad={10} radius={22} />
+            <Highlight frame={frame} rect={kpis} from={226} to={284} pad={10} radius={22} />
             <Glow frame={frame} rect={a['kpi-0']} from={234} to={252} />
             <Glow frame={frame} rect={a['kpi-1']} from={246} to={264} />
             <Glow frame={frame} rect={a['kpi-2']} from={258} to={276} />

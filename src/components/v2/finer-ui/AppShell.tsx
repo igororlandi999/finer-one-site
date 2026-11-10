@@ -57,7 +57,7 @@ export function AppShell({ view, onNavigate, navigable = ['home', 'advisor'], cl
                 )
                 const base = 'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[13px]'
                 return (
-                  <li key={i}>
+                  <li key={i} data-demo={`nav-${i}`}>
                     {target && onNavigate && navigable.includes(target) ? (
                       <button
                         type="button"
