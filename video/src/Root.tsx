@@ -5,10 +5,11 @@ import '@/index.css'
 import { FPS, HEIGHT, WIDTH } from './lib/constants'
 import { HomeScene } from './scenes/HomeScene'
 import { CashflowScene } from './scenes/CashflowScene'
-import { EarthBackground } from './scenes/EarthBackground'
+import { EarthBackground, EarthSharpSource } from './scenes/EarthBackground'
 import { HeroPreview } from './scenes/HeroPreview'
 import { HeroSample } from './scenes/HeroSample'
 import { HeroSampleV2 } from './scenes/HeroSampleV2'
+import { HeroSampleV3 } from './scenes/HeroSampleV3'
 import { ScreenStill } from './scenes/ScreenStill'
 import type { View } from '@/components/v2/finer-ui/AppShell'
 
@@ -16,6 +17,14 @@ function ScreenStillComp({ view }: { view: View }) {
   return (
     <LanguageProvider>
       <ScreenStill view={view} />
+    </LanguageProvider>
+  )
+}
+
+function HeroSampleV3Comp() {
+  return (
+    <LanguageProvider>
+      <HeroSampleV3 />
     </LanguageProvider>
   )
 }
@@ -60,10 +69,13 @@ export function Root() {
       <Composition id="HeroSample" component={HeroSampleComp} durationInFrames={300} fps={FPS} width={WIDTH} height={HEIGHT} />
       {/* Product Film 2.0: linha cometa, escrita humana, profundidade e loop sem corte, 10 s. */}
       <Composition id="HeroSampleV2" component={HeroSampleV2Comp} durationInFrames={300} fps={FPS} width={WIDTH} height={HEIGHT} />
+      {/* Versão final da homepage: o clique em "Ver plano de ação" abre o Advisor, 10 s. */}
+      <Composition id="HeroSampleV3" component={HeroSampleV3Comp} durationInFrames={300} fps={FPS} width={WIDTH} height={HEIGHT} />
       {/* Ecrã estático para o storyboard (--props='{"view":"receitas"}'). */}
       <Composition id="ScreenStill" component={ScreenStillComp} durationInFrames={1} fps={FPS} width={WIDTH} height={HEIGHT} defaultProps={{ view: 'home' as View }} />
       {/* Amostra anterior: Finer Home → Cashflow, 17 s. */}
       {/* Fundo cinematográfico da Hero: Terra em loop de 14 s. */}
+      <Composition id="EarthSharpSource" component={EarthSharpSource} durationInFrames={1} fps={FPS} width={2244} height={1120} />
       <Composition id="HeroEarth" component={EarthBackground} durationInFrames={420} fps={FPS} width={WIDTH} height={HEIGHT} />
       {/* Pré-visualização animada da Hero completa (1440×900). */}
       <Composition id="HeroPreview" component={() => (<LanguageProvider><HeroPreview /></LanguageProvider>)} durationInFrames={240} fps={FPS} width={1440} height={900} />

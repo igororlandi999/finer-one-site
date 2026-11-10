@@ -15,7 +15,7 @@ import { useLanguage } from '@/i18n/LanguageContext'
 import type { Lang } from '@/i18n/LanguageContext'
 
 const copy: Record<Lang, {
-  eyebrow: string; first: string; secondPrefix: string; highlight: string; sub: string
+  eyebrow: string; first: string; secondPrefix: string; highlight: string; sub: [string, string]
   primary: string; secondary: string; waitlistPrefix: string; waitlist: string
   badge: string; play: string; pause: string; videoLabel: string; posterLabel: string
 }> = {
@@ -24,7 +24,7 @@ const copy: Record<Lang, {
     first: 'A sua empresa já tem os números.',
     secondPrefix: 'Agora precisa de ',
     highlight: 'respostas',
-    sub: 'Saiba quanto tem por receber, acompanhe a tesouraria e descubra o que merece a sua atenção. A Finer One transforma informação financeira em clareza para decidir.',
+    sub: ['Acompanhe recebimentos, despesas e tesouraria.', 'Perceba o que está a acontecer e saiba onde agir.'],
     primary: 'Ser Finer Pioneer',
     secondary: 'Ver a Finer One em ação',
     waitlistPrefix: 'Prefere acompanhar à distância?',
@@ -40,7 +40,7 @@ const copy: Record<Lang, {
     first: 'Your company already has the numbers.',
     secondPrefix: 'Now it needs ',
     highlight: 'answers',
-    sub: 'Know what you are owed, keep track of cash and discover what deserves your attention. Finer One turns financial information into clarity to decide.',
+    sub: ['Track receivables, expenses and cash.', 'See what is happening and know where to act.'],
     primary: 'Become a Finer Pioneer',
     secondary: 'See Finer One in action',
     waitlistPrefix: 'Prefer to follow along?',
@@ -77,49 +77,71 @@ export function HeroDemo() {
     >
       <Backdrop />
 
-      <div className="mx-auto grid w-full max-w-[1280px] grid-cols-[minmax(0,1fr)] items-center gap-14 px-6 sm:px-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-16 lg:px-12 xl:gap-[72px] xl:px-14">
+      <div className="mx-auto grid w-full max-w-[1280px] grid-cols-[minmax(0,1fr)] items-center gap-14 px-6 sm:px-10 lg:grid-cols-[minmax(0,0.96fr)_minmax(0,1.14fr)] lg:gap-14 lg:px-12 xl:gap-[76px] xl:px-14">
         {/* Mensagem */}
-        <div className="max-w-[600px]">
-          <p className="inline-flex animate-fade-up items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.28em] text-[#7CB8FF]">
+        <div className="max-w-[580px]">
+          <p className="inline-flex animate-fade-up items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.3em] text-[#7CB8FF]">
             <span className="h-px w-8 bg-gradient-to-r from-transparent to-glow" aria-hidden="true" />
             {t.eyebrow}
           </p>
-          <h1 id="hero-titulo" className="mt-7 font-display text-[38px] font-bold leading-[1.06] tracking-[-0.035em] text-white sm:text-[48px] lg:text-[43px] xl:text-[51px]">
+          <h1 id="hero-titulo" className="mt-7 font-display text-[36px] font-bold leading-[1.05] tracking-[-0.032em] text-white [font-feature-settings:'kern'] sm:text-[46px] lg:text-[41px] xl:text-[48px]">
             <span className="block text-balance animate-fade-up [animation-delay:90ms]">{t.first}</span>
-            <span className="mt-1 block text-balance animate-fade-up [animation-delay:200ms]">
+            <span className="mt-1.5 block text-balance animate-fade-up [animation-delay:200ms]">
               {t.secondPrefix}
-              <span className="text-accent [text-shadow:0_0_40px_rgba(0,82,255,0.5)]">{t.highlight}</span>
-              <span className="text-accent">.</span>
+              <span className="relative whitespace-nowrap text-accent [text-shadow:0_0_32px_rgba(0,82,255,0.45)]">
+                {t.highlight}
+                <span className="text-accent">.</span>
+              </span>
             </span>
           </h1>
-          <p className="mt-9 max-w-[520px] animate-fade-up text-[16.5px] leading-[1.65] text-white/80 [animation-delay:300ms] sm:text-[18px]">{t.sub}</p>
-          <div className="mt-11 flex animate-fade-up flex-col gap-3 [animation-delay:400ms] sm:flex-row sm:items-center sm:gap-4">
-            <a href="/pioneers/" className={buttonClasses({ size: 'lg', className: 'group px-7 font-semibold' })}>
+          <p className="mt-10 max-w-[500px] animate-fade-up text-[16.5px] leading-[1.6] tracking-[-0.003em] text-white/[0.78] [animation-delay:300ms] sm:text-[18px]">
+            <span className="block">{t.sub[0]}</span>
+            <span className="mt-1 block">{t.sub[1]}</span>
+          </p>
+          <div className="mt-11 flex animate-fade-up flex-col gap-3 [animation-delay:400ms] sm:flex-row sm:items-center sm:gap-3.5">
+            <a
+              href="/pioneers/"
+              className={buttonClasses({
+                size: 'lg',
+                className:
+                  'group h-[52px] px-7 font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_10px_30px_-10px_rgba(0,82,255,0.95)] transition-[transform,background-color,box-shadow] duration-300 hover:-translate-y-px hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_16px_40px_-12px_rgba(30,144,255,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-glow focus-visible:ring-offset-2 focus-visible:ring-offset-[#03060F]',
+              })}
+            >
               {t.primary}
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true" />
             </a>
-            <a href="#demo" className={buttonClasses({ variant: 'ghost', size: 'lg', className: 'text-white/90 hover:text-white' })}>
-              <PlayCircle className="h-[18px] w-[18px] text-glow" aria-hidden="true" />
+            <a
+              href="#demo"
+              className={buttonClasses({
+                variant: 'outline',
+                size: 'lg',
+                className:
+                  'group h-[52px] border-white/[0.14] bg-white/[0.04] px-6 text-white/90 backdrop-blur-sm transition-[border-color,background-color,color] duration-300 hover:border-white/30 hover:bg-white/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-glow',
+              })}
+            >
+              <PlayCircle className="h-[18px] w-[18px] text-glow transition-transform duration-300 group-hover:scale-110" aria-hidden="true" />
               {t.secondary}
             </a>
           </div>
-          <p className="mt-6 animate-fade-up text-[13.5px] text-white/70 [animation-delay:480ms]">
+          <p className="mt-7 animate-fade-up text-[13.5px] text-white/60 [animation-delay:480ms]">
             {t.waitlistPrefix}{' '}
-            <a href="/lista-espera/" className="font-medium text-white/90 underline decoration-white/30 underline-offset-4 transition-colors hover:text-white hover:decoration-glow">
+            <a href="/lista-espera/" className="group inline-flex items-center gap-1 font-medium text-white/85 underline decoration-white/25 underline-offset-[5px] transition-colors hover:text-white hover:decoration-glow">
               {t.waitlist}
+              <ArrowRight className="h-3 w-3 opacity-60 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:opacity-100" aria-hidden="true" />
             </a>
           </p>
         </div>
 
-        {/* Vídeo da plataforma */}
-        <div className="relative opacity-0 [animation:fo-enter-right_1s_cubic-bezier(0.22,1,0.36,1)_450ms_forwards]">
-          {/* Painel de fundo com a fotografia oficial, desencontrado da moldura */}
-          {/* Profundidade subtil: halo azul muito suave por trás da janela */}
-          <div aria-hidden="true" className="absolute -inset-x-6 -inset-y-8 rounded-[40px] bg-[radial-gradient(closest-side,rgba(0,82,255,0.22),transparent)] blur-2xl" />
+        {/* Vídeo da plataforma — apresentado como peça de produto */}
+        <div className="relative opacity-0 [animation:fo-enter-right_1.1s_cubic-bezier(0.22,1,0.36,1)_420ms_forwards]">
+          {/* Halo azul muito suave por trás da janela */}
+          <div aria-hidden="true" className="absolute -inset-x-8 -inset-y-10 rounded-[48px] bg-[radial-gradient(closest-side,rgba(0,82,255,0.2),transparent)] blur-2xl" />
+          {/* Luz refletida por baixo da janela (dá peso e profundidade) */}
+          <div aria-hidden="true" className="absolute -bottom-10 left-[12%] right-[12%] h-16 rounded-[50%] bg-[radial-gradient(closest-side,rgba(30,144,255,0.32),transparent)] blur-xl" />
           <LuminousLine
             viewBox="0 0 1000 600"
             d="M -80 560 C 220 560, 380 500, 520 430 S 800 220, 1080 170"
-            className="absolute -bottom-6 -left-24 h-[75%] w-[calc(100%+6rem)] max-w-none opacity-60"
+            className="absolute -bottom-6 -left-24 h-[75%] w-[calc(100%+6rem)] max-w-none opacity-50"
             delay={900}
             spark={false}
           />
@@ -159,13 +181,13 @@ function Backdrop() {
         <img src={HERO_BACKGROUND.poster} alt="" className="absolute inset-0 h-full w-full translate-y-[6%] scale-[1.1] object-cover object-[50%_70%] opacity-95" />
       )}
       {/* Leitura: navy forte à esquerda (texto), aliviando para a direita */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(3,6,15,0.94)_0%,rgba(3,6,15,0.78)_36%,rgba(3,6,15,0.35)_68%,rgba(3,6,15,0.45)_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(3,6,15,0.93)_0%,rgba(3,6,15,0.74)_34%,rgba(3,6,15,0.22)_66%,rgba(3,6,15,0.32)_100%)]" />
       {/* Topo limpo por baixo da navegação; centro sem competir com o título */}
       <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(3,6,15,0.9)_0%,rgba(3,6,15,0.35)_22%,transparent_45%)]" />
       {/* Transição para a secção seguinte */}
       {/* Acalma o brilho por trás dos botões (esquerda/baixo) e aprofunda o navy */}
       <div className="absolute inset-0 bg-[radial-gradient(45%_40%_at_18%_80%,rgba(3,6,15,0.6),transparent_70%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(130%_100%_at_50%_30%,transparent_55%,rgba(2,4,10,0.7)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(130%_100%_at_50%_30%,transparent_58%,rgba(2,4,10,0.6)_100%)]" />
       <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-navy-deep" />
     </div>
   )
@@ -174,10 +196,13 @@ function Backdrop() {
 /** Moldura de aplicação 16:9 — a mesma para o vídeo final e para o poster. */
 function Frame({ t, children, controls }: { t: T; children: ReactNode; controls?: ReactNode }) {
   return (
-    <div className="rounded-[14px] p-px shadow-[0_40px_90px_-30px_rgba(0,0,0,0.9),0_0_0_1px_rgba(255,255,255,0.14),0_0_60px_-20px_rgba(30,144,255,0.35)]">
-      <div className="relative overflow-hidden rounded-[13px] bg-white">
+    // Moldura de vidro: aro translúcido, orla superior com a linha azul da marca,
+    // sombra longa e um contorno interior fino para separar o ecrã do fundo.
+    <div className="relative rounded-[18px] border border-white/[0.11] bg-[linear-gradient(180deg,rgba(255,255,255,0.09),rgba(255,255,255,0.03))] p-[6px] shadow-[0_50px_110px_-40px_rgba(0,0,0,0.95),0_0_70px_-24px_rgba(30,144,255,0.4),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-md sm:p-[7px]">
+      <span aria-hidden="true" className="pointer-events-none absolute -top-px left-[14%] right-[14%] h-px bg-[linear-gradient(90deg,transparent,rgba(90,180,255,0.9),transparent)]" />
+      <div className="relative overflow-hidden rounded-[12px] bg-white ring-1 ring-black/10">
         <div className="relative aspect-video bg-[#F7F9FE]">{children}</div>
-        <span className="pointer-events-none absolute bottom-3 left-3 rounded-full bg-[#0B1030]/75 px-2.5 py-1 text-[10.5px] font-semibold text-white backdrop-blur">{t.badge}</span>
+        <span className="pointer-events-none absolute bottom-3 left-3 rounded-full bg-[#0B1030]/70 px-2.5 py-1 text-[10px] font-semibold tracking-[0.01em] text-white/95 ring-1 ring-white/10 backdrop-blur">{t.badge}</span>
         {controls}
       </div>
     </div>

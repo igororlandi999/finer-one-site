@@ -181,6 +181,7 @@ export function FinerHomeView({ interactive = true, onOpenAdvisor, showAsk = tru
             </div>
             <button
               type="button"
+              data-demo="priority-cta"
               tabIndex={tab}
               onClick={interactive ? onOpenAdvisor : undefined}
               className={cn('inline-flex shrink-0 items-center justify-center gap-1 rounded-full bg-accent px-4 py-2.5 text-[13px] font-semibold text-white shadow-[0_8px_20px_-8px_rgba(0,82,255,0.9)] transition-colors hover:bg-accent-hover')}

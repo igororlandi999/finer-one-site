@@ -12,12 +12,12 @@
  */
 export type DemoVideoSource = { src: string; mobile?: string; webm?: string; poster?: string }
 
-// Versão de desenvolvimento: a amostra V2 (Product Film 2.0) fica visível no hero
+// Versão de desenvolvimento: a amostra V3 (versão final proposta) fica visível no hero
 // para avaliação. Substituir pelo vídeo final aprovado antes de publicar.
 export const DEMO_VIDEO: DemoVideoSource = {
-  src: '/video/amostras/hero-a-v2.mp4',
-  mobile: '/video/amostras/hero-a-v2-720.mp4',
-  poster: '/video/amostras/hero-a-v2.jpg',
+  src: '/video/amostras/hero-a-v3.mp4',
+  mobile: '/video/amostras/hero-a-v3-720.mp4',
+  poster: '/video/amostras/hero-a-v3.jpg',
 }
 
 /**
@@ -33,10 +33,11 @@ export const HERO_BACKGROUND = {
 }
 
 /**
- * Versões para comparação: ?video=v1 mostra a amostra original (referência).
+ * Versões para comparação: ?video=v1 (original) e ?video=v2 (Product Film 2.0).
  * Remover antes de publicar.
  */
 export const DEMO_VIDEO_SAMPLES: Record<string, DemoVideoSource> = {
   v1: { src: '/video/amostras/hero-a.mp4', poster: '/video/amostras/hero-a.jpg' },
-  v2: DEMO_VIDEO,
+  v2: { src: '/video/amostras/hero-a-v2.mp4', mobile: '/video/amostras/hero-a-v2-720.mp4', poster: '/video/amostras/hero-a-v2.jpg' },
+  v3: DEMO_VIDEO,
 }
