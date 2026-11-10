@@ -10,8 +10,11 @@ Contexto obrigatório para qualquer sessão que trabalhe neste repositório.
 - Não inventar preços, clientes, testemunhos, métricas, certificações ou parceiros.
 - Kontomatik e Qwist estão **em avaliação** — não os apresentar como parceiros.
   AWS é a tecnologia **prevista** para o processamento de faturas.
-- Open Banking, leitura de faturas por email, alertas e Finer Advisor são
-  funcionamento **previsto/MVP em teste** — comunicar como tal.
+- Ligação bancária (Open Banking) e receção de faturas por email dedicado:
+  **funcionalidades reais**, por indicação do fundador (10/11/2026) — não as rotular
+  como "previstas". Continua proibido nomear fornecedores, bancos suportados, tempos
+  de atualização ou garantias técnicas não verificadas.
+- Alertas e Finer Advisor: comunicar com rigor, sem prometer resultados.
 - Valores em euros no site são sempre demonstrativos e rotulados como "Exemplo".
 - Não usar as capturas reais da plataforma sem confirmar que os dados nelas são fictícios.
 

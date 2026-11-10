@@ -17,6 +17,7 @@ import { BenefitsCards } from '@/components/v2/BenefitsCards'
 import { BenefitsMotion } from '@/components/v2/BenefitsMotion'
 import { HowItWorks } from '@/components/v2/HowItWorks'
 import { HowItWorksMotion } from '@/components/v2/HowItWorksMotion'
+import { HowItWorksDemo } from '@/components/v2/HowItWorksDemo'
 import { Security } from '@/components/v2/Security'
 import { PricingSection } from '@/components/pricing/PricingSection'
 import { EarlyAccess } from '@/components/v2/EarlyAccess'
@@ -65,7 +66,7 @@ export default function App() {
           {/* Demonstração interativa retirada: a plataforma já aparece no vídeo da hero. Versão antiga em ?tour=sim */}
           {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('tour') === 'sim' && <ProductTour />}
           {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'antigo' ? <Benefits /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'cartoes' ? <BenefitsCards /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'faixa' ? <BenefitsStrip /> : <BenefitsMotion />}
-          {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'antigo' ? <HowItWorks /> : <HowItWorksMotion />}
+          {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'antigo' ? <HowItWorks /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'v2' ? <HowItWorksMotion /> : <HowItWorksDemo />}
         </div>
         <CinematicBand />
         <Security />
