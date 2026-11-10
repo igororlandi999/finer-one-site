@@ -3,6 +3,7 @@ import { Navbar } from '@/components/layout/Navbar'
 import { HeroDemo } from '@/components/v2/HeroDemo'
 import { ProblemSection } from '@/components/problem/ProblemSection'
 import { Challenges } from '@/components/v2/Challenges'
+import { FinancialStory } from '@/components/v2/story/FinancialStory'
 import { PillarsScrolly } from '@/components/v2/PillarsScrolly'
 import { ProductTour } from '@/components/v2/ProductTour'
 import { CinematicBand } from '@/components/v2/CinematicBand'
@@ -16,7 +17,8 @@ import { FinalCTA } from '@/components/footer/FinalCTA'
 import { SiteFooter } from '@/components/footer/SiteFooter'
 
 // Comparação na versão de desenvolvimento: ?secao=antiga mostra a segunda secção anterior.
-const OLD_SECOND = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('secao') === 'antiga'
+// ?secao=antiga (versão original) · ?secao=desafios (versão de três desafios).
+const SECOND = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('secao') : null
 
 /**
  * Homepage v2 (branch dev/homepage-v2).
@@ -45,7 +47,7 @@ export default function App() {
       <Navbar />
       <main id="conteudo">
         <HeroDemo />
-        {OLD_SECOND ? <ProblemSection /> : <Challenges />}
+        {SECOND === 'antiga' ? <ProblemSection /> : SECOND === 'desafios' ? <Challenges /> : <FinancialStory />}
         <PillarsScrolly />
         {/* Folha clara contínua: demonstração, benefícios e funcionamento.
             Cantos arredondados sobre o navy, em vez de cortes retos entre
