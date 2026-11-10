@@ -7,7 +7,14 @@ import { getUiData } from './data'
 import type { AdvisorAction } from './data'
 
 /** Finer Advisor recriado a partir da captura real, com dados fictícios. */
-export function FinerAdvisorView() {
+/**
+ * `demo` (vídeo Remotion): quantos pontos de "O que os dados mostram" e quantas
+ * recomendações estão visíveis (valores contínuos para entradas suaves) e a
+ * intensidade do destaque da primeira recomendação. Sem `demo`, mostra tudo.
+ */
+export type AdvisorDemo = { shows: number; recs: number; focus: number }
+
+export function FinerAdvisorView({ demo }: { demo?: AdvisorDemo } = {}) {
   const { lang } = useLanguage()
   const { advisor } = getUiData(lang)
   const [selectedId, setSelectedId] = useState(advisor.actions[0].id)
@@ -75,7 +82,7 @@ export function FinerAdvisorView() {
         </div>
 
         {/* Painel de detalhe */}
-        <ActionDetail key={selected.id + lang} action={selected} labels={advisor} />
+        <ActionDetail key={selected.id + lang} action={selected} labels={advisor} demo={demo} />
       </div>
     </div>
   )
@@ -125,13 +132,14 @@ function ActionCard({ action, identified, active, onSelect }: { action: AdvisorA
 
 type Labels = ReturnType<typeof getUiData>['advisor']
 
-function ActionDetail({ action, labels }: { action: AdvisorAction; labels: Labels }) {
+function ActionDetail({ action, labels, demo }: { action: AdvisorAction; labels: Labels; demo?: AdvisorDemo }) {
+  const reveal = (n: number | undefined, i: number) => (n === undefined ? 1 : Math.min(1, Math.max(0, n - i)))
   const [value, setValue] = useState(action.simulator.initial)
   const [explain, setExplain] = useState(false)
   const results = action.simulator.results(value)
 
   return (
-    <div aria-live="polite" className={cn('fo-rise rounded-2xl border border-[#0B1030]/[0.07] bg-white p-5 shadow-[0_16px_50px_-28px_rgba(11,16,48,0.45)] @xl:p-6')}>
+    <div data-demo="adv-detail" aria-live="polite" className={cn(demo ? '' : 'fo-rise', 'rounded-2xl border border-[#0B1030]/[0.07] bg-white p-5 shadow-[0_16px_50px_-28px_rgba(11,16,48,0.45)] @xl:p-6')}>
       <p className="text-[10.5px] font-bold uppercase tracking-[0.2em] text-accent">{action.area}</p>
       <p className="mt-1 text-[17px] font-bold">{action.title}</p>
       <p className="mt-1 text-[13px] text-[#0B1030]/75">{action.summary}</p>
@@ -173,19 +181,30 @@ function ActionDetail({ action, labels }: { action: AdvisorAction; labels: Label
         </div>
       </div>
 
-      <div className="mt-4 rounded-xl bg-[#F3F6FD] p-4">
+      <div data-demo="adv-shows" className="mt-4 rounded-xl bg-[#F3F6FD] p-4">
         <p className="text-[13px] font-bold">{labels.shows}</p>
         <ul className="mt-2 list-disc space-y-1 pl-4 text-[12.5px] leading-relaxed text-[#0B1030]/85">
-          {action.shows.map((s) => (
-            <li key={s}>{s}</li>
+          {action.shows.map((s, i) => (
+            <li key={s} style={{ opacity: reveal(demo?.shows, i), transform: `translateY(${(1 - reveal(demo?.shows, i)) * 6}px)` }}>
+              {s}
+            </li>
           ))}
         </ul>
       </div>
 
-      <p className="mt-4 text-[13px] font-bold">{labels.recs}</p>
-      <ul className="mt-2 divide-y divide-[#0B1030]/[0.07] rounded-xl border border-[#0B1030]/[0.08]">
-        {action.recs.map(([t, d]) => (
-          <li key={t} className="flex items-center gap-3 px-3.5 py-2.5">
+      <p data-demo="adv-recs-title" className="mt-4 text-[13px] font-bold">{labels.recs}</p>
+      <ul data-demo="adv-recs" className="mt-2 divide-y divide-[#0B1030]/[0.07] rounded-xl border border-[#0B1030]/[0.08]">
+        {action.recs.map(([t, d], i) => (
+          <li
+            key={t}
+            data-demo={`adv-rec-${i}`}
+            className="flex items-center gap-3 px-3.5 py-2.5"
+            style={{
+              opacity: reveal(demo?.recs, i),
+              transform: `translateY(${(1 - reveal(demo?.recs, i)) * 6}px)`,
+              ...(i === 0 && demo?.focus ? { backgroundColor: `rgba(0,82,255,${0.07 * demo.focus})`, boxShadow: `inset 3px 0 0 rgba(0,82,255,${demo.focus})` } : {}),
+            }}
+          >
             <span className="min-w-0 flex-1">
               <span className="block text-[13px] font-medium">{t}</span>
               <span className="block text-[11.5px] text-[#0B1030]/70">{d}</span>

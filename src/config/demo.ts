@@ -25,3 +25,11 @@ export const HERO_BACKGROUND = {
   video: '/video/hero-earth.mp4',
   poster: '/images/hero-earth.jpg',
 }
+
+/**
+ * Amostras para aprovação (não substituem o hero). Só aparecem com
+ * ?video=amostra no endereço. Remover antes de publicar.
+ */
+export const DEMO_VIDEO_SAMPLES: Record<string, { src: string; poster: string }> = {
+  amostra: { src: '/video/amostras/hero-a.mp4', poster: '/video/amostras/hero-a.jpg' },
+}

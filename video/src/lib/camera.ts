@@ -31,3 +31,17 @@ export function cameraTransform({ s, x, y }: { s: number; x: number; y: number }
   ty = Math.min(0, Math.max(HEIGHT - CANVAS_H * scale, ty))
   return `translate(${tx}px, ${ty}px) scale(${scale})`
 }
+
+/** Escala e deslocação do palco (as mesmas de cameraTransform), para converter pontos. */
+export function cameraParams({ s, x, y }: { s: number; x: number; y: number }) {
+  const scale = K * s
+  const tx = Math.min(0, Math.max(WIDTH - CANVAS_W * scale, WIDTH / 2 - x * scale))
+  const ty = Math.min(0, Math.max(HEIGHT - CANVAS_H * scale, HEIGHT / 2 - y * scale))
+  return { scale, tx, ty }
+}
+
+/** Converte um ponto da interface para coordenadas do ecrã (1920×1080). */
+export function toStage(cam: { s: number; x: number; y: number }, px: number, py: number) {
+  const { scale, tx, ty } = cameraParams(cam)
+  return { x: tx + px * scale, y: ty + py * scale }
+}

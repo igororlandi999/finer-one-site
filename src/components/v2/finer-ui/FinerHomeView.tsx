@@ -169,7 +169,7 @@ export function FinerHomeView({ interactive = true, onOpenAdvisor, showAsk = tru
                 <span className={cn('h-1.5 w-1.5 rounded-full bg-accent')} aria-hidden="true" />
                 {home.priorityLabel}
               </p>
-              <p className={cn('mt-1.5 text-[14.5px] font-bold')}>{home.priority}</p>
+              <p data-demo="priority" className={cn('mt-1.5 text-[14.5px] font-bold')}>{home.priority}</p>
               <p className={cn('mt-1 text-[12px] text-[#0B1030]/70')}>{home.priorityMeta}</p>
             </div>
             <button
