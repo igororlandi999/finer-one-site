@@ -43,9 +43,7 @@ export const DEMO_VIDEO_SAMPLES: Record<string, DemoVideoSource> = {
 }
 
 /**
- * Destino do CTA "Experimentar demonstração" da hero. Enquanto a nova secção 2
- * (experimentação do Finer Home) não existir, aponta para a secção atual com o
- * Finer Home interativo (#plataforma, separador Finer Home por omissão).
- * Quando a nova secção 2 estiver pronta, basta mudar esta âncora.
+ * Destino do CTA "Experimentar demonstração" da hero: a secção 2,
+ * Experiência Finer Home (src/components/v2/HomeExperience.tsx).
  */
-export const TRY_DEMO_ANCHOR = '#plataforma'
+export const TRY_DEMO_ANCHOR = '#experimentar-finer'

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Navbar } from '@/components/layout/Navbar'
 import { HeroDemo } from '@/components/v2/HeroDemo'
+import { HomeExperience } from '@/components/v2/HomeExperience'
 import { ProblemSection } from '@/components/problem/ProblemSection'
 import { Challenges } from '@/components/v2/Challenges'
 import { FinancialStory } from '@/components/v2/story/FinancialStory'
@@ -60,6 +61,8 @@ export default function App() {
       <Navbar />
       <main id="conteudo">
         <HeroDemo />
+        {/* Nova secção 2: experiência Finer Home (destino do CTA principal da hero) */}
+        <HomeExperience />
         {SECOND === 'antiga' ? <ProblemSection /> : SECOND === 'desafios' ? <Challenges /> : SECOND === 'scroll' ? <FinancialStory /> : SECOND === 'exemplos' ? <FinanceDemo /> : SECOND === 'paineis' ? <ClarityShowcase /> : SECOND === 'etapas' ? <ClarityStage /> : <ClarityMotion />}
         {/* Os três pilares já são demonstrados na secção anterior; versão antiga em ?pilares=sim */}
         {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('pilares') === 'sim' && <PillarsScrolly />}
