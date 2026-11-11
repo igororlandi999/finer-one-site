@@ -1,5 +1,5 @@
-import { useRef } from 'react'
-import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
+import { useRef, useState } from 'react'
+import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from 'motion/react'
 import type { MotionValue, Variants } from 'motion/react'
 import type { Lang } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
@@ -38,7 +38,7 @@ const note: Record<Lang, string> = {
 
 const ATMOS = {
   background:
-    'radial-gradient(60% 60% at 12% 108%, #0A2A86 0%, rgba(10,42,134,0) 72%), radial-gradient(55% 60% at 88% 110%, #0A40C8 0%, rgba(10,64,200,0) 72%), radial-gradient(70% 45% at 50% 62%, rgba(0,82,255,0.55) 0%, rgba(0,82,255,0) 75%), radial-gradient(70% 50% at 50% -10%, #EAF1FF 0%, rgba(234,241,255,0) 70%), linear-gradient(180deg, #F7F9FF 0%, #D3E2FF 28%, #5B8EF5 52%, #0A40C8 78%, #0A2470 100%)',
+    'radial-gradient(60% 60% at 12% 108%, #0A2A86 0%, rgba(10,42,134,0) 72%), radial-gradient(55% 60% at 88% 110%, #0A40C8 0%, rgba(10,64,200,0) 72%), radial-gradient(70% 45% at 50% 62%, rgba(0,82,255,0.55) 0%, rgba(0,82,255,0) 75%), radial-gradient(70% 50% at 50% -10%, #EAF1FF 0%, rgba(234,241,255,0) 70%), linear-gradient(180deg, #F7F9FF 0%, #D3E2FF 22%, #4A82F2 40%, #0A40C8 60%, #0A2470 100%)',
 }
 
 export function SecurityAtmosphere({ lang }: { lang: Lang }) {
@@ -53,8 +53,20 @@ export function SecurityAtmosphere({ lang }: { lang: Lang }) {
   const rows = [
     { name: pt ? 'Conta à ordem' : 'Current account', sub: pt ? 'Banco Exemplo · Open Banking' : 'Example Bank · Open Banking', state: pt ? 'Autorizada por si' : 'Authorised by you', on: true },
     { name: pt ? 'Faturas por email' : 'Invoices by email', sub: pt ? 'Endereço de faturas da empresa' : 'Company invoice address', state: pt ? 'A receber' : 'Receiving', on: true },
-    { name: pt ? 'Conta poupança' : 'Savings account', sub: pt ? 'Banco Exemplo' : 'Example Bank', state: pt ? 'Não ligada' : 'Not connected', on: false },
   ]
+
+  // O momento da autorização acontece com o scroll: não ligada → a aguardar → autorizada por si
+  const card = useRef<HTMLDivElement>(null)
+  const { scrollYProgress: auth } = useScroll({ target: card, offset: ['start 0.8', 'end 0.35'] })
+  const [stage, setStage] = useState(reduced ? 2 : 0)
+  useMotionValueEvent(auth, 'change', (p) => { if (!reduced) setStage(p < 0.34 ? 0 : p < 0.7 ? 1 : 2) })
+  const stages = [
+    { state: pt ? 'Não ligada' : 'Not connected', sub: pt ? 'Banco Exemplo' : 'Example Bank', tone: 'text-[#0B1030]/40', name: 'text-[#070D2B]/55' },
+    { state: pt ? 'A aguardar a sua autorização' : 'Waiting for your authorisation', sub: pt ? 'Banco Exemplo · autorização junto do banco' : 'Example Bank · authorisation with your bank', tone: 'text-[#0B1030]/70', name: 'text-[#070D2B]' },
+    { state: pt ? 'Autorizada por si' : 'Authorised by you', sub: pt ? 'Banco Exemplo · Open Banking' : 'Example Bank · Open Banking', tone: 'text-accent-deep', name: 'text-[#070D2B]' },
+  ]
+  const st = stages[stage]
+  const poster: [string, string] = pt ? ['Nada fica ligado', 'sem a sua autorização.'] : ['Nothing gets connected', 'without your authorisation.']
 
   return (
     <motion.div
@@ -67,7 +79,7 @@ export function SecurityAtmosphere({ lang }: { lang: Lang }) {
     >
       <motion.div aria-hidden="true" className="absolute inset-x-0 -top-[15%] -z-10 h-[130%]" style={{ ...ATMOS, y: bgY }} />
 
-      <motion.div style={{ y: cardY }} className="relative mx-auto max-w-[620px]">
+      <motion.div ref={card} style={{ y: cardY }} className="relative mx-auto max-w-[620px]">
         <motion.div variants={rise} className="rounded-[26px] bg-white p-5 shadow-[0_40px_90px_-40px_rgba(7,13,43,0.6),0_0_0_1px_rgba(11,16,48,0.05)] sm:p-7">
           <div className="flex items-baseline justify-between gap-3">
             <p className="font-display text-[20px] font-bold tracking-[-0.02em] text-[#070D2B] sm:text-[22px]">{pt ? 'Ligações da sua empresa' : 'Your company’s connections'}</p>
@@ -92,12 +104,41 @@ export function SecurityAtmosphere({ lang }: { lang: Lang }) {
                 </motion.span>
               </motion.li>
             ))}
+            <motion.li
+              className="flex items-baseline justify-between gap-4 py-4"
+              variants={{ hidden: { opacity: 0, x: -10 }, show: { opacity: 1, x: 0, transition: { duration: 0.5, ease: EASE, delay: 0.71 } } }}
+            >
+              <span className="min-w-0 flex-1">
+                <span className={cn('block text-[15.5px] font-semibold transition-colors duration-500', st.name)}>{pt ? 'Conta poupança' : 'Savings account'}</span>
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.span key={stage} className="block text-[13px] leading-snug text-[#0B1030]/55" initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.25 }}>
+                    {st.sub}
+                  </motion.span>
+                </AnimatePresence>
+              </span>
+              <span className="relative max-w-[46%] shrink-0 text-right text-[13.5px] font-semibold leading-snug sm:max-w-none" aria-live="polite">
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.span key={stage} className={cn('block', st.tone)} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.3, ease: EASE }}>
+                    {st.state}
+                  </motion.span>
+                </AnimatePresence>
+              </span>
+            </motion.li>
           </ul>
         </motion.div>
       </motion.div>
 
+      {/* Frase-cartaz em branco, à maneira da Lovable: sobe por máscara, linha a linha */}
+      <motion.p variants={group} className="relative mt-12 font-display text-[38px] font-bold leading-[1.02] tracking-[-0.04em] text-white sm:text-[56px] lg:mt-16 lg:text-[72px]">
+        {poster.map((l) => (
+          <span key={l} className="block overflow-hidden pb-[0.08em]">
+            <motion.span className="block" variants={{ hidden: { y: '105%' }, show: { y: '0%', transition: { duration: 0.9, ease: EASE } } }}>{l}</motion.span>
+          </span>
+        ))}
+      </motion.p>
+
       {/* Três factos sobre a cor, em branco */}
-      <motion.ul variants={group} className="relative mt-10 grid gap-6 text-white sm:grid-cols-3 sm:gap-8 lg:mt-14">
+      <motion.ul variants={group} className="relative mt-8 grid gap-6 text-white sm:grid-cols-3 sm:gap-8 lg:mt-10">
         {facts[lang].map((f) => (
           <motion.li key={f.t} variants={rise} className="border-t border-white/30 pt-4">
             <p className="text-[16px] font-semibold">{f.t}</p>
