@@ -27,7 +27,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
     price: 'A anunciar',
     period: '/mês',
     note: 'Os valores do Pro e do Team serão anunciados.',
-    billing: { monthly: 'Mensal', annual: 'Anual', save: '−10 €/mês', priceM: '67,90 €', priceA: '57,90 €', per: '/mês', noteM: 'Plano mensal', noteA: 'Por mês, no plano anual', tbd: 'As funcionalidades deste plano serão anunciadas.' },
+    billing: { monthly: 'Mensal', annual: 'Anual', save: '−10 €/mês', priceM: '67,90 €', priceA: '57,90 €', per: '/mês', noteM: 'Plano mensal · IVA incluído', noteA: 'Por mês, no plano anual · IVA incluído', tbd: 'As funcionalidades deste plano serão anunciadas.' },
     plans: [
       {
         id: 'plus',
@@ -71,7 +71,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
     price: 'To be announced',
     period: '/mo',
     note: 'Pricing for Pro and Team will be announced.',
-    billing: { monthly: 'Monthly', annual: 'Annual', save: '−€10/mo', priceM: '€67.90', priceA: '€57.90', per: '/mo', noteM: 'Monthly plan', noteA: 'Per month, on the annual plan', tbd: 'The features of this plan will be announced.' },
+    billing: { monthly: 'Monthly', annual: 'Annual', save: '−€10/mo', priceM: '€67.90', priceA: '€57.90', per: '/mo', noteM: 'Monthly plan · VAT included', noteA: 'Per month, on the annual plan · VAT included', tbd: 'The features of this plan will be announced.' },
     plans: [
       {
         id: 'plus',
