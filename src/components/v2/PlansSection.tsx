@@ -132,7 +132,6 @@ export function PlansSection() {
     ro.observe(el)
     return () => ro.disconnect()
   }, [])
-  const line = useTransform(deal, [0.82, 1], [0, 1])
 
   return (
     <MotionConfig reducedMotion="user">
@@ -151,10 +150,6 @@ export function PlansSection() {
           </motion.div>
 
           <div ref={grid} className="relative mt-14 grid items-stretch gap-x-5 gap-y-12 lg:mt-16 lg:grid-cols-3">
-            {/* Linha da marca que liga as etiquetas do Plus ao Team quando o baralho se abre */}
-            {!reduced && (
-              <motion.span aria-hidden="true" className="absolute left-[16.6%] right-[16.6%] top-0 z-0 hidden h-px origin-left bg-accent-deep lg:block" style={{ scaleX: line }} />
-            )}
             {t.plans.map((p, i) => (
               <PlanCard key={p.id} p={p} i={i} t={t} deal={deal} step={step} reduced={reduced} />
             ))}
