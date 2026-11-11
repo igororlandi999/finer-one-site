@@ -71,7 +71,7 @@ const copy: Record<Lang, {
   },
 }
 
-/** PRÉ-VISUALIZAÇÃO: ?painel=ramp | lovable | searchable (sem parâmetro = céu Finer One). */
+/** Versão final: atmosfera (opção D, escolhida pelo fundador). Comparação: ?painel=manifesto | searchable | ramp | lovable | ceu. */
 const PANEL = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('painel') : null
 
 /** Atmosfera de cor à maneira da Lovable, nas cores Finer One. */
@@ -107,7 +107,7 @@ export function SecurityTrust() {
             <motion.p variants={item} className="mt-4 max-w-[560px] text-[16.5px] leading-[1.6] text-[#0B1030]/70 sm:text-[18px]">{t.sub}</motion.p>
           </motion.div>
 
-          {PANEL === 'atmosfera' ? (
+          {!PANEL || PANEL === 'atmosfera' ? (
             <SecurityAtmosphere lang={lang} />
           ) : PANEL === 'manifesto' ? (
             <SecurityManifesto lang={lang} />
@@ -166,7 +166,7 @@ function FeatureRow({ row, index, flip, children }: { row: Row; index: number; f
         )}
         style={PANEL === 'lovable' ? { ...LOVABLE_BG, scale } : { scale }}
       >
-        {!PANEL && (<>
+        {PANEL === 'ceu' && (<>
         <motion.img
           src="/images/finer-sky.webp"
           alt=""
