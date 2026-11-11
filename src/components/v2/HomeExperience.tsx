@@ -73,7 +73,6 @@ function getCopy(lang: Lang) {
     suggested: pt ? 'Perguntas sugeridas' : 'Suggested questions',
     empty: pt ? 'Escolha uma pergunta para ver a resposta.' : 'Pick a question to see the answer.',
     nextLabel: pt ? 'Próximo passo' : 'Next step',
-    more: pt ? 'Conhecer o Finer Home' : 'Discover Finer Home',
     qa,
   }
 }
@@ -205,23 +204,6 @@ export function HomeExperience() {
                 </AnimatePresence>
               </div>
 
-              {/* Ligação discreta, depois da interação (destino existente: Finer Home interativo) */}
-              <div className="mx-auto mt-2 flex h-6 max-w-[620px] justify-end">
-                <AnimatePresence>
-                  {sel !== null && (
-                    <motion.a
-                      href="#plataforma"
-                      className="group inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-accent underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1, transition: { duration: 0.3, delay: 0.2 } }}
-                      exit={{ opacity: 0 }}
-                    >
-                      {t.more}
-                      <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-                    </motion.a>
-                  )}
-                </AnimatePresence>
-              </div>
             </div>
           </motion.div>
         </motion.div>

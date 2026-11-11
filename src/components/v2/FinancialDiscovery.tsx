@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
 import { AnimatePresence, MotionConfig, motion } from 'motion/react'
 import type { Variants } from 'motion/react'
-import { ArrowRight, Lightbulb } from 'lucide-react'
+import { Lightbulb } from 'lucide-react'
 import { useLanguage } from '@/i18n/LanguageContext'
 import type { Lang } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
@@ -73,7 +73,6 @@ function getCopy(lang: Lang) {
       source: pt
         ? 'Baseada nos dados demonstrativos desta análise. Apoia a decisão; não a toma por si nem garante resultados.'
         : 'Recommendation based on the demo data in this analysis. It supports the decision; it does not make it for you or guarantee results.',
-      more: pt ? 'Conhecer o Finer Advisor' : 'Discover Finer Advisor',
     },
     pillars: pt ? ['Recebimentos', 'Tesouraria', 'Custos', 'Prioridades'] : ['Receivables', 'Cash', 'Costs', 'Priorities'],
     pillarsLabel: pt ? 'A Finer One analisa' : 'Finer One analyses',
@@ -301,10 +300,6 @@ function Decide({ t, lang }: { t: Copy; lang: Lang }) {
       </ol>
       <div className="mt-auto flex flex-wrap items-end justify-between gap-3 pt-3">
         <p className="max-w-[420px] text-[12px] leading-snug text-[#0B1030]/55">{d.source}</p>
-        <a href="#finer-advisor" className="group inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-accent underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
-          {d.more}
-          <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-        </a>
       </div>
     </div>
   )

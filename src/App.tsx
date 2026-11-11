@@ -82,7 +82,8 @@ export default function App() {
         </div>
         {/* Nova secção 5: Para quem é */}
         <ForWhom />
-        {(typeof window === 'undefined' || new URLSearchParams(window.location.search).get('plataforma') !== 'v1') && <PlatformShowcase />}
+        {/* Montra 'Experimente o que faz a diferença' retirada da nova homepage (fundador, 11/11/2026). Disponível em ?plataforma=sim */}
+        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('plataforma') === 'sim' && <PlatformShowcase />}
         {/* Banda cinematográfica retirada (pedido do fundador, 11/11/2026). Versão anterior em ?banda=sim */}
         {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('banda') === 'sim' && <CinematicBand />}
         <Security />
