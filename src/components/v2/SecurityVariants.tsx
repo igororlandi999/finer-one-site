@@ -50,16 +50,11 @@ export function SecurityAtmosphere({ lang }: { lang: Lang }) {
   const bgY = useTransform(scrollYProgress, [0, 1], reduced ? ['0%', '0%'] : ['12%', '-12%'])
   const cardY = useTransform(scrollYProgress, [0, 1], reduced ? [0, 0] : [40, -30])
 
-  const rows = [
-    { name: pt ? 'Conta à ordem' : 'Current account', sub: pt ? 'Banco Exemplo · Open Banking' : 'Example Bank · Open Banking', state: pt ? 'Autorizada por si' : 'Authorised by you', on: true },
-    { name: pt ? 'Faturas por email' : 'Invoices by email', sub: pt ? 'Endereço de faturas da empresa' : 'Company invoice address', state: pt ? 'A receber' : 'Receiving', on: true },
-  ]
-
-  // O momento da autorização acontece com o scroll: não ligada → a aguardar → autorizada por si
+  // A conta à ordem mostra o momento da autorização com o scroll: não ligada → a aguardar → autorizada por si
   const card = useRef<HTMLDivElement>(null)
-  const { scrollYProgress: auth } = useScroll({ target: card, offset: ['start 0.8', 'end 0.35'] })
+  const { scrollYProgress: auth } = useScroll({ target: card, offset: ['start 0.7', 'end 0.25'] })
   const [stage, setStage] = useState(reduced ? 2 : 0)
-  useMotionValueEvent(auth, 'change', (p) => { if (!reduced) setStage(p < 0.34 ? 0 : p < 0.7 ? 1 : 2) })
+  useMotionValueEvent(auth, 'change', (p) => { if (!reduced) setStage(p < 0.25 ? 0 : p < 0.6 ? 1 : 2) })
   const stages = [
     { state: pt ? 'Não ligada' : 'Not connected', sub: pt ? 'Banco Exemplo' : 'Example Bank', tone: 'text-[#0B1030]/40', name: 'text-[#070D2B]/55' },
     { state: pt ? 'A aguardar a sua autorização' : 'Waiting for your authorisation', sub: pt ? 'Banco Exemplo · autorização junto do banco' : 'Example Bank · authorisation with your bank', tone: 'text-[#0B1030]/70', name: 'text-[#070D2B]' },
@@ -67,6 +62,7 @@ export function SecurityAtmosphere({ lang }: { lang: Lang }) {
   ]
   const st = stages[stage]
   const poster: [string, string] = pt ? ['Nada fica ligado', 'sem a sua autorização.'] : ['Nothing gets connected', 'without your authorisation.']
+  const rowIn = (d: number): Variants => ({ hidden: { opacity: 0, x: -10 }, show: { opacity: 1, x: 0, transition: { duration: 0.5, ease: EASE, delay: d } } })
 
   return (
     <motion.div
@@ -79,44 +75,24 @@ export function SecurityAtmosphere({ lang }: { lang: Lang }) {
     >
       <motion.div aria-hidden="true" className="absolute inset-x-0 -top-[15%] -z-10 h-[130%]" style={{ ...ATMOS, y: bgY }} />
 
-      <motion.div ref={card} style={{ y: cardY }} className="relative mx-auto max-w-[620px]">
+      {/* Cartão ilustrativo (decorativo para leitores de ecrã: a frase e os factos dizem o mesmo em texto) */}
+      <motion.div ref={card} style={{ y: cardY }} className="relative mx-auto max-w-[620px]" aria-hidden="true">
         <motion.div variants={rise} className="rounded-[26px] bg-white p-5 shadow-[0_40px_90px_-40px_rgba(7,13,43,0.6),0_0_0_1px_rgba(11,16,48,0.05)] sm:p-7">
           <div className="flex items-baseline justify-between gap-3">
             <p className="font-display text-[20px] font-bold tracking-[-0.02em] text-[#070D2B] sm:text-[22px]">{pt ? 'Ligações da sua empresa' : 'Your company’s connections'}</p>
             <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#0B1030]/35">{pt ? 'Ilustrativo' : 'Illustrative'}</p>
           </div>
           <ul className="mt-4 divide-y divide-[#0B1030]/[0.07]">
-            {rows.map((r, i) => (
-              <motion.li
-                key={r.name}
-                className="flex items-baseline justify-between gap-4 py-4"
-                variants={{ hidden: { opacity: 0, x: -10 }, show: { opacity: 1, x: 0, transition: { duration: 0.5, ease: EASE, delay: 0.35 + i * 0.18 } } }}
-              >
-                <span className="min-w-0 flex-1">
-                  <span className={cn('block text-[15.5px] font-semibold', r.on ? 'text-[#070D2B]' : 'text-[#070D2B]/55')}>{r.name}</span>
-                  <span className="block text-[13px] leading-snug text-[#0B1030]/55 sm:truncate">{r.sub}</span>
-                </span>
-                <motion.span
-                  className={cn('shrink-0 text-right text-[13.5px] font-semibold', r.on ? 'text-accent-deep' : 'text-[#0B1030]/40')}
-                  variants={{ hidden: { opacity: 0, scale: 0.9 }, show: { opacity: 1, scale: 1, transition: { duration: 0.4, ease: EASE, delay: 0.8 + i * 0.22 } } }}
-                >
-                  {r.state}
-                </motion.span>
-              </motion.li>
-            ))}
-            <motion.li
-              className="flex items-baseline justify-between gap-4 py-4"
-              variants={{ hidden: { opacity: 0, x: -10 }, show: { opacity: 1, x: 0, transition: { duration: 0.5, ease: EASE, delay: 0.71 } } }}
-            >
+            <motion.li className="flex items-baseline justify-between gap-4 py-4" variants={rowIn(0.35)}>
               <span className="min-w-0 flex-1">
-                <span className={cn('block text-[15.5px] font-semibold transition-colors duration-500', st.name)}>{pt ? 'Conta poupança' : 'Savings account'}</span>
+                <span className={cn('block text-[15.5px] font-semibold transition-colors duration-500', st.name)}>{pt ? 'Conta à ordem' : 'Current account'}</span>
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.span key={stage} className="block text-[13px] leading-snug text-[#0B1030]/55" initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.25 }}>
                     {st.sub}
                   </motion.span>
                 </AnimatePresence>
               </span>
-              <span className="relative max-w-[46%] shrink-0 text-right text-[13.5px] font-semibold leading-snug sm:max-w-none" aria-live="polite">
+              <span className="relative max-w-[46%] shrink-0 text-right text-[13.5px] font-semibold leading-snug sm:max-w-none">
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.span key={stage} className={cn('block', st.tone)} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.3, ease: EASE }}>
                     {st.state}
@@ -124,18 +100,33 @@ export function SecurityAtmosphere({ lang }: { lang: Lang }) {
                 </AnimatePresence>
               </span>
             </motion.li>
+            <motion.li className="flex items-baseline justify-between gap-4 py-4" variants={rowIn(0.53)}>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[15.5px] font-semibold text-[#070D2B]">{pt ? 'Faturas por email' : 'Invoices by email'}</span>
+                <span className="block text-[13px] leading-snug text-[#0B1030]/55">{pt ? 'Endereço de faturas da empresa' : 'Company invoice address'}</span>
+              </span>
+              <span className="shrink-0 text-right text-[13.5px] font-semibold text-accent-deep">{pt ? 'A receber' : 'Receiving'}</span>
+            </motion.li>
           </ul>
         </motion.div>
       </motion.div>
 
-      {/* Frase-cartaz em branco, à maneira da Lovable: sobe por máscara, linha a linha */}
-      <motion.p variants={group} className="relative mt-12 font-display text-[38px] font-bold leading-[1.02] tracking-[-0.04em] text-white sm:text-[56px] lg:mt-16 lg:text-[72px]">
-        {poster.map((l) => (
-          <span key={l} className="block overflow-hidden pb-[0.08em]">
-            <motion.span className="block" variants={{ hidden: { y: '105%' }, show: { y: '0%', transition: { duration: 0.9, ease: EASE } } }}>{l}</motion.span>
+      {/* Frase-cartaz: branco + navy da marca (sobre uma faixa branca, como o logótipo), sobe por máscara */}
+      <motion.h3 variants={group} className="relative mt-12 font-display text-[36px] font-bold leading-[1.04] tracking-[-0.04em] sm:text-[56px] lg:mt-16 lg:text-[72px]">
+        <span className="block overflow-hidden pb-[0.08em]">
+          <motion.span className="block text-white" variants={{ hidden: { y: '105%' }, show: { y: '0%', transition: { duration: 0.9, ease: EASE } } }}>{poster[0]}</motion.span>
+        </span>
+        <span className="relative isolate mt-1 inline-block">
+          <motion.span
+            aria-hidden="true"
+            className="absolute -inset-x-3 inset-y-0 -z-10 origin-left rounded-[14px] bg-white sm:-inset-x-4 sm:rounded-[18px]"
+            variants={{ hidden: { scaleX: 0 }, show: { scaleX: 1, transition: { duration: 0.8, ease: EASE, delay: 0.35 } } }}
+          />
+          <span className="block overflow-hidden pb-[0.08em]">
+            <motion.span className="block text-[#070D2B]" variants={{ hidden: { y: '105%' }, show: { y: '0%', transition: { duration: 0.9, ease: EASE, delay: 0.55 } } }}>{poster[1]}</motion.span>
           </span>
-        ))}
-      </motion.p>
+        </span>
+      </motion.h3>
 
       {/* Três factos sobre a cor, em branco */}
       <motion.ul variants={group} className="relative mt-8 grid gap-6 text-white sm:grid-cols-3 sm:gap-8 lg:mt-10">
