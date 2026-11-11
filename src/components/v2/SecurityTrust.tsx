@@ -5,6 +5,7 @@ import type { Variants } from 'motion/react'
 import { useLanguage } from '@/i18n/LanguageContext'
 import type { Lang } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
+import { SecurityAtmosphere, SecurityManifesto } from './SecurityVariants'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -106,7 +107,11 @@ export function SecurityTrust() {
             <motion.p variants={item} className="mt-4 max-w-[560px] text-[16.5px] leading-[1.6] text-[#0B1030]/70 sm:text-[18px]">{t.sub}</motion.p>
           </motion.div>
 
-          {PANEL === 'searchable' ? (
+          {PANEL === 'atmosfera' ? (
+            <SecurityAtmosphere lang={lang} />
+          ) : PANEL === 'manifesto' ? (
+            <SecurityManifesto lang={lang} />
+          ) : PANEL === 'searchable' ? (
             <SearchableList lang={lang} />
           ) : (
             <div className="mt-10 space-y-6 lg:mt-12 lg:space-y-8">
