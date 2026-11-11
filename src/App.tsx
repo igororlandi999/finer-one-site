@@ -23,6 +23,7 @@ import { HowItWorks } from '@/components/v2/HowItWorks'
 import { HowItWorksMotion } from '@/components/v2/HowItWorksMotion'
 import { HowItWorksDemo } from '@/components/v2/HowItWorksDemo'
 import { HowItWorksSteps } from '@/components/v2/HowItWorksSteps'
+import { ForWhom } from '@/components/v2/ForWhom'
 import { HowItWorksDemoV1 } from '@/components/v2/HowItWorksDemoV1'
 import { HowItWorksDemoV2 } from '@/components/v2/HowItWorksDemoV2'
 import { Security } from '@/components/v2/Security'
@@ -79,6 +80,8 @@ export default function App() {
           {/* Secção 5, versão anterior (clara, quatro áreas) em ?plataforma=v1 */}
           {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('plataforma') === 'v1' && <PlatformShowcaseV1 />}
         </div>
+        {/* Nova secção 5: Para quem é */}
+        <ForWhom />
         {(typeof window === 'undefined' || new URLSearchParams(window.location.search).get('plataforma') !== 'v1') && <PlatformShowcase />}
         {/* Banda cinematográfica retirada (pedido do fundador, 11/11/2026). Versão anterior em ?banda=sim */}
         {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('banda') === 'sim' && <CinematicBand />}
