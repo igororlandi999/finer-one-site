@@ -12,8 +12,8 @@ const EASE = [0.22, 1, 0.36, 1] as const
  * Secção de planos (âncora #precos), à maneira da página de preços da
  * Searchable: cartões claros lado a lado, o plano em destaque com a cor da
  * marca. PREÇOS (indicação do fundador, 12/11/2026): Plus mensal 67,90 €/mês,
- * Plus anual 57,90 €/mês. Pro e Team: conteúdo e valores ainda por definir —
- * sem lista de funcionalidades, só aviso pela lista de espera.
+ * Plus anual 57,90 €/mês. Pro e Team: estratégia ainda por definir — sem
+ * promessas (nem funcionalidades nem posicionamento), só aviso pela lista de espera.
  */
 type Plan = { id: 'plus' | 'pro' | 'team'; name: string; status: string; promise: string; desc: string; listLabel: string; items: string[]; cta: string; href: string }
 
@@ -27,7 +27,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
     price: 'A anunciar',
     period: '/mês',
     note: 'Os valores do Pro e do Team serão anunciados.',
-    billing: { monthly: 'Mensal', annual: 'Anual', saveM: 'Poupe 120 € por ano com o plano anual', saveA: 'Poupa 120 € por ano face ao plano mensal.', priceM: '67,90 €', priceA: '57,90 €', per: '/mês', noteM: 'Plano mensal · IVA incluído', noteA: 'Por mês, no plano anual · IVA incluído', tbd: 'As funcionalidades deste plano serão anunciadas.' },
+    billing: { monthly: 'Mensal', annual: 'Anual', saveM: 'Poupe 120 € por ano com o plano anual', saveA: 'Poupa 120 € por ano face ao plano mensal.', priceM: '67,90 €', priceA: '57,90 €', per: '/mês', noteM: 'Plano mensal · IVA incluído', noteA: 'Por mês, no plano anual · IVA incluído', tbd: 'Funcionalidades e valores a anunciar.' },
     plans: [
       {
         id: 'plus',
@@ -44,22 +44,22 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
         id: 'pro',
         name: 'Pro',
         status: 'Em desenvolvimento',
-        promise: 'Perceber o que está a acontecer — e o que pode acontecer a seguir.',
-        desc: 'Mais profundidade para empresas que querem antecipar cenários e decidir com maior contexto financeiro.',
+        promise: 'Um novo plano em preparação.',
+        desc: 'Ainda estamos a definir o que vai incluir. Deixe o seu contacto e seja o primeiro a saber.',
         listLabel: '',
         items: [],
-        cta: 'Avisar-me quando chegar',
+        cta: 'Quero ser avisado',
         href: '/lista-espera/',
       },
       {
         id: 'team',
         name: 'Team',
         status: 'Em desenvolvimento',
-        promise: 'Comparar o desempenho da empresa com o setor.',
-        desc: 'Para empresas que querem situar os seus números face ao mercado e acompanhar a evolução do valor do negócio.',
+        promise: 'Mais um plano em preparação.',
+        desc: 'O que vai incluir será anunciado mais tarde. Deixe o seu contacto e seja o primeiro a saber.',
         listLabel: '',
         items: [],
-        cta: 'Avisar-me quando chegar',
+        cta: 'Quero ser avisado',
         href: '/lista-espera/',
       },
     ],
@@ -71,7 +71,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
     price: 'To be announced',
     period: '/mo',
     note: 'Pricing for Pro and Team will be announced.',
-    billing: { monthly: 'Monthly', annual: 'Annual', saveM: 'Save €120 a year with the annual plan', saveA: 'You save €120 a year versus monthly.', priceM: '€67.90', priceA: '€57.90', per: '/mo', noteM: 'Monthly plan · VAT included', noteA: 'Per month, on the annual plan · VAT included', tbd: 'The features of this plan will be announced.' },
+    billing: { monthly: 'Monthly', annual: 'Annual', saveM: 'Save €120 a year with the annual plan', saveA: 'You save €120 a year versus monthly.', priceM: '€67.90', priceA: '€57.90', per: '/mo', noteM: 'Monthly plan · VAT included', noteA: 'Per month, on the annual plan · VAT included', tbd: 'Features and pricing to be announced.' },
     plans: [
       {
         id: 'plus',
@@ -88,22 +88,22 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
         id: 'pro',
         name: 'Pro',
         status: 'In development',
-        promise: 'Understand what’s happening — and what could happen next.',
-        desc: 'More depth for companies that want to anticipate scenarios and decide with greater financial context.',
+        promise: 'A new plan in the works.',
+        desc: 'We’re still defining what it will include. Leave your contact and be the first to know.',
         listLabel: '',
         items: [],
-        cta: 'Notify me when it’s ready',
+        cta: 'Notify me',
         href: '/lista-espera/',
       },
       {
         id: 'team',
         name: 'Team',
         status: 'In development',
-        promise: 'Compare the company’s performance with the industry.',
-        desc: 'For companies that want to benchmark their numbers against the market and track the evolution of business value.',
+        promise: 'Another plan in the works.',
+        desc: 'What it will include will be announced later. Leave your contact and be the first to know.',
         listLabel: '',
         items: [],
-        cta: 'Notify me when it’s ready',
+        cta: 'Notify me',
         href: '/lista-espera/',
       },
     ],
