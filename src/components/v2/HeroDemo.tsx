@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
-import { ArrowRight, Pause, Play, PlayCircle } from 'lucide-react'
+import { ArrowRight, Pause, Play } from 'lucide-react'
 import { buttonClasses } from '@/components/ui/Button'
 import { LuminousLine } from '@/components/v2/LuminousLine'
 import { AppShell } from '@/components/v2/finer-ui/AppShell'
 import { FinerHomeView } from '@/components/v2/finer-ui/FinerHomeView'
 import { ScaledCanvas } from '@/components/v2/finer-ui/ScaledCanvas'
-import { DEMO_VIDEO, DEMO_VIDEO_SAMPLES, HERO_BACKGROUND } from '@/config/demo'
+import { DEMO_VIDEO, DEMO_VIDEO_SAMPLES, HERO_BACKGROUND, TRY_DEMO_ANCHOR } from '@/config/demo'
 import type { DemoVideoSource } from '@/config/demo'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useInView } from '@/hooks/useInView'
@@ -15,8 +15,8 @@ import { useLanguage } from '@/i18n/LanguageContext'
 import type { Lang } from '@/i18n/LanguageContext'
 
 const copy: Record<Lang, {
-  eyebrow: string; first: string; secondPrefix: string; highlight: string; sub: [string, string]
-  primary: string; secondary: string; waitlistPrefix: string; waitlist: string
+  eyebrow: string; first: string; secondPrefix: string; highlight: string; sub: string
+  primary: string; secondary: string
   badge: string; play: string; pause: string; videoLabel: string; posterLabel: string
 }> = {
   pt: {
@@ -24,11 +24,9 @@ const copy: Record<Lang, {
     first: 'A sua empresa já tem os números.',
     secondPrefix: 'Agora precisa de ',
     highlight: 'respostas',
-    sub: ['Acompanhe recebimentos, despesas e tesouraria.', 'Perceba o que está a acontecer e saiba onde agir.'],
-    primary: 'Ser Finer Pioneer',
-    secondary: 'Ver a Finer One em ação',
-    waitlistPrefix: 'Prefere acompanhar à distância?',
-    waitlist: 'Entrar na lista de espera',
+    sub: 'Faça perguntas sobre o seu negócio, acompanhe a tesouraria e descubra o que merece a sua atenção.',
+    primary: 'Experimentar demonstração',
+    secondary: 'Ser Finer Pioneer',
     badge: 'Dados fictícios',
     play: 'Reproduzir vídeo',
     pause: 'Pausar vídeo',
@@ -40,11 +38,9 @@ const copy: Record<Lang, {
     first: 'Your company already has the numbers.',
     secondPrefix: 'Now it needs ',
     highlight: 'answers',
-    sub: ['Track receivables, expenses and cash.', 'See what is happening and know where to act.'],
-    primary: 'Become a Finer Pioneer',
-    secondary: 'See Finer One in action',
-    waitlistPrefix: 'Prefer to follow along?',
-    waitlist: 'Join the waitlist',
+    sub: 'Ask questions about your business, follow your cash and find out what deserves your attention.',
+    primary: 'Try the demo',
+    secondary: 'Become a Finer Pioneer',
     badge: 'Fictitious data',
     play: 'Play video',
     pause: 'Pause video',
@@ -80,7 +76,7 @@ export function HeroDemo() {
       <div className="mx-auto grid w-full max-w-[1280px] grid-cols-[minmax(0,1fr)] items-center gap-14 px-6 sm:px-10 lg:grid-cols-[minmax(0,0.96fr)_minmax(0,1.14fr)] lg:gap-14 lg:px-12 xl:gap-[76px] xl:px-14">
         {/* Mensagem */}
         <div className="max-w-[580px]">
-          <p className="inline-flex animate-fade-up items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.3em] text-[#7CB8FF]">
+          <p className="inline-flex animate-fade-up items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#7CB8FF] sm:tracking-[0.3em]">
             <span className="h-px w-8 bg-gradient-to-r from-transparent to-glow" aria-hidden="true" />
             {t.eyebrow}
           </p>
@@ -95,12 +91,11 @@ export function HeroDemo() {
             </span>
           </h1>
           <p className="mt-10 max-w-[500px] animate-fade-up text-[16.5px] leading-[1.6] tracking-[-0.003em] text-white/[0.78] [animation-delay:300ms] sm:text-[18px]">
-            <span className="block">{t.sub[0]}</span>
-            <span className="mt-1 block">{t.sub[1]}</span>
+            {t.sub}
           </p>
           <div className="mt-11 flex animate-fade-up flex-col gap-3 [animation-delay:400ms] sm:flex-row sm:items-center sm:gap-3.5">
             <a
-              href="/pioneers/"
+              href={TRY_DEMO_ANCHOR}
               className={buttonClasses({
                 size: 'lg',
                 className:
@@ -111,7 +106,7 @@ export function HeroDemo() {
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true" />
             </a>
             <a
-              href="#demo"
+              href="/pioneers/"
               className={buttonClasses({
                 variant: 'outline',
                 size: 'lg',
@@ -119,17 +114,10 @@ export function HeroDemo() {
                   'group h-[52px] border-white/[0.14] bg-white/[0.04] px-6 text-white/90 backdrop-blur-sm transition-[border-color,background-color,color] duration-300 hover:border-white/30 hover:bg-white/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-glow',
               })}
             >
-              <PlayCircle className="h-[18px] w-[18px] text-glow transition-transform duration-300 group-hover:scale-110" aria-hidden="true" />
               {t.secondary}
+              <ArrowRight className="h-4 w-4 text-white/60 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true" />
             </a>
           </div>
-          <p className="mt-7 animate-fade-up text-[13.5px] text-white/60 [animation-delay:480ms]">
-            {t.waitlistPrefix}{' '}
-            <a href="/lista-espera/" className="group inline-flex items-center gap-1 font-medium text-white/85 underline decoration-white/25 underline-offset-[5px] transition-colors hover:text-white hover:decoration-glow">
-              {t.waitlist}
-              <ArrowRight className="h-3 w-3 opacity-60 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:opacity-100" aria-hidden="true" />
-            </a>
-          </p>
         </div>
 
         {/* Vídeo da plataforma — apresentado como peça de produto */}
