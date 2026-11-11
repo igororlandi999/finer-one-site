@@ -143,7 +143,7 @@ export function HowItWorksSteps() {
           </motion.div>
 
           {/* Uma única demonstração: só o conteúdo muda */}
-          <motion.div variants={item} className="mt-8 overflow-hidden rounded-[32px] bg-[linear-gradient(180deg,#F3F6FD_0%,#F8FAFF_100%)]">
+          <motion.div variants={item} className="mt-8 overflow-hidden rounded-[32px] bg-[#F6F8FC]">
             {/* Topo limpo (o céu da plataforma já aparece nas secções 2 e 3: aqui não se repete) */}
             <div className="relative">
               <div className="relative flex h-14 items-center justify-between gap-2 px-4 pt-2 sm:px-7">
@@ -167,7 +167,7 @@ export function HowItWorksSteps() {
               <AnimatePresence initial={false}>
                 <motion.div
                   key={step}
-                  className="col-start-1 row-start-1 grid grid-cols-[minmax(0,1fr)] content-start gap-4 p-4 sm:p-6 lg:grid-cols-2 lg:gap-5 lg:p-6"
+                  className="col-start-1 row-start-1 grid grid-cols-[minmax(0,1fr)] content-start gap-4 lg:content-center p-4 sm:p-6 lg:grid-cols-2 lg:gap-5 lg:p-6"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0, transition: { duration: 0.35, ease: EASE, delay: 0.06 } }}
                   exit={{ opacity: 0, transition: { duration: 0.2 } }}
@@ -187,14 +187,25 @@ export function HowItWorksSteps() {
 
 /* ---------------- Peças de interface ---------------- */
 
-function Card({ title, children, className, glow }: { title: string; children: ReactNode; className?: string; glow?: boolean }) {
+/**
+ * Cartão à maneira da Lovable: branco, cantos grandes, contorno quase invisível
+ * e uma luz suave da marca no canto (azul elétrico + céu). Todos iguais; o
+ * cartão do resultado (glow) tem a luz um pouco mais presente.
+ */
+export function GlowCard({ title, children, className, glow }: { title: string; children: ReactNode; className?: string; glow?: boolean }) {
   return (
-    <div className={cn('relative rounded-[24px] p-6', glow ? 'bg-[linear-gradient(160deg,#FFFFFF_0%,#EEF3FF_100%)]' : 'bg-white', className)}>
+    <div className={cn('relative isolate overflow-hidden rounded-[24px] bg-white p-6 shadow-[0_1px_2px_rgba(11,16,48,0.04),0_0_0_1px_rgba(11,16,48,0.06)]', className)}>
+      <span
+        aria-hidden="true"
+        className={cn('pointer-events-none absolute -right-20 -top-24 -z-10 h-64 w-72 rounded-full', glow ? 'bg-[radial-gradient(closest-side,rgba(30,144,255,0.34),rgba(141,184,246,0.22)_45%,transparent)]' : 'bg-[radial-gradient(closest-side,rgba(94,151,238,0.26),rgba(185,211,250,0.14)_50%,transparent)]')}
+      />
+      <span aria-hidden="true" className="pointer-events-none absolute -left-16 bottom-[-30%] -z-10 h-56 w-56 rounded-full bg-[radial-gradient(closest-side,rgba(185,211,250,0.16),transparent)]" />
       <p className="text-[11.5px] font-semibold uppercase tracking-[0.18em] text-[#0B1030]/50">{title}</p>
       <div className="mt-2.5">{children}</div>
     </div>
   )
 }
+const Card = GlowCard
 
 const rise = (i: number, base = 0.4, gap = 0.18) => ({
   initial: { opacity: 0, y: 8 },
@@ -289,7 +300,7 @@ function MomentInvoice({ lang }: { lang: Lang }) {
           </div>
         </motion.div>
         {/* Documento recebido, lido pela Finer One (linha azul percorre o PDF) */}
-        <motion.div className="relative mt-4 overflow-hidden rounded-[16px] bg-[#F3F6FD] p-4" {...rise(0, 0.6)}>
+        <motion.div className="relative mt-4 overflow-hidden rounded-[16px] bg-[#F6F8FC] p-4 ring-1 ring-[#0B1030]/[0.04]" {...rise(0, 0.6)}>
           <div className="flex items-center gap-2">
             <span className="rounded-[4px] bg-[#C2410C] px-1.5 py-0.5 text-[10.5px] font-bold text-white">PDF</span>
             <span className="text-[14px] font-semibold text-[#070D2B]">FT-2026-207.pdf</span>
@@ -356,13 +367,14 @@ function MomentTogether({ lang }: { lang: Lang }) {
 
   return (
     <div className="lg:col-span-2">
-      <div className="relative rounded-[24px] bg-white">
+      <div className="relative isolate overflow-hidden rounded-[24px] bg-white shadow-[0_1px_2px_rgba(11,16,48,0.04),0_0_0_1px_rgba(11,16,48,0.06)]">
+        <span aria-hidden="true" className="pointer-events-none absolute -right-24 -top-32 -z-10 h-80 w-[420px] rounded-full bg-[radial-gradient(closest-side,rgba(30,144,255,0.22),rgba(141,184,246,0.16)_45%,transparent)]" />
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 pb-2 pt-5 sm:px-6">
           <div>
             <p className="font-display text-[22px] font-bold tracking-[-0.02em] text-[#070D2B]">{pt ? 'Movimentos e faturas' : 'Transactions and invoices'}</p>
             <p className="text-[13.5px] text-[#0B1030]/60">{pt ? 'Conta à ordem · Email de faturas' : 'Current account · Invoice email'}</p>
           </div>
-          <div className="relative flex gap-1 rounded-full bg-[#F3F6FD] p-1" role="group" aria-label={pt ? 'Filtrar por origem' : 'Filter by source'}>
+          <div className="relative flex gap-1 rounded-full bg-[#F1F4FA] p-1" role="group" aria-label={pt ? 'Filtrar por origem' : 'Filter by source'}>
             {chips.map(([k, l]) => (
               <button
                 key={k}
