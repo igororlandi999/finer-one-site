@@ -7,8 +7,8 @@ import type { Lang } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
 
 const EASE = [0.22, 1, 0.36, 1] as const
-/** Cada momento fica 7 s; depois avança e, no fim, recomeça. */
-const STEP_MS = 7000
+/** Cada momento fica 5,5 s (tempo de leitura sem esperas); depois avança e, no fim, recomeça. */
+const STEP_MS = 5500
 
 const copy: Record<Lang, {
   eyebrow: string; title: [string, string]; sub: string; nav: string; note: string
@@ -46,7 +46,7 @@ const item: Variants = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0
 /**
  * Secção 4 — Como funciona (nova homepage, fase 4). Três momentos escolhidos
  * pelo visitante, ligados pela linha Finer One que avança até ao momento ativo.
- * Avança sozinho a cada 7 s e recomeça (clique opcional; pausa fora do ecrã). Reutiliza as peças de interface da versão anterior
+ * Avança sozinho a cada 5,5 s e recomeça (clique opcional; pausa fora do ecrã). Reutiliza as peças de interface da versão anterior
  * (HowItWorksDemo, em ?funcionamento=v5).
  */
 export function HowItWorksSteps() {
@@ -65,7 +65,7 @@ export function HowItWorksSteps() {
   useEffect(() => { fill.set(step / 2) }, [step, fill])
 
   const run = useRef<{ stop: () => void } | null>(null)
-  // Um único motor: 7 s por momento, avança e recomeça; pausa fora do ecrã; sem automático com movimento reduzido.
+  // Um único motor: 5,5 s por momento, avança e recomeça; pausa fora do ecrã; sem automático com movimento reduzido.
   useEffect(() => {
     if (!visible || reduced) return
     const remaining = (STEP_MS / 1000) * (1 - progress.get())
@@ -144,12 +144,10 @@ export function HowItWorksSteps() {
 
           {/* Uma única demonstração: só o conteúdo muda */}
           <motion.div variants={item} className="mt-8 overflow-hidden rounded-[28px] bg-white shadow-[0_40px_90px_-60px_rgba(11,16,48,0.55),0_0_0_1px_rgba(11,16,48,0.06)]">
-            {/* Topo com o céu Finer (o "mundo" da plataforma), como nos ecrãs reais */}
-            <div className="relative h-16 overflow-hidden sm:h-[72px]">
-              <img src="/images/finer-sky.webp" alt="" aria-hidden="true" decoding="async" loading="lazy" className="absolute inset-0 h-full w-full object-cover object-top" />
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-white" />
-              <div className="relative flex h-full items-center justify-between gap-2 px-4 sm:px-6">
-                <span className="flex items-center gap-2 rounded-full bg-white/90 py-1 pl-1 pr-3 shadow-[0_6px_18px_-10px_rgba(7,13,43,0.5)]">
+            {/* Topo limpo (o céu da plataforma já aparece nas secções 2 e 3: aqui não se repete) */}
+            <div className="relative border-b border-[#0B1030]/[0.06]">
+              <div className="relative flex h-14 items-center justify-between gap-2 px-4 sm:px-6">
+                <span className="flex items-center gap-2 rounded-full bg-[#F3F6FC] py-1 pl-1 pr-3">
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#070D2B]">
                     <svg viewBox="0 0 326 445" className="h-3 w-3 fill-white" aria-hidden="true"><path d="M326 0H0v445l99-99v-92h109l86-87H99V79h227z" /></svg>
                   </span>
@@ -158,18 +156,18 @@ export function HowItWorksSteps() {
                     <motion.span key={step} className="text-[13px] text-[#0B1030]/55" initial={{ opacity: 0, y: 3 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -3 }} transition={{ duration: 0.2 }}>· {t.steps[step].tag}</motion.span>
                   </AnimatePresence>
                 </span>
-                <span className="hidden rounded-full bg-[#070D2B]/45 px-3 py-1 text-[11.5px] font-semibold text-white backdrop-blur-sm sm:inline">{t.note}</span>
+                <span className="hidden text-[12px] font-medium text-[#0B1030]/50 sm:inline">{t.note}</span>
               </div>
             </div>
             {/* Mobile: descrição do momento ativo por cima da demonstração */}
             <p className="px-4 pb-1 pt-2 text-[14px] leading-snug text-[#0B1030]/75 sm:hidden">
               <span className="font-semibold text-[#070D2B]">{t.steps[step].title}</span> {t.steps[step].desc}
             </p>
-            <div id="func-panel" role="tabpanel" aria-labelledby={`func-tab-${step}`} className="relative grid lg:h-[490px]" data-func-panel>
+            <div id="func-panel" role="tabpanel" aria-labelledby={`func-tab-${step}`} className="relative grid lg:h-[420px]" data-func-panel>
               <AnimatePresence initial={false}>
                 <motion.div
                   key={step}
-                  className="col-start-1 row-start-1 grid grid-cols-[minmax(0,1fr)] content-start gap-4 p-4 sm:p-6 lg:grid-cols-2 lg:gap-6 lg:p-8"
+                  className="col-start-1 row-start-1 grid grid-cols-[minmax(0,1fr)] content-start gap-4 p-4 sm:p-6 lg:grid-cols-2 lg:gap-5 lg:p-6"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0, transition: { duration: 0.35, ease: EASE, delay: 0.06 } }}
                   exit={{ opacity: 0, transition: { duration: 0.2 } }}
@@ -191,9 +189,9 @@ export function HowItWorksSteps() {
 
 function Card({ title, children, className, glow }: { title: string; children: ReactNode; className?: string; glow?: boolean }) {
   return (
-    <div className={cn('relative rounded-[20px] bg-white p-5 sm:p-6', glow ? 'shadow-[0_24px_50px_-30px_rgba(0,82,255,0.55),0_0_0_1px_rgba(0,82,255,0.18)]' : 'shadow-[0_18px_40px_-34px_rgba(11,16,48,0.45),0_0_0_1px_rgba(11,16,48,0.06)]', className)}>
+    <div className={cn('relative rounded-[20px] bg-white p-5', glow ? 'shadow-[0_24px_50px_-30px_rgba(0,82,255,0.55),0_0_0_1px_rgba(0,82,255,0.18)]' : 'shadow-[0_18px_40px_-34px_rgba(11,16,48,0.45),0_0_0_1px_rgba(11,16,48,0.06)]', className)}>
       <p className="text-[11.5px] font-semibold uppercase tracking-[0.18em] text-[#0B1030]/50">{title}</p>
-      <div className="mt-3">{children}</div>
+      <div className="mt-2.5">{children}</div>
     </div>
   )
 }
@@ -229,12 +227,12 @@ function MomentBank({ lang }: { lang: Lang }) {
             {pt ? 'Ligada' : 'Connected'}
           </motion.span>
         </div>
-        <div className="mt-5 border-t border-[#0B1030]/[0.08] pt-4">
+        <div className="mt-4 border-t border-[#0B1030]/[0.08] pt-3">
           <Label>{pt ? 'Saldo disponível' : 'Available balance'}</Label>
           <p className="mt-1 font-display text-[28px] font-bold leading-none tracking-[-0.03em] text-[#070D2B] tabular-nums sm:text-[32px]">€&nbsp;28.540,32</p>
         </div>
         {/* Como a conta foi ligada: o gesto do empresário, sem detalhes técnicos */}
-        <ol className="mt-5 space-y-2.5 border-t border-[#0B1030]/[0.08] pt-4">
+        <ol className="mt-4 space-y-2 border-t border-[#0B1030]/[0.08] pt-3">
           {steps.map((s, i) => (
             <motion.li key={s} className="flex items-center gap-3 text-[14.5px] text-[#070D2B]" {...rise(i, 0.5, 0.3)}>
               <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent text-white">
@@ -302,8 +300,8 @@ function MomentInvoice({ lang }: { lang: Lang }) {
             <span className="rounded-[4px] bg-[#C2410C] px-1.5 py-0.5 text-[10.5px] font-bold text-white">PDF</span>
             <span className="text-[14px] font-semibold text-[#070D2B]">FT-2026-207.pdf</span>
           </div>
-          <div aria-hidden="true" className="mt-3 space-y-2">
-            {[92, 70, 84, 56, 76, 40].map((w, i) => (
+          <div aria-hidden="true" className="mt-2.5 space-y-1.5">
+            {[92, 70, 84, 48].map((w, i) => (
               <span key={i} className="block h-[7px] rounded-full bg-[#0B1030]/[0.08]" style={{ width: `${w}%` }} />
             ))}
           </div>
@@ -319,7 +317,7 @@ function MomentInvoice({ lang }: { lang: Lang }) {
       </Card>
 
       <Card title={pt ? 'Informação da fatura' : 'Invoice information'} glow>
-        <dl className="grid grid-cols-2 gap-x-5 gap-y-4">
+        <dl className="grid grid-cols-2 gap-x-5 gap-y-3">
           {fields.map(([k, v], i) => (
             <motion.div key={k} {...rise(i, 1.8, 0.2)}>
               <dt className="text-[13px] text-[#0B1030]/60">{k}</dt>
@@ -363,7 +361,7 @@ function MomentTogether({ lang }: { lang: Lang }) {
   return (
     <div className="lg:col-span-2">
       <div className="relative rounded-[16px] border border-accent/30 bg-white shadow-[0_18px_40px_-28px_rgba(0,82,255,0.7)]">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#0B1030]/[0.08] px-4 py-4 sm:px-5">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#0B1030]/[0.08] px-4 py-3 sm:px-5">
           <div>
             <p className="text-[18px] font-bold text-[#070D2B]">{pt ? 'Movimentos e faturas' : 'Transactions and invoices'}</p>
             <p className="text-[13.5px] text-[#0B1030]/60">{pt ? 'Conta à ordem · Email de faturas' : 'Current account · Invoice email'}</p>
@@ -383,7 +381,7 @@ function MomentTogether({ lang }: { lang: Lang }) {
             ))}
           </div>
         </div>
-        <ul className="min-h-[300px] px-4 sm:px-5">
+        <ul className="px-4 sm:px-5">
           <AnimatePresence initial={false} mode="popLayout">
             {shown.map((r, i) => (
               <motion.li
@@ -392,7 +390,7 @@ function MomentTogether({ lang }: { lang: Lang }) {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0, transition: { duration: 0.35, ease: EASE, delay: 0.2 + i * 0.08 } }}
                 exit={{ opacity: 0, transition: { duration: 0.2 } }}
-                className="relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 border-b border-[#0B1030]/[0.07] py-3 last:border-b-0 sm:grid-cols-[64px_minmax(0,1fr)_76px_120px]"
+                className="relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 border-b border-[#0B1030]/[0.07] py-2.5 last:border-b-0 sm:grid-cols-[64px_minmax(0,1fr)_76px_120px]"
               >
                 {/* Linha Finer One: assinala o que acabou de chegar das etapas 1 e 2 */}
                 {r.n && (
