@@ -70,6 +70,15 @@ const copy: Record<Lang, {
   },
 }
 
+/** PRÉ-VISUALIZAÇÃO: ?painel=ramp | lovable | searchable (sem parâmetro = céu Finer One). */
+const PANEL = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('painel') : null
+
+/** Atmosfera de cor à maneira da Lovable, nas cores Finer One. */
+const LOVABLE_BG = {
+  background:
+    'radial-gradient(70% 65% at 12% 108%, rgba(0,82,255,0.9), transparent 62%), radial-gradient(60% 60% at 92% 104%, rgba(30,144,255,0.8), transparent 62%), radial-gradient(90% 55% at 50% 112%, rgba(141,184,246,0.95), transparent 72%), radial-gradient(60% 40% at 70% -10%, rgba(185,211,250,0.55), transparent 70%), #F8FAFF',
+}
+
 const group: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } }
 const item: Variants = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE } } }
 
@@ -88,23 +97,27 @@ export function SecurityTrust() {
     <MotionConfig reducedMotion="user">
       <section id="seguranca" aria-labelledby="seguranca-titulo" className="relative scroll-mt-20 bg-white text-navy">
         <div className="mx-auto max-w-content px-5 pb-12 pt-12 sm:px-6 lg:px-8 lg:pb-16 lg:pt-14">
-          <motion.div className="mx-auto max-w-[760px] text-center" variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.5 }}>
+          <motion.div className="max-w-[760px] text-left" variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.5 }}>
             <motion.p variants={item} className="text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">{t.eyebrow}</motion.p>
             <motion.h2 variants={item} id="seguranca-titulo" className="mt-3 text-balance font-display text-[34px] font-bold leading-[1.04] tracking-[-0.035em] text-[#070D2B] sm:text-[48px] lg:text-[56px]">
               {t.title[0]}
               <span className="text-accent-deep">{t.title[1]}</span>
             </motion.h2>
-            <motion.p variants={item} className="mx-auto mt-4 max-w-[560px] text-[16.5px] leading-[1.6] text-[#0B1030]/70 sm:text-[18px]">{t.sub}</motion.p>
+            <motion.p variants={item} className="mt-4 max-w-[560px] text-[16.5px] leading-[1.6] text-[#0B1030]/70 sm:text-[18px]">{t.sub}</motion.p>
           </motion.div>
 
-          <div className="mt-10 space-y-6 lg:mt-12 lg:space-y-8">
-            <FeatureRow row={t.rows[0]} index={0} flip={false}>
-              <Sources t={t.v1} />
-            </FeatureRow>
-            <FeatureRow row={t.rows[1]} index={1} flip>
-              <Authorise t={t.v2} />
-            </FeatureRow>
-          </div>
+          {PANEL === 'searchable' ? (
+            <SearchableList lang={lang} />
+          ) : (
+            <div className="mt-10 space-y-6 lg:mt-12 lg:space-y-8">
+              <FeatureRow row={t.rows[0]} index={0} flip={false}>
+                <Sources t={t.v1} />
+              </FeatureRow>
+              <FeatureRow row={t.rows[1]} index={1} flip>
+                <Authorise t={t.v2} />
+              </FeatureRow>
+            </div>
+          )}
         </div>
       </section>
     </MotionConfig>
@@ -141,9 +154,14 @@ function FeatureRow({ row, index, flip, children }: { row: Row; index: number; f
 
       {/* Painel: céu Finer One + cartão branco */}
       <motion.div
-        style={{ scale }}
-        className={cn('relative isolate h-[300px] overflow-hidden rounded-[32px] sm:h-[360px] lg:h-[400px]', flip && 'lg:order-1')}
+        className={cn(
+          'relative isolate h-[300px] overflow-hidden rounded-[32px] sm:h-[360px] lg:h-[400px]',
+          PANEL === 'ramp' && 'bg-[#F2F4F8] bg-[radial-gradient(rgba(11,16,48,0.09)_1px,transparent_1px)] [background-size:14px_14px]',
+          flip && 'lg:order-1',
+        )}
+        style={PANEL === 'lovable' ? { ...LOVABLE_BG, scale } : { scale }}
       >
+        {!PANEL && (<>
         <motion.img
           src="/images/finer-sky.webp"
           alt=""
@@ -154,6 +172,7 @@ function FeatureRow({ row, index, flip, children }: { row: Row; index: number; f
           style={{ y: skyY }}
         />
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-b from-white/0 via-white/0 to-white/25" />
+        </>)}
         {/* O conteúdo do cartão anima (variantes off → on) quando o painel entra no ecrã */}
         <motion.div className="absolute inset-0 flex items-center justify-center p-5 sm:p-8" initial="off" whileInView="on" viewport={{ once: true, amount: 0.6 }}>
           {children}
@@ -257,5 +276,71 @@ function Link({ d }: { d: number }) {
       <line x1="0" y1="4" x2="24" y2="4" stroke="rgba(11,16,48,0.15)" strokeWidth="1.5" strokeDasharray="2 3" />
       <motion.line x1="0" y1="4" x2="24" y2="4" stroke="#0A40C8" strokeWidth="1.5" variants={{ off: { pathLength: 0 }, on: { pathLength: 1, transition: { duration: 0.5, ease: EASE, delay: d } } }} />
     </svg>
+  )
+}
+
+/* ---------- Opção Searchable: painel cinzento com lista de pontos (como a página Enterprise) ---------- */
+
+const listCopy: Record<Lang, { title: string; text: string; caption: string; items: { icon: 'bank' | 'mail' | 'link' | 'info'; t: string; d: string }[] }> = {
+  pt: {
+    title: 'Nada entra nem fica ligado sem a sua decisão.',
+    text: 'A informação que liga ou envia é utilizada para a organizar e produzir as análises da plataforma.',
+    caption: 'Segurança e transparência',
+    items: [
+      { icon: 'bank', t: 'Contas bancárias que decide ligar', d: 'Os movimentos das contas que escolhe ligar à Finer One.' },
+      { icon: 'mail', t: 'Faturas que decide enviar', d: 'As faturas enviadas para o endereço de faturas da empresa na Finer One.' },
+      { icon: 'link', t: 'Ligação por Open Banking', d: 'Só fica ativa depois de a autorizar junto do seu banco.' },
+      { icon: 'info', t: 'Disponibilidade', d: 'Nem todas as instituições bancárias estão necessariamente disponíveis.' },
+    ],
+  },
+  en: {
+    title: 'Nothing comes in or gets connected without your decision.',
+    text: 'The information you connect or send is used to organise it and produce the platform’s analyses.',
+    caption: 'Security and transparency',
+    items: [
+      { icon: 'bank', t: 'Bank accounts you choose to connect', d: 'Transactions from the accounts you choose to connect to Finer One.' },
+      { icon: 'mail', t: 'Invoices you choose to send', d: 'Invoices sent to your company’s Finer One invoice address.' },
+      { icon: 'link', t: 'Open Banking connection', d: 'Only becomes active after you authorise it with your bank.' },
+      { icon: 'info', t: 'Availability', d: 'Not every banking institution is necessarily available.' },
+    ],
+  },
+}
+
+const ICONS = {
+  bank: <path d="M3 8h14M4 8v7m4-7v7m4-7v7m4-7v7M2.5 16.5h15M10 3l7 3.5H3z" strokeLinejoin="round" />,
+  mail: <><rect x="2.5" y="4.5" width="15" height="11" rx="2" /><path d="m3 6 7 5 7-5" strokeLinejoin="round" /></>,
+  link: <path d="M8.5 11.5a3 3 0 0 0 4.2 0l2.6-2.6a3 3 0 0 0-4.2-4.2l-.9.9M11.5 8.5a3 3 0 0 0-4.2 0l-2.6 2.6a3 3 0 0 0 4.2 4.2l.9-.9" strokeLinecap="round" />,
+  info: <><circle cx="10" cy="10" r="7.5" /><path d="M10 9v5M10 6.2v.1" strokeLinecap="round" /></>,
+}
+
+function SearchableList({ lang }: { lang: Lang }) {
+  const t = listCopy[lang]
+  const row: Variants = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE } } }
+  const rule: Variants = { hidden: { scaleX: 0 }, show: { scaleX: 1, transition: { duration: 0.7, ease: EASE } } }
+  return (
+    <motion.div
+      className="mt-10 grid gap-10 rounded-[28px] bg-[#F3F5F9] p-6 sm:p-10 lg:mt-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16 lg:p-14"
+      variants={group}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, amount: 0.3 }}
+    >
+      <div className="lg:self-end">
+        <motion.p variants={row} className="text-[14px] font-medium text-[#0B1030]/55">{t.caption}</motion.p>
+        <motion.h3 variants={row} className="mt-3 text-balance font-display text-[28px] font-bold leading-[1.06] tracking-[-0.035em] text-[#070D2B] sm:text-[36px] lg:text-[40px]">{t.title}</motion.h3>
+        <motion.p variants={row} className="mt-4 max-w-[440px] text-[16px] leading-[1.65] text-[#0B1030]/70">{t.text}</motion.p>
+      </div>
+      <motion.ul variants={group}>
+        {t.items.map((x, i) => (
+          <motion.li key={x.t} variants={row} className="relative grid grid-cols-[28px_minmax(0,1fr)] gap-x-4 gap-y-1 py-5 sm:grid-cols-[28px_minmax(0,0.9fr)_minmax(0,1.1fr)] sm:gap-x-6">
+            {i === 0 && <motion.span aria-hidden="true" variants={rule} className="absolute inset-x-0 top-0 h-px origin-left border-t border-dashed border-[#0B1030]/20" />}
+            <motion.span aria-hidden="true" variants={rule} className="absolute inset-x-0 bottom-0 h-px origin-left border-t border-dashed border-[#0B1030]/20" />
+            <svg viewBox="0 0 20 20" className="mt-0.5 h-5 w-5 text-accent-deep" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">{ICONS[x.icon]}</svg>
+            <p className="text-[15.5px] font-semibold leading-snug text-[#070D2B]">{x.t}</p>
+            <p className="col-start-2 text-[14.5px] leading-[1.6] text-[#0B1030]/65 sm:col-start-3 sm:row-start-1">{x.d}</p>
+          </motion.li>
+        ))}
+      </motion.ul>
+    </motion.div>
   )
 }
