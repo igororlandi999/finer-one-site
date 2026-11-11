@@ -16,8 +16,8 @@ type Context = { segment: string; title: string; question: string; text: string;
  */
 const IMAGES = [
   { src: '/images/para-quem-estrada.webp', pos: '50% 60%' },
-  { src: '/images/para-quem-luz.webp', pos: '50% 70%' },
-  { src: '/images/para-quem-montanha.webp', pos: '50% 30%' },
+  { src: '/images/para-quem-luz.webp', pos: '50% 62%' },
+  { src: '/images/para-quem-montanha.webp', pos: '50% 42%' },
 ]
 
 /**
@@ -149,7 +149,7 @@ function Story({ c, i, n, progress, reduced }: { c: Context; i: number; n: numbe
   const veil = useTransform(progress, [start + 0.12, 1], [0, reduced || last ? 0 : 0.35])
   // Fotografia: ligeiro zoom-out enquanto o cartão entra (parallax)
   const { scrollYProgress: enter } = useScroll({ target: ref, offset: ['start end', 'start 0.2'] })
-  const zoom = useTransform(enter, [0, 1], reduced ? [1, 1] : [1.18, 1])
+  const zoom = useTransform(enter, [0, 1], reduced ? [1, 1] : [1.06, 1])
   const img = IMAGES[i]
 
   return (
@@ -160,7 +160,7 @@ function Story({ c, i, n, progress, reduced }: { c: Context; i: number; n: numbe
     >
       <motion.article
         style={{ scale }}
-        className="relative grid origin-top overflow-hidden rounded-[32px] bg-white shadow-[0_1px_2px_rgba(11,16,48,0.04),0_0_0_1px_rgba(11,16,48,0.06),0_40px_80px_-50px_rgba(11,16,48,0.35)] lg:h-[min(500px,calc(100vh-150px))] lg:grid-cols-[minmax(0,1.08fr)_minmax(0,1fr)]"
+        className="relative grid origin-top overflow-hidden rounded-[32px] bg-white shadow-[0_1px_2px_rgba(11,16,48,0.04),0_0_0_1px_rgba(11,16,48,0.06),0_40px_80px_-50px_rgba(11,16,48,0.35)] lg:h-[min(500px,calc(100vh-150px))] lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]"
       >
         {/* Texto */}
         <motion.div
