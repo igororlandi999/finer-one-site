@@ -38,7 +38,7 @@ const note: Record<Lang, string> = {
 
 const ATMOS = {
   background:
-    'radial-gradient(60% 70% at 15% 105%, #0052FF 0%, rgba(0,82,255,0) 70%), radial-gradient(55% 70% at 85% 110%, #1E90FF 0%, rgba(30,144,255,0) 70%), radial-gradient(80% 60% at 50% 120%, #7FB2FF 0%, rgba(127,178,255,0) 75%), radial-gradient(70% 50% at 50% -10%, #EAF1FF 0%, rgba(234,241,255,0) 70%), linear-gradient(180deg, #F7F9FF 0%, #D3E2FF 34%, #5B95FF 64%, #1A5CF0 100%)',
+    'radial-gradient(60% 60% at 12% 108%, #0A2A86 0%, rgba(10,42,134,0) 72%), radial-gradient(55% 60% at 88% 110%, #0A40C8 0%, rgba(10,64,200,0) 72%), radial-gradient(70% 45% at 50% 62%, rgba(0,82,255,0.55) 0%, rgba(0,82,255,0) 75%), radial-gradient(70% 50% at 50% -10%, #EAF1FF 0%, rgba(234,241,255,0) 70%), linear-gradient(180deg, #F7F9FF 0%, #D3E2FF 28%, #5B8EF5 52%, #0A40C8 78%, #0A2470 100%)',
 }
 
 export function SecurityAtmosphere({ lang }: { lang: Lang }) {
@@ -68,7 +68,7 @@ export function SecurityAtmosphere({ lang }: { lang: Lang }) {
       <motion.div aria-hidden="true" className="absolute inset-x-0 -top-[15%] -z-10 h-[130%]" style={{ ...ATMOS, y: bgY }} />
 
       <motion.div style={{ y: cardY }} className="relative mx-auto max-w-[620px]">
-        <motion.div variants={rise} className="rounded-[26px] bg-white/95 p-5 shadow-[0_40px_90px_-40px_rgba(7,13,43,0.55),0_0_0_1px_rgba(11,16,48,0.05)] backdrop-blur sm:p-7">
+        <motion.div variants={rise} className="rounded-[26px] bg-white p-5 shadow-[0_40px_90px_-40px_rgba(7,13,43,0.6),0_0_0_1px_rgba(11,16,48,0.05)] sm:p-7">
           <div className="flex items-baseline justify-between gap-3">
             <p className="font-display text-[20px] font-bold tracking-[-0.02em] text-[#070D2B] sm:text-[22px]">{pt ? 'Ligações da sua empresa' : 'Your company’s connections'}</p>
             <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#0B1030]/35">{pt ? 'Ilustrativo' : 'Illustrative'}</p>
@@ -77,25 +77,17 @@ export function SecurityAtmosphere({ lang }: { lang: Lang }) {
             {rows.map((r, i) => (
               <motion.li
                 key={r.name}
-                className="flex items-center gap-4 py-3.5"
+                className="flex items-baseline justify-between gap-4 py-4"
                 variants={{ hidden: { opacity: 0, x: -10 }, show: { opacity: 1, x: 0, transition: { duration: 0.5, ease: EASE, delay: 0.35 + i * 0.18 } } }}
               >
-                <span className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-full', r.on ? 'bg-[#EEF3FF] text-accent-deep' : 'bg-[#F3F5F9] text-[#0B1030]/35')}>
-                  <svg viewBox="0 0 20 20" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-                    {i === 1 ? <><rect x="2.5" y="4.5" width="15" height="11" rx="2" /><path d="m3 6 7 5 7-5" strokeLinejoin="round" /></> : <path d="M3 8h14M4 8v7m4-7v7m4-7v7m4-7v7M2.5 16.5h15M10 3l7 3.5H3z" strokeLinejoin="round" />}
-                  </svg>
-                </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[15px] font-semibold text-[#070D2B]">{r.name}</span>
-                  <span className="block truncate text-[13px] text-[#0B1030]/55">{r.sub}</span>
+                  <span className={cn('block text-[15.5px] font-semibold', r.on ? 'text-[#070D2B]' : 'text-[#070D2B]/55')}>{r.name}</span>
+                  <span className="block text-[13px] leading-snug text-[#0B1030]/55 sm:truncate">{r.sub}</span>
                 </span>
                 <motion.span
-                  className={cn('flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-[12.5px] font-semibold', r.on ? 'bg-[#EEF3FF] text-accent-deep' : 'text-[#0B1030]/45 ring-1 ring-[#0B1030]/12')}
+                  className={cn('shrink-0 text-right text-[13.5px] font-semibold', r.on ? 'text-accent-deep' : 'text-[#0B1030]/40')}
                   variants={{ hidden: { opacity: 0, scale: 0.9 }, show: { opacity: 1, scale: 1, transition: { duration: 0.4, ease: EASE, delay: 0.8 + i * 0.22 } } }}
                 >
-                  {r.on && (
-                    <svg viewBox="0 0 12 12" className="h-3 w-3" aria-hidden="true"><path d="M2.5 6.2 5 8.5l4.5-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                  )}
                   {r.state}
                 </motion.span>
               </motion.li>
@@ -107,13 +99,13 @@ export function SecurityAtmosphere({ lang }: { lang: Lang }) {
       {/* Três factos sobre a cor, em branco */}
       <motion.ul variants={group} className="relative mt-10 grid gap-6 text-white sm:grid-cols-3 sm:gap-8 lg:mt-14">
         {facts[lang].map((f) => (
-          <motion.li key={f.t} variants={rise} className="border-t border-white/40 pt-4">
+          <motion.li key={f.t} variants={rise} className="border-t border-white/30 pt-4">
             <p className="text-[16px] font-semibold">{f.t}</p>
-            <p className="mt-1.5 text-[14.5px] leading-[1.55] text-white/85">{f.d}</p>
+            <p className="mt-1.5 text-[14.5px] leading-[1.55] text-white/80">{f.d}</p>
           </motion.li>
         ))}
       </motion.ul>
-      <motion.p variants={rise} className="relative mt-6 text-[13px] text-white/75">{note[lang]}</motion.p>
+      <motion.p variants={rise} className="relative mt-6 text-[13px] text-white/65">{note[lang]}</motion.p>
     </motion.div>
   )
 }
