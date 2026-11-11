@@ -194,11 +194,8 @@ export function FinancialDiscovery() {
       <section id="problema" aria-labelledby="descoberta-titulo" className="relative isolate scroll-mt-20 overflow-hidden bg-white text-navy">
         {/* Destinos já usados no menu e no rodapé ("Produto" → #demo, "Os desafios" → #problema) */}
         <span id="demo" aria-hidden="true" className="pointer-events-none absolute top-0 scroll-mt-20" />
-        {/* Atmosfera da marca com presença (à maneira da Lovable), nos tons do céu da secção 2 */}
+        {/* Fundo branco puro (como Ramp e Searchable); a atmosfera vive só no bloco do céu. Transição suave para a secção 4. */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(70%_100%_at_50%_0%,rgba(141,184,246,0.32),transparent_70%)]" />
-          <div className="absolute -right-[14%] top-[22%] h-[760px] w-[760px] rounded-full bg-[radial-gradient(closest-side,rgba(94,151,238,0.34),rgba(141,184,246,0.12)_55%,transparent)]" />
-          <div className="absolute -left-[16%] top-[52%] h-[700px] w-[700px] rounded-full bg-[radial-gradient(closest-side,rgba(30,144,255,0.2),rgba(185,211,250,0.1)_55%,transparent)]" />
           <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-[#F8FAFF]" />
         </div>
 
@@ -247,13 +244,19 @@ export function FinancialDiscovery() {
                       )}
                     />
                     <motion.div
-                      className={cn('relative min-w-0 lg:col-span-1', right ? 'lg:col-start-2 lg:pl-4' : 'lg:col-start-1 lg:pr-4 lg:text-right', tile && 'overflow-hidden rounded-[28px] bg-[linear-gradient(150deg,#0A40C8_0%,#0A35A8_55%,#0A2878_100%)] p-6 text-white shadow-[0_40px_80px_-40px_rgba(10,40,120,0.9)] sm:p-8 lg:ml-4 lg:pl-8')}
+                      className={cn('relative min-w-0 lg:col-span-1', right ? 'lg:col-start-2 lg:pl-4' : 'lg:col-start-1 lg:pr-4 lg:text-right', tile && 'isolate overflow-hidden rounded-[28px] bg-[#0A2878] p-6 text-white shadow-[0_40px_80px_-40px_rgba(10,40,120,0.9)] sm:p-8 lg:ml-4 lg:pl-8')}
                       initial={{ opacity: 0, y: 16 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, amount: 0.4 }}
                       transition={{ duration: 0.5, ease: EASE }}
                     >
-                      {tile && <span aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[radial-gradient(closest-side,rgba(126,182,255,0.22),transparent)]" />}
+                      {tile && (
+                        <span aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+                          {/* Céu Finer (o mesmo da plataforma), mais escuro e "fim de tarde" */}
+                          <img src="/images/finer-sky.webp" alt="" decoding="async" loading="lazy" className="absolute inset-0 h-full w-full object-cover object-top" />
+                          <span className="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,64,200,0.35)_0%,rgba(10,52,170,0.78)_42%,rgba(10,40,120,0.96)_100%)]" />
+                        </span>
+                      )}
                       <p className={cn('relative flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.2em]', right ? '' : 'lg:justify-end', tile ? 'text-white/85' : lit ? 'text-accent-deep' : 'text-[#0B1030]/45')}>
                         <span className="font-display text-[13px] font-bold tracking-[0.1em]">0{i + 1}</span>
                         <span aria-hidden="true" className={cn('h-px w-6 transition-colors duration-500', tile ? 'bg-white/70' : lit ? 'bg-accent' : 'bg-[#0B1030]/20')} />
