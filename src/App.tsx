@@ -97,7 +97,8 @@ export default function App() {
         {/* Nova secção 6: Segurança e confiança. Versão anterior em ?seguranca=antiga */}
         {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('seguranca') === 'antiga' ? <Security /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('seguranca') === 'acordeao' ? <SecurityTrustAccordion /> : <SecurityTrust />}
         {/* Nova secção 7: Oferta e conversão (Plus, Pioneers, lista de espera) */}
-        <OfferSection />
+        {/* 'Escolha como quer começar' retirada (fundador, 12/11/2026): repetia os planos. Versão anterior em ?oferta=sim */}
+        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('oferta') === 'sim' && <OfferSection />}
         {/* Planos: nova versão (Searchable/Lovable). Versão anterior escura em ?precos=antigo */}
         {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('precos') === 'antigo' ? <PricingSection /> : <PlansSection />}
         {/* Acesso antecipado substituído pela secção 7. Versão anterior em ?acesso=antigo */}

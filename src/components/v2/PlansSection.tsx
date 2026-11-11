@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react'
-import { MotionConfig, motion, useReducedMotion, useScroll, useSpring, useTransform } from 'motion/react'
+import { AnimatePresence, MotionConfig, motion, useReducedMotion, useScroll, useSpring, useTransform } from 'motion/react'
 import type { MotionValue, Variants } from 'motion/react'
 import { ArrowRight } from 'lucide-react'
 import { useLanguage } from '@/i18n/LanguageContext'
@@ -11,20 +11,23 @@ const EASE = [0.22, 1, 0.36, 1] as const
 /**
  * Secção de planos (âncora #precos), à maneira da página de preços da
  * Searchable: cartões claros lado a lado, o plano em destaque com a cor da
- * marca. PREÇOS: nenhum valor — "Preço a definir" até existirem valores
- * oficiais. Plus: conteúdo indicado pelo fundador (11/11/2026). Pro e Team:
- * em desenvolvimento, sem compra — só aviso pela lista de espera.
+ * marca. PREÇOS (indicação do fundador, 12/11/2026): Plus mensal 67,90 €/mês,
+ * Plus anual 57,90 €/mês. Pro e Team: conteúdo e valores ainda por definir —
+ * sem lista de funcionalidades, só aviso pela lista de espera.
  */
 type Plan = { id: 'plus' | 'pro' | 'team'; name: string; status: string; promise: string; desc: string; listLabel: string; items: string[]; cta: string; href: string }
 
-const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string; price: string; period: string; note: string; plans: Plan[] }> = {
+type Billing = { monthly: string; annual: string; save: string; priceM: string; priceA: string; per: string; noteM: string; noteA: string; tbd: string }
+
+const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string; price: string; period: string; note: string; billing: Billing; plans: Plan[] }> = {
   pt: {
     eyebrow: 'Planos',
     title: ['Escolha o plano certo ', 'para a sua empresa.'],
     sub: 'Comece pelo Plus. O Pro e o Team estão em desenvolvimento.',
     price: 'A anunciar',
     period: '/mês',
-    note: 'Os valores de cada plano serão anunciados.',
+    note: 'Os valores do Pro e do Team serão anunciados.',
+    billing: { monthly: 'Mensal', annual: 'Anual', save: '−10 €/mês', priceM: '67,90 €', priceA: '57,90 €', per: '/mês', noteM: 'Plano mensal', noteA: 'Por mês, no plano anual', tbd: 'As funcionalidades deste plano serão anunciadas.' },
     plans: [
       {
         id: 'plus',
@@ -43,8 +46,8 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
         status: 'Em desenvolvimento',
         promise: 'Perceber o que está a acontecer — e o que pode acontecer a seguir.',
         desc: 'Mais profundidade para empresas que querem antecipar cenários e decidir com maior contexto financeiro.',
-        listLabel: 'Tudo do Plus, e ainda',
-        items: ['Planeamento', 'Indicadores', 'Alertas ilimitados', 'Chat Financeiro ilimitado'],
+        listLabel: '',
+        items: [],
         cta: 'Avisar-me quando chegar',
         href: '/lista-espera/',
       },
@@ -54,8 +57,8 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
         status: 'Em desenvolvimento',
         promise: 'Comparar o desempenho da empresa com o setor.',
         desc: 'Para empresas que querem situar os seus números face ao mercado e acompanhar a evolução do valor do negócio.',
-        listLabel: 'Tudo do Pro, e ainda',
-        items: ['Benchmarking do setor', 'Avaliação'],
+        listLabel: '',
+        items: [],
         cta: 'Avisar-me quando chegar',
         href: '/lista-espera/',
       },
@@ -67,7 +70,8 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
     sub: 'Start with Plus. Pro and Team are in development.',
     price: 'To be announced',
     period: '/mo',
-    note: 'Pricing for each plan will be announced.',
+    note: 'Pricing for Pro and Team will be announced.',
+    billing: { monthly: 'Monthly', annual: 'Annual', save: '−€10/mo', priceM: '€67.90', priceA: '€57.90', per: '/mo', noteM: 'Monthly plan', noteA: 'Per month, on the annual plan', tbd: 'The features of this plan will be announced.' },
     plans: [
       {
         id: 'plus',
@@ -86,8 +90,8 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
         status: 'In development',
         promise: 'Understand what’s happening — and what could happen next.',
         desc: 'More depth for companies that want to anticipate scenarios and decide with greater financial context.',
-        listLabel: 'Everything in Plus, plus',
-        items: ['Planning', 'Indicators', 'Unlimited alerts', 'Unlimited Financial Chat'],
+        listLabel: '',
+        items: [],
         cta: 'Notify me when it’s ready',
         href: '/lista-espera/',
       },
@@ -97,8 +101,8 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
         status: 'In development',
         promise: 'Compare the company’s performance with the industry.',
         desc: 'For companies that want to benchmark their numbers against the market and track the evolution of business value.',
-        listLabel: 'Everything in Pro, plus',
-        items: ['Industry benchmarking', 'Valuation'],
+        listLabel: '',
+        items: [],
         cta: 'Notify me when it’s ready',
         href: '/lista-espera/',
       },
@@ -219,7 +223,7 @@ function PlanCard({ p, i, t, deal, step, reduced }: { p: Plan; i: number; t: (ty
         </span>
 
         <h3 className="font-display text-[30px] font-semibold leading-tight tracking-[-0.03em] text-[#070D2B] sm:text-[34px]">{p.name}</h3>
-        <p className="font-display text-[30px] font-semibold leading-tight tracking-[-0.03em] text-[#0B1030]/35 sm:text-[34px]">{t.price}</p>
+        {plus ? <PlusPrice b={t.billing} /> : <p className="font-display text-[30px] font-semibold leading-tight tracking-[-0.03em] text-[#0B1030]/35 sm:text-[34px]">{t.price}</p>}
 
         <p className="mt-7 text-[17px] leading-snug text-[#070D2B]">{p.promise}</p>
         <p className="mt-2 text-[14.5px] leading-[1.6] text-[#0B1030]/60">{p.desc}</p>
@@ -236,14 +240,64 @@ function PlanCard({ p, i, t, deal, step, reduced }: { p: Plan; i: number; t: (ty
         </a>
 
         <div className="mt-7 border-t border-[#0B1030]/10 pt-6">
-          <p className="text-[15px] font-semibold text-[#070D2B]">{p.listLabel}</p>
-          <motion.ul variants={list} className="mt-3 space-y-3">
-            {p.items.map((x) => (
-              <motion.li key={x} variants={li} className="text-[15px] text-[#0B1030]/75">{x}</motion.li>
-            ))}
-          </motion.ul>
+          {p.items.length > 0 ? (
+            <>
+              <p className="text-[15px] font-semibold text-[#070D2B]">{p.listLabel}</p>
+              <motion.ul variants={list} className="mt-3 space-y-3">
+                {p.items.map((x) => (
+                  <motion.li key={x} variants={li} className="text-[15px] text-[#0B1030]/75">{x}</motion.li>
+                ))}
+              </motion.ul>
+            </>
+          ) : (
+            <p className="text-[14.5px] leading-[1.6] text-[#0B1030]/50">{t.billing.tbd}</p>
+          )}
         </div>
       </motion.article>
     </motion.div>
+  )
+}
+
+/** Plus: escolha entre mensal e anual; o preço muda com uma transição suave. */
+function PlusPrice({ b }: { b: Billing }) {
+  const [annual, setAnnual] = useState(false)
+  const opts: [boolean, string][] = [[false, b.monthly], [true, b.annual]]
+  return (
+    <div className="mt-2">
+      <div className="inline-flex rounded-[10px] bg-[#F1F4F9] p-1" role="group" aria-label={b.monthly + ' / ' + b.annual}>
+        {opts.map(([val, label]) => {
+          const on = annual === val
+          return (
+            <button
+              key={label}
+              type="button"
+              aria-pressed={on}
+              onClick={() => setAnnual(val)}
+              className={cn('relative flex items-center gap-2 rounded-[8px] px-3.5 py-1.5 text-[13.5px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent', on ? 'text-[#070D2B]' : 'text-[#0B1030]/55 hover:text-[#070D2B]')}
+            >
+              {on && <motion.span layoutId="plus-billing" className="absolute inset-0 rounded-[8px] bg-white shadow-[0_1px_3px_rgba(11,16,48,0.12)]" transition={{ type: 'spring', stiffness: 420, damping: 34 }} />}
+              <span className="relative">{label}</span>
+              {val && <span className="relative rounded-[6px] bg-accent/10 px-1.5 py-0.5 text-[11.5px] font-bold text-accent-deep">{b.save}</span>}
+            </button>
+          )
+        })}
+      </div>
+      <div className="relative mt-3 h-[44px] overflow-hidden sm:h-[48px]" aria-live="polite">
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.p
+            key={annual ? 'a' : 'm'}
+            className="absolute inset-x-0 top-0 font-display text-[36px] font-bold leading-none tracking-[-0.04em] text-[#070D2B] tabular-nums sm:text-[40px]"
+            initial={{ y: '100%', opacity: 0 }}
+            animate={{ y: '0%', opacity: 1 }}
+            exit={{ y: '-100%', opacity: 0 }}
+            transition={{ duration: 0.45, ease: EASE }}
+          >
+            {annual ? b.priceA : b.priceM}
+            <span className="ml-1.5 text-[17px] font-semibold tracking-normal text-[#0B1030]/45">{b.per}</span>
+          </motion.p>
+        </AnimatePresence>
+      </div>
+      <p className="text-[12.5px] text-[#0B1030]/50">{annual ? b.noteA : b.noteM}</p>
+    </div>
   )
 }
