@@ -71,6 +71,7 @@ function getCopy(lang: Lang) {
     noteShort: pt ? 'Dados fictícios' : 'Fictitious data',
     ask: pt ? ['O que gostaria de saber sobre a sua ', 'empresa?'] : ['What would you like to know about your ', 'company?'],
     suggested: pt ? 'Perguntas sugeridas' : 'Suggested questions',
+    others: pt ? 'Experimente também:' : 'Also try:',
     answerLabel: pt ? 'Resposta' : 'Answer',
     nextLabel: pt ? 'Próximo passo' : 'Next step',
     qa,
@@ -81,50 +82,13 @@ const group: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.0
 const item: Variants = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } } }
 
 /**
- * Céu Finer — o "mundo" azul com nuvens do topo dos ecrãs da plataforma,
- * recriado em SVG (nuvens procedimentais com feTurbulence): nítido em qualquer
- * tamanho, sem imagem a carregar e estático (só se move com o scroll).
- * Quando existir o ficheiro original do céu (sem texto), pode substituir isto.
+ * Céu Finer — o "mundo" azul com nuvens do topo dos ecrãs da plataforma.
+ * Imagem leve (public/images/finer-sky.webp, ~40 KB) desenhada uma vez a partir
+ * de finer-sky-source.svg, para o scroll não ter de recalcular as nuvens.
+ * Quando existir o ficheiro original do céu (sem texto), basta trocar a imagem.
  */
 function FinerSky() {
-  return (
-    <svg aria-hidden="true" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1200 800">
-      <defs>
-        <linearGradient id="fs-sky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#1F5FD6" />
-          <stop offset="0.4" stopColor="#5E97EE" />
-          <stop offset="0.78" stopColor="#B9D3FA" />
-          <stop offset="1" stopColor="#F4F8FF" />
-        </linearGradient>
-        <radialGradient id="fs-sun" cx="0.78" cy="0.12" r="0.55">
-          <stop offset="0" stopColor="#FFFFFF" stopOpacity="0.85" />
-          <stop offset="0.35" stopColor="#FFFFFF" stopOpacity="0.25" />
-          <stop offset="1" stopColor="#FFFFFF" stopOpacity="0" />
-        </radialGradient>
-        <filter id="fs-clouds" x="0" y="0" width="100%" height="100%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.0042 0.0095" numOctaves="6" seed="7" />
-          <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 3.2 -1.45" />
-          <feGaussianBlur stdDeviation="0.6" />
-        </filter>
-        <filter id="fs-wisps" x="0" y="0" width="100%" height="100%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.0012 0.02" numOctaves="3" seed="21" />
-          <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 2.4 -1.1" />
-        </filter>
-        <linearGradient id="fs-fade" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#fff" stopOpacity="1" />
-          <stop offset="0.75" stopColor="#fff" stopOpacity="0.8" />
-          <stop offset="1" stopColor="#fff" stopOpacity="0" />
-        </linearGradient>
-        <mask id="fs-mask"><rect width="1200" height="800" fill="url(#fs-fade)" /></mask>
-      </defs>
-      <rect width="1200" height="800" fill="url(#fs-sky)" />
-      <g mask="url(#fs-mask)">
-        <rect width="1200" height="800" filter="url(#fs-wisps)" opacity="0.55" />
-        <rect width="1200" height="800" filter="url(#fs-clouds)" opacity="1" />
-      </g>
-      <rect width="1200" height="800" fill="url(#fs-sun)" />
-    </svg>
-  )
+  return <img src="/images/finer-sky.webp" alt="" aria-hidden="true" decoding="async" className="absolute inset-0 h-full w-full select-none object-cover" draggable={false} />
 }
 
 /**
@@ -140,6 +104,12 @@ export function HomeExperience() {
   // A primeira pergunta já aparece respondida: o palco nunca fica vazio.
   const [sel, setSel] = useState(0)
   const cur = t.qa[sel]
+  // Ao escolher pelo teclado, o foco passa para a primeira cápsula que fica (a escolhida desaparece).
+  const chipRefs = useRef<(HTMLButtonElement | null)[]>([])
+  const choose = (i: number, hadFocus: boolean) => {
+    setSel(i)
+    if (hadFocus) requestAnimationFrame(() => { const next = chipRefs.current.find((b, j) => j !== i && b && b.isConnected); next?.focus() })
+  }
 
   // Scroll: o palco abre-se do centro (cortina) e as nuvens descem mais devagar (parallax leve).
   const stageRef = useRef<HTMLDivElement>(null)
@@ -198,7 +168,7 @@ export function HomeExperience() {
               </div>
 
               {/* Cartão translúcido: pergunta, sugestões e resposta */}
-              <div className="mx-auto max-w-[560px] rounded-[24px] bg-white/[0.88] p-4 shadow-[0_30px_70px_-35px_rgba(7,13,43,0.45)] ring-1 ring-white/70 backdrop-blur-xl sm:p-6">
+              <div className="mx-auto max-w-[560px] rounded-[24px] bg-white/[0.94] p-4 shadow-[0_30px_70px_-35px_rgba(7,13,43,0.45)] ring-1 ring-white/70 sm:p-6">
                 {/* Campo "Ask Finer" com a pergunta escolhida */}
                 <div className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_1px_0_rgba(11,16,48,0.04),0_8px_24px_-18px_rgba(11,16,48,0.5)] ring-1 ring-[#0B1030]/[0.08]">
                   <AnimatePresence mode="wait" initial={false}>
@@ -211,28 +181,28 @@ export function HomeExperience() {
                   </span>
                 </div>
 
-                {/* Sugestões em cápsulas */}
-                <div role="group" aria-label={t.suggested} className="mt-3 flex flex-wrap gap-2">
-                  {t.qa.map((x, i) => {
-                    const on = sel === i
-                    return (
-                      <button
+                {/* Outras perguntas: a escolhida passa para o campo acima (sem repetição) */}
+                <div role="group" aria-label={t.suggested} className="mt-3 flex flex-wrap items-center gap-2">
+                  <span className="mr-1 text-[12.5px] font-medium text-[#0B1030]/50">{t.others}</span>
+                  <AnimatePresence initial={false} mode="popLayout">
+                    {t.qa.map((x, i) => (i === sel ? null : (
+                      <motion.button
                         key={x.q}
+                        layout
+                        ref={(el) => { chipRefs.current[i] = el }}
                         type="button"
-                        aria-pressed={on}
                         aria-controls="experimentar-resposta"
-                        onClick={() => setSel(i)}
-                        className={cn(
-                          'group relative rounded-full px-3.5 py-2 text-left text-[13.5px] font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2',
-                          on ? 'text-accent' : 'text-[#0B1030]/70 hover:text-[#070D2B]',
-                        )}
+                        onClick={(e) => choose(i, e.currentTarget === document.activeElement)}
+                        initial={{ opacity: 0, scale: 0.96 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.96 }}
+                        transition={{ duration: 0.22, ease: EASE }}
+                        className="rounded-full px-3.5 py-2 text-left text-[13.5px] font-medium text-[#0B1030]/75 ring-1 ring-[#0B1030]/12 transition-[color,box-shadow,background-color] duration-200 hover:bg-[#EAF1FF] hover:text-accent hover:ring-accent/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                       >
-                        {on && <motion.span layoutId="experimentar-chip" transition={{ duration: 0.26, ease: EASE }} className="absolute inset-0 rounded-full bg-[#EAF1FF] ring-1 ring-accent/30" />}
-                        {!on && <span aria-hidden="true" className="absolute inset-0 rounded-full ring-1 ring-[#0B1030]/10 transition-colors group-hover:ring-[#0B1030]/20" />}
-                        <span className="relative">{x.q}</span>
-                      </button>
-                    )
-                  })}
+                        {x.q}
+                      </motion.button>
+                    )))}
+                  </AnimatePresence>
                 </div>
 
                 {/* Linha de luz Finer One: liga a pergunta à resposta (desenha-se a cada resposta) */}
