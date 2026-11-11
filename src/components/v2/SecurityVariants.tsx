@@ -36,10 +36,25 @@ const note: Record<Lang, string> = {
 
 /* =================== D · Atmosfera (Lovable) =================== */
 
+/**
+ * Atmosfera com várias tonalidades da marca a misturar-se (como a Lovable):
+ * céu claro em cima, azul elétrico e azul-glow no meio, azul profundo e navy em baixo.
+ */
 const ATMOS = {
-  background:
-    'radial-gradient(60% 60% at 12% 108%, #0A2A86 0%, rgba(10,42,134,0) 72%), radial-gradient(55% 60% at 88% 110%, #0A40C8 0%, rgba(10,64,200,0) 72%), radial-gradient(70% 45% at 50% 62%, rgba(0,82,255,0.55) 0%, rgba(0,82,255,0) 75%), radial-gradient(70% 50% at 50% -10%, #EAF1FF 0%, rgba(234,241,255,0) 70%), linear-gradient(180deg, #F7F9FF 0%, #D3E2FF 22%, #4A82F2 40%, #0A40C8 60%, #0A2470 100%)',
+  background: [
+    'radial-gradient(38% 30% at 18% 44%, rgba(30,144,255,0.55) 0%, rgba(30,144,255,0) 100%)',
+    'radial-gradient(34% 28% at 84% 40%, rgba(141,184,246,0.75) 0%, rgba(141,184,246,0) 100%)',
+    'radial-gradient(46% 34% at 62% 58%, rgba(0,82,255,0.7) 0%, rgba(0,82,255,0) 100%)',
+    'radial-gradient(40% 30% at 10% 80%, rgba(10,36,112,0.9) 0%, rgba(10,36,112,0) 100%)',
+    'radial-gradient(42% 32% at 92% 86%, rgba(7,13,43,0.85) 0%, rgba(7,13,43,0) 100%)',
+    'radial-gradient(70% 40% at 50% -6%, #FFFFFF 0%, rgba(255,255,255,0) 100%)',
+    'linear-gradient(180deg, #F4F8FF 0%, #CFE0FF 20%, #5A92F8 40%, #0A4AD6 58%, #0A2E96 78%, #08184F 100%)',
+  ].join(', '),
 }
+
+/** Grão fino (imagem estática gerada uma vez) para dar textura de fotografia à cor. */
+const GRAIN =
+  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")"
 
 export function SecurityAtmosphere({ lang }: { lang: Lang }) {
   const pt = lang === 'pt'
@@ -74,15 +89,16 @@ export function SecurityAtmosphere({ lang }: { lang: Lang }) {
       variants={group}
     >
       <motion.div aria-hidden="true" className="absolute inset-x-0 -top-[15%] -z-10 h-[130%]" style={{ ...ATMOS, y: bgY }} />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 opacity-[0.14] mix-blend-overlay" style={{ backgroundImage: GRAIN, backgroundSize: '180px 180px' }} />
 
       {/* Cartão ilustrativo (decorativo para leitores de ecrã: a frase e os factos dizem o mesmo em texto) */}
-      <motion.div ref={card} style={{ y: cardY }} className="relative mx-auto max-w-[620px]" aria-hidden="true">
-        <motion.div variants={rise} className="rounded-[26px] bg-white p-5 shadow-[0_40px_90px_-40px_rgba(7,13,43,0.6),0_0_0_1px_rgba(11,16,48,0.05)] sm:p-7">
+      <motion.div ref={card} style={{ y: cardY }} className="relative mx-auto max-w-[500px]" aria-hidden="true">
+        <motion.div variants={rise} className="rounded-[22px] bg-white p-5 shadow-[0_40px_90px_-40px_rgba(7,13,43,0.6),0_0_0_1px_rgba(11,16,48,0.05)] sm:px-6 sm:py-5">
           <div className="flex items-baseline justify-between gap-3">
-            <p className="font-display text-[20px] font-bold tracking-[-0.02em] text-[#070D2B] sm:text-[22px]">{pt ? 'Ligações da sua empresa' : 'Your company’s connections'}</p>
+            <p className="font-display text-[17px] font-bold tracking-[-0.02em] text-[#070D2B] sm:text-[18px]">{pt ? 'Ligações da sua empresa' : 'Your company’s connections'}</p>
             <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#0B1030]/35">{pt ? 'Ilustrativo' : 'Illustrative'}</p>
           </div>
-          <ul className="mt-4 divide-y divide-[#0B1030]/[0.07]">
+          <ul className="mt-2 divide-y divide-[#0B1030]/[0.07]">
             <motion.li className="flex items-baseline justify-between gap-4 py-4" variants={rowIn(0.35)}>
               <span className="min-w-0 flex-1">
                 <span className={cn('block text-[15.5px] font-semibold transition-colors duration-500', st.name)}>{pt ? 'Conta à ordem' : 'Current account'}</span>
@@ -112,14 +128,14 @@ export function SecurityAtmosphere({ lang }: { lang: Lang }) {
       </motion.div>
 
       {/* Frase-cartaz: branco + navy da marca (sobre uma faixa branca, como o logótipo), sobe por máscara */}
-      <motion.h3 variants={group} className="relative mt-12 font-display text-[36px] font-bold leading-[1.04] tracking-[-0.04em] sm:text-[56px] lg:mt-16 lg:text-[72px]">
+      <motion.h3 variants={group} className="relative mt-12 font-display text-[clamp(24px,7.4vw,36px)] font-bold leading-[1.06] tracking-[-0.045em] sm:text-[58px] lg:mt-16 lg:text-[80px]">
         <span className="block overflow-hidden pb-[0.08em]">
           <motion.span className="block text-white" variants={{ hidden: { y: '105%' }, show: { y: '0%', transition: { duration: 0.9, ease: EASE } } }}>{poster[0]}</motion.span>
         </span>
         <span className="relative isolate mt-1 inline-block">
           <motion.span
             aria-hidden="true"
-            className="absolute -inset-x-3 inset-y-0 -z-10 origin-left rounded-[14px] bg-white sm:-inset-x-4 sm:rounded-[18px]"
+            className="absolute -inset-x-[0.12em] bottom-[0.06em] top-[0.1em] -z-10 origin-left rounded-[6px] bg-white sm:rounded-[8px]"
             variants={{ hidden: { scaleX: 0 }, show: { scaleX: 1, transition: { duration: 0.8, ease: EASE, delay: 0.35 } } }}
           />
           <span className="block overflow-hidden pb-[0.08em]">
