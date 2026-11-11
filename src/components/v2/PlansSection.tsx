@@ -22,7 +22,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
     eyebrow: 'Planos',
     title: ['Escolha o plano certo ', 'para a sua empresa.'],
     sub: 'Comece pelo Plus. O Pro e o Team estão em desenvolvimento.',
-    price: 'Preço a definir',
+    price: 'A anunciar',
     period: '/mês',
     note: 'Os valores de cada plano serão anunciados.',
     plans: [
@@ -65,7 +65,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
     eyebrow: 'Plans',
     title: ['Choose the right plan ', 'for your company.'],
     sub: 'Start with Plus. Pro and Team are in development.',
-    price: 'Price to be announced',
+    price: 'To be announced',
     period: '/mo',
     note: 'Pricing for each plan will be announced.',
     plans: [
@@ -164,7 +164,7 @@ export function PlansSection() {
 
 const TAB: Record<Plan['id'], string> = {
   plus: 'bg-accent text-white',
-  pro: 'bg-[#EEF1F6] text-[#070D2B]/75',
+  pro: 'bg-[#EEF1F6] text-[#070D2B]/75 transition-colors duration-300 group-hover/card:bg-[#070D2B] group-hover/card:text-white',
   team: 'bg-[#070D2B] text-white',
 }
 
@@ -181,9 +181,16 @@ function PlanCard({ p, i, t, deal, step, reduced }: { p: Plan; i: number; t: (ty
 
   return (
     <motion.div style={{ x, y, rotate, scale, zIndex: 30 - i * 10 }} className="relative h-full">
+      {plus && (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -inset-x-12 -bottom-24 top-1/4 -z-10 hidden bg-[radial-gradient(50%_42%_at_50%_62%,rgba(0,82,255,0.32),rgba(30,144,255,0.14)_55%,rgba(141,184,246,0)_100%)] lg:block"
+        />
+      )}
       <motion.article
+        whileHover={{ y: -6, transition: { duration: 0.3, ease: EASE } }}
         className={cn(
-          'relative flex h-full flex-col rounded-[20px] bg-white px-6 pb-7 pt-10 sm:px-8',
+          'group/card relative flex h-full flex-col rounded-[20px] bg-white px-6 pb-7 pt-10 sm:px-8',
           plus ? 'shadow-[0_30px_70px_-45px_rgba(0,82,255,0.55)]' : '',
         )}
         initial="hidden"
@@ -192,7 +199,7 @@ function PlanCard({ p, i, t, deal, step, reduced }: { p: Plan; i: number; t: (ty
         variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE, delay: i * 0.12 } } }}
       >
         {/* Contorno: azul elétrico no Plus (desenha-se ao entrar), fino nos outros */}
-        <span aria-hidden="true" className={cn('pointer-events-none absolute inset-0 rounded-[20px]', plus ? 'ring-0' : 'ring-1 ring-inset ring-[#0B1030]/12')} />
+        <span aria-hidden="true" className={cn('pointer-events-none absolute inset-0 rounded-[20px]', plus ? 'ring-0' : 'ring-1 ring-inset ring-[#0B1030]/12 transition-[box-shadow] duration-300 group-hover/card:ring-[#0B1030]/30')} />
         {plus && (
           <motion.span
             aria-hidden="true"
@@ -212,10 +219,7 @@ function PlanCard({ p, i, t, deal, step, reduced }: { p: Plan; i: number; t: (ty
         </span>
 
         <h3 className="font-display text-[30px] font-semibold leading-tight tracking-[-0.03em] text-[#070D2B] sm:text-[34px]">{p.name}</h3>
-        <p className="font-display text-[30px] font-semibold leading-tight tracking-[-0.03em] text-[#0B1030]/35 sm:text-[34px]">
-          € —<span className="ml-1 text-[18px]">{t.period}</span>
-        </p>
-        <p className="mt-1 text-[12.5px] text-[#0B1030]/50">{t.price}</p>
+        <p className="font-display text-[30px] font-semibold leading-tight tracking-[-0.03em] text-[#0B1030]/35 sm:text-[34px]">{t.price}</p>
 
         <p className="mt-7 text-[17px] leading-snug text-[#070D2B]">{p.promise}</p>
         <p className="mt-2 text-[14.5px] leading-[1.6] text-[#0B1030]/60">{p.desc}</p>
