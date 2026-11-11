@@ -111,13 +111,13 @@ export function SecurityTrust() {
           viewport={{ once: true, amount: 0.25 }}
         >
           <div>
-            <motion.p variants={item} className="inline-flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent">
+            <motion.p variants={item} className="inline-flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">
               <span aria-hidden="true" className="h-px w-6 bg-accent shadow-[0_0_6px_rgba(0,82,255,0.6)]" />
               {t.eyebrow}
             </motion.p>
             <motion.h2 variants={item} id="seguranca-titulo" className="mt-4 text-balance font-display text-[32px] font-bold leading-[1.06] tracking-[-0.035em] text-[#070D2B] sm:text-[42px] lg:text-[46px]">
               {t.title[0]}
-              <span className="text-accent">{t.title[1]}</span>
+              <span className="text-accent-deep">{t.title[1]}</span>
             </motion.h2>
             <motion.p variants={item} className="mt-5 max-w-[420px] text-[16.5px] leading-[1.6] text-[#0B1030]/70 sm:text-[18px]">{t.sub}</motion.p>
           </div>
@@ -140,9 +140,9 @@ export function SecurityTrust() {
                       onClick={() => setOpen(isOpen ? null : i)}
                       className="group flex w-full items-center gap-4 py-5 pl-4 pr-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent sm:py-6 sm:pl-5"
                     >
-                      <span className="w-6 shrink-0 font-display text-[13px] font-bold tabular-nums text-accent">0{i + 1}</span>
+                      <span className="w-6 shrink-0 font-display text-[13px] font-bold tabular-nums text-accent-deep">0{i + 1}</span>
                       <span className={cn('flex-1 font-display text-[18px] font-bold leading-snug tracking-[-0.01em] transition-colors sm:text-[20px]', isOpen ? 'text-[#070D2B]' : 'text-[#070D2B]/80 group-hover:text-[#070D2B]')}>{x.q}</span>
-                      <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors duration-200', isOpen ? 'border-accent bg-accent text-white' : 'border-[#0B1030]/15 text-[#0B1030]/60 group-hover:border-accent group-hover:text-accent')}>
+                      <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors duration-200', isOpen ? 'border-accent bg-accent text-white' : 'border-[#0B1030]/15 text-[#0B1030]/60 group-hover:border-accent group-hover:text-accent-deep')}>
                         <Plus className={cn('h-4 w-4 transition-transform duration-300', isOpen && 'rotate-45')} aria-hidden="true" />
                       </span>
                     </button>

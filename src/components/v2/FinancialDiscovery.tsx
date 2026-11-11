@@ -171,7 +171,7 @@ export function FinancialDiscovery() {
       key: t.steps[1].k,
       q: t.steps[1].q,
       big: t.anticipate.share,
-      bigClass: 'text-accent',
+      bigClass: 'text-accent-deep',
       caption: t.anticipate.shareText,
       text: t.anticipate.text,
       meta: lang === 'pt'
@@ -205,10 +205,10 @@ export function FinancialDiscovery() {
         <motion.div className="mx-auto max-w-content px-5 pb-12 pt-14 sm:px-6 lg:px-8 lg:pb-14 lg:pt-20" variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.1 }}>
           {/* Cabeçalho */}
           <div className="mx-auto max-w-[820px] text-center">
-            <motion.p variants={item} className="text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent">{t.eyebrow}</motion.p>
+            <motion.p variants={item} className="text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">{t.eyebrow}</motion.p>
             <motion.h2 variants={item} id="descoberta-titulo" className="mt-3 text-balance font-display text-[34px] font-bold leading-[1.04] tracking-[-0.035em] text-[#070D2B] sm:text-[48px] lg:text-[60px]">
               {t.title[0]}
-              <span className="text-accent">{t.title[1]}</span>
+              <span className="text-accent-deep">{t.title[1]}</span>
             </motion.h2>
             <motion.p variants={item} className="mx-auto mt-5 max-w-[560px] text-[16.5px] leading-[1.6] text-[#0B1030]/70 sm:text-[18px]">{t.sub}</motion.p>
           </div>
@@ -247,14 +247,14 @@ export function FinancialDiscovery() {
                       )}
                     />
                     <motion.div
-                      className={cn('relative min-w-0 lg:col-span-1', right ? 'lg:col-start-2 lg:pl-4' : 'lg:col-start-1 lg:pr-4 lg:text-right', tile && 'overflow-hidden rounded-[28px] bg-accent p-6 text-white shadow-[0_40px_80px_-40px_rgba(0,82,255,0.85)] sm:p-8 lg:ml-4 lg:pl-8')}
+                      className={cn('relative min-w-0 lg:col-span-1', right ? 'lg:col-start-2 lg:pl-4' : 'lg:col-start-1 lg:pr-4 lg:text-right', tile && 'overflow-hidden rounded-[28px] bg-[linear-gradient(150deg,#0A40C8_0%,#0A35A8_55%,#0A2878_100%)] p-6 text-white shadow-[0_40px_80px_-40px_rgba(10,40,120,0.9)] sm:p-8 lg:ml-4 lg:pl-8')}
                       initial={{ opacity: 0, y: 16 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, amount: 0.4 }}
                       transition={{ duration: 0.5, ease: EASE }}
                     >
-                      {tile && <span aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[radial-gradient(closest-side,rgba(255,255,255,0.28),transparent)]" />}
-                      <p className={cn('relative flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.2em]', right ? '' : 'lg:justify-end', tile ? 'text-white/85' : lit ? 'text-accent' : 'text-[#0B1030]/45')}>
+                      {tile && <span aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[radial-gradient(closest-side,rgba(126,182,255,0.22),transparent)]" />}
+                      <p className={cn('relative flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.2em]', right ? '' : 'lg:justify-end', tile ? 'text-white/85' : lit ? 'text-accent-deep' : 'text-[#0B1030]/45')}>
                         <span className="font-display text-[13px] font-bold tracking-[0.1em]">0{i + 1}</span>
                         <span aria-hidden="true" className={cn('h-px w-6 transition-colors duration-500', tile ? 'bg-white/70' : lit ? 'bg-accent' : 'bg-[#0B1030]/20')} />
                         {c.key}
@@ -279,7 +279,7 @@ export function FinancialDiscovery() {
               <span>{t.pillarsLabel}</span>
               {t.pillars.map((p, i) => (
                 <span key={p} className="inline-flex items-center gap-2 text-[#070D2B]">
-                  <span className="text-accent">0{i + 1}</span>
+                  <span className="text-accent-deep">0{i + 1}</span>
                   {p}
                 </span>
               ))}

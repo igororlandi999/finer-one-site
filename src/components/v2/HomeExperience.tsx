@@ -134,10 +134,10 @@ export function HomeExperience() {
         >
           {/* Mensagem */}
           <div>
-            <motion.p variants={item} className="text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent">{t.eyebrow}</motion.p>
+            <motion.p variants={item} className="text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">{t.eyebrow}</motion.p>
             <motion.h2 variants={item} id="experimentar-titulo" className="mt-4 text-balance font-display text-[34px] font-bold leading-[1.04] tracking-[-0.035em] text-[#070D2B] sm:text-[44px] lg:text-[46px] xl:text-[50px]">
               {t.title[0]}
-              <span className="whitespace-nowrap text-accent">{t.title[1]}</span>
+              <span className="whitespace-nowrap text-accent-deep">{t.title[1]}</span>
             </motion.h2>
             <motion.p variants={item} className="mt-5 max-w-[400px] text-[16.5px] leading-[1.6] text-[#0B1030]/70 sm:text-[18px]">{t.sub}</motion.p>
           </div>
@@ -197,7 +197,7 @@ export function HomeExperience() {
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.96 }}
                         transition={{ duration: 0.22, ease: EASE }}
-                        className="rounded-full px-3.5 py-2 text-left text-[13.5px] font-medium text-[#0B1030]/75 ring-1 ring-[#0B1030]/12 transition-[color,box-shadow,background-color] duration-200 hover:bg-[#EAF1FF] hover:text-accent hover:ring-accent/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                        className="rounded-full px-3.5 py-2 text-left text-[13.5px] font-medium text-[#0B1030]/75 ring-1 ring-[#0B1030]/12 transition-[color,box-shadow,background-color] duration-200 hover:bg-[#EAF1FF] hover:text-accent-deep hover:ring-accent/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                       >
                         {x.q}
                       </motion.button>
@@ -226,19 +226,19 @@ export function HomeExperience() {
                       animate={{ opacity: 1, y: 0, transition: { duration: 0.26, ease: EASE } }}
                       exit={{ opacity: 0, y: -4, transition: { duration: 0.16 } }}
                     >
-                      <p className="flex items-center gap-2 text-[11.5px] font-semibold uppercase tracking-[0.16em] text-accent">
+                      <p className="flex items-center gap-2 text-[11.5px] font-semibold uppercase tracking-[0.16em] text-accent-deep">
                         <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
                         {t.answerLabel}
                       </p>
                       {cur.evidence && (
                         <motion.p className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, ease: EASE, delay: 0.08 }}>
                           <span className="font-display text-[44px] font-bold leading-none tracking-[-0.04em] text-[#070D2B] tabular-nums sm:text-[58px]">{cur.evidence.value}</span>
-                          <span className="text-[14px] font-semibold text-[#0B1030]/60">{cur.evidence.label.toLowerCase()} · <span className="text-accent">{cur.evidence.extra}</span></span>
+                          <span className="text-[14px] font-semibold text-[#0B1030]/60">{cur.evidence.label.toLowerCase()} · <span className="text-accent-deep">{cur.evidence.extra}</span></span>
                         </motion.p>
                       )}
                       <p className={cn('text-[#070D2B]', cur.evidence ? 'mt-3 text-[16px] leading-[1.55] text-[#0B1030]/80' : 'mt-3 font-display text-[19px] font-bold leading-[1.35] tracking-[-0.015em] sm:text-[22px]')}>{cur.a}</p>
                       <p className="mt-4 flex gap-2 text-[14.5px] leading-[1.55] text-[#0B1030]/70">
-                        <ArrowRight className="mt-[3px] h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
+                        <ArrowRight className="mt-[3px] h-4 w-4 shrink-0 text-accent-deep" aria-hidden="true" />
                         <span><span className="font-semibold text-[#070D2B]">{t.nextLabel}: </span>{cur.next}</span>
                       </p>
                     </motion.div>

@@ -98,7 +98,7 @@ export function OfferSection() {
       <section id="comecar" aria-labelledby="comecar-titulo" className="relative scroll-mt-20 border-t border-[#0B1030]/[0.06] bg-[#F5F8FD] text-navy">
         <motion.div className="mx-auto max-w-content px-5 py-16 sm:px-6 lg:px-8 lg:py-20" variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }}>
           <div className="mx-auto max-w-[760px] text-center">
-            <motion.p variants={item} className="inline-flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent">
+            <motion.p variants={item} className="inline-flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">
               <span aria-hidden="true" className="h-px w-6 bg-accent shadow-[0_0_6px_rgba(0,82,255,0.6)]" />
               {t.eyebrow}
               <span aria-hidden="true" className="h-px w-6 bg-accent shadow-[0_0_6px_rgba(0,82,255,0.6)]" />
@@ -121,7 +121,7 @@ export function OfferSection() {
                     : 'border-[#0B1030]/[0.1] shadow-[0_20px_50px_-45px_rgba(11,16,48,0.5)] hover:border-[#0B1030]/25',
                 )}
               >
-                <p className={cn('text-[11.5px] font-semibold uppercase tracking-[0.16em]', o.primary ? 'text-accent' : 'text-[#0B1030]/55')}>{o.kind}</p>
+                <p className={cn('text-[11.5px] font-semibold uppercase tracking-[0.16em]', o.primary ? 'text-accent-deep' : 'text-[#0B1030]/55')}>{o.kind}</p>
                 <h3 className="mt-3 font-display text-[28px] font-bold tracking-[-0.025em] text-[#070D2B] sm:text-[32px]">{o.name}</h3>
                 <p className="mt-2 text-[17px] font-semibold leading-snug text-[#070D2B]">{o.headline}</p>
                 <p className="mt-2 text-[15px] leading-[1.6] text-[#0B1030]/70">{o.desc}</p>
@@ -140,7 +140,7 @@ export function OfferSection() {
                       'group/cta inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg px-6 text-[15px] font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 sm:w-auto',
                       o.primary
                         ? 'bg-accent text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_10px_26px_-12px_rgba(0,82,255,0.9)] hover:bg-accent-hover'
-                        : 'border border-[#0B1030]/15 bg-white text-[#070D2B] hover:border-accent/60 hover:text-accent',
+                        : 'border border-[#0B1030]/15 bg-white text-[#070D2B] hover:border-accent/60 hover:text-accent-deep',
                     )}
                   >
                     {o.cta}
@@ -153,7 +153,7 @@ export function OfferSection() {
 
           <motion.p variants={item} className="mt-8 text-center text-[15px] text-[#0B1030]/65">
             {t.waitPrefix}{' '}
-            <a href="/lista-espera/" className="font-semibold text-[#070D2B] underline decoration-[#0B1030]/25 underline-offset-[5px] transition-colors hover:text-accent hover:decoration-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
+            <a href="/lista-espera/" className="font-semibold text-[#070D2B] underline decoration-[#0B1030]/25 underline-offset-[5px] transition-colors hover:text-accent-deep hover:decoration-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
               {t.wait}
             </a>
           </motion.p>

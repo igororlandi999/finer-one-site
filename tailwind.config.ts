@@ -22,6 +22,8 @@ export default {
         accent: {
           DEFAULT: '#0052FF', // Accent Blue
           hover: '#1C63FF',
+          /** Azul profundo da marca para destaques sobre fundos claros (mais perto do navy do logótipo). */
+          deep: '#0A40C8',
         },
         glow: '#1E90FF', // Glow Blue
         /** Branco azulado das secções claras (degradê branco→azul das apresentações). */

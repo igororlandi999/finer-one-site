@@ -67,10 +67,10 @@ export function HowItWorksSteps() {
       <section id="funcionamento" aria-labelledby="funcionamento-titulo" className="relative scroll-mt-20 bg-white text-navy">
         <motion.div className="mx-auto max-w-content px-5 py-16 sm:px-6 lg:px-8 lg:py-20" variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }}>
           <div className="mx-auto max-w-[820px] text-center">
-            <motion.p variants={item} className="text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent">{t.eyebrow}</motion.p>
+            <motion.p variants={item} className="text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">{t.eyebrow}</motion.p>
             <motion.h2 variants={item} id="funcionamento-titulo" className="mt-3 text-balance font-display text-[32px] font-bold leading-[1.06] tracking-[-0.035em] text-[#070D2B] sm:text-[44px] lg:text-[52px]">
               {t.title[0]}
-              <span className="text-accent">{t.title[1]}</span>
+              <span className="text-accent-deep">{t.title[1]}</span>
             </motion.h2>
             <motion.p variants={item} className="mx-auto mt-4 max-w-[600px] text-[16.5px] leading-[1.6] text-[#0B1030]/70 sm:text-[18px]">{t.sub}</motion.p>
           </div>
@@ -221,7 +221,7 @@ function MomentBank({ lang }: { lang: Lang }) {
         {/* Movimento recebido: chega com destaque */}
         <motion.div className="rounded-[12px] border border-accent/30 bg-[#EEF3FF] px-4 py-3.5" {...rise(0, 1.5)}>
           <div className="flex items-center justify-between gap-3">
-            <span className="text-[12.5px] font-bold uppercase tracking-[0.1em] text-accent">{pt ? 'Movimento recebido' : 'Incoming transaction'}</span>
+            <span className="text-[12.5px] font-bold uppercase tracking-[0.1em] text-accent-deep">{pt ? 'Movimento recebido' : 'Incoming transaction'}</span>
             <span className="text-[13px] tabular-nums text-[#0B1030]/60">05 nov 2026</span>
           </div>
           <div className="mt-1.5 flex items-baseline justify-between gap-3">
@@ -254,7 +254,7 @@ function MomentInvoice({ lang }: { lang: Lang }) {
       <Card title={pt ? 'Email de faturas' : 'Invoice email'}>
         {/* Para onde se enviam: o endereço de faturas da empresa na Finer One (sem inventar domínio) */}
         <motion.div className="mb-3 flex items-center gap-2 rounded-[10px] bg-[#EEF3FF] px-3.5 py-2.5 text-[14px]" {...rise(0, 0.15)}>
-          <span className="font-semibold text-accent">{pt ? 'Para:' : 'To:'}</span>
+          <span className="font-semibold text-accent-deep">{pt ? 'Para:' : 'To:'}</span>
           <span className="min-w-0 text-[#070D2B]">{pt ? 'o endereço de faturas da sua empresa na Finer One' : "your company's Finer One invoice address"}</span>
         </motion.div>
         <motion.div className="flex items-start gap-3 rounded-[12px] border border-[#0B1030]/[0.08] bg-white p-3.5" {...rise(0, 0.4)}>
@@ -294,7 +294,7 @@ function MomentInvoice({ lang }: { lang: Lang }) {
           {fields.map(([k, v], i) => (
             <motion.div key={k} {...rise(i, 1.8, 0.2)}>
               <dt className="text-[13px] text-[#0B1030]/60">{k}</dt>
-              <dd className={cn('mt-0.5 font-semibold text-[#070D2B] tabular-nums', i === 4 ? 'font-display text-[22px] tracking-[-0.02em] text-accent' : 'text-[16px]')}>{v}</dd>
+              <dd className={cn('mt-0.5 font-semibold text-[#070D2B] tabular-nums', i === 4 ? 'font-display text-[22px] tracking-[-0.02em] text-accent-deep' : 'text-[16px]')}>{v}</dd>
             </motion.div>
           ))}
         </dl>
@@ -381,10 +381,10 @@ function MomentTogether({ lang }: { lang: Lang }) {
                   </span>
                   {/* Mobile: data e origem por baixo da descrição */}
                   <span className="mt-0.5 block text-[12.5px] text-[#0B1030]/60 sm:hidden">
-                    {r.d} · <span className={cn('font-semibold', r.s === 'invoice' ? 'text-accent' : 'text-[#0B1030]/75')}>{source(r.s)}</span>
+                    {r.d} · <span className={cn('font-semibold', r.s === 'invoice' ? 'text-accent-deep' : 'text-[#0B1030]/75')}>{source(r.s)}</span>
                   </span>
                 </div>
-                <span className={cn('hidden justify-self-start rounded-full px-2.5 py-0.5 text-[12.5px] font-bold sm:inline', r.s === 'invoice' ? 'bg-accent/[0.1] text-accent' : 'bg-[#0B1030]/[0.06] text-[#0B1030]/70')}>
+                <span className={cn('hidden justify-self-start rounded-full px-2.5 py-0.5 text-[12.5px] font-bold sm:inline', r.s === 'invoice' ? 'bg-accent/[0.1] text-accent-deep' : 'bg-[#0B1030]/[0.06] text-[#0B1030]/70')}>
                   {source(r.s)}
                 </span>
                 <span className={cn('text-right text-[15px] font-semibold tabular-nums sm:text-[15.5px]', r.v.startsWith('+') ? 'text-[#0B6B40]' : 'text-[#070D2B]')}>{r.v}</span>
