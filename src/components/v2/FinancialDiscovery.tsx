@@ -196,12 +196,12 @@ export function FinancialDiscovery() {
         <span id="demo" aria-hidden="true" className="pointer-events-none absolute top-0 scroll-mt-20" />
         {/* Atmosfera da marca: luz azul muito suave, como o céu da plataforma ao longe */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute -right-[12%] top-[6%] h-[560px] w-[560px] rounded-full bg-[radial-gradient(closest-side,rgba(94,151,238,0.22),transparent)] blur-2xl" />
-          <div className="absolute -left-[10%] top-[48%] h-[520px] w-[520px] rounded-full bg-[radial-gradient(closest-side,rgba(0,82,255,0.10),transparent)] blur-2xl" />
+          <div className="absolute -right-[12%] top-[6%] h-[620px] w-[620px] rounded-full bg-[radial-gradient(closest-side,rgba(94,151,238,0.2),transparent)]" />
+          <div className="absolute -left-[10%] top-[48%] h-[580px] w-[580px] rounded-full bg-[radial-gradient(closest-side,rgba(0,82,255,0.09),transparent)]" />
           <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-[#F8FAFF]" />
         </div>
 
-        <motion.div className="mx-auto max-w-content px-5 pb-16 pt-16 sm:px-6 lg:px-8 lg:pb-20 lg:pt-24" variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.1 }}>
+        <motion.div className="mx-auto max-w-content px-5 pb-12 pt-14 sm:px-6 lg:px-8 lg:pb-14 lg:pt-20" variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.1 }}>
           {/* Cabeçalho */}
           <div className="mx-auto max-w-[820px] text-center">
             <motion.p variants={item} className="text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent">{t.eyebrow}</motion.p>
@@ -213,27 +213,28 @@ export function FinancialDiscovery() {
           </div>
 
           {/* Três capítulos ligados pela linha de luz */}
-          <div ref={wrap} className="relative mx-auto mt-12 max-w-[1080px] lg:mt-16">
+          <div ref={wrap} className="relative mx-auto mt-10 max-w-[1080px] lg:mt-12">
             {geo.d && (
               <svg aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-visible" width={geo.w} height={geo.h} viewBox={`0 0 ${geo.w} ${geo.h}`}>
                 <path d={geo.d} fill="none" stroke="rgba(11,16,48,0.08)" strokeWidth="1.5" />
+                <motion.path d={geo.d} fill="none" stroke="rgba(30,144,255,0.22)" strokeWidth="9" strokeLinecap="round" style={{ pathLength: reduced ? 1 : draw }} />
                 <motion.path
                   d={geo.d}
                   fill="none"
                   stroke="#0052FF"
                   strokeWidth="2.5"
                   strokeLinecap="round"
-                  style={{ pathLength: reduced ? 1 : draw, filter: 'drop-shadow(0 0 4px rgba(30,144,255,0.9)) drop-shadow(0 0 12px rgba(0,82,255,0.45))' }}
+                  style={{ pathLength: reduced ? 1 : draw }}
                 />
               </svg>
             )}
 
-            <ol className="relative space-y-14 sm:space-y-20 lg:space-y-0">
+            <ol className="relative">
               {chapters.map((c, i) => {
                 const lit = reached > i
                 const right = i % 2 === 1
                 return (
-                  <li key={c.key} className={cn('relative grid grid-cols-[28px_minmax(0,1fr)] gap-x-4 sm:gap-x-6 lg:grid-cols-2 lg:gap-x-16', i > 0 && 'lg:-mt-24')}>
+                  <li key={c.key} className={cn('relative grid grid-cols-[28px_minmax(0,1fr)] gap-x-4 sm:gap-x-6 lg:grid-cols-2 lg:gap-x-16', i > 0 && 'mt-10 sm:mt-14 lg:-mt-32')}>
                     {/* Ponto da linha */}
                     <span
                       ref={(el) => { dots.current[i] = el }}
@@ -256,11 +257,11 @@ export function FinancialDiscovery() {
                         {c.key}
                       </p>
                       <h3 className="mt-2 text-[17px] font-semibold text-[#0B1030]/70 sm:text-[19px]">{c.q}</h3>
-                      <MaskNumber className={cn('mt-3 font-display font-bold leading-none tracking-[-0.045em] tabular-nums', i === 2 ? 'text-[38px] sm:text-[56px] lg:text-[64px]' : i === 0 ? 'whitespace-nowrap text-[44px] sm:text-[68px] lg:text-[74px]' : 'text-[60px] sm:text-[92px] lg:text-[110px]', c.bigClass, 'leading-[0.98]')}>
+                      <MaskNumber className={cn('mt-3 font-display font-bold leading-none tracking-[-0.045em] tabular-nums', i === 2 ? 'text-[36px] sm:text-[52px] lg:text-[58px]' : i === 0 ? 'whitespace-nowrap text-[42px] sm:text-[64px] lg:text-[70px]' : 'text-[56px] sm:text-[84px] lg:text-[96px]', c.bigClass, 'leading-[0.98]')}>
                         {c.big}
                       </MaskNumber>
-                      <p className={cn('mt-3 text-[15px] font-semibold text-[#0B1030]/60 sm:text-[16px]')}>{c.caption}</p>
-                      <p className={cn('mt-4 max-w-[460px] text-[16px] leading-[1.6] text-[#0B1030]/80 sm:text-[17px]', right ? '' : 'lg:ml-auto')}>{c.text}</p>
+                      <p className={cn('mt-2 text-[15px] font-semibold text-[#0B1030]/60 sm:text-[16px]')}>{c.caption}</p>
+                      <p className={cn('mt-3 max-w-[460px] text-[16px] leading-[1.6] text-[#0B1030]/80 sm:text-[17px]', right ? '' : 'lg:ml-auto')}>{c.text}</p>
                       <p className={cn('mt-2 max-w-[460px] text-[13px] leading-snug text-[#0B1030]/50', right ? '' : 'lg:ml-auto')}>{c.meta}</p>
                     </motion.div>
                   </li>
@@ -270,7 +271,7 @@ export function FinancialDiscovery() {
           </div>
 
           {/* Os quatro temas e a indicação de dados fictícios */}
-          <motion.div variants={item} className="mx-auto mt-16 max-w-[900px] border-t border-[#0B1030]/10 pt-6 lg:mt-20">
+          <motion.div variants={item} className="mx-auto mt-12 max-w-[900px] border-t border-[#0B1030]/10 pt-6 lg:mt-14">
             <p className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[12.5px] font-semibold uppercase tracking-[0.2em] text-[#0B1030]/45">
               <span>{t.pillarsLabel}</span>
               {t.pillars.map((p, i) => (
