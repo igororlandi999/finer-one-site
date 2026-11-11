@@ -7,8 +7,8 @@ import type { Lang } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
 
 const EASE = [0.22, 1, 0.36, 1] as const
-/** Cada momento fica 5,5 s (tempo de leitura sem esperas); depois avança e, no fim, recomeça. */
-const STEP_MS = 5500
+/** Tempo de cada momento, à medida do conteúdo (contas, faturas, tudo reunido); depois recomeça. */
+const STEP_MS = [5000, 5000, 6500]
 
 const copy: Record<Lang, {
   eyebrow: string; title: [string, string]; sub: string; nav: string; note: string
@@ -46,7 +46,7 @@ const item: Variants = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0
 /**
  * Secção 4 — Como funciona (nova homepage, fase 4). Três momentos escolhidos
  * pelo visitante, ligados pela linha Finer One que avança até ao momento ativo.
- * Avança sozinho a cada 5,5 s e recomeça (clique opcional; pausa fora do ecrã). Reutiliza as peças de interface da versão anterior
+ * Avança sozinho (5 / 5 / 6,5 s) e recomeça (clique opcional; pausa fora do ecrã). Reutiliza as peças de interface da versão anterior
  * (HowItWorksDemo, em ?funcionamento=v5).
  */
 export function HowItWorksSteps() {
@@ -65,10 +65,10 @@ export function HowItWorksSteps() {
   useEffect(() => { fill.set(step / 2) }, [step, fill])
 
   const run = useRef<{ stop: () => void } | null>(null)
-  // Um único motor: 5,5 s por momento, avança e recomeça; pausa fora do ecrã; sem automático com movimento reduzido.
+  // Um único motor: 5 / 5 / 6,5 s por momento, avança e recomeça; pausa fora do ecrã; sem automático com movimento reduzido.
   useEffect(() => {
     if (!visible || reduced) return
-    const remaining = (STEP_MS / 1000) * (1 - progress.get())
+    const remaining = (STEP_MS[step] / 1000) * (1 - progress.get())
     const controls = animate(progress, 1, {
       duration: Math.max(0.05, remaining),
       ease: 'linear',
@@ -143,11 +143,11 @@ export function HowItWorksSteps() {
           </motion.div>
 
           {/* Uma única demonstração: só o conteúdo muda */}
-          <motion.div variants={item} className="mt-8 overflow-hidden rounded-[28px] bg-white shadow-[0_40px_90px_-60px_rgba(11,16,48,0.55),0_0_0_1px_rgba(11,16,48,0.06)]">
+          <motion.div variants={item} className="mt-8 overflow-hidden rounded-[32px] bg-[linear-gradient(180deg,#F3F6FD_0%,#F8FAFF_100%)]">
             {/* Topo limpo (o céu da plataforma já aparece nas secções 2 e 3: aqui não se repete) */}
-            <div className="relative border-b border-[#0B1030]/[0.06]">
-              <div className="relative flex h-14 items-center justify-between gap-2 px-4 sm:px-6">
-                <span className="flex items-center gap-2 rounded-full bg-[#F3F6FC] py-1 pl-1 pr-3">
+            <div className="relative">
+              <div className="relative flex h-14 items-center justify-between gap-2 px-4 pt-2 sm:px-7">
+                <span className="flex items-center gap-2 rounded-full bg-white py-1 pl-1 pr-3">
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#070D2B]">
                     <svg viewBox="0 0 326 445" className="h-3 w-3 fill-white" aria-hidden="true"><path d="M326 0H0v445l99-99v-92h109l86-87H99V79h227z" /></svg>
                   </span>
@@ -163,7 +163,7 @@ export function HowItWorksSteps() {
             <p className="px-4 pb-1 pt-2 text-[14px] leading-snug text-[#0B1030]/75 sm:hidden">
               <span className="font-semibold text-[#070D2B]">{t.steps[step].title}</span> {t.steps[step].desc}
             </p>
-            <div id="func-panel" role="tabpanel" aria-labelledby={`func-tab-${step}`} className="relative grid lg:h-[420px]" data-func-panel>
+            <div id="func-panel" role="tabpanel" aria-labelledby={`func-tab-${step}`} className="relative grid lg:h-[410px]" data-func-panel>
               <AnimatePresence initial={false}>
                 <motion.div
                   key={step}
@@ -189,7 +189,7 @@ export function HowItWorksSteps() {
 
 function Card({ title, children, className, glow }: { title: string; children: ReactNode; className?: string; glow?: boolean }) {
   return (
-    <div className={cn('relative rounded-[20px] bg-white p-5', glow ? 'shadow-[0_24px_50px_-30px_rgba(0,82,255,0.55),0_0_0_1px_rgba(0,82,255,0.18)]' : 'shadow-[0_18px_40px_-34px_rgba(11,16,48,0.45),0_0_0_1px_rgba(11,16,48,0.06)]', className)}>
+    <div className={cn('relative rounded-[24px] p-6', glow ? 'bg-[linear-gradient(160deg,#FFFFFF_0%,#EEF3FF_100%)]' : 'bg-white', className)}>
       <p className="text-[11.5px] font-semibold uppercase tracking-[0.18em] text-[#0B1030]/50">{title}</p>
       <div className="mt-2.5">{children}</div>
     </div>
@@ -227,16 +227,16 @@ function MomentBank({ lang }: { lang: Lang }) {
             {pt ? 'Ligada' : 'Connected'}
           </motion.span>
         </div>
-        <div className="mt-4 border-t border-[#0B1030]/[0.08] pt-3">
+        <div className="mt-5">
           <Label>{pt ? 'Saldo disponível' : 'Available balance'}</Label>
-          <p className="mt-1 font-display text-[28px] font-bold leading-none tracking-[-0.03em] text-[#070D2B] tabular-nums sm:text-[32px]">€&nbsp;28.540,32</p>
+          <p className="mt-1 font-display text-[34px] font-bold leading-none tracking-[-0.04em] text-[#070D2B] tabular-nums sm:text-[40px]">€&nbsp;28.540,32</p>
         </div>
         {/* Como a conta foi ligada: o gesto do empresário, sem detalhes técnicos */}
-        <ol className="mt-4 space-y-2 border-t border-[#0B1030]/[0.08] pt-3">
+        <ol className="mt-5 space-y-1.5">
           {steps.map((s, i) => (
             <motion.li key={s} className="flex items-center gap-3 text-[14.5px] text-[#070D2B]" {...rise(i, 0.5, 0.3)}>
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent text-white">
-                <svg viewBox="0 0 12 12" className="h-3 w-3" aria-hidden="true"><path d="m2.5 6.2 2.2 2.2 4.8-4.8" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center text-accent-deep">
+                <svg viewBox="0 0 12 12" className="h-3.5 w-3.5" aria-hidden="true"><path d="m2.5 6.2 2.2 2.2 4.8-4.8" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </span>
               {s}
             </motion.li>
@@ -246,19 +246,13 @@ function MomentBank({ lang }: { lang: Lang }) {
 
       <Card title={pt ? 'Movimentos' : 'Transactions'} glow>
         {/* Movimento recebido: chega com destaque */}
-        <motion.div className="rounded-[12px] border border-accent/30 bg-[#EEF3FF] px-4 py-3.5" {...rise(0, 1.5)}>
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-[12.5px] font-bold uppercase tracking-[0.1em] text-accent-deep">{pt ? 'Movimento recebido' : 'Incoming transaction'}</span>
-            <span className="text-[13px] tabular-nums text-[#0B1030]/60">05 nov 2026</span>
-          </div>
-          <div className="mt-1.5 flex items-baseline justify-between gap-3">
-            <span className="text-[16px] font-semibold text-[#070D2B]">{pt ? 'Transferência · Cliente E' : 'Transfer · Customer E'}</span>
-            <span className="font-display text-[22px] font-bold tracking-[-0.02em] text-[#0B6B40] tabular-nums">+&nbsp;€&nbsp;3.150,00</span>
-          </div>
+        <motion.div {...rise(0, 1.5)}>
+          <p className="font-display text-[34px] font-bold leading-none tracking-[-0.04em] text-[#0B6B40] tabular-nums sm:text-[40px]">+&nbsp;€&nbsp;3.150,00</p>
+          <p className="mt-2 text-[14.5px] text-[#0B1030]/70"><span className="font-semibold text-[#070D2B]">{pt ? 'Transferência · Cliente E' : 'Transfer · Customer E'}</span> · {pt ? 'recebida a 05 nov 2026' : 'received 5 Nov 2026'}</p>
         </motion.div>
-        <ul className="mt-2 divide-y divide-[#0B1030]/[0.07]">
+        <ul className="mt-4 divide-y divide-[#0B1030]/[0.06]">
           {rows.map(([d, desc, v], i) => (
-            <motion.li key={desc} {...rise(i, 1.9, 0.15)} className={cn("grid-cols-[48px_minmax(0,1fr)_auto] items-center gap-3 py-3 sm:grid sm:grid-cols-[56px_minmax(0,1fr)_auto]", i === 2 ? "hidden" : "grid")}>
+            <motion.li key={desc} {...rise(i, 1.9, 0.15)} className={cn("grid-cols-[48px_minmax(0,1fr)_auto] items-center gap-3 py-2.5 sm:grid sm:grid-cols-[56px_minmax(0,1fr)_auto]", i === 2 ? "hidden" : "grid")}>
               <span className="text-[13px] tabular-nums text-[#0B1030]/55">{d}</span>
               <span className="text-[15px] leading-snug text-[#070D2B] sm:truncate">{desc}</span>
               <span className="text-[15px] font-semibold tabular-nums text-[#070D2B]">{v}</span>
@@ -280,11 +274,11 @@ function MomentInvoice({ lang }: { lang: Lang }) {
     <>
       <Card title={pt ? 'Email de faturas' : 'Invoice email'}>
         {/* Para onde se enviam: o endereço de faturas da empresa na Finer One (sem inventar domínio) */}
-        <motion.div className="mb-3 flex items-center gap-2 rounded-[10px] bg-[#EEF3FF] px-3.5 py-2.5 text-[14px]" {...rise(0, 0.15)}>
+        <motion.div className="mb-4 flex items-baseline gap-2 text-[14.5px]" {...rise(0, 0.15)}>
           <span className="font-semibold text-accent-deep">{pt ? 'Para:' : 'To:'}</span>
           <span className="min-w-0 text-[#070D2B]">{pt ? 'o endereço de faturas da sua empresa na Finer One' : "your company's Finer One invoice address"}</span>
         </motion.div>
-        <motion.div className="flex items-start gap-3 rounded-[12px] border border-[#0B1030]/[0.08] bg-white p-3.5" {...rise(0, 0.4)}>
+        <motion.div className="flex items-start gap-3" {...rise(0, 0.4)}>
           <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#070D2B] text-[13px] font-bold text-white">H</span>
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline justify-between gap-2">
@@ -295,14 +289,14 @@ function MomentInvoice({ lang }: { lang: Lang }) {
           </div>
         </motion.div>
         {/* Documento recebido, lido pela Finer One (linha azul percorre o PDF) */}
-        <motion.div className="relative mt-3 overflow-hidden rounded-[12px] border border-[#0B1030]/[0.09] bg-white p-4" {...rise(0, 0.6)}>
+        <motion.div className="relative mt-4 overflow-hidden rounded-[16px] bg-[#F3F6FD] p-4" {...rise(0, 0.6)}>
           <div className="flex items-center gap-2">
             <span className="rounded-[4px] bg-[#C2410C] px-1.5 py-0.5 text-[10.5px] font-bold text-white">PDF</span>
             <span className="text-[14px] font-semibold text-[#070D2B]">FT-2026-207.pdf</span>
           </div>
           <div aria-hidden="true" className="mt-2.5 space-y-1.5">
             {[92, 70, 84, 48].map((w, i) => (
-              <span key={i} className="block h-[7px] rounded-full bg-[#0B1030]/[0.08]" style={{ width: `${w}%` }} />
+              <span key={i} className="block h-[7px] rounded-full bg-[#0B1030]/[0.07]" style={{ width: `${w}%` }} />
             ))}
           </div>
           <motion.span
@@ -317,11 +311,13 @@ function MomentInvoice({ lang }: { lang: Lang }) {
       </Card>
 
       <Card title={pt ? 'Informação da fatura' : 'Invoice information'} glow>
-        <dl className="grid grid-cols-2 gap-x-5 gap-y-3">
-          {fields.map(([k, v], i) => (
-            <motion.div key={k} {...rise(i, 1.8, 0.2)}>
-              <dt className="text-[13px] text-[#0B1030]/60">{k}</dt>
-              <dd className={cn('mt-0.5 font-semibold text-[#070D2B] tabular-nums', i === 4 ? 'font-display text-[22px] tracking-[-0.02em] text-accent-deep' : 'text-[16px]')}>{v}</dd>
+        <motion.p className="font-display text-[34px] font-bold leading-none tracking-[-0.04em] text-accent-deep tabular-nums sm:text-[40px]" {...rise(0, 1.6)}>{fields[4][1]}</motion.p>
+        <p className="mt-2 text-[14px] text-[#0B1030]/60">{fields[4][0]} · {fields[5][0]} {fields[5][1]}</p>
+        <dl className="mt-5 grid grid-cols-2 gap-x-5 gap-y-3">
+          {fields.slice(0, 4).map(([k, v], i) => (
+            <motion.div key={k} {...rise(i, 1.9, 0.18)}>
+              <dt className="text-[12.5px] text-[#0B1030]/55">{k}</dt>
+              <dd className="mt-0.5 text-[16px] font-semibold text-[#070D2B] tabular-nums">{v}</dd>
             </motion.div>
           ))}
         </dl>
@@ -360,13 +356,13 @@ function MomentTogether({ lang }: { lang: Lang }) {
 
   return (
     <div className="lg:col-span-2">
-      <div className="relative rounded-[16px] border border-accent/30 bg-white shadow-[0_18px_40px_-28px_rgba(0,82,255,0.7)]">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#0B1030]/[0.08] px-4 py-3 sm:px-5">
+      <div className="relative rounded-[24px] bg-white">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-5 pb-2 pt-5 sm:px-6">
           <div>
-            <p className="text-[18px] font-bold text-[#070D2B]">{pt ? 'Movimentos e faturas' : 'Transactions and invoices'}</p>
+            <p className="font-display text-[22px] font-bold tracking-[-0.02em] text-[#070D2B]">{pt ? 'Movimentos e faturas' : 'Transactions and invoices'}</p>
             <p className="text-[13.5px] text-[#0B1030]/60">{pt ? 'Conta à ordem · Email de faturas' : 'Current account · Invoice email'}</p>
           </div>
-          <div className="relative flex gap-1 rounded-full bg-[#E9EEF8] p-1" role="group" aria-label={pt ? 'Filtrar por origem' : 'Filter by source'}>
+          <div className="relative flex gap-1 rounded-full bg-[#F3F6FD] p-1" role="group" aria-label={pt ? 'Filtrar por origem' : 'Filter by source'}>
             {chips.map(([k, l]) => (
               <button
                 key={k}
@@ -381,7 +377,7 @@ function MomentTogether({ lang }: { lang: Lang }) {
             ))}
           </div>
         </div>
-        <ul className="px-4 sm:px-5">
+        <ul className="px-5 pb-3 sm:px-6">
           <AnimatePresence initial={false} mode="popLayout">
             {shown.map((r, i) => (
               <motion.li
@@ -390,18 +386,18 @@ function MomentTogether({ lang }: { lang: Lang }) {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0, transition: { duration: 0.35, ease: EASE, delay: 0.2 + i * 0.08 } }}
                 exit={{ opacity: 0, transition: { duration: 0.2 } }}
-                className="relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 border-b border-[#0B1030]/[0.07] py-2.5 last:border-b-0 sm:grid-cols-[64px_minmax(0,1fr)_76px_120px]"
+                className="relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 border-b border-[#0B1030]/[0.06] py-2.5 last:border-b-0 sm:grid-cols-[64px_minmax(0,1fr)_76px_120px]"
               >
                 {/* Linha Finer One: assinala o que acabou de chegar das etapas 1 e 2 */}
                 {r.n && (
-                  <motion.span aria-hidden="true" className="absolute -left-4 bottom-3 top-3 w-[3px] origin-top rounded-full bg-gradient-to-b from-accent to-glow shadow-[0_0_8px_rgba(30,144,255,0.8)] sm:-left-5" initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ duration: 0.5, ease: EASE, delay: 1 + i * 0.25 }} />
+                  <motion.span aria-hidden="true" className="absolute -left-5 bottom-3 top-3 w-[3px] origin-top rounded-full bg-gradient-to-b from-accent to-glow shadow-[0_0_8px_rgba(30,144,255,0.8)] sm:-left-6" initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ duration: 0.5, ease: EASE, delay: 1 + i * 0.25 }} />
                 )}
                 <span className="hidden text-[13px] tabular-nums text-[#0B1030]/55 sm:block">{r.d}</span>
                 <div className="min-w-0">
                   <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[15px] font-medium leading-snug text-[#070D2B] sm:flex-nowrap sm:text-[15.5px]">
                     <span className="min-w-0 sm:truncate">{r.t}</span>
                     {r.n && (
-                      <motion.span className="shrink-0 rounded-full bg-accent px-2 py-px text-[11px] font-bold uppercase tracking-[0.06em] text-white" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, ease: EASE, delay: 1.2 + i * 0.25 }}>
+                      <motion.span className="shrink-0 text-[11px] font-bold uppercase tracking-[0.14em] text-accent-deep" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, ease: EASE, delay: 1.2 + i * 0.25 }}>
                         {pt ? 'Novo' : 'New'}
                       </motion.span>
                     )}
@@ -411,7 +407,7 @@ function MomentTogether({ lang }: { lang: Lang }) {
                     {r.d} · <span className={cn('font-semibold', r.s === 'invoice' ? 'text-accent-deep' : 'text-[#0B1030]/75')}>{source(r.s)}</span>
                   </span>
                 </div>
-                <span className={cn('hidden justify-self-start rounded-full px-2.5 py-0.5 text-[12.5px] font-bold sm:inline', r.s === 'invoice' ? 'bg-accent/[0.1] text-accent-deep' : 'bg-[#0B1030]/[0.06] text-[#0B1030]/70')}>
+                <span className={cn('hidden justify-self-start text-[11px] font-semibold uppercase tracking-[0.14em] sm:inline', r.s === 'invoice' ? 'text-accent-deep' : 'text-[#0B1030]/45')}>
                   {source(r.s)}
                 </span>
                 <span className={cn('text-right text-[15px] font-semibold tabular-nums sm:text-[15.5px]', r.v.startsWith('+') ? 'text-[#0B6B40]' : 'text-[#070D2B]')}>{r.v}</span>
