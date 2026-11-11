@@ -25,6 +25,7 @@ import { HowItWorksDemo } from '@/components/v2/HowItWorksDemo'
 import { HowItWorksSteps } from '@/components/v2/HowItWorksSteps'
 import { ForWhom } from '@/components/v2/ForWhom'
 import { SecurityTrust } from '@/components/v2/SecurityTrust'
+import { OfferSection } from '@/components/v2/OfferSection'
 import { HowItWorksDemoV1 } from '@/components/v2/HowItWorksDemoV1'
 import { HowItWorksDemoV2 } from '@/components/v2/HowItWorksDemoV2'
 import { Security } from '@/components/v2/Security'
@@ -89,8 +90,11 @@ export default function App() {
         {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('banda') === 'sim' && <CinematicBand />}
         {/* Nova secção 6: Segurança e confiança. Versão anterior em ?seguranca=antiga */}
         {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('seguranca') === 'antiga' ? <Security /> : <SecurityTrust />}
+        {/* Nova secção 7: Oferta e conversão (Plus, Pioneers, lista de espera) */}
+        <OfferSection />
         <PricingSection />
-        <EarlyAccess />
+        {/* Acesso antecipado substituído pela secção 7. Versão anterior em ?acesso=antigo */}
+        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('acesso') === 'antigo' && <EarlyAccess />}
         <FAQSection />
         <FinalCTA />
       </main>
