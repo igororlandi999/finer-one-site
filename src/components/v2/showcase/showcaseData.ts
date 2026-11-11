@@ -73,6 +73,48 @@ export function cashPeriod(months: number) {
   return { list, inC, outC, start: FINAL_BALANCE - inC + outC, end: FINAL_BALANCE }
 }
 
+/**
+ * Cashflow por atividade num horizonte histórico (3 ou 6 meses). As entradas e
+ * saídas mensais são a atividade operacional (como no ecrã real); investimento
+ * (equipamento em set.) e financiamento (prestação de € 1.000/mês) são fictícios.
+ */
+export const FINANCING_MONTH = -100000
+export const INVESTMENT = { month: 'set.', valueC: -420000 }
+
+export function cashActivity(months: 3 | 6) {
+  const list = CASH_MONTHS.slice(-months)
+  const op = list.reduce((s, m) => s + m.inC - m.outC, 0)
+  const inv = list.some((m) => m.pt === INVESTMENT.month) ? INVESTMENT.valueC : 0
+  const fin = FINANCING_MONTH * months
+  return { list, op, inv, fin, net: op + inv + fin, start: FINAL_BALANCE - (op + inv + fin), end: FINAL_BALANCE }
+}
+
+/** Mês atual (nov.) face ao anterior (out.). */
+export function monthCompare() {
+  const [prev, cur] = CASH_MONTHS.slice(-2)
+  return { prev, cur, inDelta: cur.inC - prev.inC, outDelta: cur.outC - prev.outC, netCur: cur.inC - cur.outC, netDelta: cur.inC - cur.outC - (prev.inC - prev.outC) }
+}
+
+/**
+ * Previsão ILUSTRATIVA: média mensal dos últimos 6 meses de entradas e saídas,
+ * mais a prestação de financiamento. Serve apenas a demonstração; não descreve
+ * o método de previsão da plataforma.
+ */
+export const FORECAST_MONTHS = [
+  { pt: 'dez.', en: 'Dec' }, { pt: 'jan.', en: 'Jan' }, { pt: 'fev.', en: 'Feb' },
+  { pt: 'mar.', en: 'Mar' }, { pt: 'abr.', en: 'Apr' }, { pt: 'mai.', en: 'May' },
+]
+
+export function cashForecast(months: 3 | 6) {
+  const base = CASH_MONTHS.slice(-6)
+  const avgIn = Math.round(base.reduce((s, m) => s + m.inC, 0) / 6)
+  const avgOut = Math.round(base.reduce((s, m) => s + m.outC, 0) / 6)
+  const list = FORECAST_MONTHS.slice(0, months).map((m) => ({ ...m, inC: avgIn, outC: avgOut }))
+  const op = (avgIn - avgOut) * months
+  const fin = FINANCING_MONTH * months
+  return { list, avgIn, avgOut, op, inv: 0, fin, net: op + fin, start: FINAL_BALANCE, end: FINAL_BALANCE + op + fin, perMonth: avgIn - avgOut + FINANCING_MONTH }
+}
+
 /* ---------------- Clientes e Fornecedores ---------------- */
 
 export type Doc = { who: string; doc: string; due: string; valueC: number; days: number; late: boolean }
