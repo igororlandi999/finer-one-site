@@ -1,12 +1,14 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { KeyboardEvent, ReactNode } from 'react'
-import { AnimatePresence, MotionConfig, motion } from 'motion/react'
+import { AnimatePresence, MotionConfig, animate, motion, useInView, useMotionValue, useMotionValueEvent, useReducedMotion } from 'motion/react'
 import type { Variants } from 'motion/react'
 import { useLanguage } from '@/i18n/LanguageContext'
 import type { Lang } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
 
 const EASE = [0.22, 1, 0.36, 1] as const
+/** Cada momento fica 7 s; depois avança e, no fim, recomeça. */
+const STEP_MS = 7000
 
 const copy: Record<Lang, {
   eyebrow: string; title: [string, string]; sub: string; nav: string; note: string
@@ -44,31 +46,57 @@ const item: Variants = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0
 /**
  * Secção 4 — Como funciona (nova homepage, fase 4). Três momentos escolhidos
  * pelo visitante, ligados pela linha Finer One que avança até ao momento ativo.
- * Sem reprodução automática. Reutiliza as peças de interface da versão anterior
+ * Avança sozinho a cada 7 s e recomeça (clique opcional; pausa fora do ecrã). Reutiliza as peças de interface da versão anterior
  * (HowItWorksDemo, em ?funcionamento=v5).
  */
 export function HowItWorksSteps() {
   const { lang } = useLanguage()
   const t = copy[lang]
+  const reduced = useReducedMotion() ?? false
   const [step, setStep] = useState(0)
+  const [token, setToken] = useState(0)
   const refs = useRef<(HTMLButtonElement | null)[]>([])
+  const zone = useRef<HTMLDivElement>(null)
+  const visible = useInView(zone, { amount: 0.35 })
+  const progress = useMotionValue(0)
+  // A linha dos passos enche-se com o tempo: do ponto ativo até ao seguinte.
+  const fill = useMotionValue(0)
+  useMotionValueEvent(progress, 'change', (p) => fill.set(Math.min(1, (step + (step < 2 ? p : 0)) / 2)))
+  useEffect(() => { fill.set(step / 2) }, [step, fill])
+
+  const run = useRef<{ stop: () => void } | null>(null)
+  // Um único motor: 7 s por momento, avança e recomeça; pausa fora do ecrã; sem automático com movimento reduzido.
+  useEffect(() => {
+    if (!visible || reduced) return
+    const remaining = (STEP_MS / 1000) * (1 - progress.get())
+    const controls = animate(progress, 1, {
+      duration: Math.max(0.05, remaining),
+      ease: 'linear',
+      onComplete: () => { progress.set(0); setStep((v) => (v + 1) % 3) },
+    })
+    run.current = controls
+    return () => controls.stop()
+  }, [visible, reduced, step, token, progress])
+
+  // Escolha do visitante: pára o ciclo em curso antes de mudar (evita que o avanço automático a ultrapasse).
+  const choose = (i: number) => { run.current?.stop(); progress.set(0); setStep(i); setToken((n) => n + 1) }
 
   const onKey = (e: KeyboardEvent<HTMLButtonElement>, i: number) => {
     const d = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0
     if (!d) return
     e.preventDefault()
     const next = (i + d + 3) % 3
-    setStep(next)
+    choose(next)
     refs.current[next]?.focus()
   }
 
   return (
     <MotionConfig reducedMotion="user">
       <section id="funcionamento" aria-labelledby="funcionamento-titulo" className="relative scroll-mt-20 bg-white text-navy">
-        <motion.div className="mx-auto max-w-content px-5 py-16 sm:px-6 lg:px-8 lg:py-20" variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }}>
+        <motion.div className="mx-auto max-w-content px-5 py-14 sm:px-6 lg:px-8 lg:py-16" variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }}>
           <div className="mx-auto max-w-[820px] text-center">
             <motion.p variants={item} className="text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">{t.eyebrow}</motion.p>
-            <motion.h2 variants={item} id="funcionamento-titulo" className="mt-3 text-balance font-display text-[32px] font-bold leading-[1.06] tracking-[-0.035em] text-[#070D2B] sm:text-[44px] lg:text-[52px]">
+            <motion.h2 variants={item} id="funcionamento-titulo" className="mt-3 text-balance font-display text-[34px] font-bold leading-[1.04] tracking-[-0.035em] text-[#070D2B] sm:text-[48px] lg:text-[56px]">
               {t.title[0]}
               <span className="text-accent-deep">{t.title[1]}</span>
             </motion.h2>
@@ -76,17 +104,11 @@ export function HowItWorksSteps() {
           </div>
 
           {/* Três momentos ligados pela linha Finer One (avança até ao momento ativo) */}
-          <motion.div variants={item} className="relative mx-auto mt-10 max-w-[980px] lg:mt-12">
+          <motion.div ref={zone} variants={item} className="relative mx-auto mt-10 max-w-[980px] lg:mt-12">
             <svg aria-hidden="true" viewBox="0 0 100 4" preserveAspectRatio="none" className="pointer-events-none absolute left-[16.66%] right-[16.66%] top-[13px] h-1 w-[66.68%] overflow-visible">
-              <line x1="0" y1="2" x2="100" y2="2" stroke="rgba(11,16,48,0.12)" strokeWidth="1.5" />
-              <motion.line
-                x1="0" y1="2" x2="100" y2="2"
-                stroke="#0052FF" strokeWidth="2" strokeLinecap="round"
-                style={{ filter: 'drop-shadow(0 0 3px rgba(30,144,255,0.75))' }}
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: step / 2 }}
-                transition={{ duration: 0.5, ease: EASE }}
-              />
+              <line x1="0" y1="2" x2="100" y2="2" stroke="rgba(11,16,48,0.1)" strokeWidth="1.5" />
+              <motion.line x1="0" y1="2" x2="100" y2="2" stroke="rgba(30,144,255,0.25)" strokeWidth="6" strokeLinecap="round" style={{ pathLength: fill }} />
+              <motion.line x1="0" y1="2" x2="100" y2="2" stroke="#0052FF" strokeWidth="2" strokeLinecap="round" style={{ pathLength: fill }} />
             </svg>
             <div role="tablist" aria-label={t.nav} className="relative grid grid-cols-3 gap-2">
               {t.steps.map((s, i) => {
@@ -102,18 +124,18 @@ export function HowItWorksSteps() {
                     aria-selected={on}
                     aria-controls="func-panel"
                     tabIndex={on ? 0 : -1}
-                    onClick={() => setStep(i)}
+                    onClick={() => choose(i)}
                     onKeyDown={(e) => onKey(e, i)}
                     className="group flex flex-col items-center rounded-xl px-1 pb-2 text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-4"
                   >
-                    <span className={cn('relative flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold tabular-nums transition-colors duration-300', on ? 'bg-accent text-white shadow-[0_0_0_5px_rgba(0,82,255,0.14),0_0_16px_rgba(30,144,255,0.6)]' : done ? 'bg-accent/90 text-white' : 'bg-white text-[#0B1030]/55 ring-1 ring-[#0B1030]/15 group-hover:text-[#0B1030] group-hover:ring-accent/40')}>
+                    <span className={cn('relative flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold tabular-nums transition-colors duration-300', on ? 'bg-accent text-white shadow-[0_0_0_6px_rgba(0,82,255,0.12),0_0_18px_rgba(30,144,255,0.6)]' : done ? 'bg-accent-deep text-white' : 'bg-white text-[#0B1030]/55 ring-1 ring-[#0B1030]/15 group-hover:text-[#0B1030] group-hover:ring-accent/40')}>
                       0{i + 1}
                     </span>
-                    <span className={cn('mt-3 block font-display text-[14px] font-bold leading-snug transition-colors sm:text-[18px]', on ? 'text-[#070D2B]' : 'text-[#0B1030]/55 group-hover:text-[#0B1030]/85')}>
+                    <span className={cn('mt-3 block font-display text-[14px] font-bold leading-snug tracking-[-0.015em] transition-colors duration-300 sm:text-[20px]', on ? 'text-[#070D2B]' : 'text-[#0B1030]/45 group-hover:text-[#0B1030]/75')}>
                       <span className="sm:hidden">{s.tag}</span>
                       <span className="hidden sm:inline">{s.title}</span>
                     </span>
-                    <span className={cn('mt-1 hidden max-w-[260px] text-[14px] leading-snug sm:block', on ? 'text-[#0B1030]/70' : 'text-[#0B1030]/45')}>{s.desc}</span>
+                    <span className={cn('mt-1.5 hidden max-w-[270px] text-[14.5px] leading-snug transition-colors duration-300 sm:block', on ? 'text-[#0B1030]/70' : 'text-[#0B1030]/40')}>{s.desc}</span>
                   </button>
                 )
               })}
@@ -121,19 +143,26 @@ export function HowItWorksSteps() {
           </motion.div>
 
           {/* Uma única demonstração: só o conteúdo muda */}
-          <motion.div variants={item} className="mt-8 overflow-hidden rounded-[22px] border border-[#0B1030]/[0.07] bg-[#F7F9FE] shadow-[0_30px_70px_-55px_rgba(11,16,48,0.5)]">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#0B1030]/[0.07] bg-white px-4 py-2.5 sm:px-5">
-              <span className="flex items-center gap-2.5">
-                <span className="flex h-6 w-6 items-center justify-center rounded-[6px] bg-[#070D2B]">
-                  <svg viewBox="0 0 326 445" className="h-3 w-3 fill-white" aria-hidden="true"><path d="M326 0H0v445l99-99v-92h109l86-87H99V79h227z" /></svg>
+          <motion.div variants={item} className="mt-8 overflow-hidden rounded-[28px] bg-white shadow-[0_40px_90px_-60px_rgba(11,16,48,0.55),0_0_0_1px_rgba(11,16,48,0.06)]">
+            {/* Topo com o céu Finer (o "mundo" da plataforma), como nos ecrãs reais */}
+            <div className="relative h-16 overflow-hidden sm:h-[72px]">
+              <img src="/images/finer-sky.webp" alt="" aria-hidden="true" decoding="async" loading="lazy" className="absolute inset-0 h-full w-full object-cover object-top" />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-white" />
+              <div className="relative flex h-full items-center justify-between gap-2 px-4 sm:px-6">
+                <span className="flex items-center gap-2 rounded-full bg-white/90 py-1 pl-1 pr-3 shadow-[0_6px_18px_-10px_rgba(7,13,43,0.5)]">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#070D2B]">
+                    <svg viewBox="0 0 326 445" className="h-3 w-3 fill-white" aria-hidden="true"><path d="M326 0H0v445l99-99v-92h109l86-87H99V79h227z" /></svg>
+                  </span>
+                  <span className="text-[13px] font-bold">Finer One</span>
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.span key={step} className="text-[13px] text-[#0B1030]/55" initial={{ opacity: 0, y: 3 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -3 }} transition={{ duration: 0.2 }}>· {t.steps[step].tag}</motion.span>
+                  </AnimatePresence>
                 </span>
-                <span className="text-[13.5px] font-bold">Finer One</span>
-                <span className="text-[13px] text-[#0B1030]/50">· {t.steps[step].tag}</span>
-              </span>
-              <span className="text-[12px] font-medium text-[#0B1030]/55">{t.note}</span>
+                <span className="hidden rounded-full bg-[#070D2B]/45 px-3 py-1 text-[11.5px] font-semibold text-white backdrop-blur-sm sm:inline">{t.note}</span>
+              </div>
             </div>
             {/* Mobile: descrição do momento ativo por cima da demonstração */}
-            <p className="border-b border-[#0B1030]/[0.06] bg-white px-4 py-3 text-[14px] leading-snug text-[#0B1030]/75 sm:hidden">
+            <p className="px-4 pb-1 pt-2 text-[14px] leading-snug text-[#0B1030]/75 sm:hidden">
               <span className="font-semibold text-[#070D2B]">{t.steps[step].title}</span> {t.steps[step].desc}
             </p>
             <div id="func-panel" role="tabpanel" aria-labelledby={`func-tab-${step}`} className="relative grid lg:h-[490px]" data-func-panel>
@@ -162,8 +191,8 @@ export function HowItWorksSteps() {
 
 function Card({ title, children, className, glow }: { title: string; children: ReactNode; className?: string; glow?: boolean }) {
   return (
-    <div className={cn('relative rounded-[16px] border bg-white p-5 sm:p-6', glow ? 'border-accent/35 shadow-[0_18px_40px_-26px_rgba(0,82,255,0.7)]' : 'border-[#0B1030]/[0.09]', className)}>
-      <p className="text-[12.5px] font-bold uppercase tracking-[0.12em] text-[#0B1030]/60">{title}</p>
+    <div className={cn('relative rounded-[20px] bg-white p-5 sm:p-6', glow ? 'shadow-[0_24px_50px_-30px_rgba(0,82,255,0.55),0_0_0_1px_rgba(0,82,255,0.18)]' : 'shadow-[0_18px_40px_-34px_rgba(11,16,48,0.45),0_0_0_1px_rgba(11,16,48,0.06)]', className)}>
+      <p className="text-[11.5px] font-semibold uppercase tracking-[0.18em] text-[#0B1030]/50">{title}</p>
       <div className="mt-3">{children}</div>
     </div>
   )
