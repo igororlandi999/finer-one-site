@@ -17,7 +17,7 @@ const EASE = [0.22, 1, 0.36, 1] as const
  */
 type Plan = { id: 'plus' | 'pro' | 'team'; name: string; status: string; promise: string; desc: string; listLabel: string; items: string[]; cta: string; href: string }
 
-type Billing = { monthly: string; annual: string; save: string; priceM: string; priceA: string; per: string; noteM: string; noteA: string; tbd: string }
+type Billing = { monthly: string; annual: string; saveM: string; saveA: string; priceM: string; priceA: string; per: string; noteM: string; noteA: string; tbd: string }
 
 const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string; price: string; period: string; note: string; billing: Billing; plans: Plan[] }> = {
   pt: {
@@ -27,7 +27,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
     price: 'A anunciar',
     period: '/mês',
     note: 'Os valores do Pro e do Team serão anunciados.',
-    billing: { monthly: 'Mensal', annual: 'Anual', save: '−10 €/mês', priceM: '67,90 €', priceA: '57,90 €', per: '/mês', noteM: 'Plano mensal · IVA incluído', noteA: 'Por mês, no plano anual · IVA incluído', tbd: 'As funcionalidades deste plano serão anunciadas.' },
+    billing: { monthly: 'Mensal', annual: 'Anual', saveM: 'Poupe 120 € por ano com o plano anual', saveA: 'Poupa 120 € por ano face ao plano mensal.', priceM: '67,90 €', priceA: '57,90 €', per: '/mês', noteM: 'Plano mensal · IVA incluído', noteA: 'Por mês, no plano anual · IVA incluído', tbd: 'As funcionalidades deste plano serão anunciadas.' },
     plans: [
       {
         id: 'plus',
@@ -71,7 +71,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
     price: 'To be announced',
     period: '/mo',
     note: 'Pricing for Pro and Team will be announced.',
-    billing: { monthly: 'Monthly', annual: 'Annual', save: '−€10/mo', priceM: '€67.90', priceA: '€57.90', per: '/mo', noteM: 'Monthly plan · VAT included', noteA: 'Per month, on the annual plan · VAT included', tbd: 'The features of this plan will be announced.' },
+    billing: { monthly: 'Monthly', annual: 'Annual', saveM: 'Save €120 a year with the annual plan', saveA: 'You save €120 a year versus monthly.', priceM: '€67.90', priceA: '€57.90', per: '/mo', noteM: 'Monthly plan · VAT included', noteA: 'Per month, on the annual plan · VAT included', tbd: 'The features of this plan will be announced.' },
     plans: [
       {
         id: 'plus',
@@ -159,7 +159,6 @@ export function PlansSection() {
             ))}
           </div>
 
-          <p className="mt-8 text-center text-[13.5px] text-[#0B1030]/50">{t.note}</p>
         </div>
       </section>
     </MotionConfig>
@@ -239,20 +238,20 @@ function PlanCard({ p, i, t, deal, step, reduced }: { p: Plan; i: number; t: (ty
           <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true" />
         </a>
 
-        <div className="mt-7 border-t border-[#0B1030]/10 pt-6">
-          {p.items.length > 0 ? (
-            <>
-              <p className="text-[15px] font-semibold text-[#070D2B]">{p.listLabel}</p>
-              <motion.ul variants={list} className="mt-3 space-y-3">
-                {p.items.map((x) => (
-                  <motion.li key={x} variants={li} className="text-[15px] text-[#0B1030]/75">{x}</motion.li>
-                ))}
-              </motion.ul>
-            </>
-          ) : (
-            <p className="text-[14.5px] leading-[1.6] text-[#0B1030]/50">{t.billing.tbd}</p>
-          )}
-        </div>
+        {p.items.length > 0 ? (
+          <div className="mt-7 border-t border-[#0B1030]/10 pt-6">
+            <p className="text-[15px] font-semibold text-[#070D2B]">{p.listLabel}</p>
+            <motion.ul variants={list} className="mt-3 space-y-3">
+              {p.items.map((x) => (
+                <motion.li key={x} variants={li} className="text-[15px] text-[#0B1030]/75">{x}</motion.li>
+              ))}
+            </motion.ul>
+          </div>
+        ) : (
+          <div className="mt-7 flex min-h-[120px] flex-1 items-center justify-center rounded-[14px] bg-[#F6F8FC] bg-[radial-gradient(rgba(11,16,48,0.09)_1px,transparent_1px)] p-6 text-center [background-size:12px_12px]">
+            <p className="max-w-[220px] text-[14px] leading-[1.55] text-[#0B1030]/55">{t.billing.tbd}</p>
+          </div>
+        )}
       </motion.article>
     </motion.div>
   )
@@ -277,7 +276,6 @@ function PlusPrice({ b }: { b: Billing }) {
             >
               {on && <motion.span layoutId="plus-billing" className="absolute inset-0 rounded-[8px] bg-white shadow-[0_1px_3px_rgba(11,16,48,0.12)]" transition={{ type: 'spring', stiffness: 420, damping: 34 }} />}
               <span className="relative">{label}</span>
-              {val && <span className="relative rounded-[6px] bg-accent/10 px-1.5 py-0.5 text-[11.5px] font-bold text-accent-deep">{b.save}</span>}
             </button>
           )
         })}
@@ -298,6 +296,14 @@ function PlusPrice({ b }: { b: Billing }) {
         </AnimatePresence>
       </div>
       <p className="text-[12.5px] text-[#0B1030]/50">{annual ? b.noteA : b.noteM}</p>
+      {annual ? (
+        <p className="mt-2 text-[13.5px] font-semibold text-accent-deep">{b.saveA}</p>
+      ) : (
+        <button type="button" onClick={() => setAnnual(true)} className="group mt-2 inline-flex items-center gap-1.5 text-left text-[13.5px] font-semibold text-accent-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
+          <span className="underline decoration-accent-deep/30 underline-offset-4 transition-colors group-hover:decoration-accent-deep">{b.saveM}</span>
+          <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true" />
+        </button>
+      )}
     </div>
   )
 }
