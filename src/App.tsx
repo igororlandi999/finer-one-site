@@ -29,6 +29,7 @@ import { ForWhomEditorial } from '@/components/v2/ForWhomEditorial'
 import { ForWhomStories } from '@/components/v2/ForWhomStories'
 import { ForWhomBlock } from '@/components/v2/ForWhomBlock'
 import { SecurityTrust } from '@/components/v2/SecurityTrust'
+import { SecurityTrustAccordion } from '@/components/v2/SecurityTrustAccordion'
 import { OfferSection } from '@/components/v2/OfferSection'
 import { HowItWorksDemoV1 } from '@/components/v2/HowItWorksDemoV1'
 import { HowItWorksDemoV2 } from '@/components/v2/HowItWorksDemoV2'
@@ -93,7 +94,7 @@ export default function App() {
         {/* Banda cinematográfica retirada (pedido do fundador, 11/11/2026). Versão anterior em ?banda=sim */}
         {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('banda') === 'sim' && <CinematicBand />}
         {/* Nova secção 6: Segurança e confiança. Versão anterior em ?seguranca=antiga */}
-        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('seguranca') === 'antiga' ? <Security /> : <SecurityTrust />}
+        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('seguranca') === 'antiga' ? <Security /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('seguranca') === 'acordeao' ? <SecurityTrustAccordion /> : <SecurityTrust />}
         {/* Nova secção 7: Oferta e conversão (Plus, Pioneers, lista de espera) */}
         <OfferSection />
         <PricingSection />
