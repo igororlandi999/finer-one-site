@@ -9,15 +9,11 @@ const EASE = [0.22, 1, 0.36, 1] as const
 
 type Context = { segment: string; title: string; question: string; text: string; message: string }
 
-/**
- * Imagens: recortes SEM TEXTO das imagens de identidade Finer One (estrada com
- * luz, rastos de luz, montanha). Substituir pelos ficheiros originais em alta
- * resolução quando existirem.
- */
+/** Imagens de identidade Finer One, versões sem texto enviadas pelo fundador (1254×1254). */
 const IMAGES = [
-  { src: '/images/para-quem-estrada.webp', pos: '50% 60%' },
-  { src: '/images/para-quem-luz.webp', pos: '50% 62%' },
-  { src: '/images/para-quem-montanha.webp', pos: '50% 42%' },
+  { src: '/images/para-quem-estrada.webp', pos: '60% 82%' },
+  { src: '/images/para-quem-luz.webp', pos: '90% 82%' },
+  { src: '/images/para-quem-montanha.webp', pos: '75% 88%' },
 ]
 
 /**
@@ -106,7 +102,7 @@ export function ForWhom() {
   return (
     <MotionConfig reducedMotion="user">
       <section id="para-quem" aria-labelledby="para-quem-titulo" className="relative scroll-mt-20 bg-[linear-gradient(180deg,#FFFFFF_0%,#F4F7FC_18%,#F4F7FC_82%,#FFFFFF_100%)] text-navy">
-        <div className="mx-auto max-w-content px-5 pb-14 pt-12 sm:px-6 lg:px-8 lg:pb-16 lg:pt-14">
+        <div className="mx-auto max-w-content px-5 pb-10 pt-10 sm:px-6 lg:px-8 lg:pb-12 lg:pt-12">
           {/* Cabeçalho no mesmo registo das secções 3 e 4 */}
           <motion.div className="mx-auto max-w-[820px] text-center" variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.4 }}>
             <motion.p variants={item} className="text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">{t.eyebrow}</motion.p>
@@ -119,14 +115,14 @@ export function ForWhom() {
           </motion.div>
 
           {/* Pilha de histórias */}
-          <ul ref={stack} className={cn('relative mt-10 lg:mt-12', !reduced && 'pb-[12vh] lg:pb-[18vh]')}>
+          <ul ref={stack} className={cn('relative mt-8 lg:mt-10', !reduced && 'pb-[6vh] lg:pb-[10vh]')}>
             {t.contexts.map((c, i) => (
               <Story key={c.title} c={c} i={i} n={n} progress={scrollYProgress} reduced={reduced} />
             ))}
           </ul>
 
           <motion.p
-            className="mx-auto mt-8 max-w-[620px] text-center text-[14px] leading-relaxed text-[#0B1030]/55"
+            className="mx-auto mt-6 max-w-[620px] text-center text-[14px] leading-relaxed text-[#0B1030]/55"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -155,16 +151,16 @@ function Story({ c, i, n, progress, reduced }: { c: Context; i: number; n: numbe
   return (
     <li
       ref={ref}
-      className={cn('relative', !reduced && 'sticky max-lg:[@media(max-height:760px)]:static', last ? '' : reduced ? 'mb-6' : 'mb-6 lg:mb-[14vh]')}
+      className={cn('relative', !reduced && 'sticky max-lg:[@media(max-height:760px)]:static', last ? '' : reduced ? 'mb-5' : 'mb-5 lg:mb-[7vh]')}
       style={reduced ? undefined : { top: 88 + i * 22 }}
     >
       <motion.article
         style={{ scale }}
-        className="relative grid origin-top overflow-hidden rounded-[32px] bg-white shadow-[0_1px_2px_rgba(11,16,48,0.04),0_0_0_1px_rgba(11,16,48,0.06),0_40px_80px_-50px_rgba(11,16,48,0.35)] lg:h-[min(500px,calc(100vh-150px))] lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]"
+        className="relative grid origin-top overflow-hidden rounded-[32px] bg-white shadow-[0_1px_2px_rgba(11,16,48,0.04),0_0_0_1px_rgba(11,16,48,0.06),0_40px_80px_-50px_rgba(11,16,48,0.35)] lg:h-[min(430px,calc(100vh-150px))] lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
       >
         {/* Texto */}
         <motion.div
-          className="order-2 flex flex-col p-6 sm:p-9 lg:order-1 lg:p-12"
+          className="order-2 flex flex-col justify-center p-6 sm:p-9 lg:order-1 lg:px-12 lg:py-10"
           variants={group}
           initial="hidden"
           whileInView="show"
@@ -175,18 +171,12 @@ function Story({ c, i, n, progress, reduced }: { c: Context; i: number; n: numbe
             <span aria-hidden="true" className="h-px w-6 bg-[#0B1030]/20" />
             {c.segment}
           </motion.p>
-          <motion.h3 variants={item} className="mt-5 font-display text-[30px] font-bold leading-[1.05] tracking-[-0.035em] text-[#070D2B] sm:text-[38px] lg:text-[44px]">{c.title}</motion.h3>
-          <motion.blockquote variants={item} className="mt-5 border-l-2 border-accent-deep pl-4 text-[18px] leading-[1.45] text-[#070D2B]/85 sm:text-[20px]">
+          <motion.h3 variants={item} className="mt-4 font-display text-[30px] font-bold leading-[1.05] tracking-[-0.035em] text-[#070D2B] sm:text-[38px] lg:text-[44px]">{c.title}</motion.h3>
+          <motion.blockquote variants={item} className="mt-4 border-l-2 border-accent-deep pl-4 text-[18px] leading-[1.45] text-[#070D2B]/85 sm:text-[20px]">
             “{c.question}”
           </motion.blockquote>
-          <motion.p variants={item} className="mt-6 text-[15px] leading-[1.6] text-[#0B1030]/65 lg:max-w-[440px]">{c.text}</motion.p>
-          <motion.p variants={item} className="mt-4 text-[15px] font-semibold leading-snug text-accent-deep">{c.message}</motion.p>
-          {/* Rodapé discreto: onde estamos na pilha */}
-          <motion.p variants={item} aria-hidden="true" className="mt-auto hidden items-center gap-3 pt-6 text-[12px] font-semibold tabular-nums tracking-[0.12em] text-[#0B1030]/35 lg:flex">
-            0{i + 1}
-            <span className="relative h-px w-16 bg-[#0B1030]/10"><span className="absolute inset-y-0 left-0 bg-accent-deep" style={{ width: `${((i + 1) / n) * 100}%` }} /></span>
-            0{n}
-          </motion.p>
+          <motion.p variants={item} className="mt-5 text-[15px] leading-[1.6] text-[#0B1030]/65 lg:max-w-[460px]">{c.text}</motion.p>
+          <motion.p variants={item} className="mt-3 text-[15px] font-semibold leading-snug text-accent-deep">{c.message}</motion.p>
         </motion.div>
 
         {/* Fotografia da identidade (limpa, sem nada por cima) */}
