@@ -57,6 +57,13 @@ export function PlatformShowcase() {
   const { lang } = useLanguage()
   const t = copy[lang]
   const [tab, setTab] = useState<Tab>('home')
+  // Ligação "Conhecer o Finer Advisor" (secção 3): #finer-advisor abre o separador Advisor.
+  useEffect(() => {
+    const sync = () => { if (window.location.hash === '#finer-advisor') setTab('advisor') }
+    sync()
+    window.addEventListener('hashchange', sync)
+    return () => window.removeEventListener('hashchange', sync)
+  }, [])
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
 
   const onKey = (e: KeyboardEvent<HTMLButtonElement>, i: number) => {
@@ -71,6 +78,7 @@ export function PlatformShowcase() {
   return (
     <MotionConfig reducedMotion="user">
       <section id="plataforma" aria-labelledby="plataforma-titulo" className="relative isolate scroll-mt-24 overflow-hidden bg-navy py-20 text-white lg:py-24">
+        <span id="finer-advisor" aria-hidden="true" className="pointer-events-none absolute top-0 scroll-mt-16" />
         {/* Iluminação azul muito subtil */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute inset-0 bg-[radial-gradient(55%_45%_at_70%_55%,rgba(0,82,255,0.16),transparent_70%)]" />

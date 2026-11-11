@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Navbar } from '@/components/layout/Navbar'
 import { HeroDemo } from '@/components/v2/HeroDemo'
 import { HomeExperience } from '@/components/v2/HomeExperience'
+import { FinancialDiscovery } from '@/components/v2/FinancialDiscovery'
 import { ProblemSection } from '@/components/problem/ProblemSection'
 import { Challenges } from '@/components/v2/Challenges'
 import { FinancialStory } from '@/components/v2/story/FinancialStory'
@@ -63,7 +64,7 @@ export default function App() {
         <HeroDemo />
         {/* Nova secção 2: experiência Finer Home (destino do CTA principal da hero) */}
         <HomeExperience />
-        {SECOND === 'antiga' ? <ProblemSection /> : SECOND === 'desafios' ? <Challenges /> : SECOND === 'scroll' ? <FinancialStory /> : SECOND === 'exemplos' ? <FinanceDemo /> : SECOND === 'paineis' ? <ClarityShowcase /> : SECOND === 'etapas' ? <ClarityStage /> : <ClarityMotion />}
+        {SECOND === 'antiga' ? <ProblemSection /> : SECOND === 'desafios' ? <Challenges /> : SECOND === 'scroll' ? <FinancialStory /> : SECOND === 'exemplos' ? <FinanceDemo /> : SECOND === 'paineis' ? <ClarityShowcase /> : SECOND === 'etapas' ? <ClarityStage /> : SECOND === 'clareza' ? <ClarityMotion /> : <FinancialDiscovery />}
         {/* Os três pilares já são demonstrados na secção anterior; versão antiga em ?pilares=sim */}
         {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('pilares') === 'sim' && <PillarsScrolly />}
         {/* Folha clara contínua: demonstração, benefícios e funcionamento.
@@ -72,7 +73,7 @@ export default function App() {
         <div className={typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('fundo') === 'antigo' ? 'relative z-10 rounded-[28px] bg-gradient-to-b from-ice via-white to-ice sm:mx-3 sm:rounded-[40px]' : 'relative z-10 rounded-b-[28px] bg-gradient-to-b from-[#F8FAFF] via-white to-ice sm:rounded-b-[40px]'}>
           {/* Demonstração interativa retirada: a plataforma já aparece no vídeo da hero. Versão antiga em ?tour=sim */}
           {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('tour') === 'sim' && <ProductTour />}
-          {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'antigo' ? <Benefits /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'cartoes' ? <BenefitsCards /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'faixa' ? <BenefitsStrip /> : <BenefitsMotion />}
+          {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'antigo' ? <Benefits /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'cartoes' ? <BenefitsCards /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'faixa' ? <BenefitsStrip /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'motion' ? <BenefitsMotion /> : null /* os quatro temas passaram para a faixa da secção 3 */}
           {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'antigo' ? <HowItWorks /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'v2' ? <HowItWorksMotion /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'v3' ? <HowItWorksDemoV1 /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'v4' ? <HowItWorksDemoV2 /> : <HowItWorksDemo />}
           {/* Secção 5, versão anterior (clara, quatro áreas) em ?plataforma=v1 */}
           {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('plataforma') === 'v1' && <PlatformShowcaseV1 />}
