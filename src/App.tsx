@@ -35,6 +35,7 @@ import { HowItWorksDemoV1 } from '@/components/v2/HowItWorksDemoV1'
 import { HowItWorksDemoV2 } from '@/components/v2/HowItWorksDemoV2'
 import { Security } from '@/components/v2/Security'
 import { PricingSection } from '@/components/pricing/PricingSection'
+import { PlansSection } from '@/components/v2/PlansSection'
 import { EarlyAccess } from '@/components/v2/EarlyAccess'
 import { FAQSection } from '@/components/faq/FAQSection'
 import { FinalCTA } from '@/components/footer/FinalCTA'
@@ -97,7 +98,8 @@ export default function App() {
         {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('seguranca') === 'antiga' ? <Security /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('seguranca') === 'acordeao' ? <SecurityTrustAccordion /> : <SecurityTrust />}
         {/* Nova secção 7: Oferta e conversão (Plus, Pioneers, lista de espera) */}
         <OfferSection />
-        <PricingSection />
+        {/* Planos: nova versão (Searchable/Lovable). Versão anterior escura em ?precos=antigo */}
+        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('precos') === 'antigo' ? <PricingSection /> : <PlansSection />}
         {/* Acesso antecipado substituído pela secção 7. Versão anterior em ?acesso=antigo */}
         {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('acesso') === 'antigo' && <EarlyAccess />}
         <FAQSection />
