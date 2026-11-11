@@ -143,11 +143,11 @@ export function HowItWorksSteps() {
           </motion.div>
 
           {/* Uma única demonstração: só o conteúdo muda */}
-          <motion.div variants={item} className="mt-8 overflow-hidden rounded-[32px] bg-[#F6F8FC]">
+          <motion.div variants={item} className="relative isolate mt-8 overflow-hidden rounded-[32px] bg-[#FBFBFD] shadow-[0_0_0_1px_rgba(11,16,48,0.05)]">
             {/* Topo limpo (o céu da plataforma já aparece nas secções 2 e 3: aqui não se repete) */}
             <div className="relative">
               <div className="relative flex h-14 items-center justify-between gap-2 px-4 pt-2 sm:px-7">
-                <span className="flex items-center gap-2 rounded-full bg-white py-1 pl-1 pr-3">
+                <span className="flex items-center gap-2 rounded-full bg-white py-1 pl-1 pr-3 shadow-[0_6px_18px_-10px_rgba(7,13,43,0.4)]">
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#070D2B]">
                     <svg viewBox="0 0 326 445" className="h-3 w-3 fill-white" aria-hidden="true"><path d="M326 0H0v445l99-99v-92h109l86-87H99V79h227z" /></svg>
                   </span>
@@ -189,17 +189,17 @@ export function HowItWorksSteps() {
 
 /**
  * Cartão à maneira da Lovable: branco, cantos grandes, contorno quase invisível
- * e uma luz suave da marca no canto (azul elétrico + céu). Todos iguais; o
- * cartão do resultado (glow) tem a luz um pouco mais presente.
+ * e uma luz de cor bem visível nas cores Finer One (azul elétrico + céu). O
+ * cartão do resultado (glow) tem a luz à direita; o outro, à esquerda. A luz
+ * desvanece para branco em baixo para não tirar leitura aos números.
  */
 export function GlowCard({ title, children, className, glow }: { title: string; children: ReactNode; className?: string; glow?: boolean }) {
   return (
     <div className={cn('relative isolate overflow-hidden rounded-[24px] bg-white p-6 shadow-[0_1px_2px_rgba(11,16,48,0.04),0_0_0_1px_rgba(11,16,48,0.06)]', className)}>
-      <span
-        aria-hidden="true"
-        className={cn('pointer-events-none absolute -right-20 -top-24 -z-10 h-64 w-72 rounded-full', glow ? 'bg-[radial-gradient(closest-side,rgba(30,144,255,0.34),rgba(141,184,246,0.22)_45%,transparent)]' : 'bg-[radial-gradient(closest-side,rgba(94,151,238,0.26),rgba(185,211,250,0.14)_50%,transparent)]')}
-      />
-      <span aria-hidden="true" className="pointer-events-none absolute -left-16 bottom-[-30%] -z-10 h-56 w-56 rounded-full bg-[radial-gradient(closest-side,rgba(185,211,250,0.16),transparent)]" />
+      <>
+          <span aria-hidden="true" className={cn('pointer-events-none absolute -z-10 h-[340px] w-[420px] rounded-full', glow ? '-right-28 -top-36 bg-[radial-gradient(closest-side,rgba(0,82,255,0.55),rgba(30,144,255,0.35)_40%,rgba(141,184,246,0.18)_65%,transparent)]' : '-left-28 -top-36 bg-[radial-gradient(closest-side,rgba(30,144,255,0.45),rgba(141,184,246,0.3)_45%,rgba(185,211,250,0.12)_70%,transparent)]')} />
+          <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-gradient-to-t from-white via-white to-transparent" />
+      </>
       <p className="text-[11.5px] font-semibold uppercase tracking-[0.18em] text-[#0B1030]/50">{title}</p>
       <div className="mt-2.5">{children}</div>
     </div>
@@ -368,7 +368,8 @@ function MomentTogether({ lang }: { lang: Lang }) {
   return (
     <div className="lg:col-span-2">
       <div className="relative isolate overflow-hidden rounded-[24px] bg-white shadow-[0_1px_2px_rgba(11,16,48,0.04),0_0_0_1px_rgba(11,16,48,0.06)]">
-        <span aria-hidden="true" className="pointer-events-none absolute -right-24 -top-32 -z-10 h-80 w-[420px] rounded-full bg-[radial-gradient(closest-side,rgba(30,144,255,0.22),rgba(141,184,246,0.16)_45%,transparent)]" />
+        <span aria-hidden="true" className="pointer-events-none absolute -right-28 -top-40 -z-10 h-[360px] w-[520px] rounded-full bg-[radial-gradient(closest-side,rgba(0,82,255,0.5),rgba(30,144,255,0.32)_40%,rgba(141,184,246,0.16)_65%,transparent)]" />
+        <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 top-[72px] -z-10 bg-gradient-to-b from-transparent via-white to-white" />
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 pb-2 pt-5 sm:px-6">
           <div>
             <p className="font-display text-[22px] font-bold tracking-[-0.02em] text-[#070D2B]">{pt ? 'Movimentos e faturas' : 'Transactions and invoices'}</p>
