@@ -23,6 +23,7 @@ import { HowItWorks } from '@/components/v2/HowItWorks'
 import { HowItWorksMotion } from '@/components/v2/HowItWorksMotion'
 import { HowItWorksDemo } from '@/components/v2/HowItWorksDemo'
 import { HowItWorksSteps } from '@/components/v2/HowItWorksSteps'
+import { HowItWorksFlow } from '@/components/v2/HowItWorksFlow'
 import { ForWhom } from '@/components/v2/ForWhom'
 import { SecurityTrust } from '@/components/v2/SecurityTrust'
 import { OfferSection } from '@/components/v2/OfferSection'
@@ -78,7 +79,7 @@ export default function App() {
           {/* Demonstração interativa retirada: a plataforma já aparece no vídeo da hero. Versão antiga em ?tour=sim */}
           {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('tour') === 'sim' && <ProductTour />}
           {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'antigo' ? <Benefits /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'cartoes' ? <BenefitsCards /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'faixa' ? <BenefitsStrip /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'motion' ? <BenefitsMotion /> : null /* os quatro temas passaram para a faixa da secção 3 */}
-          {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'antigo' ? <HowItWorks /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'v2' ? <HowItWorksMotion /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'v3' ? <HowItWorksDemoV1 /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'v4' ? <HowItWorksDemoV2 /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'v5' ? <HowItWorksDemo /> : <HowItWorksSteps />}
+          {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'antigo' ? <HowItWorks /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'v2' ? <HowItWorksMotion /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'v3' ? <HowItWorksDemoV1 /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'v4' ? <HowItWorksDemoV2 /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'v5' ? <HowItWorksDemo /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'v6' ? <HowItWorksSteps /> : <HowItWorksFlow />}
           {/* Secção 5, versão anterior (clara, quatro áreas) em ?plataforma=v1 */}
           {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('plataforma') === 'v1' && <PlatformShowcaseV1 />}
         </div>
