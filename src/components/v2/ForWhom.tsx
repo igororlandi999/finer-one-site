@@ -106,7 +106,7 @@ export function ForWhom() {
   return (
     <MotionConfig reducedMotion="user">
       <section id="para-quem" aria-labelledby="para-quem-titulo" className="relative scroll-mt-20 bg-[linear-gradient(180deg,#FFFFFF_0%,#F4F7FC_18%,#F4F7FC_82%,#FFFFFF_100%)] text-navy">
-        <div className="mx-auto max-w-content px-5 pb-14 pt-14 sm:px-6 lg:px-8 lg:pb-20 lg:pt-20">
+        <div className="mx-auto max-w-content px-5 pb-14 pt-12 sm:px-6 lg:px-8 lg:pb-16 lg:pt-14">
           {/* Cabeçalho no mesmo registo das secções 3 e 4 */}
           <motion.div className="mx-auto max-w-[820px] text-center" variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.4 }}>
             <motion.p variants={item} className="text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">{t.eyebrow}</motion.p>
@@ -119,14 +119,14 @@ export function ForWhom() {
           </motion.div>
 
           {/* Pilha de histórias */}
-          <ul ref={stack} className="relative mt-10 pb-[12vh] lg:mt-14 lg:pb-[18vh]">
+          <ul ref={stack} className={cn('relative mt-10 lg:mt-12', !reduced && 'pb-[12vh] lg:pb-[18vh]')}>
             {t.contexts.map((c, i) => (
               <Story key={c.title} c={c} i={i} n={n} progress={scrollYProgress} reduced={reduced} />
             ))}
           </ul>
 
           <motion.p
-            className="mx-auto mt-10 max-w-[620px] text-center text-[14px] leading-relaxed text-[#0B1030]/55"
+            className="mx-auto mt-8 max-w-[620px] text-center text-[14px] leading-relaxed text-[#0B1030]/55"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -144,7 +144,7 @@ function Story({ c, i, n, progress, reduced }: { c: Context; i: number; n: numbe
   const ref = useRef<HTMLLIElement>(null)
   const last = i === n - 1
   // Quando o cartão seguinte sobe, este recua (fica um pouco mais pequeno e mais suave)
-  const start = i / n
+  const start = (i + 0.35) / n
   const scale = useTransform(progress, [start, 1], [1, reduced || last ? 1 : 1 - (n - 1 - i) * 0.045])
   const veil = useTransform(progress, [start + 0.12, 1], [0, reduced || last ? 0 : 0.35])
   // Fotografia: ligeiro zoom-out enquanto o cartão entra (parallax)
@@ -155,7 +155,7 @@ function Story({ c, i, n, progress, reduced }: { c: Context; i: number; n: numbe
   return (
     <li
       ref={ref}
-      className={cn('relative', !reduced && 'sticky', last ? '' : 'mb-6 lg:mb-[14vh]')}
+      className={cn('relative', !reduced && 'sticky max-lg:[@media(max-height:760px)]:static', last ? '' : reduced ? 'mb-6' : 'mb-6 lg:mb-[14vh]')}
       style={reduced ? undefined : { top: 88 + i * 22 }}
     >
       <motion.article
@@ -180,6 +180,7 @@ function Story({ c, i, n, progress, reduced }: { c: Context; i: number; n: numbe
             “{c.question}”
           </motion.blockquote>
           <motion.p variants={item} className="mt-6 text-[15px] leading-[1.6] text-[#0B1030]/65 lg:max-w-[440px]">{c.text}</motion.p>
+          <motion.p variants={item} className="mt-4 text-[15px] font-semibold leading-snug text-accent-deep">{c.message}</motion.p>
           {/* Rodapé discreto: onde estamos na pilha */}
           <motion.p variants={item} aria-hidden="true" className="mt-auto hidden items-center gap-3 pt-6 text-[12px] font-semibold tabular-nums tracking-[0.12em] text-[#0B1030]/35 lg:flex">
             0{i + 1}
@@ -188,8 +189,8 @@ function Story({ c, i, n, progress, reduced }: { c: Context; i: number; n: numbe
           </motion.p>
         </motion.div>
 
-        {/* Fotografia da identidade, com a mensagem por cima */}
-        <div className="relative order-1 h-[220px] overflow-hidden sm:h-[280px] lg:order-2 lg:h-auto">
+        {/* Fotografia da identidade (limpa, sem nada por cima) */}
+        <div className="relative order-1 h-[200px] overflow-hidden sm:h-[280px] lg:order-2 lg:h-auto">
           <motion.img
             src={img.src}
             alt=""
@@ -199,17 +200,6 @@ function Story({ c, i, n, progress, reduced }: { c: Context; i: number; n: numbe
             className="absolute inset-0 h-full w-full object-cover"
             style={{ objectPosition: img.pos, scale: zoom }}
           />
-          <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/25 to-transparent" />
-          <motion.p
-            className="absolute bottom-4 left-4 right-4 flex w-fit items-center gap-2.5 rounded-2xl bg-white/90 sm:rounded-full py-2 pl-3 pr-4 text-[13.5px] font-semibold text-[#070D2B] shadow-[0_10px_30px_-12px_rgba(7,13,43,0.5)] backdrop-blur-md sm:bottom-6 sm:left-6"
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.6 }}
-            transition={{ duration: 0.6, ease: EASE, delay: 0.35 }}
-          >
-            <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
-            {c.message}
-          </motion.p>
         </div>
 
         {/* Véu: o cartão de trás fica mais suave quando o seguinte o cobre */}
