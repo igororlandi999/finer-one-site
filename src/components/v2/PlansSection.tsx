@@ -106,23 +106,20 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
   },
 }
 
-/** Mesma família de cor da secção 6 (atmosfera Finer One), mais suave. */
-const PLUS_BG = {
-  background: [
-    'radial-gradient(60% 45% at 85% 0%, rgba(141,184,246,0.75) 0%, rgba(141,184,246,0) 100%)',
-    'radial-gradient(55% 40% at 0% 100%, rgba(0,82,255,0.55) 0%, rgba(0,82,255,0) 100%)',
-    'radial-gradient(60% 45% at 100% 100%, rgba(10,42,134,0.6) 0%, rgba(10,42,134,0) 100%)',
-    'linear-gradient(180deg, #F6F9FF 0%, #E3ECFF 45%, #B9D0FB 100%)',
-  ].join(', '),
-}
-
 const group: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.1 } } }
 const rise: Variants = { hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE } } }
 
+/**
+ * Estilo Ramp (escolha do fundador): título grande ao centro em dois tons,
+ * etiqueta por cima de cada cartão, o plano em destaque com contorno na cor
+ * da marca. Cartões brancos, texto calmo, sem ícones.
+ */
 export function PlansSection() {
   const { lang } = useLanguage()
   const t = copy[lang]
-  const reduced = useReducedMotion() ?? false
+  const reducedPref = useReducedMotion() ?? false
+  const wide = typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches
+  const reduced = reducedPref || !wide
   const grid = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: grid, offset: ['start end', 'end start'] })
 
@@ -130,88 +127,105 @@ export function PlansSection() {
     <MotionConfig reducedMotion="user">
       <section id="precos" aria-labelledby="precos-titulo" className="relative scroll-mt-24 bg-white text-navy">
         <div className="mx-auto max-w-content px-5 pb-14 pt-12 sm:px-6 lg:px-8 lg:pb-20 lg:pt-16">
-          <motion.div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-end lg:gap-12" variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.5 }}>
-            <div>
-              <motion.p variants={rise} className="text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">{t.eyebrow}</motion.p>
-              <motion.h2 variants={rise} id="precos-titulo" className="mt-3 text-balance font-display text-[34px] font-bold leading-[1.04] tracking-[-0.035em] text-[#070D2B] sm:text-[48px] lg:text-[56px]">
-                {t.title[0]}
-                <span className="text-accent-deep">{t.title[1]}</span>
-              </motion.h2>
-            </div>
-            <motion.p variants={rise} className="text-[16.5px] leading-[1.6] text-[#0B1030]/70 sm:text-[18px] lg:pb-2">{t.sub}</motion.p>
+          <motion.div className="mx-auto max-w-[860px] text-center" variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.5 }}>
+            <h2 id="precos-titulo" className="font-display text-[36px] font-bold leading-[1.02] tracking-[-0.04em] sm:text-[54px] lg:text-[68px]">
+              <span className="block overflow-hidden pb-[0.06em]">
+                <motion.span className="block text-[#070D2B]" variants={{ hidden: { y: '105%' }, show: { y: '0%', transition: { duration: 0.9, ease: EASE } } }}>{t.title[0].trim()}</motion.span>
+              </span>
+              <span className="block overflow-hidden pb-[0.06em]">
+                <motion.span className="block text-accent-deep" variants={{ hidden: { y: '105%' }, show: { y: '0%', transition: { duration: 0.9, ease: EASE, delay: 0.08 } } }}>{t.title[1]}</motion.span>
+              </span>
+            </h2>
+            <motion.p variants={rise} className="mx-auto mt-5 max-w-[560px] text-[16.5px] leading-[1.6] text-[#0B1030]/65 sm:text-[18px]">{t.sub}</motion.p>
           </motion.div>
 
-          <div ref={grid} className="mt-10 grid items-stretch gap-5 lg:mt-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)_minmax(0,1fr)]">
+          <div ref={grid} className="mt-14 grid items-stretch gap-x-5 gap-y-12 lg:mt-16 lg:grid-cols-3">
             {t.plans.map((p, i) => (
               <PlanCard key={p.id} p={p} i={i} t={t} progress={scrollYProgress} reduced={reduced} />
             ))}
           </div>
 
-          <p className="mt-6 text-[13.5px] text-[#0B1030]/50">{t.note}</p>
+          <p className="mt-8 text-center text-[13.5px] text-[#0B1030]/50">{t.note}</p>
         </div>
       </section>
     </MotionConfig>
   )
 }
 
+const TAB: Record<Plan['id'], string> = {
+  plus: 'bg-accent text-white',
+  pro: 'bg-[#EEF1F6] text-[#070D2B]/75',
+  team: 'bg-[#070D2B] text-white',
+}
+
 function PlanCard({ p, i, t, progress, reduced }: { p: Plan; i: number; t: (typeof copy)['pt']; progress: MotionValue<number>; reduced: boolean }) {
   const plus = p.id === 'plus'
   // Parallax suave: os planos em desenvolvimento "assentam" um pouco depois do Plus
-  const y = useTransform(progress, [0, 0.5], reduced ? [0, 0] : [plus ? 30 : 60 + i * 20, 0])
-  const list: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.06, delayChildren: 0.35 } } }
-  const li: Variants = { hidden: { opacity: 0, x: -8 }, show: { opacity: 1, x: 0, transition: { duration: 0.45, ease: EASE } } }
+  const y = useTransform(progress, [0, 0.45], reduced ? [0, 0] : [plus ? 20 : 50 + i * 16, 0])
+  const list: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.06, delayChildren: 0.4 } } }
+  const li: Variants = { hidden: { opacity: 0, y: 6 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } } }
 
   return (
     <motion.div style={{ y }} className="h-full">
-    <motion.article
-      className={cn(
-        'relative isolate flex h-full flex-col overflow-hidden rounded-[28px] p-6 sm:p-8',
-        plus ? 'shadow-[0_40px_80px_-50px_rgba(10,42,134,0.55),0_0_0_1px_rgba(10,64,200,0.18)]' : 'bg-[#F6F8FC] shadow-[0_0_0_1px_rgba(11,16,48,0.06)]',
-      )}
-      initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, amount: 0.3 }}
-      variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE, delay: i * 0.12 } } }}
-    >
-      {plus && <span aria-hidden="true" className="absolute inset-0 -z-10" style={PLUS_BG} />}
+      <motion.article
+        className={cn(
+          'relative flex h-full flex-col rounded-[20px] bg-white px-6 pb-7 pt-10 sm:px-8',
+          plus ? 'shadow-[0_30px_70px_-45px_rgba(0,82,255,0.55)]' : '',
+        )}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.3 }}
+        variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE, delay: i * 0.12 } } }}
+      >
+        {/* Contorno: azul elétrico no Plus (desenha-se ao entrar), fino nos outros */}
+        <span aria-hidden="true" className={cn('pointer-events-none absolute inset-0 rounded-[20px]', plus ? 'ring-0' : 'ring-1 ring-inset ring-[#0B1030]/12')} />
+        {plus && (
+          <motion.span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 rounded-[20px] ring-2 ring-inset ring-accent"
+            variants={{ hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: 0.6, delay: 0.3 + i * 0.12 } } }}
+          />
+        )}
 
-      <div className="flex items-baseline justify-between gap-3">
-        <h3 className="font-display text-[30px] font-bold tracking-[-0.035em] text-[#070D2B] sm:text-[34px]">{p.name}</h3>
-        <span className={cn('text-right text-[12px] font-semibold uppercase tracking-[0.14em]', plus ? 'text-accent-deep' : 'text-[#0B1030]/45')}>{p.status}</span>
-      </div>
-      <p className="mt-4 text-[17px] font-semibold leading-snug text-[#070D2B]">{p.promise}</p>
-      <p className="mt-2 text-[15px] leading-[1.6] text-[#0B1030]/65">{p.desc}</p>
+        {/* Etiqueta por cima do cartão, à maneira da Ramp */}
+        <span className="absolute inset-x-0 top-0 flex -translate-y-1/2 justify-center">
+          <motion.span
+            className={cn('whitespace-nowrap rounded-[8px] px-4 py-1.5 text-[13px] font-semibold', TAB[p.id])}
+            variants={{ hidden: { opacity: 0, y: -6 }, show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE, delay: 0.2 + i * 0.12 } } }}
+          >
+            {p.status}
+          </motion.span>
+        </span>
 
-      <div className={cn('mt-6 border-t pt-5', plus ? 'border-[#0A40C8]/15' : 'border-[#0B1030]/10')}>
-        <p className="font-display text-[26px] font-bold tracking-[-0.03em] text-[#070D2B]">
-          € —<span className="ml-1.5 text-[14px] font-medium tracking-normal text-[#0B1030]/50">{t.period}</span>
+        <h3 className="font-display text-[30px] font-semibold leading-tight tracking-[-0.03em] text-[#070D2B] sm:text-[34px]">{p.name}</h3>
+        <p className="font-display text-[30px] font-semibold leading-tight tracking-[-0.03em] text-[#0B1030]/35 sm:text-[34px]">
+          € —<span className="ml-1 text-[18px]">{t.period}</span>
         </p>
-        <p className="mt-0.5 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B1030]/45">{t.price}</p>
-      </div>
+        <p className="mt-1 text-[12.5px] text-[#0B1030]/50">{t.price}</p>
 
-      <p className="mt-6 text-[13px] font-semibold text-[#0B1030]/55">{p.listLabel}</p>
-      <motion.ul variants={list} className="mt-2">
-        {p.items.map((x) => (
-          <motion.li key={x} variants={li} className={cn('flex items-baseline gap-3 border-b py-2.5 text-[15px]', plus ? 'border-[#0A40C8]/10 font-medium text-[#070D2B]' : 'border-[#0B1030]/[0.07] text-[#0B1030]/75')}>
-            <span aria-hidden="true" className={cn('h-px w-3 shrink-0 translate-y-[-4px]', plus ? 'bg-accent-deep' : 'bg-[#0B1030]/30')} />
-            {x}
-          </motion.li>
-        ))}
-      </motion.ul>
+        <p className="mt-7 text-[17px] leading-snug text-[#070D2B]">{p.promise}</p>
+        <p className="mt-2 text-[14.5px] leading-[1.6] text-[#0B1030]/60">{p.desc}</p>
 
-      <div className="mt-auto pt-8">
         <a
           href={p.href}
           className={cn(
-            'group inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-[15px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2',
-            plus ? 'bg-[#070D2B] text-white hover:bg-accent-deep' : 'bg-white text-[#070D2B] ring-1 ring-[#0B1030]/12 hover:ring-[#0B1030]/30',
+            'group mt-7 inline-flex w-full items-center justify-center gap-2 rounded-[10px] px-6 py-3.5 text-[15px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2',
+            plus ? 'bg-[#070D2B] text-white hover:bg-accent-deep' : 'bg-[#F3F5F9] text-[#070D2B] hover:bg-[#E9EDF4]',
           )}
         >
           {p.cta}
           <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true" />
         </a>
-      </div>
-    </motion.article>
+
+        <div className="mt-7 border-t border-[#0B1030]/10 pt-6">
+          <p className="text-[15px] font-semibold text-[#070D2B]">{p.listLabel}</p>
+          <motion.ul variants={list} className="mt-3 space-y-3">
+            {p.items.map((x) => (
+              <motion.li key={x} variants={li} className="text-[15px] text-[#0B1030]/75">{x}</motion.li>
+            ))}
+          </motion.ul>
+        </div>
+      </motion.article>
     </motion.div>
   )
 }
