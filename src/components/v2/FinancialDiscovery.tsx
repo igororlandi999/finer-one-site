@@ -194,10 +194,11 @@ export function FinancialDiscovery() {
       <section id="problema" aria-labelledby="descoberta-titulo" className="relative isolate scroll-mt-20 overflow-hidden bg-white text-navy">
         {/* Destinos já usados no menu e no rodapé ("Produto" → #demo, "Os desafios" → #problema) */}
         <span id="demo" aria-hidden="true" className="pointer-events-none absolute top-0 scroll-mt-20" />
-        {/* Atmosfera da marca: luz azul muito suave, como o céu da plataforma ao longe */}
+        {/* Atmosfera da marca com presença (à maneira da Lovable), nos tons do céu da secção 2 */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute -right-[12%] top-[6%] h-[620px] w-[620px] rounded-full bg-[radial-gradient(closest-side,rgba(94,151,238,0.2),transparent)]" />
-          <div className="absolute -left-[10%] top-[48%] h-[580px] w-[580px] rounded-full bg-[radial-gradient(closest-side,rgba(0,82,255,0.09),transparent)]" />
+          <div className="absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(70%_100%_at_50%_0%,rgba(141,184,246,0.32),transparent_70%)]" />
+          <div className="absolute -right-[14%] top-[22%] h-[760px] w-[760px] rounded-full bg-[radial-gradient(closest-side,rgba(94,151,238,0.34),rgba(141,184,246,0.12)_55%,transparent)]" />
+          <div className="absolute -left-[16%] top-[52%] h-[700px] w-[700px] rounded-full bg-[radial-gradient(closest-side,rgba(30,144,255,0.2),rgba(185,211,250,0.1)_55%,transparent)]" />
           <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-[#F8FAFF]" />
         </div>
 
@@ -233,6 +234,7 @@ export function FinancialDiscovery() {
               {chapters.map((c, i) => {
                 const lit = reached > i
                 const right = i % 2 === 1
+                const tile = i === 1 // ponto alto da análise: bloco na cor da marca
                 return (
                   <li key={c.key} className={cn('relative grid grid-cols-[28px_minmax(0,1fr)] gap-x-4 sm:gap-x-6 lg:grid-cols-2 lg:gap-x-16', i > 0 && 'mt-10 sm:mt-14 lg:-mt-32')}>
                     {/* Ponto da linha */}
@@ -245,24 +247,25 @@ export function FinancialDiscovery() {
                       )}
                     />
                     <motion.div
-                      className={cn('min-w-0 lg:col-span-1', right ? 'lg:col-start-2 lg:pl-4' : 'lg:col-start-1 lg:pr-4 lg:text-right')}
+                      className={cn('relative min-w-0 lg:col-span-1', right ? 'lg:col-start-2 lg:pl-4' : 'lg:col-start-1 lg:pr-4 lg:text-right', tile && 'overflow-hidden rounded-[28px] bg-accent p-6 text-white shadow-[0_40px_80px_-40px_rgba(0,82,255,0.85)] sm:p-8 lg:ml-4 lg:pl-8')}
                       initial={{ opacity: 0, y: 16 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, amount: 0.4 }}
                       transition={{ duration: 0.5, ease: EASE }}
                     >
-                      <p className={cn('flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.2em]', right ? '' : 'lg:justify-end', lit ? 'text-accent' : 'text-[#0B1030]/45')}>
+                      {tile && <span aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[radial-gradient(closest-side,rgba(255,255,255,0.28),transparent)]" />}
+                      <p className={cn('relative flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.2em]', right ? '' : 'lg:justify-end', tile ? 'text-white/85' : lit ? 'text-accent' : 'text-[#0B1030]/45')}>
                         <span className="font-display text-[13px] font-bold tracking-[0.1em]">0{i + 1}</span>
-                        <span aria-hidden="true" className={cn('h-px w-6 transition-colors duration-500', lit ? 'bg-accent' : 'bg-[#0B1030]/20')} />
+                        <span aria-hidden="true" className={cn('h-px w-6 transition-colors duration-500', tile ? 'bg-white/70' : lit ? 'bg-accent' : 'bg-[#0B1030]/20')} />
                         {c.key}
                       </p>
-                      <h3 className="mt-2 text-[17px] font-semibold text-[#0B1030]/70 sm:text-[19px]">{c.q}</h3>
-                      <MaskNumber className={cn('mt-3 font-display font-bold leading-none tracking-[-0.045em] tabular-nums', i === 2 ? 'text-[36px] sm:text-[52px] lg:text-[58px]' : i === 0 ? 'whitespace-nowrap text-[42px] sm:text-[64px] lg:text-[70px]' : 'text-[56px] sm:text-[84px] lg:text-[96px]', c.bigClass, 'leading-[0.98]')}>
+                      <h3 className={cn('relative mt-2 text-[17px] font-semibold sm:text-[19px]', tile ? 'text-white/85' : 'text-[#0B1030]/70')}>{c.q}</h3>
+                      <MaskNumber className={cn('mt-3 font-display font-bold leading-none tracking-[-0.045em] tabular-nums', i === 2 ? 'text-[36px] sm:text-[52px] lg:text-[58px]' : i === 0 ? 'whitespace-nowrap text-[42px] sm:text-[64px] lg:text-[70px]' : 'text-[56px] sm:text-[84px] lg:text-[96px]', tile ? 'text-white' : c.bigClass, 'leading-[0.98]')}>
                         {c.big}
                       </MaskNumber>
-                      <p className={cn('mt-2 text-[15px] font-semibold text-[#0B1030]/60 sm:text-[16px]')}>{c.caption}</p>
-                      <p className={cn('mt-3 max-w-[460px] text-[16px] leading-[1.6] text-[#0B1030]/80 sm:text-[17px]', right ? '' : 'lg:ml-auto')}>{c.text}</p>
-                      <p className={cn('mt-2 max-w-[460px] text-[13px] leading-snug text-[#0B1030]/50', right ? '' : 'lg:ml-auto')}>{c.meta}</p>
+                      <p className={cn('relative mt-2 text-[15px] font-semibold sm:text-[16px]', tile ? 'text-white/80' : 'text-[#0B1030]/60')}>{c.caption}</p>
+                      <p className={cn('relative mt-3 max-w-[460px] text-[16px] leading-[1.6] sm:text-[17px]', right ? '' : 'lg:ml-auto', tile ? 'text-white/95' : 'text-[#0B1030]/80')}>{c.text}</p>
+                      <p className={cn('relative mt-2 max-w-[460px] text-[13px] leading-snug', right ? '' : 'lg:ml-auto', tile ? 'text-white/75' : 'text-[#0B1030]/50')}>{c.meta}</p>
                     </motion.div>
                   </li>
                 )
