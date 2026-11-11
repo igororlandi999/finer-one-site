@@ -1,8 +1,7 @@
-import { useRef, useState } from 'react'
-import type { KeyboardEvent } from 'react'
-import { AnimatePresence, MotionConfig, motion, useInView, useReducedMotion, useScroll, useTransform } from 'motion/react'
+import { useLayoutEffect, useRef, useState } from 'react'
+import type { ReactNode, RefObject } from 'react'
+import { MotionConfig, motion, useMotionValueEvent, useReducedMotion, useScroll, useSpring } from 'motion/react'
 import type { Variants } from 'motion/react'
-import { Lightbulb } from 'lucide-react'
 import { useLanguage } from '@/i18n/LanguageContext'
 import type { Lang } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
@@ -83,260 +82,208 @@ function getCopy(lang: Lang) {
 const group: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } }
 const item: Variants = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } } }
 
-/*
- * Montanha oficial (public/images/mountain-line.jpg, 1122×940): a linha azul
- * tem três pontos e o cume. Os três pontos são os três momentos da análise.
- * Coordenadas medidas na imagem original; o palco mantém a proporção da imagem,
- * por isso os marcadores ficam sempre em cima dos pontos.
- */
-const IMG_W = 1122
-// Imagem original: 1122×940 px.
-/** Altura visível no palco: corta a floresta, mantendo toda a linha (y 27–578). */
-const VIEW_H = 640
-const POINTS = [
-  { x: 438, y: 447 },
-  { x: 604, y: 335 },
-  { x: 767, y: 196 },
-]
-const LINE = 'M268 578 C340 520 392 478 438 447 S560 362 604 335 S720 232 767 196 S905 120 951 27'
-// Fração do comprimento da linha até cada ponto (o cume fica em 1).
-const REACH = [0.3, 0.52, 0.75]
+/** Número grande que sobe de dentro de uma máscara quando entra no ecrã (uma vez). */
+function MaskNumber({ children, className }: { children: ReactNode; className?: string }) {
+  // O gatilho fica no contentor visível (a parte interior começa fora da máscara).
+  return (
+    <motion.span className="block overflow-hidden pb-[0.08em]" initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
+      <motion.span
+        className={cn('block', className)}
+        variants={{ hidden: { y: '105%' }, show: { y: '0%', transition: { duration: 0.75, ease: EASE } } }}
+      >
+        {children}
+      </motion.span>
+    </motion.span>
+  )
+}
 
 /**
- * Nova secção 3 — Descoberta Financeira, "a subida até à decisão". Três momentos
- * (Compreender, Antecipar, Decidir) ligados aos três pontos da linha de luz da
- * montanha; a análise aparece num painel no estilo do Finer Advisor, com o céu
- * da plataforma no topo. Escolha sempre do visitante (sem avanço automático).
+ * Linha de luz Finer One guiada pelo scroll: desce pela secção e liga os três
+ * capítulos. Desenhada em coordenadas reais (sem distorção), acende cada ponto
+ * quando o leitor lá chega. Não esconde conteúdo nem controla a página.
+ */
+function useLightPath(wrap: RefObject<HTMLDivElement | null>, dots: RefObject<(HTMLSpanElement | null)[]>) {
+  const [geo, setGeo] = useState<{ w: number; h: number; d: string; marks: { x: number; y: number; at: number }[] }>({ w: 0, h: 0, d: '', marks: [] })
+  useLayoutEffect(() => {
+    const el = wrap.current
+    if (!el) return
+    const measure = () => {
+      const box = el.getBoundingClientRect()
+      const pts = (dots.current ?? []).filter(Boolean).map((d) => {
+        const r = (d as HTMLSpanElement).getBoundingClientRect()
+        return { x: r.left + r.width / 2 - box.left, y: r.top + r.height / 2 - box.top }
+      })
+      if (!pts.length) return
+      const start = { x: pts[0].x, y: 0 }
+      const all = [start, ...pts, { x: pts[pts.length - 1].x, y: box.height }]
+      let d = `M ${all[0].x} ${all[0].y}`
+      for (let i = 1; i < all.length; i++) {
+        const a = all[i - 1]
+        const b = all[i]
+        const my = (a.y + b.y) / 2
+        d += ` C ${a.x} ${my}, ${b.x} ${my}, ${b.x} ${b.y}`
+      }
+      setGeo({ w: box.width, h: box.height, d, marks: pts.map((p) => ({ ...p, at: p.y / box.height })) })
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [wrap, dots])
+  return geo
+}
+
+/**
+ * Nova secção 3 — Descoberta Financeira, em formato editorial (cartaz), sobre
+ * branco com a atmosfera azul da marca. Três capítulos (Compreender, Antecipar,
+ * Decidir) sempre visíveis, com números grandes e uma linha de luz que os liga
+ * à medida que se faz scroll. Sem interface da plataforma (não repetir a secção 2).
  * Versões anteriores: ?secao=clareza (Dos números à decisão), ?beneficios=motion.
  */
 export function FinancialDiscovery() {
   const { lang } = useLanguage()
   const t = getCopy(lang)
   const reduced = useReducedMotion() ?? false
-  const [step, setStep] = useState(0)
-  const refs = useRef<(HTMLButtonElement | null)[]>([])
-  const stageRef = useRef<HTMLDivElement>(null)
-  const seen = useInView(stageRef, { once: true, amount: 0.35 })
-  const { scrollYProgress } = useScroll({ target: stageRef, offset: ['start end', 'end start'] })
-  const drift = useTransform(scrollYProgress, [0, 1], ['-2.5%', '2.5%'])
+  const wrap = useRef<HTMLDivElement>(null)
+  const dots = useRef<(HTMLSpanElement | null)[]>([])
+  const geo = useLightPath(wrap, dots)
+  const { scrollYProgress } = useScroll({ target: wrap, offset: ['start 0.75', 'end 0.55'] })
+  const draw = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.4 })
+  const [reached, setReached] = useState(reduced ? 3 : 0)
+  useMotionValueEvent(draw, 'change', (v) => {
+    if (reduced) return
+    const n = geo.marks.filter((m) => v >= m.at - 0.02).length
+    setReached((r) => (r === n ? r : n))
+  })
 
-  const onKey = (e: KeyboardEvent<HTMLButtonElement>, i: number) => {
-    const d = ['ArrowDown', 'ArrowRight'].includes(e.key) ? 1 : ['ArrowUp', 'ArrowLeft'].includes(e.key) ? -1 : 0
-    if (!d) return
-    e.preventDefault()
-    const next = (i + d + 3) % 3
-    setStep(next)
-    refs.current[next]?.focus()
-  }
+  const [mMin, mMax] = range(mainInv)
+  const chapters = [
+    {
+      key: t.steps[0].k,
+      q: t.steps[0].q,
+      big: eur(TOTAL_OVERDUE, lang),
+      bigClass: 'text-[#070D2B]',
+      caption: lang === 'pt' ? `por receber · ${OVERDUE_COUNT} faturas em atraso` : `receivable · ${OVERDUE_COUNT} overdue invoices`,
+      text: t.understand.text,
+      meta: t.understand.meta,
+    },
+    {
+      key: t.steps[1].k,
+      q: t.steps[1].q,
+      big: t.anticipate.share,
+      bigClass: 'text-accent',
+      caption: t.anticipate.shareText,
+      text: t.anticipate.text,
+      meta: lang === 'pt'
+        ? `${CLIENT_NAMES[lang].A}: ${eur(MAIN_CLIENT_TOTAL, lang)} em ${mainInv.length} faturas (${mMin}–${mMax} dias) · compromissos a 15 dias: ${eur(COMMITMENTS_TOTAL, lang)}`
+        : `${CLIENT_NAMES[lang].A}: ${eur(MAIN_CLIENT_TOTAL, lang)} in ${mainInv.length} invoices (${mMin}–${mMax} days) · 15-day commitments: ${eur(COMMITMENTS_TOTAL, lang)}`,
+    },
+    {
+      key: t.steps[2].k,
+      q: t.steps[2].q,
+      big: lang === 'pt' ? `Comece pelo ${CLIENT_NAMES[lang].A}.` : `Start with ${CLIENT_NAMES[lang].A}.`,
+      bigClass: 'text-[#070D2B]',
+      caption: lang === 'pt' ? `${eur(MAIN_CLIENT_TOTAL, lang)} · ${mainInv.length} faturas · até ${mMax} dias de atraso` : `${eur(MAIN_CLIENT_TOTAL, lang)} · ${mainInv.length} invoices · up to ${mMax} days late`,
+      text: `${t.decide.title} ${t.decide.text}`,
+      meta: t.decide.source,
+    },
+  ]
 
   return (
     <MotionConfig reducedMotion="user">
-      <section id="problema" aria-labelledby="descoberta-titulo" className="relative isolate scroll-mt-20 overflow-hidden bg-navy text-white">
+      <section id="problema" aria-labelledby="descoberta-titulo" className="relative isolate scroll-mt-20 overflow-hidden bg-white text-navy">
         {/* Destinos já usados no menu e no rodapé ("Produto" → #demo, "Os desafios" → #problema) */}
         <span id="demo" aria-hidden="true" className="pointer-events-none absolute top-0 scroll-mt-20" />
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(45%_40%_at_75%_35%,rgba(0,82,255,0.18),transparent_70%)]" />
+        {/* Atmosfera da marca: luz azul muito suave, como o céu da plataforma ao longe */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+          <div className="absolute -right-[12%] top-[6%] h-[560px] w-[560px] rounded-full bg-[radial-gradient(closest-side,rgba(94,151,238,0.22),transparent)] blur-2xl" />
+          <div className="absolute -left-[10%] top-[48%] h-[520px] w-[520px] rounded-full bg-[radial-gradient(closest-side,rgba(0,82,255,0.10),transparent)] blur-2xl" />
+          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-[#F8FAFF]" />
+        </div>
 
-        <motion.div className="mx-auto max-w-content px-5 pb-14 pt-16 sm:px-6 lg:px-8 lg:pb-16 lg:pt-20" variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.15 }}>
+        <motion.div className="mx-auto max-w-content px-5 pb-16 pt-16 sm:px-6 lg:px-8 lg:pb-20 lg:pt-24" variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.1 }}>
           {/* Cabeçalho */}
           <div className="mx-auto max-w-[820px] text-center">
-            <motion.p variants={item} className="text-[11.5px] font-semibold uppercase tracking-[0.26em] text-glow">{t.eyebrow}</motion.p>
-            <motion.h2 variants={item} id="descoberta-titulo" className="mt-3 text-balance font-display text-[32px] font-bold leading-[1.06] tracking-[-0.035em] sm:text-[44px] lg:text-[52px]">
+            <motion.p variants={item} className="text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent">{t.eyebrow}</motion.p>
+            <motion.h2 variants={item} id="descoberta-titulo" className="mt-3 text-balance font-display text-[34px] font-bold leading-[1.04] tracking-[-0.035em] text-[#070D2B] sm:text-[48px] lg:text-[60px]">
               {t.title[0]}
-              <span className="text-glow">{t.title[1]}</span>
+              <span className="text-accent">{t.title[1]}</span>
             </motion.h2>
-            <motion.p variants={item} className="mx-auto mt-4 max-w-[560px] text-[16.5px] leading-[1.6] text-white/70 sm:text-[18px]">{t.sub}</motion.p>
+            <motion.p variants={item} className="mx-auto mt-5 max-w-[560px] text-[16.5px] leading-[1.6] text-[#0B1030]/70 sm:text-[18px]">{t.sub}</motion.p>
           </div>
 
-          <motion.div variants={item} className="mt-10 grid grid-cols-[minmax(0,1fr)] items-center gap-8 lg:mt-14 lg:grid-cols-[minmax(0,0.34fr)_minmax(0,0.66fr)] lg:gap-12">
-            {/* Momentos editoriais */}
-            <div role="tablist" aria-label={t.nav} aria-orientation="vertical" className="grid grid-cols-3 gap-2 lg:grid-cols-1 lg:gap-1">
-              {t.steps.map((s, i) => {
-                const on = step === i
+          {/* Três capítulos ligados pela linha de luz */}
+          <div ref={wrap} className="relative mx-auto mt-12 max-w-[1080px] lg:mt-16">
+            {geo.d && (
+              <svg aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-visible" width={geo.w} height={geo.h} viewBox={`0 0 ${geo.w} ${geo.h}`}>
+                <path d={geo.d} fill="none" stroke="rgba(11,16,48,0.08)" strokeWidth="1.5" />
+                <motion.path
+                  d={geo.d}
+                  fill="none"
+                  stroke="#0052FF"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  style={{ pathLength: reduced ? 1 : draw, filter: 'drop-shadow(0 0 4px rgba(30,144,255,0.9)) drop-shadow(0 0 12px rgba(0,82,255,0.45))' }}
+                />
+              </svg>
+            )}
+
+            <ol className="relative space-y-14 sm:space-y-20 lg:space-y-0">
+              {chapters.map((c, i) => {
+                const lit = reached > i
+                const right = i % 2 === 1
                 return (
-                  <button
-                    key={s.k}
-                    ref={(el) => { refs.current[i] = el }}
-                    type="button"
-                    role="tab"
-                    id={`desc-tab-${i}`}
-                    aria-selected={on}
-                    aria-controls="desc-panel"
-                    tabIndex={on ? 0 : -1}
-                    onClick={() => setStep(i)}
-                    onKeyDown={(e) => onKey(e, i)}
-                    className="group relative flex flex-col items-start gap-1 rounded-xl py-3 pl-4 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-glow lg:flex-row lg:items-baseline lg:gap-5 lg:py-5 lg:pl-6"
-                  >
-                    <span aria-hidden="true" className="absolute bottom-3 left-0 top-3 w-px bg-white/10" />
-                    {on && <motion.span layoutId="desc-luz" transition={{ duration: 0.3, ease: EASE }} aria-hidden="true" className="absolute bottom-3 left-0 top-3 w-[2px] rounded-full bg-glow shadow-[0_0_12px_rgba(30,144,255,0.95)]" />}
-                    <span className={cn('font-display text-[26px] font-bold leading-none tabular-nums tracking-[-0.03em] transition-colors duration-300 lg:text-[44px]', on ? 'text-glow' : 'text-white/25 group-hover:text-white/45')}>0{i + 1}</span>
-                    <span className="min-w-0">
-                      <span className={cn('block font-display text-[15px] font-bold transition-colors duration-300 sm:text-[19px] lg:text-[21px]', on ? 'text-white' : 'text-white/55 group-hover:text-white/80')}>{s.k}</span>
-                      <span className={cn('mt-0.5 hidden text-[14px] transition-colors duration-300 sm:block', on ? 'text-white/70' : 'text-white/35 group-hover:text-white/55')}>{s.q}</span>
-                    </span>
-                  </button>
+                  <li key={c.key} className={cn('relative grid grid-cols-[28px_minmax(0,1fr)] gap-x-4 sm:gap-x-6 lg:grid-cols-2 lg:gap-x-16', i > 0 && 'lg:-mt-24')}>
+                    {/* Ponto da linha */}
+                    <span
+                      ref={(el) => { dots.current[i] = el }}
+                      aria-hidden="true"
+                      className={cn(
+                        'relative z-10 mt-3 h-3.5 w-3.5 justify-self-center rounded-full border-2 transition-all duration-500 lg:absolute lg:left-1/2 lg:top-3 lg:mt-0 lg:-translate-x-1/2',
+                        lit ? 'border-accent bg-white shadow-[0_0_0_6px_rgba(0,82,255,0.12),0_0_18px_rgba(30,144,255,0.9)]' : 'border-[#0B1030]/20 bg-white',
+                      )}
+                    />
+                    <motion.div
+                      className={cn('min-w-0 lg:col-span-1', right ? 'lg:col-start-2 lg:pl-4' : 'lg:col-start-1 lg:pr-4 lg:text-right')}
+                      initial={{ opacity: 0, y: 16 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, amount: 0.4 }}
+                      transition={{ duration: 0.5, ease: EASE }}
+                    >
+                      <p className={cn('flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.2em]', right ? '' : 'lg:justify-end', lit ? 'text-accent' : 'text-[#0B1030]/45')}>
+                        <span className="font-display text-[13px] font-bold tracking-[0.1em]">0{i + 1}</span>
+                        <span aria-hidden="true" className={cn('h-px w-6 transition-colors duration-500', lit ? 'bg-accent' : 'bg-[#0B1030]/20')} />
+                        {c.key}
+                      </p>
+                      <h3 className="mt-2 text-[17px] font-semibold text-[#0B1030]/70 sm:text-[19px]">{c.q}</h3>
+                      <MaskNumber className={cn('mt-3 font-display font-bold leading-none tracking-[-0.045em] tabular-nums', i === 2 ? 'text-[38px] sm:text-[56px] lg:text-[64px]' : i === 0 ? 'whitespace-nowrap text-[44px] sm:text-[68px] lg:text-[74px]' : 'text-[60px] sm:text-[92px] lg:text-[110px]', c.bigClass, 'leading-[0.98]')}>
+                        {c.big}
+                      </MaskNumber>
+                      <p className={cn('mt-3 text-[15px] font-semibold text-[#0B1030]/60 sm:text-[16px]')}>{c.caption}</p>
+                      <p className={cn('mt-4 max-w-[460px] text-[16px] leading-[1.6] text-[#0B1030]/80 sm:text-[17px]', right ? '' : 'lg:ml-auto')}>{c.text}</p>
+                      <p className={cn('mt-2 max-w-[460px] text-[13px] leading-snug text-[#0B1030]/50', right ? '' : 'lg:ml-auto')}>{c.meta}</p>
+                    </motion.div>
+                  </li>
                 )
               })}
-            </div>
+            </ol>
+          </div>
 
-            {/* Palco: montanha + painel Finer Advisor */}
-            <div className="min-w-0">
-              <div ref={stageRef} className="relative overflow-hidden rounded-[28px] shadow-[0_50px_100px_-50px_rgba(0,82,255,0.55)] ring-1 ring-white/10" style={{ aspectRatio: `${IMG_W} / ${VIEW_H}` }}>
-                <motion.div className="absolute inset-0" style={reduced ? undefined : { y: drift, scale: 1.06 }}>
-                  <img src="/images/mountain-line.jpg" alt="" aria-hidden="true" decoding="async" loading="lazy" className="absolute inset-0 h-full w-full select-none object-cover object-top" draggable={false} />
-                  {/* Linha de luz: desenha-se uma vez à entrada e acompanha o momento ativo */}
-                  <svg aria-hidden="true" viewBox={`0 0 ${IMG_W} ${VIEW_H}`} preserveAspectRatio="xMidYMin slice" className="absolute inset-0 h-full w-full">
-                    <motion.path
-                      d={LINE}
-                      fill="none"
-                      stroke="#7FC4FF"
-                      strokeWidth="5"
-                      strokeLinecap="round"
-                      style={{ filter: 'drop-shadow(0 0 8px rgba(30,144,255,0.95)) drop-shadow(0 0 18px rgba(0,82,255,0.7))' }}
-                      initial={{ pathLength: 0 }}
-                      animate={{ pathLength: seen || reduced ? REACH[step] : 0 }}
-                      transition={{ duration: seen ? 0.7 : 0, ease: EASE }}
-                    />
-                  </svg>
-                  {/* Marcadores nos três pontos da linha */}
-                  {POINTS.map((p, i) => {
-                    const on = step === i
-                    return (
-                      <button
-                        key={i}
-                        type="button"
-                        tabIndex={-1}
-                        aria-hidden="true"
-                        onClick={() => setStep(i)}
-                        className="group absolute flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center"
-                        style={{ left: `${(p.x / IMG_W) * 100}%`, top: `${(p.y / VIEW_H) * 100}%` }}
-                      >
-                        <span className={cn('rounded-full transition-all duration-300', on ? 'h-4 w-4 bg-white shadow-[0_0_0_6px_rgba(30,144,255,0.35),0_0_24px_rgba(30,144,255,1)]' : 'h-3 w-3 bg-white/80 shadow-[0_0_12px_rgba(30,144,255,0.8)] group-hover:h-3.5 group-hover:w-3.5')} />
-                        {on && (
-                          <motion.span key={`l-${i}`} className="absolute left-9 top-1/2 hidden -translate-y-1/2 whitespace-nowrap rounded-full bg-[#070D2B]/70 px-3 py-1 text-[12px] font-semibold text-white ring-1 ring-white/15 backdrop-blur-sm sm:block" initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.25, ease: EASE, delay: 0.25 }}>
-                            0{i + 1} · {t.steps[i].k}
-                          </motion.span>
-                        )}
-                      </button>
-                    )
-                  })}
-                </motion.div>
-                <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-[#070D2B] to-transparent" />
-              </div>
-
-              {/* Painel no estilo do Finer Advisor, com o céu da plataforma no topo */}
-              <div id="desc-panel" role="tabpanel" aria-labelledby={`desc-tab-${step}`} className="relative z-10 mx-3 -mt-16 overflow-hidden rounded-[20px] bg-white text-[#070D2B] shadow-[0_30px_70px_-30px_rgba(0,0,0,0.6)] -mt-8 sm:mx-6 sm:-mt-12 lg:ml-6 lg:mr-auto lg:-mt-14 lg:w-[82%]" data-desc-panel>
-                <div className="relative h-14 overflow-hidden">
-                  <img src="/images/finer-sky.webp" alt="" aria-hidden="true" decoding="async" className="absolute inset-0 h-full w-full object-cover object-top" />
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white/70" />
-                  <div className="relative flex h-full items-end justify-between gap-3 px-5 pb-2">
-                    <p className="whitespace-nowrap font-display text-[19px] font-bold tracking-[-0.02em]">Finer Advisor<span className="text-accent">.</span></p>
-                    <span className="mb-1 whitespace-nowrap rounded-full bg-white/80 px-2.5 py-0.5 text-[11px] font-semibold text-[#0B1030]/60"><span className="sm:hidden">{t.noteShort}</span><span className="hidden sm:inline">{t.note}</span></span>
-                  </div>
-                </div>
-                <div className="grid min-h-[340px] px-5 pb-5 pt-4 sm:min-h-[326px]">
-                  <AnimatePresence mode="wait" initial={false}>
-                    <motion.div
-                      key={step}
-                      className="col-start-1 row-start-1 min-w-0"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0, transition: { duration: 0.28, ease: EASE } }}
-                      exit={{ opacity: 0, y: -5, transition: { duration: 0.16 } }}
-                    >
-                      <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-accent">0{step + 1} · {t.steps[step].q}</p>
-                      {step === 0 && <Understand t={t} />}
-                      {step === 1 && <Anticipate t={t} lang={lang} />}
-                      {step === 2 && <Decide t={t} lang={lang} />}
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Os quatro temas, numa linha editorial sobre o navy */}
-          <motion.div variants={item} className="mx-auto mt-12 max-w-[900px] border-t border-white/10 pt-6 lg:mt-14">
-            <p className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[12.5px] font-semibold uppercase tracking-[0.2em] text-white/45">
-              <span className="text-white/30">{t.pillarsLabel}</span>
+          {/* Os quatro temas e a indicação de dados fictícios */}
+          <motion.div variants={item} className="mx-auto mt-16 max-w-[900px] border-t border-[#0B1030]/10 pt-6 lg:mt-20">
+            <p className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[12.5px] font-semibold uppercase tracking-[0.2em] text-[#0B1030]/45">
+              <span>{t.pillarsLabel}</span>
               {t.pillars.map((p, i) => (
-                <span key={p} className="inline-flex items-center gap-2 text-white/80">
-                  <span className="text-glow">0{i + 1}</span>
+                <span key={p} className="inline-flex items-center gap-2 text-[#070D2B]">
+                  <span className="text-accent">0{i + 1}</span>
                   {p}
                 </span>
               ))}
             </p>
+            <p className="mt-3 text-center text-[12px] text-[#0B1030]/45">{t.note}</p>
           </motion.div>
         </motion.div>
       </section>
     </MotionConfig>
-  )
-}
-
-type Copy = ReturnType<typeof getCopy>
-
-/* 01 · Compreender — a situação, num relance */
-function Understand({ t }: { t: Copy }) {
-  const [value, label] = t.understand.kpis[0]
-  return (
-    <div className="mt-3">
-      <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <span className="font-display text-[42px] font-bold leading-none tracking-[-0.04em] tabular-nums sm:text-[52px]">{value}</span>
-        <span className="text-[14px] font-semibold text-[#0B1030]/60">{label.toLowerCase()} · <span className="text-accent">{t.understand.kpis[1][0]} {t.understand.kpis[1][1].toLowerCase()}</span></span>
-      </p>
-      <p className="mt-3 text-[16px] leading-[1.55] text-[#0B1030]/80">{t.understand.text}</p>
-      <p className="mt-1 text-[13.5px] text-[#0B1030]/55">{t.understand.meta}</p>
-    </div>
-  )
-}
-
-/* 02 · Antecipar — da apresentação à interpretação, com evidências */
-function Anticipate({ t, lang }: { t: Copy; lang: Lang }) {
-  const a = t.anticipate
-  const main = a.rows[0]
-  const other = a.rows[1]
-  return (
-    <div className="mt-3">
-      <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <span className="font-display text-[42px] font-bold leading-none tracking-[-0.04em] text-accent tabular-nums sm:text-[52px]">{a.share}</span>
-        <span className="text-[14px] font-semibold text-[#0B1030]/65">{a.shareText}</span>
-      </p>
-      {/* Uma só barra: o peso do Cliente A face aos outros */}
-      <div className="mt-3 flex h-2 overflow-hidden rounded-full bg-[#0B1030]/[0.08]">
-        <motion.span className="h-full origin-left rounded-full bg-accent" style={{ width: `${(main.value / TOTAL_OVERDUE) * 100}%` }} initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 0.5, ease: EASE, delay: 0.1 }} />
-      </div>
-      <p className="mt-2 flex flex-wrap justify-between gap-x-4 text-[13px] text-[#0B1030]/65">
-        <span><strong className="text-[#070D2B]">{main.label}</strong> {eur(main.value, lang)} · {main.meta}</span>
-        <span>{other.label} {eur(other.value, lang)}</span>
-      </p>
-      <p className="mt-3 text-[14.5px] leading-[1.55] text-[#0B1030]/80">{a.text}</p>
-      <p className="mt-2 text-[13.5px] text-[#0B1030]/60">{a.commitments}: <strong className="tabular-nums text-[#070D2B]">{eur(COMMITMENTS_TOTAL, lang)}</strong></p>
-    </div>
-  )
-}
-
-/* 03 · Decidir — recomendação explicável, no estilo do Finer Advisor */
-function Decide({ t, lang }: { t: Copy; lang: Lang }) {
-  const d = t.decide
-  return (
-    <div className="mt-3">
-      <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#0B1030]/55">
-        <Lightbulb className="h-3.5 w-3.5 text-accent" aria-hidden="true" />
-        {d.badge}
-      </p>
-      <p className="mt-1.5 font-display text-[20px] font-bold leading-snug tracking-[-0.015em] sm:text-[22px]">{d.title}</p>
-      <p className="mt-1 text-[14px] leading-[1.5] text-[#0B1030]/70">{d.text}</p>
-      <ol className="mt-2 divide-y divide-[#0B1030]/[0.07]">
-        {d.list.map((r, i) => (
-          <li key={r.label} className="flex items-center gap-3 py-1.5">
-            <span className={cn('flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold', i === 0 ? 'bg-accent text-white' : 'bg-[#EEF3FF] text-accent')}>{r.n}</span>
-            <span className="min-w-0 flex-1">
-              <span className="text-[14.5px] font-semibold">{r.label}</span>
-              <span className="ml-2 text-[12.5px] text-[#0B1030]/55">{r.detail}</span>
-            </span>
-            <span className="text-[15px] font-bold tabular-nums">{eur(r.value, lang)}</span>
-          </li>
-        ))}
-      </ol>
-      <p className="mt-2 text-[12px] leading-snug text-[#0B1030]/50">{d.source}</p>
-    </div>
   )
 }
