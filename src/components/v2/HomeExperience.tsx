@@ -126,7 +126,7 @@ export function HomeExperience() {
         className="relative z-20 -mt-4 scroll-mt-20 bg-white text-navy shadow-[0_-30px_80px_-40px_rgba(0,82,255,0.45)] sm:-mt-6"
       >
         <motion.div
-          className="mx-auto grid max-w-content grid-cols-[minmax(0,1fr)] items-center gap-9 px-5 pb-12 pt-14 sm:px-6 lg:grid-cols-[minmax(0,0.84fr)_minmax(0,1.16fr)] lg:gap-12 lg:px-8 lg:py-[76px]"
+          className="mx-auto grid max-w-content grid-cols-[minmax(0,1fr)] items-center gap-9 px-5 pb-8 pt-14 sm:px-6 lg:grid-cols-[minmax(0,0.84fr)_minmax(0,1.16fr)] lg:gap-12 lg:px-8 lg:pb-10 lg:pt-[76px]"
           variants={group}
           initial="hidden"
           whileInView="show"

@@ -199,7 +199,7 @@ export function FinancialDiscovery() {
           <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-[#F8FAFF]" />
         </div>
 
-        <motion.div className="mx-auto max-w-content px-5 pb-12 pt-14 sm:px-6 lg:px-8 lg:pb-14 lg:pt-20" variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.1 }}>
+        <motion.div className="mx-auto max-w-content px-5 pb-12 pt-8 sm:px-6 lg:px-8 lg:pb-14 lg:pt-10" variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.1 }}>
           {/* Cabeçalho */}
           <div className="mx-auto max-w-[820px] text-center">
             <motion.p variants={item} className="text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">{t.eyebrow}</motion.p>
