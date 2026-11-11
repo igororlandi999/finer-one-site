@@ -11,6 +11,7 @@ import { ClarityMotion } from '@/components/v2/story/ClarityMotion'
 import { PillarsScrolly } from '@/components/v2/PillarsScrolly'
 import { ProductTour } from '@/components/v2/ProductTour'
 import { CinematicBand } from '@/components/v2/CinematicBand'
+import { PlatformShowcase } from '@/components/v2/PlatformShowcase'
 import { Benefits } from '@/components/v2/Benefits'
 import { BenefitsStrip } from '@/components/v2/BenefitsStrip'
 import { BenefitsCards } from '@/components/v2/BenefitsCards'
@@ -69,8 +70,10 @@ export default function App() {
           {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('tour') === 'sim' && <ProductTour />}
           {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'antigo' ? <Benefits /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'cartoes' ? <BenefitsCards /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'faixa' ? <BenefitsStrip /> : <BenefitsMotion />}
           {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'antigo' ? <HowItWorks /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'v2' ? <HowItWorksMotion /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'v3' ? <HowItWorksDemoV1 /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'v4' ? <HowItWorksDemoV2 /> : <HowItWorksDemo />}
+          <PlatformShowcase />
         </div>
-        <CinematicBand />
+        {/* Banda cinematográfica retirada (pedido do fundador, 11/11/2026). Versão anterior em ?banda=sim */}
+        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('banda') === 'sim' && <CinematicBand />}
         <Security />
         <PricingSection />
         <EarlyAccess />

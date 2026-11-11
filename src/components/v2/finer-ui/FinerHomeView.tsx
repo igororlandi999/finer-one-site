@@ -17,12 +17,14 @@ type Props = {
    * até ao carácter indicado, controladas pelo fotograma. Ignora o estado interno.
    */
   script?: { question: string; typedQ: number; answer: string; typedA: number; reveal?: number }
+  /** Conteúdo alternativo (ex.: montra de funcionalidades), com a mesma forma. */
+  data?: ReturnType<typeof getUiData>['home']
 }
 
 /** Finer Home recriada a partir da captura real, com dados fictícios. */
-export function FinerHomeView({ interactive = true, onOpenAdvisor, showAsk = true, script }: Props) {
+export function FinerHomeView({ interactive = true, onOpenAdvisor, showAsk = true, script, data }: Props) {
   const { lang } = useLanguage()
-  const { home } = getUiData(lang)
+  const home = data ?? getUiData(lang).home
   const reduced = usePrefersReducedMotion()
   const [selected, setSelected] = useState<number | null>(null)
   const [typed, setTyped] = useState(0)

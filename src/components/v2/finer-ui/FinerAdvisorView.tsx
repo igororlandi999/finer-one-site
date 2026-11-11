@@ -14,9 +14,11 @@ import type { AdvisorAction } from './data'
  */
 export type AdvisorDemo = { shows: number; recs: number; focus: number }
 
-export function FinerAdvisorView({ demo }: { demo?: AdvisorDemo } = {}) {
+/** actionIds limita as recomendações mostradas (ex.: montra de funcionalidades). */
+export function FinerAdvisorView({ demo, actionIds }: { demo?: AdvisorDemo; actionIds?: string[] } = {}) {
   const { lang } = useLanguage()
-  const { advisor } = getUiData(lang)
+  const base = getUiData(lang).advisor
+  const advisor = actionIds ? { ...base, actions: base.actions.filter((a) => actionIds.includes(a.id)) } : base
   const [selectedId, setSelectedId] = useState(advisor.actions[0].id)
   const [recalc, setRecalc] = useState<'idle' | 'busy' | 'done'>('idle')
   const timer = useRef<number | undefined>(undefined)
