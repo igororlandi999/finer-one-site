@@ -1,5 +1,5 @@
-import { useRef } from 'react'
-import { MotionConfig, motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
+import { useLayoutEffect, useRef, useState } from 'react'
+import { MotionConfig, motion, useReducedMotion, useScroll, useSpring, useTransform } from 'motion/react'
 import type { MotionValue, Variants } from 'motion/react'
 import { ArrowRight } from 'lucide-react'
 import { useLanguage } from '@/i18n/LanguageContext'
@@ -121,7 +121,18 @@ export function PlansSection() {
   const wide = typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches
   const reduced = reducedPref || !wide
   const grid = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ target: grid, offset: ['start end', 'end start'] })
+  const { scrollYProgress } = useScroll({ target: grid, offset: ['start 0.72', 'start 0.18'] })
+  const deal = useSpring(scrollYProgress, { stiffness: 120, damping: 26, mass: 0.6 })
+  // Distância entre colunas (largura do cartão + espaço), medida no ecrã
+  const [step, setStep] = useState(400)
+  useLayoutEffect(() => {
+    const el = grid.current
+    if (!el) return
+    const ro = new ResizeObserver(() => setStep((el.clientWidth - 40) / 3 + 20))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+  const line = useTransform(deal, [0.82, 1], [0, 1])
 
   return (
     <MotionConfig reducedMotion="user">
@@ -139,9 +150,13 @@ export function PlansSection() {
             <motion.p variants={rise} className="mx-auto mt-5 max-w-[560px] text-[16.5px] leading-[1.6] text-[#0B1030]/65 sm:text-[18px]">{t.sub}</motion.p>
           </motion.div>
 
-          <div ref={grid} className="mt-14 grid items-stretch gap-x-5 gap-y-12 lg:mt-16 lg:grid-cols-3">
+          <div ref={grid} className="relative mt-14 grid items-stretch gap-x-5 gap-y-12 lg:mt-16 lg:grid-cols-3">
+            {/* Linha da marca que liga as etiquetas do Plus ao Team quando o baralho se abre */}
+            {!reduced && (
+              <motion.span aria-hidden="true" className="absolute left-[16.6%] right-[16.6%] top-0 z-0 hidden h-px origin-left bg-accent-deep lg:block" style={{ scaleX: line }} />
+            )}
             {t.plans.map((p, i) => (
-              <PlanCard key={p.id} p={p} i={i} t={t} progress={scrollYProgress} reduced={reduced} />
+              <PlanCard key={p.id} p={p} i={i} t={t} deal={deal} step={step} reduced={reduced} />
             ))}
           </div>
 
@@ -158,15 +173,19 @@ const TAB: Record<Plan['id'], string> = {
   team: 'bg-[#070D2B] text-white',
 }
 
-function PlanCard({ p, i, t, progress, reduced }: { p: Plan; i: number; t: (typeof copy)['pt']; progress: MotionValue<number>; reduced: boolean }) {
+function PlanCard({ p, i, t, deal, step, reduced }: { p: Plan; i: number; t: (typeof copy)['pt']; deal: MotionValue<number>; step: number; reduced: boolean }) {
   const plus = p.id === 'plus'
-  // Parallax suave: os planos em desenvolvimento "assentam" um pouco depois do Plus
-  const y = useTransform(progress, [0, 0.45], reduced ? [0, 0] : [plus ? 20 : 50 + i * 16, 0])
+  // Baralho: o Plus começa ao centro, à frente; o Pro e o Team por trás, ligeiramente rodados.
+  const from = i === 0 ? step : i === 2 ? -step : 0
+  const x = useTransform(deal, [0, 1], reduced ? [0, 0] : [from, 0])
+  const rotate = useTransform(deal, [0, 1], reduced ? [0, 0] : [i === 0 ? 0 : i === 1 ? 4 : -4, 0])
+  const scale = useTransform(deal, [0, 1], reduced ? [1, 1] : [i === 0 ? 1 : 0.94, 1])
+  const y = useTransform(deal, [0, 1], reduced ? [0, 0] : [i === 0 ? 0 : 14, 0])
   const list: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.06, delayChildren: 0.4 } } }
   const li: Variants = { hidden: { opacity: 0, y: 6 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } } }
 
   return (
-    <motion.div style={{ y }} className="h-full">
+    <motion.div style={{ x, y, rotate, scale, zIndex: 30 - i * 10 }} className="relative h-full">
       <motion.article
         className={cn(
           'relative flex h-full flex-col rounded-[20px] bg-white px-6 pb-7 pt-10 sm:px-8',
