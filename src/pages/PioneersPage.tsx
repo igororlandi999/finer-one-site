@@ -60,6 +60,8 @@ const copy = {
     review: 'A sua candidatura',
     name: 'Nome',
     company: 'Empresa',
+    namePh: 'O seu nome',
+    companyPh: 'Nome da empresa',
     sector: 'Setor de atividade',
     sectorPlaceholder: 'Selecione o setor',
     sectors: ['Agência / consultoria', 'Comércio', 'Construção', 'E-commerce', 'Indústria', 'Recrutamento / trabalho temporário', 'Restauração e hotelaria', 'Saúde', 'Serviços profissionais', 'Tecnologia', 'Transportes e logística', 'Outro'],
@@ -128,6 +130,8 @@ const copy = {
     review: 'Your application',
     name: 'Name',
     company: 'Company',
+    namePh: 'Your name',
+    companyPh: 'Company name',
     sector: 'Industry',
     sectorPlaceholder: 'Select the industry',
     sectors: ['Agency / consulting', 'Retail', 'Construction', 'E-commerce', 'Manufacturing', 'Staffing / recruitment', 'Hospitality', 'Health', 'Professional services', 'Technology', 'Transport and logistics', 'Other'],
@@ -187,7 +191,7 @@ function PioneersStory() {
       <section className="bg-white pt-[72px] text-navy">
         <div className="mx-auto grid max-w-[1440px] gap-4 px-3 pb-3 sm:px-4 sm:pb-4 lg:min-h-[calc(100svh-72px)] lg:grid-cols-2">
           <motion.div variants={group} initial="hidden" animate="show" className="flex flex-col justify-center px-3 py-12 sm:px-8 lg:px-14 xl:px-24">
-            <motion.p variants={rise} className="inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-accent-deep">
+            <motion.p variants={rise} className="inline-flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.24em] text-accent-deep">
               <span aria-hidden="true" className="h-px w-8 bg-accent-deep/60" />
               {t.kicker}
             </motion.p>
@@ -206,7 +210,7 @@ function PioneersStory() {
 
       {/* 2 · O programa, em claro (alternância escuro/claro da identidade) */}
       <section aria-labelledby="pio-programa" className="bg-white text-navy">
-        <motion.div variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.15 }} className="mx-auto max-w-content px-5 py-20 sm:px-6 lg:px-8 lg:py-28">
+        <motion.div variants={group} initial="hidden" whileInView="show" viewport={{ once: true, margin: '0px 0px -12% 0px' }} className="mx-auto max-w-content px-5 py-20 sm:px-6 lg:px-8 lg:py-28">
           <div className="grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-20">
             <div>
               <motion.p variants={rise} className="inline-flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">
@@ -466,7 +470,7 @@ function ApplicationCard({ t }: { t: T }) {
                     {step === 0 && (
                       <>
                         <Field id="pio-name" label={t.name} error={errors.name}>
-                          <TextInput className="rounded-full px-5" id="pio-name" autoComplete="name" maxLength={100} value={values.name} onChange={(e) => set('name')(e.target.value)} error={errors.name} />
+                          <TextInput className="rounded-full px-5" id="pio-name" autoComplete="name" maxLength={100} placeholder={t.namePh} value={values.name} onChange={(e) => set('name')(e.target.value)} error={errors.name} />
                         </Field>
                         <Field id="pio-email" label={t.email} error={errors.email}>
                           <TextInput className="rounded-full px-5" id="pio-email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder="nome@empresa.pt" value={values.email} onChange={(e) => set('email')(e.target.value)} error={errors.email} />
@@ -476,7 +480,7 @@ function ApplicationCard({ t }: { t: T }) {
                     {step === 1 && (
                       <>
                         <Field id="pio-company" label={t.company} error={errors.company}>
-                          <TextInput className="rounded-full px-5" id="pio-company" autoComplete="organization" maxLength={120} value={values.company} onChange={(e) => set('company')(e.target.value)} error={errors.company} />
+                          <TextInput className="rounded-full px-5" id="pio-company" autoComplete="organization" maxLength={120} placeholder={t.companyPh} value={values.company} onChange={(e) => set('company')(e.target.value)} error={errors.company} />
                         </Field>
                         <Field id="pio-sector" label={t.sector} error={errors.sector}>
                           <SelectInput className="rounded-full px-5" id="pio-sector" value={values.sector} onChange={(e) => set('sector')(e.target.value)} error={errors.sector}>

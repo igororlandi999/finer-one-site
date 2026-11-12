@@ -56,7 +56,7 @@ const secondaryBtn = buttonClasses({
 function Title({ t, center }: { t: T; center?: boolean }) {
   return (
     <>
-      <motion.p variants={rise} className={cn('inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#7CB8FF] sm:tracking-[0.3em]', center && 'justify-center')}>
+      <motion.p variants={rise} className={cn('inline-flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[#7CB8FF] sm:tracking-[0.3em]', center && 'justify-center')}>
         <span aria-hidden="true" className="hidden h-px w-8 bg-gradient-to-r from-transparent to-glow sm:block" />
         {t.eyebrow}
         {center && <span aria-hidden="true" className="hidden h-px w-8 bg-gradient-to-l from-transparent to-glow sm:block" />}

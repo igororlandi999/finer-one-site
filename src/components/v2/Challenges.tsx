@@ -99,7 +99,7 @@ export function Challenges() {
           {/* Cabeçalho editorial: título à esquerda, contexto à direita */}
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-end lg:gap-16">
             <div className={cn(on ? 'animate-fade-up' : 'opacity-0')}>
-              <p className="inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent">
+              <p className="inline-flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.28em] text-accent">
                 <span aria-hidden="true" className="h-px w-8 bg-gradient-to-r from-transparent to-accent" />
                 {t.eyebrow}
               </p>

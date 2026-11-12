@@ -9,13 +9,13 @@ import { cn } from '@/lib/utils'
  * Visual (12/11/2026) à maneira das páginas legais da Ramp (índice fixo ao lado,
  * secções numeradas, leitura confortável), da Searchable (bloco "como nos contactar"
  * e identificação da empresa) e da Lovable (página branca e sóbria, datas no topo).
- * Texto apenas em português até validação jurídica. Os elementos entre
+ * Versão inglesa traduzida do rascunho (a portuguesa prevalece). Os elementos entre
  * [colchetes] têm de ser confirmados pelos fundadores antes de publicar.
  */
 const CONTACT = 'geral.finerone@gmail.com'
 
 type Section = { id: string; title: string; body: (string | string[])[] }
-const sections: Section[] = [
+const sectionsPt: Section[] = [
   {
     id: 'responsavel',
     title: 'Quem é o responsável pelos dados',
@@ -25,7 +25,7 @@ const sections: Section[] = [
     id: 'dados',
     title: 'Que dados recolhemos',
     body: [
-      'Recolhemos apenas o que nos indica nos formulários do site:',
+      'Apenas o que nos indica nos formulários do site:',
       [
         'Lista de espera: nome, email, dimensão da empresa e os temas que quer acompanhar.',
         'Finer Pioneers: nome, empresa, setor de atividade, email profissional e a descrição do principal desafio financeiro que decidir partilhar.',
@@ -69,11 +69,77 @@ const sections: Section[] = [
   },
 ]
 
+const sectionsEn: Section[] = [
+  { id: 'responsavel', title: 'Who is responsible for your data', body: [`Finer One [legal name, tax number and address to be confirmed]. For any privacy question, write to ${CONTACT}.`] },
+  {
+    id: 'dados',
+    title: 'What data we collect',
+    body: [
+      'Only what you give us in the website forms:',
+      [
+        'Waitlist: name, email, company size and the topics you want to follow.',
+        'Finer Pioneers: name, company, industry, work email and the description of the main financial challenge you choose to share.',
+      ],
+      'We also record the submission date and the version of this notice you accepted. We do not ask for bank details or company documents in these forms.',
+    ],
+  },
+  {
+    id: 'finalidades',
+    title: 'What we use the data for',
+    body: [
+      ['Waitlist: sending you news about Finer One and about access to the platform.', 'Finer Pioneers: assessing your application and contacting you about the programme.'],
+      'We do not sell or pass your data to third parties for marketing purposes.',
+    ],
+  },
+  { id: 'fundamento', title: 'Legal basis', body: ['Processing is based on your consent, which you can withdraw at any time, without affecting processing carried out until then.'] },
+  { id: 'onde', title: 'Where the data is kept', body: ['The data is stored [in the service chosen by Finer One — to be confirmed], with access restricted to the Finer One team.'] },
+  { id: 'prazo', title: 'How long we keep it', body: ['We keep the data while the programme or the waitlist is active, or until you withdraw your consent [maximum period to be confirmed].'] },
+  {
+    id: 'direitos',
+    title: 'Your rights',
+    body: [
+      `You can ask to access, correct, erase, restrict or port your data, and object to its processing, by writing to ${CONTACT}.`,
+      'You also have the right to lodge a complaint with the Portuguese data protection authority (CNPD).',
+    ],
+  },
+]
+
+const ui = {
+  pt: {
+    title: ['Aviso de ', 'privacidade'],
+    sub: 'Como tratamos os dados que nos envia nos formulários da Lista de espera e do programa Finer Pioneers.',
+    status: 'Estado', statusValue: 'Rascunho em revisão',
+    updated: 'Última atualização', updatedValue: '[data a confirmar na publicação]',
+    applies: 'Aplica-se a', appliesValue: 'Formulários do site finer-one.com',
+    note: '',
+    toc: 'Nesta página',
+    summaryLead: 'Em resumo:',
+    summary: 'pedimos só o necessário para o manter informado ou avaliar a sua candidatura, não vendemos os seus dados e pode pedir para os apagar a qualquer momento.',
+    contactTitle: ['Tem alguma questão sobre ', 'os seus dados?'],
+    contactText: 'Escreva-nos para pedir acesso, correção ou eliminação. Respondemos dentro dos prazos previstos na lei.',
+  },
+  en: {
+    title: ['Privacy ', 'notice'],
+    sub: 'How we handle the data you send us through the Waitlist and Finer Pioneers forms.',
+    status: 'Status', statusValue: 'Draft under review',
+    updated: 'Last updated', updatedValue: '[date to be confirmed on publication]',
+    applies: 'Applies to', appliesValue: 'Forms on finer-one.com',
+    note: 'Translation of the Portuguese draft. In case of doubt, the Portuguese version prevails.',
+    toc: 'On this page',
+    summaryLead: 'In short:',
+    summary: 'we only ask for what we need to keep you informed or assess your application, we do not sell your data and you can ask us to delete it at any time.',
+    contactTitle: ['Any questions about ', 'your data?'],
+    contactText: 'Write to us to request access, correction or deletion. We reply within the time limits set by law.',
+  },
+}
+
 const EASE = [0.22, 1, 0.36, 1] as const
 
 export function PrivacyPage() {
   const { lang } = useLanguage()
-  const active = useActiveSection(sections.map((s) => s.id))
+  const sections = lang === 'en' ? sectionsEn : sectionsPt
+  const t = ui[lang]
+  const active = useActiveSection(sectionsPt.map((s) => s.id))
 
   return (
     <MotionConfig reducedMotion="user">
@@ -86,31 +152,29 @@ export function PrivacyPage() {
               Legal
             </p>
             <h1 id="priv-titulo" className="mt-6 font-display text-[40px] font-bold leading-[1.02] tracking-[-0.04em] text-[#070D2B] sm:text-[56px] lg:text-[64px]">
-              Aviso de <span className="text-accent-deep">privacidade</span>
+              {t.title[0]}<span className="text-accent-deep">{t.title[1]}</span>
             </h1>
             <p className="mt-5 max-w-[620px] text-[17px] leading-[1.6] text-[#0B1030]/65">
-              Como tratamos os dados que nos envia nos formulários da Lista de espera e do programa Finer Pioneers.
+              {t.sub}
             </p>
             <dl className="mt-8 flex flex-wrap gap-x-10 gap-y-3 text-[13.5px]">
               <div>
-                <dt className="text-[#0B1030]/45">Estado</dt>
+                <dt className="text-[#0B1030]/45">{t.status}</dt>
                 <dd className="mt-1 inline-flex items-center gap-2 font-semibold text-[#070D2B]">
                   <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-signal" />
-                  Rascunho em revisão
+                  {t.statusValue}
                 </dd>
               </div>
               <div>
-                <dt className="text-[#0B1030]/45">Última atualização</dt>
-                <dd className="mt-1 font-semibold text-[#070D2B]">[data a confirmar na publicação]</dd>
+                <dt className="text-[#0B1030]/45">{t.updated}</dt>
+                <dd className="mt-1 font-semibold text-[#070D2B]">{t.updatedValue}</dd>
               </div>
               <div>
-                <dt className="text-[#0B1030]/45">Aplica-se a</dt>
-                <dd className="mt-1 font-semibold text-[#070D2B]">Formulários do site finer-one.com</dd>
+                <dt className="text-[#0B1030]/45">{t.applies}</dt>
+                <dd className="mt-1 font-semibold text-[#070D2B]">{t.appliesValue}</dd>
               </div>
             </dl>
-            {lang === 'en' && (
-              <p className="mt-6 text-[13.5px] text-[#0B1030]/55">This notice is available in Portuguese only while it is under legal review.</p>
-            )}
+            {t.note && <p className="mt-6 text-[13.5px] text-[#0B1030]/55">{t.note}</p>}
           </motion.div>
 
           <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-20">
@@ -118,7 +182,7 @@ export function PrivacyPage() {
             <div className="max-w-[700px]">
               <details className="group mb-6 rounded-2xl border border-[#0B1030]/[0.08] lg:hidden">
                 <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 text-[14px] font-semibold text-[#070D2B] [&::-webkit-details-marker]:hidden">
-                  Nesta página
+                  {t.toc}
                   <ChevronDown className="h-4 w-4 transition-transform duration-300 group-open:rotate-180" aria-hidden="true" />
                 </summary>
                 <ol className="border-t border-[#0B1030]/[0.08] px-5 py-3">
@@ -133,8 +197,7 @@ export function PrivacyPage() {
                 </ol>
               </details>
               <p role="note" className="rounded-2xl border border-[#0B1030]/[0.08] bg-[#F7F9FE] p-5 text-[14.5px] leading-[1.65] text-[#0B1030]/75">
-                <strong className="font-semibold text-[#070D2B]">Em resumo:</strong> pedimos só o necessário para o manter informado ou avaliar a sua
-                candidatura, não vendemos os seus dados e pode pedir para os apagar a qualquer momento.
+                <strong className="font-semibold text-[#070D2B]">{t.summaryLead}</strong> {t.summary}
               </p>
 
               <div className="mt-2 space-y-4">
@@ -169,10 +232,10 @@ export function PrivacyPage() {
                 <img src="/images/sobre-linha.webp" alt="" aria-hidden="true" className="absolute inset-x-0 bottom-[-6%] h-[50%] w-full object-cover object-[80%_50%] opacity-70 mix-blend-screen" style={{ maskImage: 'linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent)' }} />
                 <div className="relative">
                   <p className="font-display text-[24px] font-bold tracking-[-0.02em]">
-                    Tem alguma questão sobre <span className="text-[#3D86FF]">os seus dados?</span>
+                    {t.contactTitle[0]}<span className="text-[#3D86FF]">{t.contactTitle[1]}</span>
                   </p>
                   <p className="mt-3 max-w-[480px] text-[15px] leading-[1.6] text-white/70">
-                    Escreva-nos para pedir acesso, correção ou eliminação. Respondemos dentro dos prazos previstos na lei.
+                    {t.contactText}
                   </p>
                   <a
                     href={`mailto:${CONTACT}`}
@@ -187,9 +250,9 @@ export function PrivacyPage() {
             </div>
 
             {/* Índice fixo (como na Ramp) */}
-            <nav aria-label="Nesta página" className="hidden lg:block">
+            <nav aria-label={t.toc} className="hidden lg:block">
               <div className="sticky top-28">
-                <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#0B1030]/45">Nesta página</p>
+                <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#0B1030]/45">{t.toc}</p>
                 <ol className="relative mt-5 border-l border-[#0B1030]/10">
                   {sections.map((s, i) => (
                     <li key={s.id}>

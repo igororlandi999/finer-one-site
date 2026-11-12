@@ -29,6 +29,7 @@ const copy = {
     qTitles: ['Comecemos por si.', 'Qual é a dimensão da sua empresa?', 'O que gostaria de acompanhar melhor?'],
     qHints: ['', 'Escolha uma opção.', 'Escolha uma ou mais opções.'],
     name: 'Nome',
+    namePh: 'O seu nome',
     email: 'Email profissional',
     sizes: ['Só eu', '2 a 9 pessoas', '10 a 49 pessoas', '50 a 249 pessoas', '250 ou mais'],
     interests: ['Tesouraria', 'Recebimentos', 'Custos e despesas', 'Previsões', 'Tudo num só lugar'],
@@ -70,6 +71,7 @@ const copy = {
     qTitles: ['Let’s start with you.', 'How big is your company?', 'What would you like to keep a closer eye on?'],
     qHints: ['', 'Choose one option.', 'Choose one or more options.'],
     name: 'Name',
+    namePh: 'Your name',
     email: 'Work email',
     sizes: ['Just me', '2 to 9 people', '10 to 49 people', '50 to 249 people', '250 or more'],
     interests: ['Cash position', 'Receivables', 'Costs and expenses', 'Forecasts', 'Everything in one place'],
@@ -307,7 +309,7 @@ function SignupBox({ t }: { t: T }) {
 
                   {step === 0 && (
                     <div className="mt-1 grid gap-1 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)_auto] sm:items-center">
-                      {field('name', t.name, <input id="wl-name" name="wl-name" autoComplete="name" maxLength={100} value={name} aria-invalid={errors.name ? true : undefined} aria-describedby={errors.name ? 'wl-name-error' : undefined} onChange={(e) => { setName(e.target.value); setErrors((x) => ({ ...x, name: undefined, form: undefined })) }} className={inputCls} />)}
+                      {field('name', t.name, <input id="wl-name" name="wl-name" autoComplete="name" maxLength={100} placeholder={t.namePh} value={name} aria-invalid={errors.name ? true : undefined} aria-describedby={errors.name ? 'wl-name-error' : undefined} onChange={(e) => { setName(e.target.value); setErrors((x) => ({ ...x, name: undefined, form: undefined })) }} className={inputCls} />)}
                       {field('email', t.email, <input id="wl-email" name="wl-email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder="nome@empresa.pt" value={email} aria-invalid={errors.email ? true : undefined} aria-describedby={errors.email ? 'wl-email-error' : undefined} onChange={(e) => { setEmail(e.target.value); setErrors((x) => ({ ...x, email: undefined, form: undefined })) }} className={inputCls} />)}
                       <button type="submit" className="group m-1 inline-flex h-14 items-center justify-center gap-2 whitespace-nowrap rounded-[20px] bg-[#070D2B] px-6 text-[15px] font-semibold text-white shadow-[0_12px_30px_-12px_rgba(7,13,43,0.8)] transition-colors hover:bg-[#0E1A4D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2">
                         {t.next}
@@ -475,7 +477,7 @@ function Choice({ t }: { t: T }) {
   }
   return (
     <section aria-labelledby="wl-choice" className="bg-white px-4 pb-24 pt-10 text-navy sm:pb-28">
-      <motion.div variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }} className="mx-auto max-w-[1000px]">
+      <motion.div variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.15 }} className="mx-auto max-w-[1000px]">
         <div className="text-center">
           <motion.p variants={rise} className="inline-flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">
             <span aria-hidden="true" className="h-px w-8 bg-accent-deep/60" />

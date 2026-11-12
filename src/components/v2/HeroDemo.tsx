@@ -76,7 +76,7 @@ export function HeroDemo() {
       <div className="mx-auto grid w-full max-w-[1280px] grid-cols-[minmax(0,1fr)] items-center gap-14 px-6 sm:px-10 lg:grid-cols-[minmax(0,0.96fr)_minmax(0,1.14fr)] lg:gap-14 lg:px-12 xl:gap-[76px] xl:px-14">
         {/* Mensagem */}
         <div className="max-w-[580px]">
-          <p className="inline-flex animate-fade-up items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#7CB8FF] sm:tracking-[0.3em]">
+          <p className="inline-flex animate-fade-up items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.2em] text-[#7CB8FF] sm:tracking-[0.3em]">
             <span className="h-px w-8 bg-gradient-to-r from-transparent to-glow" aria-hidden="true" />
             {t.eyebrow}
           </p>

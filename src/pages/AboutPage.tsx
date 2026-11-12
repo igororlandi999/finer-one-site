@@ -97,7 +97,7 @@ type T = (typeof copy)['pt']
 const EASE = [0.22, 1, 0.36, 1] as const
 const group: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.09 } } }
 const rise: Variants = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE } } }
-const inView = { initial: 'hidden', whileInView: 'show', viewport: { once: true, amount: 0.25 } } as const
+const inView = { initial: 'hidden', whileInView: 'show', viewport: { once: true, margin: '0px 0px -12% 0px' } } as const
 
 const Eyebrow = ({ children, center }: { children: string; center?: boolean }) => (
   <motion.p variants={rise} className={cn('inline-flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep', center && 'justify-center')}>

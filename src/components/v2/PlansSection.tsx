@@ -126,7 +126,7 @@ export function PlansSection() {
   const wide = typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches
   const reduced = reducedPref || !wide
   const grid = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ target: grid, offset: ['start 0.72', 'start 0.18'] })
+  const { scrollYProgress } = useScroll({ target: grid, offset: ['start 0.92', 'start 0.5'] })
   const deal = useSpring(scrollYProgress, { stiffness: 120, damping: 26, mass: 0.6 })
   // Distância entre colunas (largura do cartão + espaço), medida no ecrã
   const [step, setStep] = useState(400)
