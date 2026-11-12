@@ -14,7 +14,7 @@ const EASE = [0.22, 1, 0.36, 1] as const
  * TEXTOS: fornecidos pelo fundador. Frases que dependem de validação antes de
  * publicar (ver relatório): perguntas em linguagem natural (02), exemplos de
  * perguntas (03), confirmação de banco "junto da equipa" (04), mecanismos de
- * receção de documentos (06), condições do programa Finer Pioneers (07).
+ * receção de documentos (06), condições do programa Finer Pioneers (07). Oferta Pioneers (1.º mês grátis + 10%) indicada pelo fundador a 12/11/2026.
  * Segurança, dados, IA, faturação e cancelamento ficam fora (secção de
  * Segurança / página de Preços).
  */
@@ -52,7 +52,7 @@ const copy: Record<Lang, { eyebrow: string; title: string; sub: string; items: Q
       },
       {
         q: 'O que é o programa Finer Pioneers?',
-        a: 'É uma iniciativa destinada a empresários interessados em conhecer a Finer One numa fase inicial e contribuir para a sua evolução. Os participantes poderão partilhar necessidades e sugestões, de acordo com as condições de participação do programa.',
+        a: 'É uma iniciativa destinada a empresários interessados em conhecer a Finer One numa fase inicial e contribuir para a sua evolução. Os participantes poderão partilhar necessidades e sugestões, de acordo com as condições de participação do programa. Quem aderir tem o primeiro mês grátis + 10% de desconto nos planos mensal e anual.',
         link: { label: 'Conhecer os Finer Pioneers', href: '/pioneers/' },
       },
     ],
@@ -88,7 +88,7 @@ const copy: Record<Lang, { eyebrow: string; title: string; sub: string; items: Q
       },
       {
         q: 'What is the Finer Pioneers programme?',
-        a: 'It is an initiative for business owners who want to get to know Finer One at an early stage and contribute to its evolution. Participants will be able to share needs and suggestions, under the programme’s participation conditions.',
+        a: 'It is an initiative for business owners who want to get to know Finer One at an early stage and contribute to its evolution. Participants will be able to share needs and suggestions, under the programme’s participation conditions. Those who join get the first month free + 10% off monthly and annual plans.',
         link: { label: 'Discover Finer Pioneers', href: '/pioneers/' },
       },
     ],
