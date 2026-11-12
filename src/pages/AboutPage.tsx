@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { MotionConfig, motion, useReducedMotion, useScroll, useSpring } from 'motion/react'
 import type { Variants } from 'motion/react'
-import { ArrowRight, Quote } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
 
@@ -25,12 +25,12 @@ const copy = {
       'Perceberam depressa que a consultoria tinha limites de escala. Em maio de 2026, numa conversa com o Igor, que voltava a Portugal com experiência a criar produtos tecnológicos no Brasil, a ideia ganhou outra forma: transformar esse conhecimento num produto capaz de ajudar milhares de empresas.',
       'Assim nasceu a Finer One: o encontro entre finanças, gestão e tecnologia, construído pelos três.',
     ],
-    peopleTitle: ['As pessoas por trás ', 'da Finer One.'],
-    peopleSub: 'Três percursos diferentes — finanças, negócio e tecnologia — com o mesmo objetivo.',
+    peopleTitle: ['Três pessoas. ', 'Uma visão.'],
+    peopleSub: 'Tecnologia, negócios e finanças a trabalhar em conjunto para transformar a gestão das empresas.',
     founders: [
-      { name: 'Henrique Bértolo', quote: 'O empresário trabalha para o negócio. O que tem de acontecer é o negócio trabalhar para o empresário.' },
-      { name: 'Igor Orlandi', quote: 'Mais do que apresentar números, queremos ajudar os empresários a compreender melhor o seu negócio e a decidir com mais segurança.' },
-      { name: 'Sebastião Andrade', quote: 'Ter acesso a números não significa necessariamente saber gerir um negócio.' },
+      { name: 'Henrique Bértolo', photo: '/images/fundadores/henrique.webp', quote: 'O empresário trabalha para o negócio. O que tem de acontecer é o negócio trabalhar para o empresário.' },
+      { name: 'Igor Orlandi', photo: '/images/fundadores/igor.webp', quote: 'Mais do que apresentar números, queremos ajudar os empresários a compreender melhor o seu negócio e a decidir com mais segurança.' },
+      { name: 'Sebastião Andrade', photo: '/images/fundadores/sebastiao.webp', quote: 'Ter acesso a números não significa necessariamente saber gerir um negócio.' },
     ],
     beliefTitle: ['Em que ', 'acreditamos.'],
     beliefs: [
@@ -63,12 +63,12 @@ const copy = {
       'They soon realised consulting would not scale. In May 2026, in a conversation with Igor — back in Portugal with experience building tech products in Brazil — the idea took a new shape: turning that knowledge into a product that could help thousands of companies.',
       'That is how Finer One was born: where finance, management and technology meet, built by the three of them.',
     ],
-    peopleTitle: ['The people behind ', 'Finer One.'],
-    peopleSub: 'Three different paths — finance, business and technology — with the same goal.',
+    peopleTitle: ['Three people. ', 'One vision.'],
+    peopleSub: 'Technology, business and finance working together to transform how companies are managed.',
     founders: [
-      { name: 'Henrique Bértolo', quote: 'Business owners work for their business. What needs to happen is the business working for them.' },
-      { name: 'Igor Orlandi', quote: 'More than showing numbers, we want to help owners understand their business better and decide with more confidence.' },
-      { name: 'Sebastião Andrade', quote: 'Having access to numbers does not necessarily mean knowing how to run a business.' },
+      { name: 'Henrique Bértolo', photo: '/images/fundadores/henrique.webp', quote: 'Business owners work for their business. What needs to happen is the business working for them.' },
+      { name: 'Igor Orlandi', photo: '/images/fundadores/igor.webp', quote: 'More than showing numbers, we want to help owners understand their business better and decide with more confidence.' },
+      { name: 'Sebastião Andrade', photo: '/images/fundadores/sebastiao.webp', quote: 'Having access to numbers does not necessarily mean knowing how to run a business.' },
     ],
     beliefTitle: ['What we ', 'believe.'],
     beliefs: [
@@ -182,36 +182,35 @@ function People({ t }: { t: T }) {
         <div className="grid gap-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-20">
           <motion.h2 variants={rise} className="font-display text-[34px] font-bold leading-[1.04] tracking-[-0.035em] text-[#070D2B] sm:text-[44px]">
             {t.peopleTitle[0]}
-            <span className="text-accent-deep">{t.peopleTitle[1]}</span>
+            <span className="block text-accent-deep">{t.peopleTitle[1]}</span>
           </motion.h2>
           <motion.p variants={rise} className="self-end text-[18px] leading-[1.6] text-[#0B1030]/65">
             {t.peopleSub}
           </motion.p>
         </div>
 
-        <div className="mt-14 grid gap-4 md:grid-cols-3">
+        {/* Como na apresentação Investidores & Parcerias: fotografia, risca azul, nome — e a frase de cada um */}
+        <div className="mt-14 grid gap-12 sm:gap-8 md:grid-cols-3">
           {t.founders.map((f, i) => (
-            <motion.figure
-              key={f.name}
-              variants={rise}
-              className="group flex flex-col overflow-hidden rounded-[24px] border border-[#0B1030]/[0.07] bg-white shadow-[0_30px_60px_-45px_rgba(7,13,43,0.45)]"
-            >
-              {/* Lugar da fotografia: as iniciais sobre o azul da marca (até haver fotografias) */}
-              <div className="relative flex aspect-[5/4] items-end overflow-hidden bg-[radial-gradient(120%_90%_at_80%_0%,#0A2A8F_0%,#070D2B_60%)] p-6">
-                <div aria-hidden="true" className="absolute inset-x-0 top-[18%] h-[38%] overflow-hidden mix-blend-screen" style={{ maskImage: 'linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent)' }}>
-                  <img src="/images/sobre-linha.webp" alt="" className="absolute top-0 h-full max-w-none object-fill max-md:!left-0 max-md:!w-full max-md:object-cover" style={{ width: 'calc(300% + 32px)', left: `calc(${-i * 100}% - ${i * 16}px)` }} />
-                </div>
-                <span aria-hidden="true" className="relative font-display text-[88px] font-bold leading-none tracking-[-0.05em] text-white/95">
-                  {f.name.split(' ').map((p) => p[0]).join('')}
-                </span>
+            <motion.figure key={f.name} variants={rise}>
+              <div className="group overflow-hidden rounded-[22px] bg-[#E9ECF3]">
+                <img
+                  src={f.photo}
+                  alt={f.name}
+                  loading="lazy"
+                  className="aspect-square w-full object-cover object-top transition-transform duration-[1.2s] ease-out group-hover:scale-[1.03]"
+                />
               </div>
-              <blockquote className="relative flex-1 px-6 pb-4 pt-6">
-                <Quote className="h-5 w-5 text-accent" aria-hidden="true" />
-                <p className="mt-3 font-display text-[18px] font-semibold leading-[1.45] tracking-[-0.01em] text-[#070D2B]">{f.quote}</p>
-              </blockquote>
-              <figcaption className="border-t border-[#0B1030]/[0.07] px-6 py-5">
-                <span className="block font-display text-[17px] font-bold text-[#070D2B]">{f.name}</span>
-              </figcaption>
+              <motion.span
+                aria-hidden="true"
+                className="mt-7 block h-[4px] w-16 origin-left rounded-full bg-accent"
+                initial={{ scaleX: 0 }}
+                whileInView={{ scaleX: 1 }}
+                viewport={{ once: true, amount: 1 }}
+                transition={{ duration: 0.8, ease: EASE, delay: 0.15 + i * 0.12 }}
+              />
+              <figcaption className="mt-4 font-display text-[22px] font-bold tracking-[-0.01em] text-[#070D2B]">{f.name}</figcaption>
+              <blockquote className="mt-3 text-[15.5px] leading-[1.6] text-[#0B1030]/65">“{f.quote}”</blockquote>
             </motion.figure>
           ))}
         </div>
