@@ -182,14 +182,14 @@ function Backdrop() {
 }
 
 /** Moldura de aplicação 16:9 — a mesma para o vídeo final e para o poster. */
-function Frame({ children, controls }: { t: T; children: ReactNode; controls?: ReactNode }) {
+function Frame({ children, controls, portrait }: { t: T; children: ReactNode; controls?: ReactNode; portrait?: boolean }) {
   return (
     // Moldura de vidro: aro translúcido, orla superior com a linha azul da marca,
     // sombra longa e um contorno interior fino para separar o ecrã do fundo.
     <div className="relative rounded-[18px] border border-white/[0.11] bg-[linear-gradient(180deg,rgba(255,255,255,0.09),rgba(255,255,255,0.03))] p-[6px] shadow-[0_50px_110px_-40px_rgba(0,0,0,0.95),0_0_70px_-24px_rgba(30,144,255,0.4),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-md sm:p-[7px]">
       <span aria-hidden="true" className="pointer-events-none absolute -top-px left-[14%] right-[14%] h-px bg-[linear-gradient(90deg,transparent,rgba(90,180,255,0.9),transparent)]" />
       <div className="relative overflow-hidden rounded-[12px] bg-white ring-1 ring-black/10">
-        <div className="relative aspect-video bg-[#F7F9FE]">{children}</div>
+        <div className={portrait ? 'relative aspect-[4/5] bg-[#F7F9FE]' : 'relative aspect-video bg-[#F7F9FE]'}>{children}</div>
         {controls}
       </div>
     </div>
@@ -226,6 +226,9 @@ function DemoVideo({ t, video: source }: { t: T; video: DemoVideoSource }) {
   // Com movimento reduzido, o vídeo só corre se o visitante o pedir.
   const [userStarted, setUserStarted] = useState(false)
   const allowed = !reduced || userStarted
+  // No telemóvel, a versão vertical (interface em formato de telemóvel), se existir.
+  const small = !useMediaQuery('(min-width: 768px)')
+  const portrait = small && !!source.portrait
 
   // Só reproduz quando visível, sem pausa do visitante e (com movimento reduzido) só por pedido.
   useEffect(() => {
@@ -252,6 +255,7 @@ function DemoVideo({ t, video: source }: { t: T; video: DemoVideoSource }) {
     <div ref={ref}>
       <Frame
         t={t}
+        portrait={portrait}
         controls={
           <>
             {/* Movimento reduzido: imagem estática com um botão claro para ver a demonstração */}
@@ -279,20 +283,27 @@ function DemoVideo({ t, video: source }: { t: T; video: DemoVideoSource }) {
         }
       >
         <video
+          key={portrait ? 'vertical' : 'horizontal'}
           ref={video}
           className="absolute inset-0 h-full w-full object-cover"
           muted
           loop
           playsInline
           preload={reduced && !userStarted ? 'none' : 'metadata'}
-          poster={source.poster}
+          poster={portrait ? source.portraitPoster : source.poster}
           aria-label={t.videoLabel}
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
         >
-          {source.mobile && <source src={source.mobile} type="video/mp4" media="(max-width: 767px)" />}
-          {source.webm && <source src={source.webm} type="video/webm" />}
-          <source src={source.src} type="video/mp4" />
+          {portrait ? (
+            <source src={source.portrait} type="video/mp4" />
+          ) : (
+            <>
+              {source.mobile && <source src={source.mobile} type="video/mp4" media="(max-width: 767px)" />}
+              {source.webm && <source src={source.webm} type="video/webm" />}
+              <source src={source.src} type="video/mp4" />
+            </>
+          )}
         </video>
       </Frame>
     </div>

@@ -16,7 +16,8 @@ type Props = {
    * Guião do vídeo de demonstração (Remotion): pergunta e resposta escritas
    * até ao carácter indicado, controladas pelo fotograma. Ignora o estado interno.
    */
-  script?: { question: string; typedQ: number; answer: string; typedA: number; reveal?: number }
+  /** focus: 0–1, destaque azul à volta da prioridade (vídeo) — desenhado no próprio bloco, acompanha sempre o texto. */
+  script?: { question: string; typedQ: number; answer: string; typedA: number; reveal?: number; focus?: number }
   /** Conteúdo alternativo (ex.: montra de funcionalidades), com a mesma forma. */
   data?: ReturnType<typeof getUiData>['home']
 }
@@ -173,7 +174,11 @@ export function FinerHomeView({ interactive = true, onOpenAdvisor, showAsk = tru
             {home.briefBody[4]}
           </p>
           <div className={cn('mt-5 flex flex-col gap-4 rounded-xl border border-accent/15 bg-[#EEF3FF] p-4 @xl:flex-row @xl:items-center')}>
-            <div className={cn('min-w-0 flex-1')}>
+            <div
+              data-demo="priority-block"
+              className={cn('min-w-0 flex-1 rounded-[12px]')}
+              style={script?.focus ? { outline: `2px solid rgba(0,82,255,${script.focus})`, outlineOffset: 9, boxShadow: `0 0 34px 14px rgba(30,144,255,${0.22 * script.focus})` } : undefined}
+            >
               <p className={cn('inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-accent')}>
                 <span className={cn('h-1.5 w-1.5 rounded-full bg-accent')} aria-hidden="true" />
                 {home.priorityLabel}

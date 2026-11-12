@@ -16,7 +16,7 @@ const QUESTION = 'Como está a tesouraria da minha empresa?'
 const ANSWER = 'Há € 50.948,60 em faturas em atraso e um cliente concentra 88,3% deste valor.'
 const WORDS = ANSWER.split(' ')
 /** O mundo do topo das páginas (como na plataforma real). */
-const SKY = <Img src={staticFile('images/finer-sky.webp')} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 42%' }} />
+const SKY = <Img src={staticFile('images/finer-mundo.webp')} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 0%' }} />
 const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const
 const ease = Easing.bezier(0.45, 0, 0.2, 1)
 const maskEase = Easing.bezier(0.55, 0, 0.25, 1)
@@ -79,7 +79,8 @@ export function HeroSampleV4() {
 
   // A caixa de destaque envolve todo o bloco da prioridade (etiqueta, título e detalhe),
   // em vez de só o título — assim não passa por cima da informação.
-  const priBox = pri ? { ...pri, y: pri.y - 24, h: pri.h + 24 + 26, w: Math.max(pri.w, 360) } : undefined
+  // Destaque da prioridade: entra e sai suavemente; desenhado no próprio bloco da interface.
+  const priFocus = interpolate(frame, [T.priority, T.priority + 10, T.open[1] + 2, T.open[1] + 10], [0, 1, 1, 0], clamp)
 
   // ---------- Câmaras ----------
   const askF = { x: ask ? ask.cx : WIDE.x, y: ask ? ask.cy + 85 : WIDE.y }
@@ -88,12 +89,15 @@ export function HeroSampleV4() {
   // V4: planos ~1,6× mais próximos do que a V3 — na janela da hero (≈ 30% do tamanho
   // real) o texto principal fica com 14–18 px, legível. Uma ideia de cada vez.
   const askC = ask ? ask.cx : WIDE.x
-  const opening: Shot = { f: 0, s: 2.25, x: askC, y: ask ? ask.cy - 30 : WIDE.y }
+  // Abertura: o topo da Finer Home com o mundo e o título "Finer Home.", e a seguir aproxima à pergunta.
+  const opening: Shot = { f: 0, s: 1.55, x: askC - 190, y: ask ? ask.cy - 60 : WIDE.y }
   // A linha da resposta cresce enquanto é escrita: enquadrar pela margem do cartão (alinhada com a
   // prioridade) e não pela largura do texto, para o início da frase nunca ficar cortado.
   const ansC = { x: pri ? pri.x + 300 : askC - 260, y: ask ? ask.cy + 150 : WIDE.y }
   const homeShots: Shot[] = [
     opening,
+    { ...opening, f: 14 },
+    { f: T.type - 2, s: 2.25, x: askC, y: ask ? ask.cy - 30 : WIDE.y },
     { f: T.send, s: 2.45, x: askC, y: ask ? ask.cy + 10 : WIDE.y }, // aproxima durante a escrita
     { f: T.answer[0] + 6, s: 2.45, ...ansC }, // a resposta, palavra a palavra
     { f: T.answer[1] + 8, s: 2.45, ...ansC },
@@ -173,9 +177,8 @@ export function HeroSampleV4() {
             homeRoot,
             <>
               <AppShell view="home" className="min-h-[900px]" sky={SKY}>
-                <FinerHomeView interactive={false} script={{ question: QUESTION, typedQ, answer: ANSWER, typedA, reveal }} />
+                <FinerHomeView interactive={false} script={{ question: QUESTION, typedQ, answer: ANSWER, typedA, reveal, focus: priFocus }} />
               </AppShell>
-              <Highlight frame={frame} rect={priBox} from={T.priority} to={T.open[1] + 10} pad={12} radius={14} />
               {send && <Pulse frame={frame} at={T.send} x={send.cx} y={send.cy} size={70} />}
               <Cursor frame={frame} path={cursorPath} visible={[10, 116]} />
               {cta && <Pulse frame={frame} at={T.ctaClick} x={cta.cx} y={cta.cy} size={90} />}

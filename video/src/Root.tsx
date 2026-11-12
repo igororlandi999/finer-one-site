@@ -12,6 +12,7 @@ import { HeroSample } from './scenes/HeroSample'
 import { HeroSampleV2 } from './scenes/HeroSampleV2'
 import { HeroSampleV3 } from './scenes/HeroSampleV3'
 import { HeroSampleV4 } from './scenes/HeroSampleV4'
+import { HeroMobile, M_H, M_W } from './scenes/HeroMobile'
 import { ScreenStill } from './scenes/ScreenStill'
 import type { View } from '@/components/v2/finer-ui/AppShell'
 
@@ -19,6 +20,14 @@ function ScreenStillComp({ view }: { view: View }) {
   return (
     <LanguageProvider>
       <ScreenStill view={view} />
+    </LanguageProvider>
+  )
+}
+
+function HeroMobileComp() {
+  return (
+    <LanguageProvider>
+      <HeroMobile />
     </LanguageProvider>
   )
 }
@@ -84,6 +93,7 @@ export function Root() {
       {/* Versão final da homepage: o clique em "Ver plano de ação" abre o Advisor, 10 s. */}
       <Composition id="HeroSampleV3" component={HeroSampleV3Comp} durationInFrames={300} fps={FPS} width={WIDTH} height={HEIGHT} />
       <Composition id="HeroSampleV4" component={HeroSampleV4Comp} durationInFrames={300} fps={FPS} width={WIDTH} height={HEIGHT} />
+      <Composition id="HeroMobile" component={HeroMobileComp} durationInFrames={300} fps={FPS} width={M_W} height={M_H} />
       {/* Ecrã estático para o storyboard (--props='{"view":"receitas"}'). */}
       <Composition id="ScreenStill" component={ScreenStillComp} durationInFrames={1} fps={FPS} width={WIDTH} height={HEIGHT} defaultProps={{ view: 'home' as View }} />
       {/* Amostra anterior: Finer Home → Cashflow, 17 s. */}

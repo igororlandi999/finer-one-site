@@ -19,7 +19,7 @@ type Props = {
   navigable?: View[]
   /** Classes extra para a raiz (ex.: altura mínima no vídeo). */
   className?: string
-  /** Imagem do topo ("mundo") fornecida pelo vídeo; no site usa-se /images/finer-sky.webp. */
+  /** Imagem do topo ("mundo") fornecida pelo vídeo; no site usa-se /images/finer-mundo.webp. */
   sky?: ReactNode
   children: ReactNode
 }
@@ -110,9 +110,9 @@ export function AppShell({ view, onNavigate, navigable = ['home', 'advisor'], cl
         {/* O "mundo" no topo de cada página, como na plataforma real: céu com nuvens
             vistas de cima, a desvanecer para o fundo. No vídeo (Remotion) a imagem chega
             pela propriedade sky, para garantir que está carregada antes de cada fotograma. */}
-        <div aria-hidden="true" className={cn('pointer-events-none absolute inset-x-0 top-0 h-[170px] overflow-hidden')}>
-          {sky ?? <img src="/images/finer-sky.webp" alt="" className={cn('h-full w-full object-cover object-[50%_42%]')} />}
-          <div className={cn('absolute inset-0')} style={{ background: 'linear-gradient(to bottom, rgba(247,249,254,0) 0%, rgba(247,249,254,0.35) 45%, #F7F9FE 100%), linear-gradient(to right, rgba(247,249,254,0.55) 0%, rgba(247,249,254,0) 45%)' }} />
+        <div aria-hidden="true" className={cn('pointer-events-none absolute inset-x-0 top-0 h-[150px] overflow-hidden')}>
+          {sky ?? <img src="/images/finer-mundo.webp" alt="" className={cn('h-full w-full object-cover object-top')} />}
+          <div className={cn('absolute inset-0')} style={{ background: 'linear-gradient(to bottom, rgba(247,249,254,0) 70%, #F7F9FE 100%)' }} />
         </div>
         <div className={cn('relative')}>{children}</div>
       </div>
