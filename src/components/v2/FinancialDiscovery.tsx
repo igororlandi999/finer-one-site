@@ -196,7 +196,7 @@ export function FinancialDiscovery() {
         <span id="demo" aria-hidden="true" className="pointer-events-none absolute top-0 scroll-mt-20" />
         {/* Fundo branco puro (como Ramp e Searchable); a atmosfera vive só no bloco do céu. Transição suave para a secção 4. */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-[#F8FAFF]" />
+          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-white" />
         </div>
 
         <motion.div className="mx-auto max-w-content px-5 pb-12 pt-8 sm:px-6 lg:px-8 lg:pb-14 lg:pt-10" variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.1 }}>

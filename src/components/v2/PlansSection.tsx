@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { AnimatePresence, MotionConfig, motion, useReducedMotion, useScroll, useSpring, useTransform } from 'motion/react'
 import type { MotionValue, Variants } from 'motion/react'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Lock } from 'lucide-react'
 import { useLanguage } from '@/i18n/LanguageContext'
 import type { Lang } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
@@ -254,8 +254,23 @@ function PlanCard({ p, i, t, deal, step, reduced }: { p: Plan; i: number; t: (ty
             </motion.ul>
           </div>
         ) : (
-          <div className="mt-7 flex min-h-[120px] flex-1 items-center justify-center rounded-[14px] bg-[#F6F8FC] bg-[radial-gradient(rgba(11,16,48,0.055)_1px,transparent_1px)] p-6 text-center [background-size:12px_12px]">
-            <p className="max-w-[220px] text-[14px] leading-[1.55] text-[#0B1030]/55">{t.billing.tbd}</p>
+          // Pré-visualização bloqueada: a lista ainda por anunciar, desfocada (sem inventar funcionalidades).
+          <div className="relative mt-7 flex min-h-[120px] flex-1 flex-col overflow-hidden rounded-[14px] border border-[#0B1030]/[0.06] bg-[linear-gradient(180deg,#FAFBFE,#F3F6FC)] px-6 pb-6 pt-7">
+            <ul aria-hidden="true" className="space-y-[18px] blur-[1.5px]">
+              {[62, 48, 74, 40, 66, 54, 44].map((w, k) => (
+                <li key={k} className="flex items-center gap-3">
+                  <span className="h-2 w-2 shrink-0 rounded-full bg-[#0B1030]/[0.12]" />
+                  <span className="h-2.5 rounded-full bg-[#0B1030]/[0.08]" style={{ width: `${w}%` }} />
+                </li>
+              ))}
+            </ul>
+            <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_55%_at_50%_50%,rgba(250,251,254,0.96),rgba(250,251,254,0.55)_70%,transparent)]" />
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full border border-[#0B1030]/[0.1] bg-white text-[#070D2B] shadow-[0_8px_20px_-12px_rgba(7,13,43,0.4)]">
+                <Lock className="h-4 w-4" aria-hidden="true" />
+              </span>
+              <p className="max-w-[220px] text-[14px] font-medium leading-[1.55] text-[#0B1030]/60">{t.billing.tbd}</p>
+            </div>
           </div>
         )}
       </motion.article>
