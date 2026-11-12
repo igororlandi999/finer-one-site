@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { motion, useMotionValueEvent, useScroll, useSpring, useTransform } from 'motion/react'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { Buttons, Title, copy, group } from '@/components/v2/FinalCTAWorld'
-import { EARTH, PT, earthPos } from './StoryDive'
+import { EARTH, PT, earthPos } from './earth'
 import { useFloodClip } from './flood'
 
 /**
