@@ -16,6 +16,8 @@ const copy = {
     sub: 'Procuramos 10 empresários para testar a Finer One em primeira mão, partilhar a sua experiência e ajudar a definir a evolução da plataforma.',
     cta: 'Candidatar-me',
     facts: ['10 lugares', 'Candidatura em 2 minutos', 'Sem ligar contas para se candidatar'],
+    offerLabel: 'Oferta Finer Pioneers',
+    offer: 'Primeiro mês grátis + 10% de desconto nos planos mensal e anual do Finer Plus.',
     whatTitle: 'O que é o Finer Pioneers',
     whatBody: 'Um grupo restrito de empresários que acompanha de perto a construção da Finer One. Testam o MVP com a equipa, dão feedback honesto e ajudam a decidir o que vem a seguir.',
     stepsTitle: 'Como funciona',
@@ -74,6 +76,8 @@ const copy = {
     sub: 'We are looking for 10 business owners to try Finer One first-hand, share their experience and help shape how the platform evolves.',
     cta: 'Apply now',
     facts: ['10 places', '2-minute application', 'No bank connection needed to apply'],
+    offerLabel: 'Finer Pioneers offer',
+    offer: 'First month free + 10% off the monthly and annual Finer Plus plans.',
     whatTitle: 'What Finer Pioneers is',
     whatBody: 'A small group of business owners who follow Finer One closely as it is built. They test the MVP with the team, give honest feedback and help decide what comes next.',
     stepsTitle: 'How it works',
@@ -257,6 +261,10 @@ export function PioneersPage() {
 
           <Reveal className="mt-16">
             <h2 className="text-[12px] font-semibold uppercase tracking-[0.22em] text-glow">{t.gainsTitle}</h2>
+            <p className="mt-5 border-y border-white/10 py-5 font-display text-[19px] font-semibold leading-snug tracking-[-0.01em] text-white sm:text-[22px]">
+              <span className="mr-2 text-glow">{t.offerLabel}:</span>
+              {t.offer}
+            </p>
             <ul className="mt-5 grid gap-4 md:grid-cols-3">
               {t.gains.map((g, i) => {
                 const Icon = gainIcons[i]
