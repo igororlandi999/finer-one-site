@@ -28,7 +28,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
     price: 'A anunciar',
     period: '/mês',
     note: 'Os valores do Pro e do Team serão anunciados.',
-    billing: { monthly: 'Mensal', annual: 'Anual', saveM: 'Poupe 120 € por ano com o plano anual', saveA: 'Poupa 120 € por ano face ao plano mensal.', priceM: '67,90 €', priceA: '57,90 €', per: '/mês', noteM: 'Plano mensal · IVA incluído', noteA: 'Por mês, no plano anual · IVA incluído', tbd: 'Funcionalidades e valores a anunciar.', pioneerLabel: 'Para Finer Pioneers', pioneerLines: ['Primeiro mês grátis', '10% de desconto no plano mensal ou anual'] },
+    billing: { monthly: 'Mensal', annual: 'Anual', saveM: 'Poupe 120 € por ano com o plano anual', saveA: 'Poupa 120 € por ano face ao plano mensal.', priceM: '67,90 €', priceA: '57,90 €', per: '/mês', noteM: 'Plano mensal · IVA incluído', noteA: 'Por mês, no plano anual · IVA incluído', tbd: 'Funcionalidades e valores a anunciar.', pioneerLabel: 'Para Finer Pioneers', pioneerLines: ['primeiro mês grátis', '10% de desconto no plano mensal ou anual'] },
     plans: [
       {
         id: 'plus',
@@ -72,7 +72,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
     price: 'To be announced',
     period: '/mo',
     note: 'Pricing for Pro and Team will be announced.',
-    billing: { monthly: 'Monthly', annual: 'Annual', saveM: 'Save €120 a year with the annual plan', saveA: 'You save €120 a year versus monthly.', priceM: '€67.90', priceA: '€57.90', per: '/mo', noteM: 'Monthly plan · VAT included', noteA: 'Per month, on the annual plan · VAT included', tbd: 'Features and pricing to be announced.', pioneerLabel: 'For Finer Pioneers', pioneerLines: ['First month free', '10% off the monthly or annual plan'] },
+    billing: { monthly: 'Monthly', annual: 'Annual', saveM: 'Save €120 a year with the annual plan', saveA: 'You save €120 a year versus monthly.', priceM: '€67.90', priceA: '€57.90', per: '/mo', noteM: 'Monthly plan · VAT included', noteA: 'Per month, on the annual plan · VAT included', tbd: 'Features and pricing to be announced.', pioneerLabel: 'For Finer Pioneers', pioneerLines: ['first month free', '10% off the monthly or annual plan'] },
     plans: [
       {
         id: 'plus',
@@ -238,6 +238,11 @@ function PlanCard({ p, i, t, deal, step, reduced }: { p: Plan; i: number; t: (ty
           {p.cta}
           <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true" />
         </a>
+        {plus && (
+          <p className="mt-3 text-center text-[13px] leading-snug text-[#0B1030]/55">
+            <span className="font-semibold text-[#070D2B]">{t.billing.pioneerLabel}:</span> {t.billing.pioneerLines.join(' · ')}
+          </p>
+        )}
 
         {p.items.length > 0 ? (
           <div className="mt-7 border-t border-[#0B1030]/10 pt-6">
@@ -249,7 +254,7 @@ function PlanCard({ p, i, t, deal, step, reduced }: { p: Plan; i: number; t: (ty
             </motion.ul>
           </div>
         ) : (
-          <div className="mt-7 flex min-h-[120px] flex-1 items-center justify-center rounded-[14px] bg-[#F6F8FC] bg-[radial-gradient(rgba(11,16,48,0.09)_1px,transparent_1px)] p-6 text-center [background-size:12px_12px]">
+          <div className="mt-7 flex min-h-[120px] flex-1 items-center justify-center rounded-[14px] bg-[#F6F8FC] bg-[radial-gradient(rgba(11,16,48,0.055)_1px,transparent_1px)] p-6 text-center [background-size:12px_12px]">
             <p className="max-w-[220px] text-[14px] leading-[1.55] text-[#0B1030]/55">{t.billing.tbd}</p>
           </div>
         )}
@@ -305,21 +310,6 @@ function PlusPrice({ b }: { b: Billing }) {
           <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true" />
         </button>
       )}
-      {/* Oferta Finer Pioneers (indicação do fundador, 12/11/2026) */}
-      <motion.div
-        className="mt-5 border-t border-[#0B1030]/10 pt-4"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, amount: 0.8 }}
-        transition={{ duration: 0.6, ease: EASE, delay: 0.4 }}
-      >
-        <p className="text-[13.5px] font-semibold text-[#070D2B]">{b.pioneerLabel}</p>
-        <ul className="mt-1.5 space-y-1">
-          {b.pioneerLines.map((l) => (
-            <li key={l} className="text-[13.5px] text-[#0B1030]/60">+ {l}</li>
-          ))}
-        </ul>
-      </motion.div>
     </div>
   )
 }
