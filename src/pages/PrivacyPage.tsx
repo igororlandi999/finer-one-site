@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { MotionConfig, motion } from 'motion/react'
-import { ArrowUpRight, Mail } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, Mail } from 'lucide-react'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
 
@@ -116,6 +116,22 @@ export function PrivacyPage() {
           <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-20">
             {/* Conteúdo */}
             <div className="max-w-[700px]">
+              <details className="group mb-6 rounded-2xl border border-[#0B1030]/[0.08] lg:hidden">
+                <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 text-[14px] font-semibold text-[#070D2B] [&::-webkit-details-marker]:hidden">
+                  Nesta página
+                  <ChevronDown className="h-4 w-4 transition-transform duration-300 group-open:rotate-180" aria-hidden="true" />
+                </summary>
+                <ol className="border-t border-[#0B1030]/[0.08] px-5 py-3">
+                  {sections.map((s, i) => (
+                    <li key={s.id}>
+                      <a href={`#${s.id}`} className="block py-2 text-[14.5px] text-[#0B1030]/70 hover:text-[#070D2B]">
+                        <span className="mr-1.5 tabular-nums">{i + 1}.</span>
+                        {s.title}
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              </details>
               <p role="note" className="rounded-2xl border border-[#0B1030]/[0.08] bg-[#F7F9FE] p-5 text-[14.5px] leading-[1.65] text-[#0B1030]/75">
                 <strong className="font-semibold text-[#070D2B]">Em resumo:</strong> pedimos só o necessário para o manter informado ou avaliar a sua
                 candidatura, não vendemos os seus dados e pode pedir para os apagar a qualquer momento.
@@ -123,15 +139,7 @@ export function PrivacyPage() {
 
               <div className="mt-2 space-y-4">
                 {sections.map((s, i) => (
-                  <motion.article
-                    key={s.id}
-                    id={s.id}
-                    initial={{ opacity: 0, y: 16 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, amount: 0.3 }}
-                    transition={{ duration: 0.6, ease: EASE }}
-                    className="scroll-mt-28 pt-10"
-                  >
+                  <article key={s.id} id={s.id} className="scroll-mt-16 pt-10">
                     <h2 className="font-display text-[24px] font-bold tracking-[-0.025em] text-[#070D2B] sm:text-[28px]">
                       <span className="mr-3 text-accent-deep">{i + 1}.</span>
                       {s.title}
@@ -142,28 +150,22 @@ export function PrivacyPage() {
                           {p.map((li) => (
                             <li key={li} className="relative pl-5 text-[16px] leading-[1.7] text-[#0B1030]/75">
                               <span aria-hidden="true" className="absolute left-0 top-[11px] h-1.5 w-1.5 rounded-full bg-accent" />
-                              {li}
+                              {withEmail(li)}
                             </li>
                           ))}
                         </ul>
                       ) : (
                         <p key={j} className="mt-4 text-[16px] leading-[1.7] text-[#0B1030]/75">
-                          {p}
+                          {withEmail(p)}
                         </p>
                       ),
                     )}
-                  </motion.article>
+                  </article>
                 ))}
               </div>
 
               {/* Contacto (como "How to contact us about privacy" na Searchable) */}
-              <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.6, ease: EASE }}
-                className="relative mt-16 overflow-hidden rounded-[24px] bg-[#070D2B] p-7 text-white sm:p-9"
-              >
+              <div className="relative mt-16 overflow-hidden rounded-[24px] bg-[#070D2B] p-7 text-white sm:p-9">
                 <img src="/images/sobre-linha.webp" alt="" aria-hidden="true" className="absolute inset-x-0 bottom-[-6%] h-[50%] w-full object-cover object-[80%_50%] opacity-70 mix-blend-screen" style={{ maskImage: 'linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent)' }} />
                 <div className="relative">
                   <p className="font-display text-[24px] font-bold tracking-[-0.02em]">
@@ -181,7 +183,7 @@ export function PrivacyPage() {
                     <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />
                   </a>
                 </div>
-              </motion.div>
+              </div>
             </div>
 
             {/* Índice fixo (como na Ramp) */}
@@ -214,11 +216,29 @@ export function PrivacyPage() {
   )
 }
 
+/** Torna o email de contacto clicável dentro do texto. */
+function withEmail(text: string) {
+  const parts = text.split(CONTACT)
+  return parts.flatMap((part, i) =>
+    i === 0
+      ? [part]
+      : [
+          <a key={i} href={`mailto:${CONTACT}`} className="font-medium text-accent-deep underline decoration-accent-deep/30 underline-offset-4 hover:decoration-accent-deep">
+            {CONTACT}
+          </a>,
+          part,
+        ],
+  )
+}
+
 /** Secção visível no momento (para destacar no índice). */
 function useActiveSection(ids: string[]) {
   const [active, setActive] = useState(ids[0])
   useEffect(() => {
     const onScroll = () => {
+      const atEnd = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4
+      const contact = document.getElementById(ids[ids.length - 1])
+      if (atEnd || (contact && contact.getBoundingClientRect().bottom < window.innerHeight * 0.6)) return setActive(ids[ids.length - 1])
       let current = ids[0]
       for (const id of ids) {
         const el = document.getElementById(id)
