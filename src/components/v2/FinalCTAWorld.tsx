@@ -20,7 +20,7 @@ const EASE = [0.22, 1, 0.36, 1] as const
  */
 const IMG = '/images/cta-earth.webp'
 
-const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string; primary: string; secondary: string }> = {
+export const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string; primary: string; secondary: string }> = {
   pt: {
     eyebrow: 'Where Finance Meets Strategy',
     title: ['O futuro do seu negócio merece ', 'decisões mais claras.'],
@@ -36,9 +36,9 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
     secondary: 'Join the waitlist',
     },
 }
-type T = (typeof copy)['pt']
+export type T = (typeof copy)['pt']
 
-const group: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.1 } } }
+export const group: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.1 } } }
 const rise: Variants = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } } }
 
 const primaryBtn = buttonClasses({
@@ -53,7 +53,7 @@ const secondaryBtn = buttonClasses({
     'group h-[52px] border-white/[0.16] bg-white/[0.04] px-6 text-white/90 backdrop-blur-sm transition-[border-color,background-color,color] duration-300 hover:border-white/30 hover:bg-white/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-glow',
 })
 
-function Title({ t, center }: { t: T; center?: boolean }) {
+export function Title({ t, center }: { t: T; center?: boolean }) {
   return (
     <>
       <motion.p variants={rise} className={cn('inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#7CB8FF] sm:tracking-[0.3em]', center && 'justify-center')}>
@@ -70,7 +70,7 @@ function Title({ t, center }: { t: T; center?: boolean }) {
   )
 }
 
-function Buttons({ t, center }: { t: T; center?: boolean }) {
+export function Buttons({ t, center }: { t: T; center?: boolean }) {
   return (
     <motion.div variants={rise} className={cn('mt-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-3.5', center && 'sm:justify-center')}>
       <a href="/pioneers/" className={primaryBtn}>
