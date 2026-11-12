@@ -49,6 +49,14 @@ Finer Home → Cashflow → Receitas → Despesas → Clientes e Fornecedores �
 Alertas → Finer Advisor → encerramento com regresso à Finer Home. Cada área com
 uma frase curta (legenda discreta) e um único movimento de câmara principal.
 
+### V4 — legibilidade na hero (12/11/2026)
+A V3 mostrava o texto com 7–9 px na janela da hero (o vídeo aparece a ~30% do
+tamanho). A V4 (`HeroSampleV4`) mantém a história e os tempos da V3, com planos
+~1,6× mais próximos e uma ideia por plano: pergunta (2,25–2,45×), resposta
+(2,45×), resumo (2,05×), prioridade e ação (2,45–2,7×), Finer Advisor (3,0–3,16×,
+enquadrado pela margem esquerda das linhas). Ficheiros `hero-a-v4.mp4`,
+`hero-a-v4-720.mp4`, `hero-a-v4.jpg`; V3 em `?video=v3`.
+
 ## Entregáveis finais
 - `hero-a.mp4` 1920×1080 (≤ 4 MB) + versão 1280×720 para telemóvel + poster JPG.
 - `demo-b.mp4` 1920×1080 (≤ 15 MB, carregado só ao abrir) + poster.
