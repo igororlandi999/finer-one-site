@@ -115,9 +115,14 @@ export function Navbar() {
     }
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(read) }
     read()
+    // Releitura depois de a página assentar (imagens, fontes, animações de entrada).
+    const late = [window.setTimeout(onScroll, 250), window.setTimeout(onScroll, 1200)]
+    window.addEventListener('load', onScroll)
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onScroll)
     return () => {
+      late.forEach((id) => window.clearTimeout(id))
+      window.removeEventListener('load', onScroll)
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
       if (raf) cancelAnimationFrame(raf)

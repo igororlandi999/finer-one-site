@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { AnimatePresence, MotionConfig, motion, useReducedMotion } from 'motion/react'
 import type { Variants } from 'motion/react'
-import { ArrowDown, ArrowLeft, ArrowRight, Check, Lock } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ArrowUp, Lock } from 'lucide-react'
 import { ConsentCheckbox, Field, Honeypot, SelectInput, TextArea, TextInput } from '@/components/forms/fields'
 import { buttonClasses } from '@/components/ui/Button'
 import { useLanguage } from '@/i18n/LanguageContext'
@@ -22,6 +22,8 @@ import { PioneersPageClassic } from '@/pages/PioneersPageClassic'
 const copy = {
   pt: {
     kicker: 'Finer Pioneers · Um convite a empresários',
+    joinTitle: ['Torne-se ', 'Finer Pioneer'],
+    askExamples: ['Como está a tesouraria da minha empresa?', 'Quanto tenho por receber?', 'O que merece mais atenção este mês?'],
     title: ['As melhores soluções constroem‑se ', 'com quem vive os desafios.'],
     sub: 'Procuramos 10 empresários para testar a Finer One em primeira mão, partilhar a sua experiência e ajudar a definir a evolução da plataforma.',
     cta: 'Candidatar-me',
@@ -88,6 +90,8 @@ const copy = {
   },
   en: {
     kicker: 'Finer Pioneers · An invitation to business owners',
+    joinTitle: ['Become a ', 'Finer Pioneer'],
+    askExamples: ['How is my company’s cash position?', 'How much is owed to me?', 'What needs the most attention this month?'],
     title: ['The best solutions are built ', 'with those who live the challenges.'],
     sub: 'We are looking for 10 business owners to try Finer One first-hand, share their experience and help shape how the platform evolves.',
     cta: 'Apply now',
@@ -178,48 +182,25 @@ function PioneersStory() {
   const t = copy[lang]
   return (
     <>
-      {/* 1 · Topo: a proposta à esquerda, a candidatura à direita (à maneira da Searchable/Lovable) */}
-      <section className="relative isolate overflow-hidden bg-navy-deep pb-16 pt-28 text-white sm:pt-32 lg:pb-24 lg:pt-36">
-        <Atmosphere />
-        <div className="mx-auto grid max-w-content items-start gap-12 px-5 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,500px)] lg:gap-16 lg:px-8 xl:gap-24">
-          <motion.div variants={group} initial="hidden" animate="show" className="lg:pt-6">
-            <motion.p variants={rise} className="inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#7CB8FF]">
-              <span aria-hidden="true" className="h-px w-8 bg-gradient-to-r from-transparent to-glow" />
+      {/* 1 · Topo (escolha do fundador: estilo Lovable) — fundo branco; à esquerda o título e a
+          candidatura em 3 passos; à direita a atmosfera Finer com uma pergunta a ser escrita. */}
+      <section className="bg-white pt-[72px] text-navy">
+        <div className="mx-auto grid max-w-[1440px] gap-4 px-3 pb-3 sm:px-4 sm:pb-4 lg:min-h-[calc(100svh-72px)] lg:grid-cols-2">
+          <motion.div variants={group} initial="hidden" animate="show" className="flex flex-col justify-center px-3 py-12 sm:px-8 lg:px-14 xl:px-24">
+            <motion.p variants={rise} className="inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-accent-deep">
+              <span aria-hidden="true" className="h-px w-8 bg-accent-deep/60" />
               {t.kicker}
             </motion.p>
-            <motion.h1 variants={rise} className="mt-6 text-balance font-display text-[36px] font-bold leading-[1.04] tracking-[-0.035em] sm:text-[48px] lg:text-[54px]">
-              {t.title[0]}
-              <span className="text-[#3D86FF] [text-shadow:0_0_28px_rgba(0,82,255,0.45)]">{t.title[1]}</span>
+            <motion.h1 variants={rise} className="mt-5 font-display text-[38px] font-bold leading-[1.02] tracking-[-0.035em] text-[#070D2B] sm:text-[46px]">
+              {t.joinTitle[0]}
+              <span className="text-accent-deep">{t.joinTitle[1]}</span>
             </motion.h1>
-            <motion.p variants={rise} className="mt-6 max-w-[540px] text-[16.5px] leading-[1.6] text-white/[0.78] sm:text-[18px]">
+            <motion.p variants={rise} className="mt-4 max-w-[460px] text-[15.5px] leading-[1.6] text-[#0B1030]/65">
               {t.sub}
             </motion.p>
-
-            {/* A oferta, em destaque */}
-            <motion.div variants={rise} className="relative mt-9 max-w-[540px] overflow-hidden rounded-2xl border border-white/[0.12] bg-[linear-gradient(135deg,rgba(0,82,255,0.22),rgba(255,255,255,0.04)_60%)] p-5 backdrop-blur-sm sm:p-6">
-              <span aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-glow/30 blur-3xl" />
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#7CB8FF]">{t.offerLabel}</p>
-              <p className="mt-2 font-display text-[19px] font-bold leading-snug tracking-[-0.015em] sm:text-[21px]">{t.offer}</p>
-            </motion.div>
-
-            <motion.ul variants={rise} className="mt-7 flex flex-wrap gap-x-6 gap-y-3 text-[14px] text-white/80">
-              {t.facts.map((f) => (
-                <li key={f} className="inline-flex items-center gap-2">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-accent/25 text-glow">
-                    <Check className="h-3 w-3" aria-hidden="true" />
-                  </span>
-                  {f}
-                </li>
-              ))}
-            </motion.ul>
-
-            <motion.a variants={rise} href="#candidatura" className={buttonClasses({ size: 'lg', className: 'group mt-9 font-semibold lg:hidden' })}>
-              {t.cta}
-              <ArrowDown className="h-4 w-4 transition-transform group-hover:translate-y-0.5" aria-hidden="true" />
-            </motion.a>
+            <ApplicationCard t={t} />
           </motion.div>
-
-          <ApplicationCard t={t} />
+          <PioneersVisual t={t} />
         </div>
       </section>
 
@@ -282,15 +263,39 @@ function PioneersStory() {
   )
 }
 
-/** Fundo do topo: o mundo da identidade a nascer por baixo, como no CTA da homepage. */
-function Atmosphere() {
+/** O painel da direita (como o da Lovable): céu → azul Finer → navy, o mundo a nascer em baixo
+ * e a pergunta à Finer One a escrever-se sozinha. Tudo nítido (degradês + imagem em tamanho real). */
+function PioneersVisual({ t }: { t: T }) {
+  const reduced = useReducedMotion() ?? false
+  const text = useRotatingText(t.askExamples, !reduced)
   return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-      <img src="/images/cta-earth.webp" alt="" className="absolute inset-x-0 bottom-0 h-[62%] w-full object-cover object-[50%_18%] opacity-90" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,#03060F_0%,#03060F_32%,rgba(3,6,15,0.7)_55%,rgba(3,6,15,0.25)_80%,rgba(3,6,15,0.6)_100%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(50%_40%_at_15%_20%,rgba(0,82,255,0.18),transparent_70%),radial-gradient(40%_40%_at_85%_30%,rgba(30,144,255,0.12),transparent_70%)]" />
-      <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-b from-transparent to-white/[0.02]" />
-    </div>
+    <motion.div
+      aria-hidden="true"
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.9, ease: EASE, delay: 0.15 }}
+      className="relative min-h-[380px] overflow-hidden rounded-[28px] sm:min-h-[460px] lg:min-h-0"
+    >
+      <div className="absolute inset-0 bg-[radial-gradient(80%_55%_at_50%_0%,#F4F8FF_0%,#BFD8FF_35%,transparent_70%),radial-gradient(70%_60%_at_15%_60%,rgba(30,144,255,0.9),transparent_70%),radial-gradient(70%_60%_at_90%_55%,rgba(0,82,255,0.95),transparent_70%),linear-gradient(180deg,#DCE9FF_0%,#3D86FF_45%,#0A40C8_70%,#070D2B_100%)]" />
+      <img
+        src="/images/cta-earth.webp"
+        alt=""
+        className="absolute inset-x-0 bottom-0 h-[46%] w-full object-cover object-[50%_10%]"
+        style={{ maskImage: 'linear-gradient(to bottom, transparent 0%, #000 45%)', WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, #000 45%)' }}
+      />
+      <div className="absolute inset-x-6 top-1/2 -translate-y-1/2 sm:inset-x-12">
+        <div className="flex items-center gap-3 rounded-2xl border border-white/60 bg-white/80 p-3.5 pl-5 shadow-[0_30px_60px_-30px_rgba(7,13,43,0.6)] backdrop-blur">
+          <span className="min-w-0 flex-1 truncate text-[15px] text-[#070D2B]">
+            {text}
+            <span className="ml-0.5 inline-block h-4 w-[2px] translate-y-0.5 animate-pulse bg-accent" />
+          </span>
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-white shadow-[0_8px_20px_-8px_rgba(0,82,255,0.9)]">
+            <ArrowUp className="h-4 w-4" />
+          </span>
+        </div>
+        <p className="mt-5 text-center text-[12px] font-semibold uppercase tracking-[0.26em] text-white/80">Where Finance Meets Strategy</p>
+      </div>
+    </motion.div>
   )
 }
 
@@ -375,18 +380,11 @@ function ApplicationCard({ t }: { t: T }) {
       initial={{ opacity: 0, y: 28 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: EASE, delay: 0.25 }}
-      className="relative scroll-mt-24 lg:sticky lg:top-24"
+      className="relative mt-9 w-full max-w-[460px] scroll-mt-28"
     >
-      {/* Halo azul por trás do cartão */}
-      <div aria-hidden="true" className="absolute -inset-6 rounded-[40px] bg-[radial-gradient(closest-side,rgba(0,82,255,0.35),transparent)] blur-2xl" />
-      <div className="relative overflow-hidden rounded-[24px] bg-white text-navy shadow-[0_50px_120px_-40px_rgba(0,0,0,0.95),0_0_0_1px_rgba(255,255,255,0.08)]">
-        {/* O mundo da plataforma no topo do cartão */}
-        <div aria-hidden="true" className="relative h-[92px] overflow-hidden">
-          <img src="/images/finer-mundo.webp" alt="" className="h-full w-full object-cover object-top" />
-          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0)_30%,#fff_100%)]" />
-        </div>
-
-        <div className="-mt-12 px-6 pb-7 sm:px-8 sm:pb-8">
+      {/* Formulário direto na página branca, sem caixa (como no registo da Lovable) */}
+      <div className="relative text-navy">
+        <div>
           {status === 'done' ? (
             <div className="pt-6">
               <FormSuccess title={t.successTitle} body={t.successBody} preview={preview} previewNote={t.previewNote}>
@@ -398,10 +396,10 @@ function ApplicationCard({ t }: { t: T }) {
             </div>
           ) : (
             <form noValidate onSubmit={onSubmit} className="relative [color-scheme:light]" aria-labelledby="pio-form-titulo">
-              <h2 id="pio-form-titulo" className="font-display text-[22px] font-bold tracking-[-0.02em] text-[#070D2B] sm:text-[24px]">{t.formTitle}</h2>
+              <h2 id="pio-form-titulo" className="sr-only">{t.formTitle}</h2>
 
               {/* Progresso */}
-              <div className="mt-4 flex items-center justify-between text-[12.5px]">
+              <div className="flex items-center justify-between text-[12.5px]">
                 <span className="font-semibold text-accent-deep" aria-live="polite">
                   {t.stepOf(step + 1)} · <span className="text-[#070D2B]">{t.stepTitles[step]}</span>
                 </span>
@@ -430,20 +428,20 @@ function ApplicationCard({ t }: { t: T }) {
                     {step === 0 && (
                       <>
                         <Field id="pio-name" label={t.name} error={errors.name}>
-                          <TextInput id="pio-name" autoComplete="name" maxLength={100} value={values.name} onChange={(e) => set('name')(e.target.value)} error={errors.name} />
+                          <TextInput className="rounded-full px-5" id="pio-name" autoComplete="name" maxLength={100} value={values.name} onChange={(e) => set('name')(e.target.value)} error={errors.name} />
                         </Field>
                         <Field id="pio-email" label={t.email} error={errors.email}>
-                          <TextInput id="pio-email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder="nome@empresa.pt" value={values.email} onChange={(e) => set('email')(e.target.value)} error={errors.email} />
+                          <TextInput className="rounded-full px-5" id="pio-email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder="nome@empresa.pt" value={values.email} onChange={(e) => set('email')(e.target.value)} error={errors.email} />
                         </Field>
                       </>
                     )}
                     {step === 1 && (
                       <>
                         <Field id="pio-company" label={t.company} error={errors.company}>
-                          <TextInput id="pio-company" autoComplete="organization" maxLength={120} value={values.company} onChange={(e) => set('company')(e.target.value)} error={errors.company} />
+                          <TextInput className="rounded-full px-5" id="pio-company" autoComplete="organization" maxLength={120} value={values.company} onChange={(e) => set('company')(e.target.value)} error={errors.company} />
                         </Field>
                         <Field id="pio-sector" label={t.sector} error={errors.sector}>
-                          <SelectInput id="pio-sector" value={values.sector} onChange={(e) => set('sector')(e.target.value)} error={errors.sector}>
+                          <SelectInput className="rounded-full px-5" id="pio-sector" value={values.sector} onChange={(e) => set('sector')(e.target.value)} error={errors.sector}>
                             <option value="">{t.sectorPlaceholder}</option>
                             {t.sectors.map((s) => (
                               <option key={s} value={s}>
@@ -480,7 +478,7 @@ function ApplicationCard({ t }: { t: T }) {
                               )
                             })}
                           </div>
-                          <TextArea id="pio-challenge" hasHint maxLength={1500} rows={3} placeholder={placeholder} value={values.challenge} onChange={(e) => set('challenge')(e.target.value)} error={errors.challenge} />
+                          <TextArea className="rounded-2xl" id="pio-challenge" hasHint maxLength={1500} rows={3} placeholder={placeholder} value={values.challenge} onChange={(e) => set('challenge')(e.target.value)} error={errors.challenge} />
                         </Field>
                         <ConsentCheckbox
                           id="pio-consent"
@@ -511,17 +509,20 @@ function ApplicationCard({ t }: { t: T }) {
 
               <div className="mt-7 flex items-center gap-3">
                 {step > 0 && (
-                  <button type="button" onClick={() => go(step - 1)} className="inline-flex h-12 items-center gap-1.5 rounded-xl px-3 text-[14px] font-semibold text-[#0B1030]/70 transition-colors hover:bg-[#0B1030]/[0.05] hover:text-[#070D2B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
+                  <button type="button" onClick={() => go(step - 1)} className="inline-flex h-12 items-center gap-1.5 rounded-full px-4 text-[14px] font-semibold text-[#0B1030]/70 transition-colors hover:bg-[#0B1030]/[0.05] hover:text-[#070D2B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
                     <ArrowLeft className="h-4 w-4" aria-hidden="true" />
                     {t.back}
                   </button>
                 )}
-                <button type="submit" disabled={status === 'sending'} className={buttonClasses({ size: 'lg', className: 'group flex-1 font-semibold' })}>
+                <button type="submit" disabled={status === 'sending'} className={buttonClasses({ size: 'lg', className: 'group h-12 flex-1 rounded-full bg-[#070D2B] font-semibold shadow-none hover:bg-[#0E1A4D]' })}>
                   {step < 2 ? t.next : status === 'sending' ? t.sending : t.submit}
                   <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true" />
                 </button>
               </div>
-              <p className="mt-4 flex items-center justify-center gap-2 text-center text-[12px] text-navy/60">
+              <p className="mt-5 text-center text-[13px] text-[#0B1030]/60">
+                {t.offerLabel}: <span className="font-semibold text-[#070D2B]">{t.offer}</span>
+              </p>
+              <p className="mt-5 flex items-center justify-center gap-2 border-t border-[#0B1030]/[0.08] pt-4 text-center text-[12px] text-navy/55">
                 <Lock className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                 {t.secure}
               </p>
