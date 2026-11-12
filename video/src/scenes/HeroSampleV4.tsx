@@ -7,7 +7,7 @@ import { FinerHomeView } from '@/components/v2/finer-ui/FinerHomeView'
 import { useAnchors } from '../lib/anchors'
 import { cameraAt, cameraTransform, toStage, WIDE } from '../lib/camera'
 import type { Shot } from '../lib/camera'
-import { CANVAS_H, CANVAS_W, HEIGHT, NAVY, WIDTH } from '../lib/constants'
+import { CANVAS_H, CANVAS_W, HEIGHT, K, NAVY, WIDTH } from '../lib/constants'
 import { Comet, curve, Pulse } from '../parts/Comet'
 import { Cursor } from '../parts/Cursor'
 import { Highlight } from '../parts/Highlight'
@@ -90,7 +90,9 @@ export function HeroSampleV4() {
   // real) o texto principal fica com 14–18 px, legível. Uma ideia de cada vez.
   const askC = ask ? ask.cx : WIDE.x
   // Abertura: o topo da Finer Home com o mundo e o título "Finer Home.", e a seguir aproxima à pergunta.
-  const opening: Shot = { f: 0, s: 1.55, x: askC - 190, y: ask ? ask.cy - 60 : WIDE.y }
+  // Nunca mostrar o menu lateral branco (232 px): a margem esquerda do plano fica sempre à direita dele.
+  const noSidebar = (sh: Shot): Shot => ({ ...sh, x: Math.max(sh.x, 232 + 6 + WIDTH / (2 * K * sh.s)) })
+  const opening: Shot = noSidebar({ f: 0, s: 1.55, x: askC - 190, y: ask ? ask.cy - 60 : WIDE.y })
   // A linha da resposta cresce enquanto é escrita: enquadrar pela margem do cartão (alinhada com a
   // prioridade) e não pela largura do texto, para o início da frase nunca ficar cortado.
   const ansC = { x: pri ? pri.x + 300 : askC - 260, y: ask ? ask.cy + 150 : WIDE.y }
@@ -106,7 +108,7 @@ export function HeroSampleV4() {
     { f: T.ctaClick, s: 2.55, ...priF },
     { f: T.open[1], s: 2.7, ...priF },
   ]
-  const homeCam = cameraAt(frame, homeShots)
+  const homeCam = cameraAt(frame, homeShots.map(noSidebar))
 
   const shows = a['adv-shows']
   const rec0 = a['adv-rec-0']
@@ -120,12 +122,12 @@ export function HeroSampleV4() {
     { f: T.close[0], s: 3.12, ...recF }, // pequena aproximação contínua no clímax
     { f: T.close[1], s: 3.16, ...recF },
   ]
-  const advCam = cameraAt(frame, advShots)
+  const advCam = cameraAt(frame, advShots.map(noSidebar))
 
   // ---------- Profundidade na passagem Home → Advisor ----------
   const depth = interpolate(frame, T.open, [0, 1], { ...clamp, easing: maskEase })
   const maxR = Math.hypot(WIDTH, HEIGHT)
-  const ctaCam = cameraAt(T.ctaClick, homeShots)
+  const ctaCam = cameraAt(T.ctaClick, homeShots.map(noSidebar))
   const openPoint = cta ? toStage(ctaCam, cta.cx, cta.cy) : { x: WIDTH * 0.84, y: HEIGHT * 0.44 }
   const radius = interpolate(frame, T.open, [0, maxR], { ...clamp, easing: maskEase })
 
