@@ -18,10 +18,10 @@
 
 var SHEETS = {
   pioneers: { name: 'Finer Pioneers', headers: ['Data', 'Nome', 'Empresa', 'Setor', 'Email', 'Principal desafio financeiro', 'Consentimento (versão)', 'Idioma', 'Estado'] },
-  waitlist: { name: 'Lista de espera', headers: ['Data', 'Nome', 'Email', 'Consentimento (versão)', 'Idioma'] },
+  waitlist: { name: 'Lista de espera', headers: ['Data', 'Nome', 'Email', 'Consentimento (versão)', 'Idioma', 'Dimensão da empresa', 'O que quer acompanhar'] },
 };
 
-var LIMITS = { name: 100, company: 120, sector: 80, email: 254, challenge: 1500 };
+var LIMITS = { name: 100, company: 120, sector: 80, email: 254, challenge: 1500, size: 40, interests: 200 };
 var MIN_FILL_MS = 3000;
 var PER_EMAIL_SECONDS = 600; // 1 envio por email a cada 10 minutos
 var GLOBAL_PER_MINUTE = 30;
@@ -47,6 +47,8 @@ function doPost(e) {
       sector: text(f.sector, LIMITS.sector),
       email: text(f.email, LIMITS.email).toLowerCase(),
       challenge: text(f.challenge, LIMITS.challenge),
+      size: text(f.size, LIMITS.size),
+      interests: text(f.interests, LIMITS.interests),
     };
 
     if (clean.name.length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(clean.email)) return reply({ ok: false, error: 'invalid' });
@@ -68,7 +70,8 @@ function doPost(e) {
 
       if (kind === 'waitlist') {
         if (emailExists(sheet, clean.email, 3)) return reply({ ok: true }); // já inscrito
-        sheet.appendRow([new Date(), safe(clean.name), safe(clean.email), consent, lang]);
+        // Colunas novas no fim, para o email continuar na coluna 3 (verificação de duplicados).
+        sheet.appendRow([new Date(), safe(clean.name), safe(clean.email), consent, lang, safe(clean.size), safe(clean.interests)]);
       } else {
         sheet.appendRow([new Date(), safe(clean.name), safe(clean.company), safe(clean.sector), safe(clean.email), safe(clean.challenge), consent, lang, 'Nova']);
         if (NOTIFY_EMAIL) {
