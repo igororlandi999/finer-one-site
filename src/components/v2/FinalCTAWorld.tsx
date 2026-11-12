@@ -9,9 +9,9 @@ import { cn } from '@/lib/utils'
 const EASE = [0.22, 1, 0.36, 1] as const
 
 /**
- * Secção 8 — CTA final (12/11/2026). O "mundo" da hero (a Terra vista do
- * espaço) numa versão estática nítida (public/images/cta-earth.webp, a partir
- * do poster da hero, com nitidez reforçada). Duas ações, por indicação do
+ * Secção 8 — CTA final (12/11/2026). O "mundo" da identidade Finer One (a
+ * Terra com as luzes da Europa, da pasta de imagens de identidade): recorte sem
+ * texto, ampliado 2x com nitidez reforçada (public/images/cta-earth.webp). Duas ações, por indicação do
  * fundador: Ser Finer Pioneer (principal) e lista de espera (secundária).
  *
  * Composição escolhida pelo fundador: à maneira da Lovable (tudo ao centro,
@@ -56,9 +56,9 @@ function Title({ t, center }: { t: T; center?: boolean }) {
   return (
     <>
       <motion.p variants={rise} className={cn('inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#7CB8FF] sm:tracking-[0.3em]', center && 'justify-center')}>
-        <span aria-hidden="true" className="h-px w-8 bg-gradient-to-r from-transparent to-glow" />
+        <span aria-hidden="true" className="hidden h-px w-8 bg-gradient-to-r from-transparent to-glow sm:block" />
         {t.eyebrow}
-        {center && <span aria-hidden="true" className="h-px w-8 bg-gradient-to-l from-transparent to-glow" />}
+        {center && <span aria-hidden="true" className="hidden h-px w-8 bg-gradient-to-l from-transparent to-glow sm:block" />}
       </motion.p>
       <motion.h2 variants={rise} id="cta-final-titulo" className="mt-6 text-balance font-display text-[36px] font-bold leading-[1.05] tracking-[-0.035em] text-white sm:text-[48px] lg:text-[56px]">
         {t.title[0]}
@@ -99,11 +99,11 @@ function LovableCTA({ t }: { t: T }) {
   return (
     <section aria-labelledby="cta-final-titulo" className="relative isolate overflow-hidden bg-[#03060F] text-white">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-        <img src={IMG} alt="" loading="lazy" decoding="async" className="absolute inset-x-0 bottom-0 h-[78%] w-full object-cover object-[50%_62%]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,#03060F_0%,#03060F_24%,rgba(3,6,15,0.55)_48%,rgba(3,6,15,0.05)_72%,rgba(3,6,15,0.35)_100%)]" />
-        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-navy-deep" />
+        <img src={IMG} alt="" loading="lazy" decoding="async" className="absolute inset-x-0 bottom-0 h-[74%] w-full object-cover object-[50%_16%]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,#03060F_0%,#03060F_26%,rgba(3,6,15,0.6)_44%,rgba(3,6,15,0)_64%,rgba(3,6,15,0)_86%,rgba(3,6,15,0.4)_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-transparent to-navy-deep" />
       </div>
-      <motion.div className="mx-auto max-w-[900px] px-6 pb-[min(34vw,340px)] pt-24 text-center sm:pt-28 lg:pt-32" variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.35 }}>
+      <motion.div className="mx-auto max-w-[900px] px-6 pb-[min(20vw,210px)] pt-20 text-center sm:pt-24" variants={group} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.35 }}>
         <Title t={t} center />
         <Buttons t={t} center />
       </motion.div>
