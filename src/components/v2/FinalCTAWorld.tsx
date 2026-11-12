@@ -1,5 +1,6 @@
+import { useRef } from 'react'
 import { ArrowRight } from 'lucide-react'
-import { MotionConfig, motion } from 'motion/react'
+import { MotionConfig, motion, useReducedMotion, useScroll, useSpring, useTransform } from 'motion/react'
 import type { Variants } from 'motion/react'
 import { buttonClasses } from '@/components/ui/Button'
 import { useLanguage } from '@/i18n/LanguageContext'
@@ -96,10 +97,18 @@ export function FinalCTAWorld() {
 
 /* A · Lovable — tudo ao centro, o mundo a nascer por baixo da frase */
 function LovableCTA({ t }: { t: T }) {
+  const ref = useRef<HTMLElement>(null)
+  const reduced = useReducedMotion() ?? false
+  // Zoom cinematográfico ligado ao scroll: o mundo começa aproximado e afasta-se até ao enquadramento
+  // final enquanto a secção entra ("ver o quadro inteiro"); acompanha o scroll e para — sem ciclo.
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end end'] })
+  const p = useSpring(scrollYProgress, { stiffness: 90, damping: 26, mass: 0.6 })
+  const scale = useTransform(p, [0, 1], reduced ? [1, 1] : [1.16, 1])
+  const y = useTransform(p, [0, 1], reduced ? ['0%', '0%'] : ['6%', '0%'])
   return (
-    <section aria-labelledby="cta-final-titulo" className="relative isolate overflow-hidden bg-[#03060F] text-white">
+    <section ref={ref} aria-labelledby="cta-final-titulo" className="relative isolate overflow-hidden bg-[#03060F] text-white">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-        <img src={IMG} alt="" loading="lazy" decoding="async" className="absolute inset-x-0 bottom-0 h-[74%] w-full object-cover object-[50%_16%]" />
+        <motion.img src={IMG} alt="" loading="lazy" decoding="async" style={{ scale, y }} className="absolute inset-x-0 bottom-0 h-[74%] w-full origin-[50%_40%] object-cover object-[50%_16%] will-change-transform" />
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,#03060F_0%,#03060F_26%,rgba(3,6,15,0.6)_44%,rgba(3,6,15,0)_64%,rgba(3,6,15,0)_86%,rgba(3,6,15,0.4)_100%)]" />
         <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-transparent to-navy-deep" />
       </div>
