@@ -95,6 +95,11 @@ const copy: Record<Lang, { eyebrow: string; title: string; sub: string; items: Q
   },
 }
 
+/** PRÉ-VISUALIZAÇÃO do estilo: ?faqestilo=lovable | ramp (sem parâmetro = Searchable, duas colunas). */
+const STYLE = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('faqestilo') : null
+const LOV = STYLE === 'lovable'
+const RAMP = STYLE === 'ramp'
+
 const group: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } }
 /** Revelação única: ~400 ms, até 12 px. */
 const rise: Variants = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE } } }
@@ -110,28 +115,31 @@ export function FAQHome() {
       <section id="faq" aria-labelledby="faq-titulo" className="relative scroll-mt-24 bg-white text-navy">
         <div className="mx-auto max-w-content px-5 sm:px-6 lg:px-8">
           <motion.div
-            className="grid grid-cols-[minmax(0,1fr)] gap-8 border-t border-[#0B1030]/[0.08] pb-16 pt-12 lg:grid-cols-[minmax(0,0.35fr)_minmax(0,0.65fr)] lg:gap-16 lg:pb-20 lg:pt-16"
+            className={cn(
+              'grid grid-cols-[minmax(0,1fr)] gap-8 border-t border-[#0B1030]/[0.08] pb-16 pt-12 lg:pb-20 lg:pt-16',
+              LOV ? 'lg:gap-12' : RAMP ? 'lg:gap-10' : 'lg:grid-cols-[minmax(0,0.35fr)_minmax(0,0.65fr)] lg:gap-16',
+            )}
             variants={group}
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.2 }}
           >
             {/* Esquerda: eyebrow, título, subtítulo — alinhados com o início das perguntas */}
-            <div className="lg:sticky lg:top-28 lg:self-start lg:pt-5">
-              <motion.p variants={rise} className="flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">
+            <div className={cn(LOV ? 'mx-auto max-w-[720px] text-center' : RAMP ? '' : 'lg:sticky lg:top-28 lg:self-start lg:pt-5')}>
+              <motion.p variants={rise} className={cn('flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep', LOV && 'justify-center')}>
                 <span aria-hidden="true" className="h-px w-6 bg-accent" />
                 {t.eyebrow}
               </motion.p>
-              <motion.h2 variants={rise} id="faq-titulo" className="mt-4 text-balance font-display text-[34px] font-bold leading-[1.04] tracking-[-0.035em] text-[#070D2B] sm:text-[44px] lg:text-[48px]">
+              <motion.h2 variants={rise} id="faq-titulo" className={cn('mt-4 text-balance font-display font-bold leading-[1.04] tracking-[-0.035em] text-[#070D2B]', RAMP ? 'text-[38px] sm:text-[56px] lg:text-[68px]' : 'text-[34px] sm:text-[44px] lg:text-[48px]')}>
                 {t.title}
               </motion.h2>
-              <motion.p variants={rise} className="mt-4 max-w-[360px] text-[16.5px] leading-[1.6] text-[#0B1030]/65 sm:text-[17px]">
+              <motion.p variants={rise} className={cn('mt-4 text-[16.5px] leading-[1.6] text-[#0B1030]/65 sm:text-[17px]', LOV ? 'mx-auto max-w-[520px]' : RAMP ? 'max-w-[560px]' : 'max-w-[360px]')}>
                 {t.sub}
               </motion.p>
             </div>
 
             {/* Direita: sete perguntas em acordeão (uma aberta de cada vez) */}
-            <motion.div variants={rise} className="border-t border-[#0B1030]/10">
+            <motion.div variants={rise} className={cn('border-t border-[#0B1030]/10', LOV && 'mx-auto w-full max-w-[880px] border-t-0')}>
               {t.items.map((x, i) => {
                 const isOpen = open === i
                 const bid = `${uid}-b${i}`
@@ -139,7 +147,7 @@ export function FAQHome() {
                 return (
                   <div key={x.q} className="group relative border-b border-[#0B1030]/10 transition-colors duration-200 hover:border-[#0B1030]/20">
                     {/* Indicador de seleção Finer One */}
-                    <span aria-hidden="true" className={cn('absolute -left-px top-0 h-full w-[2px] origin-top bg-accent transition-transform duration-300', isOpen ? 'scale-y-100' : 'scale-y-0')} />
+                    {!LOV && !RAMP && <span aria-hidden="true" className={cn('absolute -left-px top-0 h-full w-[2px] origin-top bg-accent transition-transform duration-300', isOpen ? 'scale-y-100' : 'scale-y-0')} />}
                     <h3>
                       <button
                         id={bid}
@@ -147,10 +155,10 @@ export function FAQHome() {
                         aria-expanded={isOpen}
                         aria-controls={pid}
                         onClick={() => setOpen(isOpen ? null : i)}
-                        className="flex w-full items-center gap-5 py-5 pl-4 pr-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent sm:py-6 sm:pl-5"
+                        className={cn('flex w-full items-center gap-5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent', LOV || RAMP ? 'py-5 pr-1 sm:py-6' : 'py-5 pl-4 pr-1 sm:py-6 sm:pl-5')}
                       >
-                        <span className={cn('flex-1 text-[17px] font-semibold leading-snug tracking-[-0.01em] transition-colors duration-200 sm:text-[18px]', isOpen ? 'text-[#070D2B]' : 'text-[#070D2B]/80 group-hover:text-[#070D2B]')}>{x.q}</span>
-                        <PlusMinus open={isOpen} />
+                        <span className={cn('flex-1 leading-snug tracking-[-0.01em] transition-colors duration-200', RAMP ? 'text-[17px] font-medium sm:text-[19px]' : LOV ? 'text-[18px] font-semibold sm:text-[20px]' : 'text-[17px] font-semibold sm:text-[18px]', isOpen ? 'text-[#070D2B]' : 'text-[#070D2B]/80 group-hover:text-[#070D2B]')}>{x.q}</span>
+                        {LOV ? <Chevron open={isOpen} /> : RAMP ? <Chevron open={isOpen} boxed /> : <PlusMinus open={isOpen} />}
                       </button>
                     </h3>
                     <AnimatePresence initial={false}>
@@ -164,7 +172,7 @@ export function FAQHome() {
                           animate={{ height: 'auto', opacity: 1, transition: { height: { duration: 0.26, ease: EASE }, opacity: { duration: 0.2, delay: 0.04 } } }}
                           exit={{ height: 0, opacity: 0, transition: { height: { duration: 0.22, ease: EASE }, opacity: { duration: 0.12 } } }}
                         >
-                          <div className="max-w-[640px] pb-6 pl-4 pr-10 sm:pl-5">
+                          <div className={cn('pb-6 pr-10', LOV ? 'max-w-[760px]' : RAMP ? 'max-w-[760px]' : 'max-w-[640px] pl-4 sm:pl-5')}>
                             <p className="text-[16px] leading-[1.65] text-[#0B1030]/70">{x.a}</p>
                             {x.link && (
                               <a href={x.link.href} className="mt-3 inline-flex items-center gap-1.5 text-[15px] font-semibold text-accent-deep underline decoration-accent-deep/30 underline-offset-4 transition-colors hover:decoration-accent-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
@@ -198,6 +206,24 @@ function PlusMinus({ open }: { open: boolean }) {
     >
       <span className="absolute h-[1.5px] w-3 rounded-full bg-current" />
       <span className={cn('absolute h-3 w-[1.5px] rounded-full bg-current transition-transform duration-200', open ? 'scale-y-0' : 'scale-y-100')} />
+    </span>
+  )
+}
+
+/** Seta (Lovable: simples; Ramp: dentro de um quadrado com contorno). Fica azul ao passar o rato. */
+function Chevron({ open, boxed }: { open: boolean; boxed?: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        'flex shrink-0 items-center justify-center transition-colors duration-200',
+        boxed ? 'h-9 w-9 rounded-[8px] border' : 'h-6 w-6',
+        boxed ? (open ? 'border-accent text-accent' : 'border-[#0B1030]/15 text-[#0B1030]/70 group-hover:border-accent group-hover:text-accent') : open ? 'text-accent' : 'text-[#0B1030]/55 group-hover:text-accent',
+      )}
+    >
+      <svg viewBox="0 0 16 16" className={cn('h-4 w-4 transition-transform duration-300', open && 'rotate-180')} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <path d="m4 6 4 4 4-4" />
+      </svg>
     </span>
   )
 }
