@@ -12,7 +12,7 @@ const EASE = [0.22, 1, 0.36, 1] as const
  * maneira da Lovable; respostas diretas, à maneira da Searchable.
  *
  * TEXTOS: fornecidos pelo fundador. Frases que dependem de validação antes de
- * publicar (ver relatório): perguntas em linguagem natural (02), exemplos de
+ * publicar (ver relatório): [02 confirmada pelo fundador a 12/11/2026: o Plus permite fazer perguntas] exemplos de
  * perguntas (03), confirmação de banco "junto da equipa" (04), mecanismos de
  * receção de documentos (06), condições do programa Finer Pioneers (07). Oferta Pioneers (1.º mês grátis + 10%) indicada pelo fundador a 12/11/2026.
  * Segurança, dados, IA, faturação e cancelamento ficam fora (secção de
