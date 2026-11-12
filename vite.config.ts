@@ -15,6 +15,7 @@ export default defineConfig({
         pioneers: fileURLToPath(new URL('./pioneers/index.html', import.meta.url)),
         listaEspera: fileURLToPath(new URL('./lista-espera/index.html', import.meta.url)),
         privacidade: fileURLToPath(new URL('./privacidade/index.html', import.meta.url)),
+        sobre: fileURLToPath(new URL('./sobre/index.html', import.meta.url)),
       },
     },
   },
