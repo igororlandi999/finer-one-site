@@ -40,6 +40,7 @@ import { EarlyAccess } from '@/components/v2/EarlyAccess'
 import { FAQSection } from '@/components/faq/FAQSection'
 import { FAQHome } from '@/components/v2/FAQHome'
 import { FinalCTA } from '@/components/footer/FinalCTA'
+import { FinalCTAWorld } from '@/components/v2/FinalCTAWorld'
 import { SiteFooter } from '@/components/footer/SiteFooter'
 
 // Comparação na versão de desenvolvimento: ?secao=antiga mostra a segunda secção anterior.
@@ -106,7 +107,8 @@ export default function App() {
         {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('acesso') === 'antigo' && <EarlyAccess />}
         {/* FAQ final (fundador, 12/11/2026). Versão anterior escura em ?faq=antigo */}
         {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('faq') === 'antigo' ? <FAQSection /> : <FAQHome />}
-        <FinalCTA />
+        {/* CTA final com o mundo da hero (fundador, 12/11/2026). Versão anterior em ?cta=antigo */}
+        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('cta') === 'antigo' ? <FinalCTA /> : <FinalCTAWorld />}
       </main>
 
       <SiteFooter />
