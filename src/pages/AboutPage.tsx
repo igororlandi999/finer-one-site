@@ -122,10 +122,9 @@ export function AboutPage() {
 /* 1 · Abertura + imagens (como as fotografias da equipa na Searchable) */
 function Hero({ t }: { t: T }) {
   const imgs = [
-    { src: '/images/para-quem-estrada.webp', pos: '60% 80%', cls: 'lg:col-span-6 aspect-[16/10] lg:aspect-auto lg:row-span-2' },
-    { src: '/images/para-quem-montanha.webp', pos: '75% 75%', cls: 'lg:col-span-3 aspect-[4/3] lg:aspect-auto' },
-    { src: '/images/para-quem-luz.webp', pos: '85% 70%', cls: 'lg:col-span-3 aspect-[4/3] lg:aspect-auto' },
-    { src: '/images/cta-earth.webp', pos: '50% 30%', cls: 'lg:col-span-6 aspect-[16/7] lg:aspect-auto' },
+    { src: '/images/sobre-montanha-linha.webp', pos: '62% 30%', cls: 'col-span-2 aspect-[16/11] lg:col-span-1 lg:aspect-auto' },
+    { src: '/images/sobre-cidade-noite.webp', pos: '50% 52%', cls: 'aspect-[3/4] lg:aspect-auto' },
+    { src: '/images/sobre-edificio.webp', pos: '50% 30%', cls: 'aspect-[3/4] lg:aspect-auto' },
   ]
   return (
     <section aria-labelledby="sobre-titulo" className="bg-white pb-16 pt-36 text-navy sm:pt-40">
@@ -140,9 +139,9 @@ function Hero({ t }: { t: T }) {
         </motion.p>
       </motion.div>
 
-      <motion.div variants={group} initial="hidden" animate="show" aria-label={t.gallery} role="img" className="mx-auto mt-14 grid max-w-[1400px] gap-3 px-3 sm:px-4 lg:grid-cols-12 lg:grid-rows-[220px_220px]">
+      <motion.div variants={group} initial="hidden" animate="show" aria-label={t.gallery} role="img" className="mx-auto mt-14 grid max-w-[1400px] grid-cols-2 gap-3 px-3 sm:px-4 lg:h-[460px] lg:grid-cols-[1.7fr_1fr_1fr]">
         {imgs.map((im, i) => (
-          <motion.div key={im.src} variants={{ hidden: { opacity: 0, y: 30, scale: 0.97 }, show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.9, ease: EASE, delay: 0.25 + i * 0.1 } } }} className={cn('group relative overflow-hidden rounded-[22px]', im.cls, i > 1 && 'max-lg:hidden')}>
+          <motion.div key={im.src} variants={{ hidden: { opacity: 0, y: 30, scale: 0.97 }, show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.9, ease: EASE, delay: 0.25 + i * 0.1 } } }} className={cn('group relative overflow-hidden rounded-[22px]', im.cls)}>
             <img src={im.src} alt="" className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1.4s] ease-out group-hover:scale-[1.04]" style={{ objectPosition: im.pos }} />
           </motion.div>
         ))}
@@ -177,7 +176,7 @@ function Story({ t }: { t: T }) {
 
 /* 3 · As pessoas por trás (como "The people behind Searchable"), cada uma com uma frase sua */
 function People({ t }: { t: T }) {
-  const tones = ['from-[#0052FF] to-[#0A40C8]', 'from-[#1E3A8A] to-[#070D2B]', 'from-[#1E90FF] to-[#0052FF]']
+  const linePos = ['0% 50%', '45% 50%', '100% 50%']
   return (
     <section className="bg-[#F7F9FE] text-navy">
       <motion.div variants={group} {...inView} className="mx-auto max-w-content px-5 py-20 sm:px-6 lg:px-8 lg:py-28">
@@ -198,11 +197,11 @@ function People({ t }: { t: T }) {
               variants={rise}
               whileHover={{ y: -6 }}
               transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-              className="flex flex-col overflow-hidden rounded-[24px] border border-[#0B1030]/[0.07] bg-white shadow-[0_30px_60px_-45px_rgba(7,13,43,0.45)]"
+              className="group flex flex-col overflow-hidden rounded-[24px] border border-[#0B1030]/[0.07] bg-white shadow-[0_30px_60px_-45px_rgba(7,13,43,0.45)]"
             >
               {/* Lugar da fotografia: as iniciais sobre o azul da marca (até haver fotografias) */}
-              <div className={cn('relative flex aspect-[5/4] items-end overflow-hidden bg-gradient-to-br p-6', tones[i])}>
-                <img src="/images/cta-earth.webp" alt="" aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[60%] w-full object-cover object-[50%_20%] opacity-35 mix-blend-screen" />
+              <div className="relative flex aspect-[5/4] items-end overflow-hidden bg-[radial-gradient(120%_90%_at_80%_0%,#0A2A8F_0%,#070D2B_60%)] p-6">
+                <img src="/images/sobre-linha.webp" alt="" aria-hidden="true" className="absolute inset-x-0 top-[22%] h-[34%] w-full object-cover mix-blend-screen transition-transform duration-[1.2s] ease-out group-hover:translate-x-[-4%]" style={{ objectPosition: linePos[i], maskImage: 'linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent)' }} />
                 <span aria-hidden="true" className="relative font-display text-[88px] font-bold leading-none tracking-[-0.05em] text-white/95">
                   {f.name.split(' ').map((p) => p[0]).join('')}
                 </span>
@@ -228,7 +227,7 @@ function Beliefs({ t }: { t: T }) {
   return (
     <section className="relative isolate overflow-hidden bg-navy-deep text-white">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-        <img src="/images/cta-earth.webp" alt="" className="absolute inset-x-0 bottom-0 h-[55%] w-full object-cover object-[50%_15%] opacity-70" style={{ maskImage: 'linear-gradient(to bottom, transparent, #000 60%)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 60%)' }} />
+        <img src="/images/sobre-rede.webp" alt="" className="absolute inset-x-0 bottom-0 h-[62%] w-full object-cover object-[50%_35%] opacity-60" style={{ maskImage: 'linear-gradient(to bottom, transparent, #000 60%)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 60%)' }} />
         <div className="absolute inset-0 bg-[radial-gradient(50%_40%_at_20%_15%,rgba(0,82,255,0.2),transparent_70%)]" />
       </div>
       <motion.div variants={group} {...inView} className="mx-auto max-w-content px-5 py-20 sm:px-6 lg:px-8 lg:py-28">

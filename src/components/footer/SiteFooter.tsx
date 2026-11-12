@@ -18,14 +18,14 @@ import { SiteFooterClassic } from './SiteFooterClassic'
  *
  * Referências: Lovable (o rodapé continua a atmosfera do CTA), Searchable
  * (marca à esquerda, colunas à direita, linha legal), Ramp (repete a ação).
- * Só ligações que existem; sem Privacidade/Termos (rascunho / inexistentes).
+ * Só ligações que existem; Privacidade aponta para o aviso (ainda rascunho). Sem Termos (não existem).
  * Versão anterior em ?rodape=antigo.
  */
 type Col = { title: string; links: { label: string; href: string; external?: boolean }[] }
 
 const LINKEDIN = 'https://linkedin.com/company/finerone?skipRedirect=true&viewAsMember=true'
 
-const copy: Record<Lang, { signature: string; tagline: [string, string]; cta: string; cols: Col[]; nav: string; copyright: string; top: string; lang: string }> = {
+const copy: Record<Lang, { signature: string; tagline: [string, string]; cta: string; cols: Col[]; nav: string; copyright: string; top: string; lang: string; privacy: string }> = {
   pt: {
     signature: 'Where Finance Meets Strategy',
     // Os pilares da marca (em vez de repetir "decisões mais claras", já usado no CTA logo acima).
@@ -39,6 +39,7 @@ const copy: Record<Lang, { signature: string; tagline: [string, string]; cta: st
     nav: 'Navegação do rodapé',
     copyright: '© 2026 Finer One. Todos os direitos reservados.',
     top: 'Voltar ao topo',
+    privacy: 'Privacidade',
     lang: 'Idioma',
   },
   en: {
@@ -53,6 +54,7 @@ const copy: Record<Lang, { signature: string; tagline: [string, string]; cta: st
     nav: 'Footer navigation',
     copyright: '© 2026 Finer One. All rights reserved.',
     top: 'Back to top',
+    privacy: 'Privacy',
     lang: 'Language',
   },
 }
@@ -170,7 +172,10 @@ function RevealFooter() {
 
         {/* Linha final */}
         <div className="mt-10 flex flex-col gap-5 border-t border-white/[0.08] py-7 text-[13px] text-white/45 sm:flex-row sm:items-center sm:justify-between lg:mt-12">
-          <p>{t.copyright}</p>
+          <p className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            <span>{t.copyright}</span>
+            <a href="/privacidade/" className="transition-colors hover:text-white">{t.privacy}</a>
+          </p>
           <div className="flex items-center gap-8">
             <div role="group" aria-label={t.lang} className="flex items-center gap-3">
               {(['pt', 'en'] as const).map((l, i) => (
