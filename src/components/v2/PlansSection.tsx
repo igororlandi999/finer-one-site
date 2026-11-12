@@ -12,12 +12,13 @@ const EASE = [0.22, 1, 0.36, 1] as const
  * Secção de planos (âncora #precos), à maneira da página de preços da
  * Searchable: cartões claros lado a lado, o plano em destaque com a cor da
  * marca. PREÇOS (indicação do fundador, 12/11/2026): Plus mensal 67,90 €/mês,
- * Plus anual 57,90 €/mês. Pro e Team: estratégia ainda por definir — sem
+ * Plus anual 57,90 €/mês (IVA incluído). Finer Pioneers: 1.º mês grátis e 10% de
+ * desconto no plano escolhido, mensal ou anual. Pro e Team: estratégia ainda por definir — sem
  * promessas (nem funcionalidades nem posicionamento), só aviso pela lista de espera.
  */
 type Plan = { id: 'plus' | 'pro' | 'team'; name: string; status: string; promise: string; desc: string; listLabel: string; items: string[]; cta: string; href: string }
 
-type Billing = { monthly: string; annual: string; saveM: string; saveA: string; priceM: string; priceA: string; per: string; noteM: string; noteA: string; tbd: string }
+type Billing = { monthly: string; annual: string; saveM: string; saveA: string; priceM: string; priceA: string; per: string; noteM: string; noteA: string; tbd: string; pioneerLabel: string; pioneerText: string }
 
 const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string; price: string; period: string; note: string; billing: Billing; plans: Plan[] }> = {
   pt: {
@@ -27,7 +28,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
     price: 'A anunciar',
     period: '/mês',
     note: 'Os valores do Pro e do Team serão anunciados.',
-    billing: { monthly: 'Mensal', annual: 'Anual', saveM: 'Poupe 120 € por ano com o plano anual', saveA: 'Poupa 120 € por ano face ao plano mensal.', priceM: '67,90 €', priceA: '57,90 €', per: '/mês', noteM: 'Plano mensal · IVA incluído', noteA: 'Por mês, no plano anual · IVA incluído', tbd: 'Funcionalidades e valores a anunciar.' },
+    billing: { monthly: 'Mensal', annual: 'Anual', saveM: 'Poupe 120 € por ano com o plano anual', saveA: 'Poupa 120 € por ano face ao plano mensal.', priceM: '67,90 €', priceA: '57,90 €', per: '/mês', noteM: 'Plano mensal · IVA incluído', noteA: 'Por mês, no plano anual · IVA incluído', tbd: 'Funcionalidades e valores a anunciar.', pioneerLabel: 'Finer Pioneers', pioneerText: 'Primeiro mês grátis e 10% de desconto no plano escolhido, mensal ou anual.' },
     plans: [
       {
         id: 'plus',
@@ -71,7 +72,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
     price: 'To be announced',
     period: '/mo',
     note: 'Pricing for Pro and Team will be announced.',
-    billing: { monthly: 'Monthly', annual: 'Annual', saveM: 'Save €120 a year with the annual plan', saveA: 'You save €120 a year versus monthly.', priceM: '€67.90', priceA: '€57.90', per: '/mo', noteM: 'Monthly plan · VAT included', noteA: 'Per month, on the annual plan · VAT included', tbd: 'Features and pricing to be announced.' },
+    billing: { monthly: 'Monthly', annual: 'Annual', saveM: 'Save €120 a year with the annual plan', saveA: 'You save €120 a year versus monthly.', priceM: '€67.90', priceA: '€57.90', per: '/mo', noteM: 'Monthly plan · VAT included', noteA: 'Per month, on the annual plan · VAT included', tbd: 'Features and pricing to be announced.', pioneerLabel: 'Finer Pioneers', pioneerText: 'First month free and 10% off the plan you choose, monthly or annual.' },
     plans: [
       {
         id: 'plus',
@@ -304,6 +305,17 @@ function PlusPrice({ b }: { b: Billing }) {
           <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true" />
         </button>
       )}
+      {/* Oferta Finer Pioneers (indicação do fundador, 12/11/2026) */}
+      <motion.div
+        className="mt-4 rounded-[12px] bg-[linear-gradient(135deg,#EEF3FF_0%,#E3ECFF_100%)] px-4 py-3 ring-1 ring-inset ring-accent/15"
+        initial={{ opacity: 0, y: 8 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.8 }}
+        transition={{ duration: 0.6, ease: EASE, delay: 0.5 }}
+      >
+        <p className="text-[11.5px] font-bold uppercase tracking-[0.16em] text-accent-deep">{b.pioneerLabel}</p>
+        <p className="mt-1 text-[14px] font-medium leading-snug text-[#070D2B]">{b.pioneerText}</p>
+      </motion.div>
     </div>
   )
 }
