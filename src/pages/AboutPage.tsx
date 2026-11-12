@@ -28,9 +28,9 @@ const copy = {
     peopleTitle: ['As pessoas por trás ', 'da Finer One.'],
     peopleSub: 'Três percursos diferentes — finanças, negócio e tecnologia — com o mesmo objetivo.',
     founders: [
-      { name: 'Sebastião Andrade', role: 'Estratégia e Performance Financeira', quote: 'Ter acesso a números não significa necessariamente saber gerir um negócio.' },
-      { name: 'Henrique Bértolo', role: 'Estratégia e Expansão de Negócio', quote: 'O empresário trabalha para o negócio. O que tem de acontecer é o negócio trabalhar para o empresário.' },
-      { name: 'Igor Orlandi', role: 'Tecnologia e Inovação Estratégica', quote: 'Mais do que apresentar números, queremos ajudar os empresários a compreender melhor o seu negócio e a decidir com mais segurança.' },
+      { name: 'Henrique Bértolo', quote: 'O empresário trabalha para o negócio. O que tem de acontecer é o negócio trabalhar para o empresário.' },
+      { name: 'Igor Orlandi', quote: 'Mais do que apresentar números, queremos ajudar os empresários a compreender melhor o seu negócio e a decidir com mais segurança.' },
+      { name: 'Sebastião Andrade', quote: 'Ter acesso a números não significa necessariamente saber gerir um negócio.' },
     ],
     beliefTitle: ['Em que ', 'acreditamos.'],
     beliefs: [
@@ -66,9 +66,9 @@ const copy = {
     peopleTitle: ['The people behind ', 'Finer One.'],
     peopleSub: 'Three different paths — finance, business and technology — with the same goal.',
     founders: [
-      { name: 'Sebastião Andrade', role: 'Strategy and Financial Performance', quote: 'Having access to numbers does not necessarily mean knowing how to run a business.' },
-      { name: 'Henrique Bértolo', role: 'Strategy and Business Expansion', quote: 'Business owners work for their business. What needs to happen is the business working for them.' },
-      { name: 'Igor Orlandi', role: 'Technology and Strategic Innovation', quote: 'More than showing numbers, we want to help owners understand their business better and decide with more confidence.' },
+      { name: 'Henrique Bértolo', quote: 'Business owners work for their business. What needs to happen is the business working for them.' },
+      { name: 'Igor Orlandi', quote: 'More than showing numbers, we want to help owners understand their business better and decide with more confidence.' },
+      { name: 'Sebastião Andrade', quote: 'Having access to numbers does not necessarily mean knowing how to run a business.' },
     ],
     beliefTitle: ['What we ', 'believe.'],
     beliefs: [
@@ -123,8 +123,8 @@ export function AboutPage() {
 function Hero({ t }: { t: T }) {
   const imgs = [
     { src: '/images/sobre-montanha-linha.webp', pos: '62% 30%', cls: 'col-span-2 aspect-[16/11] lg:col-span-1 lg:aspect-auto' },
-    { src: '/images/sobre-cidade-noite.webp', pos: '50% 52%', cls: 'aspect-[3/4] lg:aspect-auto' },
     { src: '/images/sobre-edificio.webp', pos: '50% 30%', cls: 'aspect-[3/4] lg:aspect-auto' },
+    { src: '/images/sobre-rede.webp', pos: '45% 45%', cls: 'aspect-[3/4] lg:aspect-auto' },
   ]
   return (
     <section aria-labelledby="sobre-titulo" className="bg-white pb-16 pt-36 text-navy sm:pt-40">
@@ -139,7 +139,7 @@ function Hero({ t }: { t: T }) {
         </motion.p>
       </motion.div>
 
-      <motion.div variants={group} initial="hidden" animate="show" aria-label={t.gallery} role="img" className="mx-auto mt-14 grid max-w-[1400px] grid-cols-2 gap-3 px-3 sm:px-4 lg:h-[460px] lg:grid-cols-[1.7fr_1fr_1fr]">
+      <motion.div variants={group} initial="hidden" animate="show" aria-label={t.gallery} role="img" className="mx-auto mt-14 grid max-w-[1400px] grid-cols-2 gap-3 px-3 sm:px-4 lg:h-[460px] lg:grid-cols-[1.6fr_0.9fr_1.3fr]">
         {imgs.map((im, i) => (
           <motion.div key={im.src} variants={{ hidden: { opacity: 0, y: 30, scale: 0.97 }, show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.9, ease: EASE, delay: 0.25 + i * 0.1 } } }} className={cn('group relative overflow-hidden rounded-[22px]', im.cls)}>
             <img src={im.src} alt="" className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1.4s] ease-out group-hover:scale-[1.04]" style={{ objectPosition: im.pos }} />
@@ -176,7 +176,6 @@ function Story({ t }: { t: T }) {
 
 /* 3 · As pessoas por trás (como "The people behind Searchable"), cada uma com uma frase sua */
 function People({ t }: { t: T }) {
-  const linePos = ['0% 50%', '45% 50%', '100% 50%']
   return (
     <section className="bg-[#F7F9FE] text-navy">
       <motion.div variants={group} {...inView} className="mx-auto max-w-content px-5 py-20 sm:px-6 lg:px-8 lg:py-28">
@@ -195,13 +194,13 @@ function People({ t }: { t: T }) {
             <motion.figure
               key={f.name}
               variants={rise}
-              whileHover={{ y: -6 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 24 }}
               className="group flex flex-col overflow-hidden rounded-[24px] border border-[#0B1030]/[0.07] bg-white shadow-[0_30px_60px_-45px_rgba(7,13,43,0.45)]"
             >
               {/* Lugar da fotografia: as iniciais sobre o azul da marca (até haver fotografias) */}
               <div className="relative flex aspect-[5/4] items-end overflow-hidden bg-[radial-gradient(120%_90%_at_80%_0%,#0A2A8F_0%,#070D2B_60%)] p-6">
-                <img src="/images/sobre-linha.webp" alt="" aria-hidden="true" className="absolute inset-x-0 top-[22%] h-[34%] w-full object-cover mix-blend-screen transition-transform duration-[1.2s] ease-out group-hover:translate-x-[-4%]" style={{ objectPosition: linePos[i], maskImage: 'linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent)' }} />
+                <div aria-hidden="true" className="absolute inset-x-0 top-[18%] h-[38%] overflow-hidden mix-blend-screen" style={{ maskImage: 'linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent)' }}>
+                  <img src="/images/sobre-linha.webp" alt="" className="absolute top-0 h-full max-w-none object-fill max-md:!left-0 max-md:!w-full max-md:object-cover" style={{ width: 'calc(300% + 32px)', left: `calc(${-i * 100}% - ${i * 16}px)` }} />
+                </div>
                 <span aria-hidden="true" className="relative font-display text-[88px] font-bold leading-none tracking-[-0.05em] text-white/95">
                   {f.name.split(' ').map((p) => p[0]).join('')}
                 </span>
@@ -212,7 +211,6 @@ function People({ t }: { t: T }) {
               </blockquote>
               <figcaption className="border-t border-[#0B1030]/[0.07] px-6 py-5">
                 <span className="block font-display text-[17px] font-bold text-[#070D2B]">{f.name}</span>
-                <span className="mt-0.5 block text-[13.5px] text-[#0B1030]/55">{f.role}</span>
               </figcaption>
             </motion.figure>
           ))}
@@ -227,7 +225,7 @@ function Beliefs({ t }: { t: T }) {
   return (
     <section className="relative isolate overflow-hidden bg-navy-deep text-white">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-        <img src="/images/sobre-rede.webp" alt="" className="absolute inset-x-0 bottom-0 h-[62%] w-full object-cover object-[50%_35%] opacity-60" style={{ maskImage: 'linear-gradient(to bottom, transparent, #000 60%)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 60%)' }} />
+        <img src="/images/sobre-linha.webp" alt="" className="absolute inset-x-0 bottom-0 h-[150px] w-full object-cover object-[70%_50%] opacity-80 mix-blend-screen" style={{ maskImage: 'linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent)' }} />
         <div className="absolute inset-0 bg-[radial-gradient(50%_40%_at_20%_15%,rgba(0,82,255,0.2),transparent_70%)]" />
       </div>
       <motion.div variants={group} {...inView} className="mx-auto max-w-content px-5 py-20 sm:px-6 lg:px-8 lg:py-28">
@@ -247,7 +245,7 @@ function Beliefs({ t }: { t: T }) {
           ))}
         </ul>
 
-        <motion.div variants={rise} className="mt-24 max-w-[880px] pb-10">
+        <motion.div variants={rise} className="mt-24 max-w-[880px] pb-24">
           <p className="text-balance font-display text-[30px] font-bold leading-[1.12] tracking-[-0.03em] sm:text-[42px]">
             {t.giveBack[0]}
             <span className="text-[#3D86FF]">{t.giveBack[1]}</span>

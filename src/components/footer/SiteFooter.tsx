@@ -33,7 +33,7 @@ const copy: Record<Lang, { signature: string; tagline: [string, string]; cta: st
     cta: 'Ser Finer Pioneer',
     cols: [
       { title: 'Produto', links: [{ label: 'Experimentar', href: '/#experimentar-finer' }, { label: 'Como funciona', href: '/#funcionamento' }, { label: 'Planos', href: '/#precos' }] },
-      { title: 'Descobrir', links: [{ label: 'Sobre nós', href: '/sobre/' }, { label: 'Para quem é', href: '/#para-quem' }, { label: 'Segurança', href: '/#seguranca' }, { label: 'Perguntas frequentes', href: '/#faq' }] },
+      { title: 'Descobrir', links: [{ label: 'Sobre nós', href: '/sobre/' }, { label: 'Para quem é', href: '/#para-quem' }, { label: 'Segurança', href: '/#seguranca' }, { label: 'Perguntas frequentes', href: '/#faq' }, { label: 'Privacidade', href: '/privacidade/' }] },
       { title: 'Começar', links: [{ label: 'Finer Pioneers', href: '/pioneers/' }, { label: 'Lista de espera', href: '/lista-espera/' }, { label: 'LinkedIn', href: LINKEDIN, external: true }] },
     ],
     nav: 'Navegação do rodapé',
@@ -48,7 +48,7 @@ const copy: Record<Lang, { signature: string; tagline: [string, string]; cta: st
     cta: 'Become a Finer Pioneer',
     cols: [
       { title: 'Product', links: [{ label: 'Try it', href: '/#experimentar-finer' }, { label: 'How it works', href: '/#funcionamento' }, { label: 'Plans', href: '/#precos' }] },
-      { title: 'Discover', links: [{ label: 'About us', href: '/sobre/' }, { label: 'Who it’s for', href: '/#para-quem' }, { label: 'Security', href: '/#seguranca' }, { label: 'FAQ', href: '/#faq' }] },
+      { title: 'Discover', links: [{ label: 'About us', href: '/sobre/' }, { label: 'Who it’s for', href: '/#para-quem' }, { label: 'Security', href: '/#seguranca' }, { label: 'FAQ', href: '/#faq' }, { label: 'Privacy', href: '/privacidade/' }] },
       { title: 'Get started', links: [{ label: 'Finer Pioneers', href: '/pioneers/' }, { label: 'Waitlist', href: '/lista-espera/' }, { label: 'LinkedIn', href: LINKEDIN, external: true }] },
     ],
     nav: 'Footer navigation',
@@ -174,7 +174,7 @@ function RevealFooter() {
         <div className="mt-10 flex flex-col gap-5 border-t border-white/[0.08] py-7 text-[13px] text-white/45 sm:flex-row sm:items-center sm:justify-between lg:mt-12">
           <p className="flex flex-wrap items-center gap-x-6 gap-y-2">
             <span>{t.copyright}</span>
-            <a href="/privacidade/" className="transition-colors hover:text-white">{t.privacy}</a>
+            <a href="/privacidade/" className="text-white/70 underline decoration-white/25 underline-offset-4 transition-colors hover:text-white">{t.privacy}</a>
           </p>
           <div className="flex items-center gap-8">
             <div role="group" aria-label={t.lang} className="flex items-center gap-3">
