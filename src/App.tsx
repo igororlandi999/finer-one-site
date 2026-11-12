@@ -72,7 +72,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-navy">
       <Navbar />
-      <main id="conteudo">
+      <main id="conteudo" className="relative z-10 bg-navy">
         <HeroDemo />
         {/* Nova secção 2: experiência Finer Home (destino do CTA principal da hero) */}
         <HomeExperience />

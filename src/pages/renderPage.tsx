@@ -24,7 +24,7 @@ export function renderPage(page: ReactNode) {
       <LanguageProvider>
         <div className="min-h-screen bg-navy">
           <Navbar />
-          <main id="conteudo">{page}</main>
+          <main id="conteudo" className="relative z-10 bg-navy">{page}</main>
           <SiteFooter />
         </div>
       </LanguageProvider>
