@@ -26,6 +26,7 @@ const copy = {
       'Assim nasceu a Finer One: o encontro entre finanças, gestão e tecnologia, construído pelos três.',
     ],
     peopleTitle: ['Três pessoas. ', 'Uma visão.'],
+    cofounder: 'Cofundador',
     peopleSub: 'Tecnologia, negócios e finanças a trabalhar em conjunto para transformar a gestão das empresas.',
     founders: [
       { name: 'Henrique Bértolo', photo: '/images/fundadores/henrique.webp', quote: 'O empresário trabalha para o negócio. O que tem de acontecer é o negócio trabalhar para o empresário.' },
@@ -64,6 +65,7 @@ const copy = {
       'That is how Finer One was born: where finance, management and technology meet, built by the three of them.',
     ],
     peopleTitle: ['Three people. ', 'One vision.'],
+    cofounder: 'Co-founder',
     peopleSub: 'Technology, business and finance working together to transform how companies are managed.',
     founders: [
       { name: 'Henrique Bértolo', photo: '/images/fundadores/henrique.webp', quote: 'Business owners work for their business. What needs to happen is the business working for them.' },
@@ -209,7 +211,10 @@ function People({ t }: { t: T }) {
                 viewport={{ once: true, amount: 1 }}
                 transition={{ duration: 0.8, ease: EASE, delay: 0.15 + i * 0.12 }}
               />
-              <figcaption className="mt-4 font-display text-[22px] font-bold tracking-[-0.01em] text-[#070D2B]">{f.name}</figcaption>
+              <figcaption className="mt-4">
+                <span className="block font-display text-[22px] font-bold tracking-[-0.01em] text-[#070D2B]">{f.name}</span>
+                <span className="mt-1 block text-[14px] font-medium text-[#0B1030]/55">{t.cofounder}</span>
+              </figcaption>
               <blockquote className="mt-3 text-[15.5px] leading-[1.6] text-[#0B1030]/65">“{f.quote}”</blockquote>
             </motion.figure>
           ))}
