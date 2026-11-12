@@ -156,7 +156,6 @@ export function HowItWorksSteps() {
                     <motion.span key={step} className="text-[13px] text-[#0B1030]/55" initial={{ opacity: 0, y: 3 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -3 }} transition={{ duration: 0.2 }}>· {t.steps[step].tag}</motion.span>
                   </AnimatePresence>
                 </span>
-                <span className="hidden text-[12px] font-medium text-[#0B1030]/50 sm:inline">{t.note}</span>
               </div>
             </div>
             {/* Mobile: descrição do momento ativo por cima da demonstração */}

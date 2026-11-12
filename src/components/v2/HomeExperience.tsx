@@ -161,10 +161,6 @@ export function HomeExperience() {
                   </span>
                   <span className="text-[13px] font-bold">Finer Home</span>
                 </span>
-                <span className="rounded-full bg-[#070D2B]/45 px-3 py-1 text-[11.5px] font-semibold text-white ring-1 ring-white/25 backdrop-blur-sm">
-                  <span className="sm:hidden">{t.noteShort}</span>
-                  <span className="hidden sm:inline">{t.note}</span>
-                </span>
               </div>
 
               {/* Cartão translúcido: pergunta, sugestões e resposta */}

@@ -276,11 +276,6 @@ export function FinancialDiscovery() {
             </ol>
           </div>
 
-          {/* Faixa "A Finer One analisa" retirada (fundador, 12/11/2026). Fica só a indicação
-              obrigatória de que os valores são exemplos com dados fictícios. */}
-          <motion.p variants={item} className="mt-10 text-center text-[12px] text-[#0B1030]/45 lg:mt-12">
-            {t.note}
-          </motion.p>
         </motion.div>
       </section>
     </MotionConfig>

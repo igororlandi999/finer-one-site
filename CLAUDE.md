@@ -15,7 +15,9 @@ Contexto obrigatório para qualquer sessão que trabalhe neste repositório.
   como "previstas". Continua proibido nomear fornecedores, bancos suportados, tempos
   de atualização ou garantias técnicas não verificadas.
 - Alertas e Finer Advisor: comunicar com rigor, sem prometer resultados.
-- Valores em euros no site são sempre demonstrativos e rotulados como "Exemplo".
+- Valores em euros no site são sempre demonstrativos (nunca dados reais). Por decisão do
+  fundador (12/11/2026), sem rótulos visíveis "dados fictícios"/"ilustrativo" — como a
+  Searchable, a Lovable e a Ramp; a indicação fica só no texto alternativo (aria-label).
 - Não usar as capturas reais da plataforma sem confirmar que os dados nelas são fictícios.
 
 ## Identidade

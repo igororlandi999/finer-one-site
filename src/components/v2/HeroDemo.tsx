@@ -182,7 +182,7 @@ function Backdrop() {
 }
 
 /** Moldura de aplicação 16:9 — a mesma para o vídeo final e para o poster. */
-function Frame({ t, children, controls }: { t: T; children: ReactNode; controls?: ReactNode }) {
+function Frame({ children, controls }: { t: T; children: ReactNode; controls?: ReactNode }) {
   return (
     // Moldura de vidro: aro translúcido, orla superior com a linha azul da marca,
     // sombra longa e um contorno interior fino para separar o ecrã do fundo.
@@ -190,7 +190,6 @@ function Frame({ t, children, controls }: { t: T; children: ReactNode; controls?
       <span aria-hidden="true" className="pointer-events-none absolute -top-px left-[14%] right-[14%] h-px bg-[linear-gradient(90deg,transparent,rgba(90,180,255,0.9),transparent)]" />
       <div className="relative overflow-hidden rounded-[12px] bg-white ring-1 ring-black/10">
         <div className="relative aspect-video bg-[#F7F9FE]">{children}</div>
-        <span className="pointer-events-none absolute bottom-3 left-3 rounded-full bg-[#0B1030]/70 px-2.5 py-1 text-[10px] font-semibold tracking-[0.01em] text-white/95 ring-1 ring-white/10 backdrop-blur">{t.badge}</span>
         {controls}
       </div>
     </div>

@@ -96,7 +96,6 @@ export function SecurityAtmosphere({ lang }: { lang: Lang }) {
         <motion.div variants={rise} className="rounded-[22px] bg-white p-5 shadow-[0_40px_90px_-40px_rgba(7,13,43,0.6),0_0_0_1px_rgba(11,16,48,0.05)] sm:px-6 sm:py-5">
           <div className="flex items-baseline justify-between gap-3">
             <p className="font-display text-[17px] font-bold tracking-[-0.02em] text-[#070D2B] sm:text-[18px]">{pt ? 'Ligações da sua empresa' : 'Your company’s connections'}</p>
-            <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#0B1030]/35">{pt ? 'Ilustrativo' : 'Illustrative'}</p>
           </div>
           <ul className="mt-2 divide-y divide-[#0B1030]/[0.07]">
             <motion.li className="flex items-baseline justify-between gap-4 py-4" variants={rowIn(0.35)}>
