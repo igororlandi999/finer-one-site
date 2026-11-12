@@ -28,7 +28,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
     price: 'A anunciar',
     period: '/mês',
     note: 'Os valores do Pro e do Team serão anunciados.',
-    billing: { monthly: 'Mensal', annual: 'Anual', saveM: 'Poupe 120 € por ano com o plano anual', saveA: 'Poupa 120 € por ano face ao plano mensal.', priceM: '67,90 €', priceA: '57,90 €', per: '/mês', noteM: 'Plano mensal · IVA incluído', noteA: 'Por mês, no plano anual · IVA incluído', tbd: 'Funcionalidades e valores a anunciar.', pioneerLabel: 'Para Finer Pioneers', pioneerLines: ['primeiro mês grátis', '10% de desconto no plano mensal ou anual'] },
+    billing: { monthly: 'Mensal', annual: 'Anual', saveM: 'Poupe 120 € por ano com o plano anual', saveA: 'Poupa 120 € por ano face ao plano mensal.', priceM: '67,90 €', priceA: '57,90 €', per: '/mês', noteM: 'Plano mensal · IVA incluído', noteA: 'Por mês, no plano anual · IVA incluído', tbd: 'Funcionalidades e valores a anunciar.', pioneerLabel: 'Para Finer Pioneers', pioneerLines: ['primeiro mês grátis', '10% de desconto nos planos mensal e anual'] },
     plans: [
       {
         id: 'plus',
@@ -72,7 +72,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
     price: 'To be announced',
     period: '/mo',
     note: 'Pricing for Pro and Team will be announced.',
-    billing: { monthly: 'Monthly', annual: 'Annual', saveM: 'Save €120 a year with the annual plan', saveA: 'You save €120 a year versus monthly.', priceM: '€67.90', priceA: '€57.90', per: '/mo', noteM: 'Monthly plan · VAT included', noteA: 'Per month, on the annual plan · VAT included', tbd: 'Features and pricing to be announced.', pioneerLabel: 'For Finer Pioneers', pioneerLines: ['first month free', '10% off the monthly or annual plan'] },
+    billing: { monthly: 'Monthly', annual: 'Annual', saveM: 'Save €120 a year with the annual plan', saveA: 'You save €120 a year versus monthly.', priceM: '€67.90', priceA: '€57.90', per: '/mo', noteM: 'Monthly plan · VAT included', noteA: 'Per month, on the annual plan · VAT included', tbd: 'Features and pricing to be announced.', pioneerLabel: 'For Finer Pioneers', pioneerLines: ['first month free', '10% off monthly and annual plans'] },
     plans: [
       {
         id: 'plus',
@@ -239,8 +239,8 @@ function PlanCard({ p, i, t, deal, step, reduced }: { p: Plan; i: number; t: (ty
           <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true" />
         </a>
         {plus && (
-          <p className="mt-3 text-center text-[13px] leading-snug text-[#0B1030]/55">
-            <span className="font-semibold text-[#070D2B]">{t.billing.pioneerLabel}:</span> {t.billing.pioneerLines.join(' · ')}
+          <p className="mt-3 text-center text-[13.5px] font-medium leading-snug text-[#070D2B]/85">
+            <span className="font-semibold text-[#070D2B]">{t.billing.pioneerLabel}:</span> {t.billing.pioneerLines.join(' + ')}
           </p>
         )}
 
