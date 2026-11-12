@@ -493,7 +493,7 @@ function Choice({ t }: { t: T }) {
         <div className="mt-12 grid gap-4 md:grid-cols-2">
           <motion.div variants={rise} whileHover={{ y: -6 }} transition={{ type: 'spring', stiffness: 300, damping: 24 }} className="flex flex-col rounded-[24px] border border-[#0B1030]/[0.09] bg-white p-7 shadow-[0_30px_60px_-45px_rgba(7,13,43,0.5)]">
             <p className="text-[12.5px] font-semibold text-[#0B1030]/50">{t.waitlistCard.for}</p>
-            <p className="mt-2 font-display text-[26px] font-bold tracking-[-0.025em] text-[#070D2B]">{t.waitlistCard.name}</p>
+            <p data-sweep className="mt-2 font-display text-[26px] font-bold tracking-[-0.025em] text-[#070D2B]">{t.waitlistCard.name}</p>
             <ul className="mt-6 flex-1 space-y-3 border-t border-[#0B1030]/[0.07] pt-6">
               {t.waitlistCard.items.map((x) => (
                 <li key={x} className="flex gap-3 text-[15px] text-[#0B1030]/75">
@@ -512,7 +512,7 @@ function Choice({ t }: { t: T }) {
             <img src="/images/cta-earth.webp" alt="" aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[55%] w-full object-cover object-[50%_15%] opacity-60" style={{ maskImage: 'linear-gradient(to bottom, transparent, #000 60%)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 60%)' }} />
             <div className="relative flex flex-1 flex-col">
               <p className="text-[12.5px] font-semibold text-[#7CB8FF]">{t.pioneersCard.for}</p>
-              <p className="mt-2 font-display text-[26px] font-bold tracking-[-0.025em]">{t.pioneersCard.name}</p>
+              <p data-sweep className="mt-2 font-display text-[26px] font-bold tracking-[-0.025em]">{t.pioneersCard.name}</p>
               <ul className="mt-6 flex-1 space-y-3 border-t border-white/10 pt-6">
                 {t.pioneersCard.items.map((x) => (
                   <li key={x} className="flex gap-3 text-[15px] text-white/85">

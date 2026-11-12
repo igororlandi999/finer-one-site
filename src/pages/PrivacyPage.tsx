@@ -203,7 +203,7 @@ export function PrivacyPage() {
               <div className="mt-2 space-y-4">
                 {sections.map((s, i) => (
                   <article key={s.id} id={s.id} className="scroll-mt-16 pt-10">
-                    <h2 data-no-sweep className="font-display text-[24px] font-bold tracking-[-0.025em] text-[#070D2B] sm:text-[28px]">
+                    <h2 className="font-display text-[24px] font-bold tracking-[-0.025em] text-[#070D2B] sm:text-[28px]">
                       <span className="mr-3 text-accent-deep">{i + 1}.</span>
                       {s.title}
                     </h2>
@@ -231,7 +231,7 @@ export function PrivacyPage() {
               <div className="relative mt-16 overflow-hidden rounded-[24px] bg-[#070D2B] p-7 text-white sm:p-9">
                 <img src="/images/sobre-linha.webp" alt="" aria-hidden="true" className="absolute inset-x-0 bottom-[-6%] h-[50%] w-full object-cover object-[80%_50%] opacity-70 mix-blend-screen" style={{ maskImage: 'linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent)' }} />
                 <div className="relative">
-                  <p className="font-display text-[24px] font-bold tracking-[-0.02em]">
+                  <p data-sweep className="font-display text-[24px] font-bold tracking-[-0.02em]">
                     {t.contactTitle[0]}<span className="text-[#3D86FF]">{t.contactTitle[1]}</span>
                   </p>
                   <p className="mt-3 max-w-[480px] text-[15px] leading-[1.6] text-white/70">

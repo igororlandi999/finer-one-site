@@ -127,7 +127,7 @@ function RevealFooter() {
             {/* Sem logótipo aqui: ao chegar ao rodapé ficava logo por baixo do da barra de navegação (repetido);
                 a marca fecha a página em grande, em baixo. */}
             {/* Sem a assinatura aqui: "Where Finance Meets Strategy" já fecha o CTA logo acima. */}
-            <p className="max-w-[17ch] text-balance font-display text-[34px] font-bold leading-[1.04] tracking-[-0.035em] text-white sm:text-[42px]">
+            <p data-sweep className="max-w-[17ch] text-balance font-display text-[34px] font-bold leading-[1.04] tracking-[-0.035em] text-white sm:text-[42px]">
               {t.tagline[0]}
               <span className="text-[#3D86FF]">{t.tagline[1]}</span>
             </p>

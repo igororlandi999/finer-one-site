@@ -6,11 +6,12 @@
  * último, levemente). Aqui fazemos o mesmo com uma máscara, para manter as cores
  * da Finer One (azul-marinho + a parte em azul) sem mexer na estrutura dos títulos.
  *
- * - Aplica-se a todos os h1/h2 dentro de <main>, quando entram no ecrã (uma vez).
+ * - Aplica-se a todos os h1/h2/h3 dentro de <main> e a títulos marcados com data-sweep
+ *   (cartões, rodapé), quando entram no ecrã (uma vez). Fora: imagens da plataforma.
  * - Um título pode ficar de fora com o atributo data-no-sweep.
  * - Com movimento reduzido não há animação (ver index.css).
  */
-const SELECTOR = 'main h1:not([data-no-sweep]), main h2:not([data-no-sweep])'
+const SELECTOR = 'main h1, main h2, main h3, [data-sweep]'
 
 export function initTitleSweep() {
   if (typeof window === 'undefined' || !('IntersectionObserver' in window)) return
@@ -39,6 +40,7 @@ export function initTitleSweep() {
     for (const el of document.querySelectorAll(SELECTOR)) {
       if (seen.has(el)) continue
       seen.add(el)
+      if (el.closest('[data-no-sweep], [aria-hidden="true"], [data-demo], [role="img"]')) continue
       // Títulos já visíveis ao carregar também animam (como na Lovable).
       el.classList.add('fo-title')
       io.observe(el)

@@ -247,7 +247,7 @@ function PioneersStory() {
                   transition={{ duration: 0.9, ease: EASE, delay: 0.15 + i * 0.18 }}
                 />
                 <span className="font-display text-[13px] font-bold text-accent-deep">0{i + 1}</span>
-                <p className="mt-3 font-display text-[21px] font-bold tracking-[-0.02em] text-[#070D2B]">{g.title}</p>
+                <p data-sweep className="mt-3 font-display text-[21px] font-bold tracking-[-0.02em] text-[#070D2B]">{g.title}</p>
                 <p className="mt-2 text-[15px] leading-[1.6] text-[#0B1030]/65">{g.text}</p>
               </motion.li>
             ))}

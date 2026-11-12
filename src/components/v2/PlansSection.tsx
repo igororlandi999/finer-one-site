@@ -223,7 +223,7 @@ function PlanCard({ p, i, t, deal, step, reduced }: { p: Plan; i: number; t: (ty
         </span>
 
         <h3 className="font-display text-[30px] font-semibold leading-tight tracking-[-0.03em] text-[#070D2B] sm:text-[34px]">{p.name}</h3>
-        {plus ? <PlusPrice b={t.billing} /> : <p className="font-display text-[30px] font-semibold leading-tight tracking-[-0.03em] text-[#0B1030]/35 sm:text-[34px]">{t.price}</p>}
+        {plus ? <PlusPrice b={t.billing} /> : <p data-sweep className="font-display text-[30px] font-semibold leading-tight tracking-[-0.03em] text-[#0B1030]/35 sm:text-[34px]">{t.price}</p>}
 
         <p className="mt-7 text-[17px] leading-snug text-[#070D2B]">{p.promise}</p>
         <p className="mt-2 text-[14.5px] leading-[1.6] text-[#0B1030]/60">{p.desc}</p>

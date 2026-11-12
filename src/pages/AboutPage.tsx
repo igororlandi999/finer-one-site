@@ -162,7 +162,7 @@ function Story({ t }: { t: T }) {
           <span className="text-accent-deep">{t.storyTitle[1]}</span>
         </motion.h2>
         <div>
-          <motion.p variants={rise} className="font-display text-[22px] font-semibold leading-[1.4] tracking-[-0.015em] text-[#070D2B] sm:text-[25px]">
+          <motion.p data-sweep variants={rise} className="font-display text-[22px] font-semibold leading-[1.4] tracking-[-0.015em] text-[#070D2B] sm:text-[25px]">
             {t.storyLead}
           </motion.p>
           {t.story.map((p) => (
@@ -243,14 +243,14 @@ function Beliefs({ t }: { t: T }) {
               <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-white/15" />
               <motion.span aria-hidden="true" className="absolute left-0 top-0 h-[2px] w-full origin-left bg-[#3D86FF]" initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true, amount: 0.8 }} transition={{ duration: 0.9, ease: EASE, delay: 0.2 + i * 0.18 }} />
               <span className="font-display text-[13px] font-bold text-[#7CB8FF]">0{i + 1}</span>
-              <p className="mt-3 font-display text-[22px] font-bold leading-[1.2] tracking-[-0.02em]">{b.title}</p>
+              <p data-sweep className="mt-3 font-display text-[22px] font-bold leading-[1.2] tracking-[-0.02em]">{b.title}</p>
               <p className="mt-3 text-[15.5px] leading-[1.65] text-white/70">{b.text}</p>
             </motion.li>
           ))}
         </ul>
 
         <motion.div variants={rise} className="mt-24 max-w-[880px] pb-24">
-          <p className="text-balance font-display text-[30px] font-bold leading-[1.12] tracking-[-0.03em] sm:text-[42px]">
+          <p data-sweep className="text-balance font-display text-[30px] font-bold leading-[1.12] tracking-[-0.03em] sm:text-[42px]">
             {t.giveBack[0]}
             <span className="text-[#3D86FF]">{t.giveBack[1]}</span>
           </p>

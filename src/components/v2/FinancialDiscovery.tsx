@@ -83,10 +83,10 @@ const group: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.0
 const item: Variants = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } } }
 
 /** Número grande que sobe de dentro de uma máscara quando entra no ecrã (uma vez). */
-function MaskNumber({ children, className }: { children: ReactNode; className?: string }) {
+function MaskNumber({ children, className, sweep }: { children: ReactNode; className?: string; sweep?: boolean }) {
   // O gatilho fica no contentor visível (a parte interior começa fora da máscara).
   return (
-    <motion.span className="block overflow-hidden pb-[0.08em]" initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
+    <motion.span data-sweep={sweep || undefined} className="block overflow-hidden pb-[0.08em]" initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
       <motion.span
         className={cn('block', className)}
         variants={{ hidden: { y: '105%' }, show: { y: '0%', transition: { duration: 0.75, ease: EASE } } }}
@@ -263,7 +263,7 @@ export function FinancialDiscovery() {
                         {c.key}
                       </p>
                       <h3 className={cn('relative mt-2 text-[17px] font-semibold sm:text-[19px]', tile ? 'text-white/85' : 'text-[#0B1030]/70')}>{c.q}</h3>
-                      <MaskNumber className={cn('mt-3 font-display font-bold leading-none tracking-[-0.045em] tabular-nums', i === 2 ? 'text-[36px] sm:text-[52px] lg:text-[58px]' : i === 0 ? 'whitespace-nowrap text-[42px] sm:text-[64px] lg:text-[70px]' : 'text-[56px] sm:text-[84px] lg:text-[96px]', tile ? 'text-white' : c.bigClass, 'leading-[0.98]')}>
+                      <MaskNumber sweep={i === 2} className={cn('mt-3 font-display font-bold leading-none tracking-[-0.045em] tabular-nums', i === 2 ? 'text-[36px] sm:text-[52px] lg:text-[58px]' : i === 0 ? 'whitespace-nowrap text-[42px] sm:text-[64px] lg:text-[70px]' : 'text-[56px] sm:text-[84px] lg:text-[96px]', tile ? 'text-white' : c.bigClass, 'leading-[0.98]')}>
                         {c.big}
                       </MaskNumber>
                       <p className={cn('relative mt-2 text-[15px] font-semibold sm:text-[16px]', tile ? 'text-white/80' : 'text-[#0B1030]/60')}>{c.caption}</p>

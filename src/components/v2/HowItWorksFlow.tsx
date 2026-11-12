@@ -183,7 +183,7 @@ export function HowItWorksFlow() {
                     <span className="flex items-baseline gap-4">
                       <span className={cn('font-display text-[15px] font-bold tabular-nums transition-colors duration-300', on ? 'text-accent-deep' : 'text-[#0B1030]/30 group-hover:text-[#0B1030]/50')}>0{i + 1}</span>
                       <span className="min-w-0">
-                        <span className={cn('block font-display text-[21px] font-bold leading-snug tracking-[-0.02em] transition-colors duration-300 sm:text-[24px]', on ? 'text-[#070D2B]' : 'text-[#0B1030]/40 group-hover:text-[#0B1030]/65')}>{s.title}</span>
+                        <span data-sweep className={cn('block font-display text-[21px] font-bold leading-snug tracking-[-0.02em] transition-colors duration-300 sm:text-[24px]', on ? 'text-[#070D2B]' : 'text-[#0B1030]/40 group-hover:text-[#0B1030]/65')}>{s.title}</span>
                         <AnimatePresence initial={false}>
                           {on && (
                             <motion.span className="block overflow-hidden" initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.35, ease: EASE }}>
