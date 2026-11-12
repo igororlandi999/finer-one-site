@@ -27,9 +27,6 @@ const copy = {
     ],
     peopleTitle: ['Três pessoas. ', 'Uma visão.'],
     cofounder: 'Cofundador',
-    joinTitle: ['Construa a Finer One ', 'connosco.'],
-    joinText: 'Teste a plataforma antes do lançamento e ajude-nos a definir o que vem a seguir.',
-    joinCta: 'Ser Finer Pioneer',
     peopleSub: 'Tecnologia, negócios e finanças a trabalhar em conjunto para transformar a gestão das empresas.',
     founders: [
       { name: 'Henrique Bértolo', photo: '/images/fundadores/henrique.webp', quote: 'O empresário trabalha para o negócio. O que tem de acontecer é o negócio trabalhar para o empresário.' },
@@ -69,9 +66,6 @@ const copy = {
     ],
     peopleTitle: ['Three people. ', 'One vision.'],
     cofounder: 'Co-founder',
-    joinTitle: ['Build Finer One ', 'with us.'],
-    joinText: 'Try the platform before launch and help us shape what comes next.',
-    joinCta: 'Become a Finer Pioneer',
     peopleSub: 'Technology, business and finance working together to transform how companies are managed.',
     founders: [
       { name: 'Henrique Bértolo', photo: '/images/fundadores/henrique.webp', quote: 'Business owners work for their business. What needs to happen is the business working for them.' },
@@ -224,24 +218,6 @@ function People({ t }: { t: T }) {
               <blockquote className="mt-2.5 text-[14.5px] leading-[1.6] text-[#0B1030]/65">“{f.quote}”</blockquote>
             </motion.figure>
           ))}
-          <motion.a
-            variants={rise}
-            href="/pioneers/"
-            className="group relative flex aspect-square flex-col justify-between overflow-hidden rounded-[14px] bg-[#070D2B] p-6 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-glow"
-          >
-            <img src="/images/sobre-linha.webp" alt="" aria-hidden="true" className="absolute inset-x-0 top-[30%] h-[24%] w-full object-cover object-[60%_50%] opacity-90 mix-blend-screen transition-transform duration-700 ease-out group-hover:translate-x-[-6%]" style={{ maskImage: 'linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent)' }} />
-            <p className="relative font-display text-[22px] font-bold leading-[1.15] tracking-[-0.02em]">
-              {t.joinTitle[0]}
-              <span className="text-[#3D86FF]">{t.joinTitle[1]}</span>
-            </p>
-            <div className="relative">
-              <p className="text-[14px] leading-[1.55] text-white/70">{t.joinText}</p>
-              <span className="mt-4 inline-flex items-center gap-2 text-[14px] font-semibold">
-                {t.joinCta}
-                <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
-              </span>
-            </div>
-          </motion.a>
         </div>
       </motion.div>
     </section>
