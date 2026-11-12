@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
-import { AnimatePresence, MotionConfig, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, MotionConfig, motion, useMotionValueEvent, useReducedMotion, useScroll, useSpring } from 'motion/react'
 import type { Variants } from 'motion/react'
 import { ArrowLeft, ArrowRight, ArrowUp, Lock } from 'lucide-react'
 import { ConsentCheckbox, Field, Honeypot, SelectInput, TextArea, TextInput } from '@/components/forms/fields'
@@ -224,25 +224,24 @@ function PioneersStory() {
 
             <div>
               <motion.p variants={rise} className="text-[13px] font-semibold text-[#0B1030]/45">{t.stepsTitle}</motion.p>
-              <ol className="relative mt-6">
-                <span aria-hidden="true" className="absolute bottom-6 left-[19px] top-6 w-px bg-gradient-to-b from-accent via-accent/40 to-transparent" />
-                {t.steps.map((s, i) => (
-                  <motion.li variants={rise} key={s.title} className="relative flex gap-5 pb-8 last:pb-0">
-                    <span className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-accent/25 bg-white font-display text-[13px] font-bold text-accent-deep shadow-[0_0_0_6px_#fff]">0{i + 1}</span>
-                    <div className="pt-1.5">
-                      <p className="font-display text-[19px] font-bold tracking-[-0.015em] text-[#070D2B]">{s.title}</p>
-                      <p className="mt-1.5 max-w-[440px] text-[15px] leading-[1.6] text-[#0B1030]/65">{s.text}</p>
-                    </div>
-                  </motion.li>
-                ))}
-              </ol>
+              <StepsTimeline steps={t.steps} />
             </div>
           </div>
 
           <motion.p variants={rise} className="mt-20 text-[13px] font-semibold text-[#0B1030]/45">{t.gainsTitle}</motion.p>
-          <ul className="mt-6 grid gap-x-10 gap-y-8 border-t border-[#0B1030]/[0.08] pt-8 md:grid-cols-3">
+          <ul className="mt-6 grid gap-x-10 gap-y-8 md:grid-cols-3">
             {t.gains.map((g, i) => (
-              <motion.li variants={rise} key={g.title}>
+              <motion.li variants={rise} key={g.title} className="relative pt-8">
+                {/* Linha fina que se desenha por cima de cada benefício, um a um */}
+                <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-[#0B1030]/[0.08]" />
+                <motion.span
+                  aria-hidden="true"
+                  className="absolute left-0 top-0 h-[2px] w-full origin-left rounded-full bg-accent"
+                  initial={{ scaleX: 0 }}
+                  whileInView={{ scaleX: 1 }}
+                  viewport={{ once: true, amount: 0.8 }}
+                  transition={{ duration: 0.9, ease: EASE, delay: 0.15 + i * 0.18 }}
+                />
                 <span className="font-display text-[13px] font-bold text-accent-deep">0{i + 1}</span>
                 <p className="mt-3 font-display text-[21px] font-bold tracking-[-0.02em] text-[#070D2B]">{g.title}</p>
                 <p className="mt-2 text-[15px] leading-[1.6] text-[#0B1030]/65">{g.text}</p>
@@ -260,6 +259,45 @@ function PioneersStory() {
         </motion.div>
       </section>
     </>
+  )
+}
+
+/** Como funciona: a linha pinta-se de azul com o scroll e cada passo acende quando a linha lá chega. */
+function StepsTimeline({ steps }: { steps: { title: string; text: string }[] }) {
+  const reduced = useReducedMotion() ?? false
+  const ref = useRef<HTMLOListElement>(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.75', 'end 0.5'] })
+  const fill = useSpring(scrollYProgress, { stiffness: 140, damping: 30, mass: 0.4 })
+  const [active, setActive] = useState(reduced ? steps.length - 1 : -1)
+  useMotionValueEvent(scrollYProgress, 'change', (v) => {
+    if (reduced) return
+    const n = steps.length - 1
+    setActive(Math.max(-1, ...steps.map((_, i) => (v >= (n ? i / n : 0) * 0.92 + 0.02 ? i : -1))))
+  })
+  return (
+    <ol ref={ref} className="relative mt-6">
+      <span aria-hidden="true" className="absolute bottom-6 left-[19px] top-6 w-px bg-[#0B1030]/[0.1]" />
+      <motion.span aria-hidden="true" className="absolute bottom-6 left-[19px] top-6 w-[2px] -translate-x-[0.5px] origin-top rounded-full bg-accent" style={{ scaleY: reduced ? 1 : fill }} />
+      {steps.map((s, i) => {
+        const on = i <= active
+        return (
+          <motion.li variants={rise} key={s.title} className="relative flex gap-5 pb-8 last:pb-0">
+            <span
+              className={cn(
+                'relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border font-display text-[13px] font-bold shadow-[0_0_0_6px_#fff] transition-all duration-500',
+                on ? 'border-accent bg-accent text-white shadow-[0_0_0_6px_#fff,0_8px_22px_-6px_rgba(0,82,255,0.7)]' : 'border-[#0B1030]/15 bg-white text-[#0B1030]/40',
+              )}
+            >
+              0{i + 1}
+            </span>
+            <div className="pt-1.5">
+              <p className={cn('font-display text-[19px] font-bold tracking-[-0.015em] transition-colors duration-500', on ? 'text-[#070D2B]' : 'text-[#0B1030]/40')}>{s.title}</p>
+              <p className={cn('mt-1.5 max-w-[440px] text-[15px] leading-[1.6] transition-colors duration-500', on ? 'text-[#0B1030]/70' : 'text-[#0B1030]/35')}>{s.text}</p>
+            </div>
+          </motion.li>
+        )
+      })}
+    </ol>
   )
 }
 
