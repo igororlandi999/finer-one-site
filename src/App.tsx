@@ -39,6 +39,7 @@ import { PlansSection } from '@/components/v2/PlansSection'
 import { EarlyAccess } from '@/components/v2/EarlyAccess'
 import { FAQSection } from '@/components/faq/FAQSection'
 import { FAQHome } from '@/components/v2/FAQHome'
+import { OrbitDive } from '@/components/v2/OrbitDive'
 import { FinalCTA } from '@/components/footer/FinalCTA'
 import { FinalCTAWorld } from '@/components/v2/FinalCTAWorld'
 import { SiteFooter } from '@/components/footer/SiteFooter'
@@ -74,6 +75,8 @@ export default function App() {
       <Navbar />
       <main id="conteudo">
         <HeroDemo />
+        {/* PROTÓTIPO: mergulho da órbita até à empresa (?mergulho=sim) */}
+        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('mergulho') === 'sim' && <OrbitDive />}
         {/* Nova secção 2: experiência Finer Home (destino do CTA principal da hero) */}
         <HomeExperience />
         {SECOND === 'antiga' ? <ProblemSection /> : SECOND === 'desafios' ? <Challenges /> : SECOND === 'scroll' ? <FinancialStory /> : SECOND === 'exemplos' ? <FinanceDemo /> : SECOND === 'paineis' ? <ClarityShowcase /> : SECOND === 'etapas' ? <ClarityStage /> : SECOND === 'clareza' ? <ClarityMotion /> : <FinancialDiscovery />}
