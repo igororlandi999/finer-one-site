@@ -15,7 +15,7 @@ import { SiteFooterClassic } from './SiteFooterClassic'
  *  - em ecrãs onde cabe, o rodapé fica por baixo da página e é "descoberto"
  *    quando a última secção sobe (sticky bottom);
  *  - o conteúdo sobe e ganha nitidez à medida que é revelado;
- *  - "FINER ONE" começa em contorno e enche-se de luz com o scroll até ao fim.
+ *  - "FINER ONE" começa apagado e enche-se de luz com o scroll até ao fim.
  *
  * Referências: Lovable (o rodapé continua a atmosfera do CTA), Searchable
  * (marca à esquerda, colunas à direita, linha legal), Ramp (repete a ação).
@@ -198,10 +198,11 @@ function RevealFooter() {
         </div>
       </motion.div>
 
-      {/* FINER ONE: começa em contorno e enche-se de luz até ao fim da página */}
+      {/* FINER ONE: começa apagado e enche-se de luz até ao fim da página */}
       <motion.div aria-hidden="true" style={{ y: markY }} className="relative select-none px-3 sm:px-5 lg:px-6">
         <div className="relative whitespace-nowrap text-center font-display text-[15.4vw] font-bold leading-[0.8] tracking-[-0.02em]" style={{ maskImage: 'linear-gradient(to bottom, #000 55%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, #000 55%, transparent 100%)' }}>
-          <span className="block text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.16)]">FINER ONE</span>
+          {/* Base apagada em preenchimento (não em contorno: o contorno desenhava linhas no interior do R) */}
+          <span className="block text-white/[0.07]">FINER ONE</span>
           <motion.span style={{ clipPath: fill }} className="absolute inset-0 block bg-[linear-gradient(180deg,rgba(255,255,255,0.92)_0%,rgba(124,184,255,0.55)_55%,rgba(0,82,255,0.25)_100%)] bg-clip-text text-transparent">
             FINER ONE
           </motion.span>
