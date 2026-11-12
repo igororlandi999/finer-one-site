@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils'
  * tem uma): frase de abertura, imagens, a história, as pessoas por trás, momentos e
  * um convite final. Todo o conteúdo vem do documento "FINER ONE — BRAND STRATEGY"
  * (respostas dos três fundadores), adaptado a PT-PT sem acrescentar factos.
- * Sem fotografias dos fundadores (ainda não existem): iniciais no lugar das fotos.
+ * Fundadores: fotografias enviadas pelo fundador, recortadas sobre o mesmo fundo claro.
  */
 const copy = {
   pt: {
@@ -45,7 +45,7 @@ const copy = {
     moments: [
       { date: 'Outubro de 2025', text: 'As primeiras consultorias financeiras a PME mostram uma dor real.' },
       { date: 'Maio de 2026', text: 'O Igor junta-se ao projeto e a ideia passa a produto tecnológico.' },
-      { date: 'A seguir', text: 'Ser o braço direito de todos os empresários.' },
+      { date: 'A seguir', text: 'O lançamento da plataforma, com os primeiros Finer Pioneers.' },
     ],
     visionTitle: ['O nosso objetivo: ser o ', 'braço direito de cada empresário.'],
     visionSub: 'Uma plataforma presente no dia a dia das empresas, que acompanha o negócio, antecipa problemas e ajuda a identificar oportunidades.',
@@ -84,7 +84,7 @@ const copy = {
     moments: [
       { date: 'October 2025', text: 'The first financial consulting projects with SMEs reveal a real pain.' },
       { date: 'May 2026', text: 'Igor joins the project and the idea becomes a tech product.' },
-      { date: 'Next', text: 'Becoming every business owner’s right hand.' },
+      { date: 'Next', text: 'The platform launch, with the first Finer Pioneers.' },
     ],
     visionTitle: ['Our goal: to be every owner’s ', 'right hand.'],
     visionSub: 'A platform present in companies’ day-to-day, following the business, anticipating problems and helping spot opportunities.',
@@ -181,18 +181,18 @@ function People({ t }: { t: T }) {
   return (
     <section className="bg-[#F7F9FE] text-navy">
       <motion.div variants={group} {...inView} className="mx-auto max-w-content px-5 py-20 sm:px-6 lg:px-8 lg:py-28">
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-20">
+        <div className="mx-auto max-w-[640px] text-center">
           <motion.h2 variants={rise} className="font-display text-[34px] font-bold leading-[1.04] tracking-[-0.035em] text-[#070D2B] sm:text-[44px]">
             {t.peopleTitle[0]}
             <span className="block text-accent-deep">{t.peopleTitle[1]}</span>
           </motion.h2>
-          <motion.p variants={rise} className="self-end text-[18px] leading-[1.6] text-[#0B1030]/65">
+          <motion.p variants={rise} className="mt-5 text-[18px] leading-[1.6] text-[#0B1030]/65">
             {t.peopleSub}
           </motion.p>
         </div>
 
         {/* Como na apresentação Investidores & Parcerias: fotografia, risca azul, nome — e a frase de cada um */}
-        <div className="mt-14 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mx-auto mt-14 grid max-w-[340px] gap-x-6 gap-y-12 sm:max-w-[640px] sm:grid-cols-2 lg:max-w-[900px] lg:grid-cols-3">
           {t.founders.map((f, i) => (
             <motion.figure key={f.name} variants={rise}>
               <div className="overflow-hidden rounded-[14px] bg-[#E9ECF3]">
