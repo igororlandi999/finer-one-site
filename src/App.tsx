@@ -38,6 +38,7 @@ import { PricingSection } from '@/components/pricing/PricingSection'
 import { PlansSection } from '@/components/v2/PlansSection'
 import { EarlyAccess } from '@/components/v2/EarlyAccess'
 import { FAQSection } from '@/components/faq/FAQSection'
+import { FAQHome } from '@/components/v2/FAQHome'
 import { FinalCTA } from '@/components/footer/FinalCTA'
 import { SiteFooter } from '@/components/footer/SiteFooter'
 
@@ -103,7 +104,8 @@ export default function App() {
         {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('precos') === 'antigo' ? <PricingSection /> : <PlansSection />}
         {/* Acesso antecipado substituído pela secção 7. Versão anterior em ?acesso=antigo */}
         {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('acesso') === 'antigo' && <EarlyAccess />}
-        <FAQSection />
+        {/* FAQ final (fundador, 12/11/2026). Versão anterior escura em ?faq=antigo */}
+        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('faq') === 'antigo' ? <FAQSection /> : <FAQHome />}
         <FinalCTA />
       </main>
 
