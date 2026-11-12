@@ -19,6 +19,8 @@ type Props = {
   navigable?: View[]
   /** Classes extra para a raiz (ex.: altura mínima no vídeo). */
   className?: string
+  /** Imagem do topo ("mundo") fornecida pelo vídeo; no site usa-se /images/finer-sky.webp. */
+  sky?: ReactNode
   children: ReactNode
 }
 
@@ -26,7 +28,7 @@ type Props = {
  * Moldura da aplicação Finer One recriada a partir das capturas reais:
  * menu lateral claro, cabeçalho com textura azul-gelo e área de conteúdo.
  */
-export function AppShell({ view, onNavigate, navigable = ['home', 'advisor'], className, children }: Props) {
+export function AppShell({ view, onNavigate, navigable = ['home', 'advisor'], className, sky, children }: Props) {
   const { lang } = useLanguage()
   const { shell } = getUiData(lang)
 
@@ -105,15 +107,13 @@ export function AppShell({ view, onNavigate, navigable = ['home', 'advisor'], cl
       </aside>
 
       <div className={cn('relative min-w-0 flex-1')}>
-        {/* Textura azul-gelo do cabeçalho (evoca a água/céu das capturas reais) */}
-        <div
-          aria-hidden="true"
-          className={cn('pointer-events-none absolute inset-x-0 top-0 h-[150px]')}
-          style={{
-            background:
-              'radial-gradient(40% 90% at 70% 0%, rgba(130,180,255,0.55), transparent 70%), radial-gradient(35% 80% at 30% 10%, rgba(190,215,255,0.7), transparent 70%), radial-gradient(30% 60% at 90% 30%, rgba(160,200,255,0.5), transparent 70%), linear-gradient(to bottom, #DCE8FF, #F7F9FE)',
-          }}
-        />
+        {/* O "mundo" no topo de cada página, como na plataforma real: céu com nuvens
+            vistas de cima, a desvanecer para o fundo. No vídeo (Remotion) a imagem chega
+            pela propriedade sky, para garantir que está carregada antes de cada fotograma. */}
+        <div aria-hidden="true" className={cn('pointer-events-none absolute inset-x-0 top-0 h-[170px] overflow-hidden')}>
+          {sky ?? <img src="/images/finer-sky.webp" alt="" className={cn('h-full w-full object-cover object-[50%_42%]')} />}
+          <div className={cn('absolute inset-0')} style={{ background: 'linear-gradient(to bottom, rgba(247,249,254,0) 0%, rgba(247,249,254,0.35) 45%, #F7F9FE 100%), linear-gradient(to right, rgba(247,249,254,0.55) 0%, rgba(247,249,254,0) 45%)' }} />
+        </div>
         <div className={cn('relative')}>{children}</div>
       </div>
     </div>

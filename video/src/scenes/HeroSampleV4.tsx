@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import type { ReactNode } from 'react'
-import { AbsoluteFill, Easing, interpolate, random, useCurrentFrame } from 'remotion'
+import { AbsoluteFill, Easing, Img, interpolate, random, staticFile, useCurrentFrame } from 'remotion'
 import { AppShell } from '@/components/v2/finer-ui/AppShell'
 import { FinerAdvisorView } from '@/components/v2/finer-ui/FinerAdvisorView'
 import { FinerHomeView } from '@/components/v2/finer-ui/FinerHomeView'
@@ -15,6 +15,8 @@ import { Highlight } from '../parts/Highlight'
 const QUESTION = 'Como está a tesouraria da minha empresa?'
 const ANSWER = 'Há € 50.948,60 em faturas em atraso e um cliente concentra 88,3% deste valor.'
 const WORDS = ANSWER.split(' ')
+/** O mundo do topo das páginas (como na plataforma real). */
+const SKY = <Img src={staticFile('images/finer-sky.webp')} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 42%' }} />
 const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const
 const ease = Easing.bezier(0.45, 0, 0.2, 1)
 const maskEase = Easing.bezier(0.55, 0, 0.25, 1)
@@ -74,6 +76,10 @@ export function HeroSampleV4() {
   const words = Math.round(interpolate(frame, T.answer, [0, WORDS.length], clamp))
   const typedA = words === 0 ? 0 : WORDS.slice(0, words).join(' ').length
   const reveal = interpolate(frame, T.reveal, [0, 3.1], clamp)
+
+  // A caixa de destaque envolve todo o bloco da prioridade (etiqueta, título e detalhe),
+  // em vez de só o título — assim não passa por cima da informação.
+  const priBox = pri ? { ...pri, y: pri.y - 24, h: pri.h + 24 + 26, w: Math.max(pri.w, 360) } : undefined
 
   // ---------- Câmaras ----------
   const askF = { x: ask ? ask.cx : WIDE.x, y: ask ? ask.cy + 85 : WIDE.y }
@@ -166,10 +172,10 @@ export function HeroSampleV4() {
           canvas(
             homeRoot,
             <>
-              <AppShell view="home" className="min-h-[900px]">
+              <AppShell view="home" className="min-h-[900px]" sky={SKY}>
                 <FinerHomeView interactive={false} script={{ question: QUESTION, typedQ, answer: ANSWER, typedA, reveal }} />
               </AppShell>
-              <Highlight frame={frame} rect={pri} from={T.priority} to={T.open[1] + 10} pad={10} radius={12} />
+              <Highlight frame={frame} rect={priBox} from={T.priority} to={T.open[1] + 10} pad={12} radius={14} />
               {send && <Pulse frame={frame} at={T.send} x={send.cx} y={send.cy} size={70} />}
               <Cursor frame={frame} path={cursorPath} visible={[10, 116]} />
               {cta && <Pulse frame={frame} at={T.ctaClick} x={cta.cx} y={cta.cy} size={90} />}
@@ -199,7 +205,7 @@ export function HeroSampleV4() {
             canvas(
               advRoot,
               <>
-                <AppShell view="advisor" className="min-h-[900px]">
+                <AppShell view="advisor" className="min-h-[900px]" sky={SKY}>
                   <FinerAdvisorView demo={advDemo} />
                 </AppShell>
                 <Highlight frame={frame} rect={rec0} from={T.climax[0] - 2} to={T.close[1] + 30} pad={5} radius={12} />
@@ -216,7 +222,7 @@ export function HeroSampleV4() {
             opening,
             canvas(
               loopRoot,
-              <AppShell view="home" className="min-h-[900px]">
+              <AppShell view="home" className="min-h-[900px]" sky={SKY}>
                 <FinerHomeView interactive={false} script={{ question: QUESTION, typedQ: 0, answer: ANSWER, typedA: 0, reveal: 0 }} />
               </AppShell>,
             ),
