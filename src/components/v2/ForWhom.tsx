@@ -120,16 +120,6 @@ export function ForWhom() {
               <Story key={c.title} c={c} i={i} n={n} progress={scrollYProgress} reduced={reduced} />
             ))}
           </ul>
-
-          <motion.p
-            className="mx-auto mt-6 max-w-[620px] text-center text-[14px] leading-relaxed text-[#0B1030]/55"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            {t.fit}
-          </motion.p>
         </div>
       </section>
     </MotionConfig>

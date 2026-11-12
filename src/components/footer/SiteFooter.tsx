@@ -1,14 +1,13 @@
 import { FooterBrand } from '@/components/footer/FooterBrand'
 import { FooterLinks } from '@/components/footer/FooterLinks'
-import { FooterVisual } from '@/components/footer/FooterVisual'
 import { LinkedInStrip } from '@/components/footer/LinkedInStrip'
 import { useFooterData } from '@/data/footer'
 
 /**
  * Rodapé institucional.
  *
- * Sequência: faixa visual -> LinkedIn -> navegação -> marca em grande escala
- * -> copyright. A faixa faz a passagem do CTA para o rodapé sem divisor.
+ * Sequência: LinkedIn -> navegação -> marca em grande escala
+ * -> copyright. (Faixa visual "Informação dispersa" retirada — fundador, 12/11/2026.)
  *
  * Fica fora do <main>, que é onde deve estar semanticamente.
  */
@@ -17,7 +16,6 @@ export function SiteFooter() {
 
   return (
     <footer className="relative isolate bg-navy-deep">
-      <FooterVisual />
       <div className="mx-auto max-w-content">
         <LinkedInStrip />
         <FooterLinks />

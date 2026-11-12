@@ -276,19 +276,11 @@ export function FinancialDiscovery() {
             </ol>
           </div>
 
-          {/* Os quatro temas e a indicação de dados fictícios */}
-          <motion.div variants={item} className="mx-auto mt-12 max-w-[900px] border-t border-[#0B1030]/10 pt-6 lg:mt-14">
-            <p className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[12.5px] font-semibold uppercase tracking-[0.2em] text-[#0B1030]/45">
-              <span>{t.pillarsLabel}</span>
-              {t.pillars.map((p, i) => (
-                <span key={p} className="inline-flex items-center gap-2 text-[#070D2B]">
-                  <span className="text-accent-deep">0{i + 1}</span>
-                  {p}
-                </span>
-              ))}
-            </p>
-            <p className="mt-3 text-center text-[12px] text-[#0B1030]/45">{t.note}</p>
-          </motion.div>
+          {/* Faixa "A Finer One analisa" retirada (fundador, 12/11/2026). Fica só a indicação
+              obrigatória de que os valores são exemplos com dados fictícios. */}
+          <motion.p variants={item} className="mt-10 text-center text-[12px] text-[#0B1030]/45 lg:mt-12">
+            {t.note}
+          </motion.p>
         </motion.div>
       </section>
     </MotionConfig>
