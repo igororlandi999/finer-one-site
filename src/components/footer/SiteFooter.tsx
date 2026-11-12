@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { ArrowRight, ArrowUp, ArrowUpRight } from 'lucide-react'
 import { MotionConfig, motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'motion/react'
-import { Logo } from '@/components/brand/Logo'
 import { useLanguage } from '@/i18n/LanguageContext'
 import type { Lang } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
@@ -123,13 +122,14 @@ function RevealFooter() {
         <div className="grid gap-14 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.4fr)] lg:gap-20">
           {/* Marca, assinatura e a ação */}
           <div>
-            <div><Logo /></div>
+            {/* Sem logótipo aqui: ao chegar ao rodapé ficava logo por baixo do da barra de navegação (repetido);
+                a marca fecha a página em grande, em baixo. */}
             {/* Sem a assinatura aqui: "Where Finance Meets Strategy" já fecha o CTA logo acima. */}
-            <p className="mt-8 max-w-[17ch] text-balance font-display text-[34px] font-bold leading-[1.04] tracking-[-0.035em] text-white sm:text-[42px]">
+            <p className="max-w-[17ch] text-balance font-display text-[34px] font-bold leading-[1.04] tracking-[-0.035em] text-white sm:text-[42px]">
               {t.tagline[0]}
               <span className="text-[#3D86FF]">{t.tagline[1]}</span>
             </p>
-            <a href="/pioneers/" className="group mt-10 inline-flex items-center gap-4 focus-visible:outline-none">
+            <a href="/pioneers/" className="group mt-8 inline-flex items-center gap-4 focus-visible:outline-none">
               <span className="relative text-[16px] font-semibold text-white">
                 {t.cta}
                 <span aria-hidden="true" className="absolute -bottom-1.5 left-0 h-px w-full origin-left scale-x-[0.25] bg-white/50 transition-transform duration-500 ease-out group-hover:scale-x-100 group-focus-visible:scale-x-100" />
@@ -141,7 +141,7 @@ function RevealFooter() {
           </div>
 
           {/* Ligações */}
-          <nav aria-label={t.nav} className="grid grid-cols-2 gap-x-8 gap-y-12 sm:grid-cols-3 lg:pt-[52px]">
+          <nav aria-label={t.nav} className="grid grid-cols-2 gap-x-8 gap-y-12 sm:grid-cols-3 lg:pt-2">
             {t.cols.map((c) => (
               <div key={c.title}>
                 <h3 className="text-[13px] font-medium text-white/40">{c.title}</h3>
@@ -169,7 +169,7 @@ function RevealFooter() {
         </div>
 
         {/* Linha final */}
-        <div className="mt-14 flex flex-col gap-5 border-t border-white/[0.08] py-7 text-[13px] text-white/45 sm:flex-row sm:items-center sm:justify-between lg:mt-16">
+        <div className="mt-10 flex flex-col gap-5 border-t border-white/[0.08] py-7 text-[13px] text-white/45 sm:flex-row sm:items-center sm:justify-between lg:mt-12">
           <p>{t.copyright}</p>
           <div className="flex items-center gap-8">
             <div role="group" aria-label={t.lang} className="flex items-center gap-3">
