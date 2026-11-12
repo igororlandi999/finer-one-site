@@ -5,6 +5,7 @@ import { Navbar } from '@/components/layout/Navbar'
 import { SiteFooter } from '@/components/footer/SiteFooter'
 import { LanguageProvider } from '@/i18n/LanguageContext'
 import '@/index.css'
+import { initTitleSweep } from '@/lib/titleSweep'
 
 /**
  * Arranque comum das páginas independentes (Finer Pioneers, Lista de Espera,
@@ -30,4 +31,5 @@ export function renderPage(page: ReactNode) {
       </LanguageProvider>
     </StrictMode>,
   )
+  initTitleSweep()
 }

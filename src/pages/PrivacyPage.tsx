@@ -203,7 +203,7 @@ export function PrivacyPage() {
               <div className="mt-2 space-y-4">
                 {sections.map((s, i) => (
                   <article key={s.id} id={s.id} className="scroll-mt-16 pt-10">
-                    <h2 className="font-display text-[24px] font-bold tracking-[-0.025em] text-[#070D2B] sm:text-[28px]">
+                    <h2 data-no-sweep className="font-display text-[24px] font-bold tracking-[-0.025em] text-[#070D2B] sm:text-[28px]">
                       <span className="mr-3 text-accent-deep">{i + 1}.</span>
                       {s.title}
                     </h2>

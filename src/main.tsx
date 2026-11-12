@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import App from '@/App'
 import { LanguageProvider } from '@/i18n/LanguageContext'
 import '@/index.css'
+import { initTitleSweep } from '@/lib/titleSweep'
 
 // Pré-visualização do modo de movimento reduzido: /?motion=reduce
 if (new URLSearchParams(window.location.search).get('motion') === 'reduce') {
@@ -22,3 +23,5 @@ createRoot(container).render(
     </LanguageProvider>
   </StrictMode>,
 )
+
+initTitleSweep()
