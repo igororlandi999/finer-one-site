@@ -213,20 +213,6 @@ function PioneersStory() {
               ))}
             </motion.ul>
 
-            {/* Quem está a construir (como os "experts" da Searchable) */}
-            <motion.div variants={rise} className="mt-10 flex items-center gap-4">
-              <div className="flex -space-x-2.5" aria-hidden="true">
-                {t.team.map(([name], i) => (
-                  <span key={name} className={cn('flex h-10 w-10 items-center justify-center rounded-full border-2 border-navy-deep font-display text-[12.5px] font-bold text-white', ['bg-[#0052FF]', 'bg-[#1E3A8A]', 'bg-[#0A40C8]'][i])}>
-                    {name.split(' ').map((p) => p[0]).join('')}
-                  </span>
-                ))}
-              </div>
-              <p className="text-[13.5px] leading-snug text-white/70">
-                {t.builtBy} <span className="text-white">{t.team.map(([n]) => n.split(' ')[0]).join(', ').replace(/, ([^,]*)$/, lang === 'pt' ? ' e $1' : ' and $1')}</span>
-              </p>
-            </motion.div>
-
             <motion.a variants={rise} href="#candidatura" className={buttonClasses({ size: 'lg', className: 'group mt-9 font-semibold lg:hidden' })}>
               {t.cta}
               <ArrowDown className="h-4 w-4 transition-transform group-hover:translate-y-0.5" aria-hidden="true" />
@@ -283,20 +269,6 @@ function PioneersStory() {
             ))}
           </ul>
 
-          <motion.p variants={rise} className="mt-20 text-[13px] font-semibold text-[#0B1030]/45">{t.teamTitle}</motion.p>
-          <ul className="mt-6 grid gap-x-10 gap-y-6 border-t border-[#0B1030]/[0.08] pt-8 sm:grid-cols-3">
-            {t.team.map(([name, role], i) => (
-              <motion.li variants={rise} key={name} className="flex items-center gap-4">
-                <span aria-hidden="true" className={cn('flex h-12 w-12 shrink-0 items-center justify-center rounded-full font-display text-[14px] font-bold text-white', ['bg-[#0052FF]', 'bg-[#1E3A8A]', 'bg-[#0A40C8]'][i])}>
-                  {name.split(' ').map((p) => p[0]).join('')}
-                </span>
-                <span>
-                  <span className="block font-display text-[17px] font-bold tracking-[-0.01em] text-[#070D2B]">{name}</span>
-                  <span className="mt-0.5 block text-[13.5px] text-[#0B1030]/60">{role}</span>
-                </span>
-              </motion.li>
-            ))}
-          </ul>
 
           <motion.div variants={rise} className="mt-16 flex justify-center">
             <a href="#candidatura" className={buttonClasses({ size: 'lg', className: 'group font-semibold' })}>
