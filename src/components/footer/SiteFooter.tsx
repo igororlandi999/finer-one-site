@@ -108,7 +108,7 @@ function RevealFooter() {
     return () => { window.removeEventListener('scroll', on); window.removeEventListener('resize', on); if (raf) cancelAnimationFrame(raf) }
   }, [raw])
   const p = useSpring(raw, { stiffness: 120, damping: 30, mass: 0.4 })
-  const contentY = useTransform(p, [0, 0.85], reduced ? [0, 0] : [70, 0])
+  const contentY = useTransform(p, [0, 0.85], reduced ? [0, 0] : [36, 0])
   const contentOpacity = useTransform(p, [0, 0.6], reduced ? [1, 1] : [0.15, 1])
   const fill = useTransform(p, [0.45, 1], reduced ? ['inset(0% 0 0 0)', 'inset(0% 0 0 0)'] : ['inset(100% 0 0 0)', 'inset(0% 0 0 0)'])
   const markY = useTransform(p, [0.3, 1], reduced ? ['0%', '0%'] : ['22%', '0%'])
@@ -118,12 +118,12 @@ function RevealFooter() {
       {/* A atmosfera azul do CTA continua aqui, muito suave */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(55%_45%_at_18%_30%,rgba(0,82,255,0.13),transparent_70%),radial-gradient(45%_40%_at_100%_100%,rgba(30,144,255,0.08),transparent_70%)]" />
 
-      <motion.div style={{ y: contentY, opacity: contentOpacity }} className="mx-auto max-w-content px-5 pt-20 sm:px-6 sm:pt-24 lg:px-8 lg:pt-28">
+      <motion.div style={{ y: contentY, opacity: contentOpacity }} className="mx-auto max-w-content px-5 pt-10 sm:px-6 sm:pt-12 lg:px-8 lg:pt-12">
         <div className="grid gap-14 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.4fr)] lg:gap-20">
           {/* Marca, assinatura e a ação */}
           <div>
             <div><Logo /></div>
-            <p className="mt-10 inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.26em] text-[#7CB8FF]">
+            <p className="mt-7 inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.26em] text-[#7CB8FF]">
               <span aria-hidden="true" className="h-px w-7 bg-gradient-to-r from-transparent to-glow" />
               {t.signature}
             </p>
@@ -140,7 +140,7 @@ function RevealFooter() {
           </div>
 
           {/* Ligações */}
-          <nav aria-label={t.nav} className="grid grid-cols-2 gap-x-8 gap-y-12 sm:grid-cols-3 lg:pt-[70px]">
+          <nav aria-label={t.nav} className="grid grid-cols-2 gap-x-8 gap-y-12 sm:grid-cols-3 lg:pt-[52px]">
             {t.cols.map((c) => (
               <div key={c.title}>
                 <h3 className="text-[13px] font-medium text-white/40">{c.title}</h3>
@@ -168,7 +168,7 @@ function RevealFooter() {
         </div>
 
         {/* Linha final */}
-        <div className="mt-20 flex flex-col gap-5 border-t border-white/[0.08] py-7 text-[13px] text-white/45 sm:flex-row sm:items-center sm:justify-between lg:mt-24">
+        <div className="mt-14 flex flex-col gap-5 border-t border-white/[0.08] py-7 text-[13px] text-white/45 sm:flex-row sm:items-center sm:justify-between lg:mt-16">
           <p>{t.copyright}</p>
           <div className="flex items-center gap-8">
             <div role="group" aria-label={t.lang} className="flex items-center gap-3">
