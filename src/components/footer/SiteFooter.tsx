@@ -26,10 +26,11 @@ type Col = { title: string; links: { label: string; href: string; external?: boo
 
 const LINKEDIN = 'https://linkedin.com/company/finerone?skipRedirect=true&viewAsMember=true'
 
-const copy: Record<Lang, { signature: string; tagline: string; cta: string; cols: Col[]; nav: string; copyright: string; top: string; lang: string }> = {
+const copy: Record<Lang, { signature: string; tagline: [string, string]; cta: string; cols: Col[]; nav: string; copyright: string; top: string; lang: string }> = {
   pt: {
     signature: 'Where Finance Meets Strategy',
-    tagline: 'Inteligência financeira para decisões mais claras.',
+    // Os pilares da marca (em vez de repetir "decisões mais claras", já usado no CTA logo acima).
+    tagline: ['Compreender hoje. Antecipar amanhã. ', 'Decidir melhor.'],
     cta: 'Ser Finer Pioneer',
     cols: [
       { title: 'Produto', links: [{ label: 'Experimentar', href: '/#experimentar-finer' }, { label: 'Como funciona', href: '/#funcionamento' }, { label: 'Planos', href: '/#precos' }] },
@@ -43,7 +44,7 @@ const copy: Record<Lang, { signature: string; tagline: string; cta: string; cols
   },
   en: {
     signature: 'Where Finance Meets Strategy',
-    tagline: 'Financial intelligence for clearer decisions.',
+    tagline: ['Understand today. Anticipate tomorrow. ', 'Decide better.'],
     cta: 'Become a Finer Pioneer',
     cols: [
       { title: 'Product', links: [{ label: 'Try it', href: '/#experimentar-finer' }, { label: 'How it works', href: '/#funcionamento' }, { label: 'Plans', href: '/#precos' }] },
@@ -123,11 +124,11 @@ function RevealFooter() {
           {/* Marca, assinatura e a ação */}
           <div>
             <div><Logo /></div>
-            <p className="mt-7 inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.26em] text-[#7CB8FF]">
-              <span aria-hidden="true" className="h-px w-7 bg-gradient-to-r from-transparent to-glow" />
-              {t.signature}
+            {/* Sem a assinatura aqui: "Where Finance Meets Strategy" já fecha o CTA logo acima. */}
+            <p className="mt-8 max-w-[17ch] text-balance font-display text-[34px] font-bold leading-[1.04] tracking-[-0.035em] text-white sm:text-[42px]">
+              {t.tagline[0]}
+              <span className="text-[#3D86FF]">{t.tagline[1]}</span>
             </p>
-            <p className="mt-5 max-w-[17ch] text-balance font-display text-[34px] font-bold leading-[1.04] tracking-[-0.035em] text-white sm:text-[42px]">{t.tagline}</p>
             <a href="/pioneers/" className="group mt-10 inline-flex items-center gap-4 focus-visible:outline-none">
               <span className="relative text-[16px] font-semibold text-white">
                 {t.cta}

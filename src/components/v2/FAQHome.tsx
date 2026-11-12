@@ -20,10 +20,10 @@ const EASE = [0.22, 1, 0.36, 1] as const
  */
 type QA = { q: string; a: string; link?: { label: string; href: string } }
 
-const copy: Record<Lang, { eyebrow: string; title: string; sub: string; items: QA[] }> = {
+const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string; items: QA[] }> = {
   pt: {
     eyebrow: 'Perguntas frequentes',
-    title: 'Ainda tem dúvidas?',
+    title: ['Ainda tem ', 'dúvidas?'],
     sub: 'Tudo o que precisa de saber para dar o próximo passo.',
     items: [
       {
@@ -59,7 +59,7 @@ const copy: Record<Lang, { eyebrow: string; title: string; sub: string; items: Q
   },
   en: {
     eyebrow: 'Frequently asked questions',
-    title: 'Still have questions?',
+    title: ['Still have ', 'questions?'],
     sub: 'Everything you need to know to take the next step.',
     items: [
       {
@@ -123,7 +123,8 @@ export function FAQHome() {
                 {t.eyebrow}
               </motion.p>
               <motion.h2 variants={rise} id="faq-titulo" className="mt-4 text-balance font-display text-[34px] font-bold leading-[1.04] tracking-[-0.035em] text-[#070D2B] sm:text-[44px] lg:text-[48px]">
-                {t.title}
+                {t.title[0]}
+                <span className="text-accent-deep">{t.title[1]}</span>
               </motion.h2>
               <motion.p variants={rise} className="mt-4 max-w-[360px] text-[16.5px] leading-[1.6] text-[#0B1030]/65 sm:text-[17px]">
                 {t.sub}

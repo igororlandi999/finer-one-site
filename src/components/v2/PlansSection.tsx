@@ -81,7 +81,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
         promise: 'Understand what’s happening.',
         desc: 'Financial clarity to track the operation and better understand company performance.',
         listLabel: 'Includes',
-        items: ['Finer Home', 'Cashflow', 'Revenue', 'Expenses', 'Clients and Suppliers', 'Finer Advisor', 'Alerts'],
+        items: ['Finer Home', 'Cashflow', 'Revenue', 'Expenses', 'Customers and Suppliers', 'Finer Advisor', 'Alerts'],
         cta: 'Become a Finer Pioneer',
         href: '/pioneers/',
       },

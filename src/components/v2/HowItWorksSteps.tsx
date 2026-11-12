@@ -239,7 +239,7 @@ function MomentBank({ lang }: { lang: Lang }) {
         </div>
         <div className="mt-5">
           <Label>{pt ? 'Saldo disponível' : 'Available balance'}</Label>
-          <p className="mt-1 font-display text-[34px] font-bold leading-none tracking-[-0.04em] text-[#070D2B] tabular-nums sm:text-[40px]">€&nbsp;28.540,32</p>
+          <p className="mt-1 font-display text-[34px] font-bold leading-none tracking-[-0.04em] text-[#070D2B] tabular-nums sm:text-[40px]">{pt ? <>€&nbsp;28.540,32</> : <>€28,540.32</>}</p>
         </div>
         {/* Como a conta foi ligada: o gesto do empresário, sem detalhes técnicos */}
         <ol className="mt-5 space-y-1.5">
@@ -257,7 +257,7 @@ function MomentBank({ lang }: { lang: Lang }) {
       <Card title={pt ? 'Movimentos' : 'Transactions'} glow>
         {/* Movimento recebido: chega com destaque */}
         <motion.div {...rise(0, 1.5)}>
-          <p className="font-display text-[34px] font-bold leading-none tracking-[-0.04em] text-[#0B6B40] tabular-nums sm:text-[40px]">+&nbsp;€&nbsp;3.150,00</p>
+          <p className="font-display text-[34px] font-bold leading-none tracking-[-0.04em] text-[#0B6B40] tabular-nums sm:text-[40px]">{pt ? <>+&nbsp;€&nbsp;3.150,00</> : <>+&nbsp;€3,150.00</>}</p>
           <p className="mt-2 text-[14.5px] text-[#0B1030]/70"><span className="font-semibold text-[#070D2B]">{pt ? 'Transferência · Cliente E' : 'Transfer · Customer E'}</span> · {pt ? 'recebida a 05 nov 2026' : 'received 5 Nov 2026'}</p>
         </motion.div>
         <ul className="mt-4 divide-y divide-[#0B1030]/[0.06]">
