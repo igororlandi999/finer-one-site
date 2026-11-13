@@ -52,7 +52,7 @@ const sectionsPt: Section[] = [
   {
     id: 'onde',
     title: 'Onde ficam os dados',
-    body: ['Os dados são guardados [no serviço escolhido pela Finer One — a confirmar], com acesso restrito à equipa da Finer One.'],
+    body: ['Os dados são guardados numa folha de cálculo Google da conta da Finer One e cada inscrição gera uma notificação por email para a caixa da equipa (Gmail). O acesso é restrito à equipa da Finer One. A Google atua como prestador de serviços.'],
   },
   {
     id: 'prazo',
@@ -92,7 +92,7 @@ const sectionsEn: Section[] = [
     ],
   },
   { id: 'fundamento', title: 'Legal basis', body: ['Processing is based on your consent, which you can withdraw at any time, without affecting processing carried out until then.'] },
-  { id: 'onde', title: 'Where the data is kept', body: ['The data is stored [in the service chosen by Finer One — to be confirmed], with access restricted to the Finer One team.'] },
+  { id: 'onde', title: 'Where the data is kept', body: ['The data is stored in a Google spreadsheet in Finer One’s Google account, and each submission sends an email notification to the team’s inbox (Gmail). Access is restricted to the Finer One team. Google acts as a service provider.'] },
   { id: 'prazo', title: 'How long we keep it', body: ['We keep the data while the programme or the waitlist is active, or until you withdraw your consent [maximum period to be confirmed].'] },
   {
     id: 'direitos',
@@ -179,7 +179,7 @@ export function PrivacyPage() {
 
           <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-20">
             {/* Conteúdo */}
-            <div className="max-w-[700px]">
+            <div className="min-w-0 max-w-[700px] [overflow-wrap:anywhere]">
               <details className="group mb-6 rounded-2xl border border-[#0B1030]/[0.08] lg:hidden">
                 <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 text-[14px] font-semibold text-[#070D2B] [&::-webkit-details-marker]:hidden">
                   {t.toc}
