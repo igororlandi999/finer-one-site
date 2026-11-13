@@ -45,42 +45,42 @@ function buildContent(lang: Lang): FooterContent {
         {
           title: 'Produto',
           links: [
-            { label: 'Produto', href: '#produto-demo' },
-            { label: 'Como funciona', href: '#produto' },
-            { label: 'Planos', href: '#precos' },
+            { label: 'Produto', href: '/#demo' },
+            { label: 'Como funciona', href: '/#funcionamento' },
+            { label: 'Planos', href: '/#precos' },
           ],
         },
         {
           title: 'Descobrir',
           links: [
-            { label: 'O problema', href: '#problema' },
-            { label: 'Segurança e confiança', href: '#decisoes' },
+            { label: 'Os desafios', href: '/#problema' },
+            { label: 'Segurança e confiança', href: '/#seguranca' },
           ],
         },
         {
           title: 'Ajuda',
-          links: [{ label: 'Perguntas frequentes', href: '#faq' }],
+          links: [{ label: 'Perguntas frequentes', href: '/#faq' }],
         },
       ]
     : [
         {
           title: 'Product',
           links: [
-            { label: 'Product', href: '#produto-demo' },
-            { label: 'How it works', href: '#produto' },
-            { label: 'Plans', href: '#precos' },
+            { label: 'Product', href: '/#demo' },
+            { label: 'How it works', href: '/#funcionamento' },
+            { label: 'Plans', href: '/#precos' },
           ],
         },
         {
           title: 'Discover',
           links: [
-            { label: 'The problem', href: '#problema' },
-            { label: 'Security & trust', href: '#decisoes' },
+            { label: 'The challenges', href: '/#problema' },
+            { label: 'Security & trust', href: '/#seguranca' },
           ],
         },
         {
           title: 'Help',
-          links: [{ label: 'FAQ', href: '#faq' }],
+          links: [{ label: 'FAQ', href: '/#faq' }],
         },
       ]
 
@@ -110,7 +110,7 @@ function buildContent(lang: Lang): FooterContent {
         ctaHeadlineFirst: 'Os números já existem.',
         ctaHeadlineSecond: 'Falta transformá‑los em decisões.',
         ctaSubheadline: 'Veja a sua empresa com mais clareza e transforme informação financeira em contexto para decidir o que vem a seguir.',
-        ctaPrimary: 'Agendar Demo',
+        ctaPrimary: 'Ser Finer Pioneer',
         tagline: 'Inteligência financeira para decisões mais claras.',
         copyright: '© 2026 Finer One. Todos os direitos reservados.',
       }
@@ -118,7 +118,7 @@ function buildContent(lang: Lang): FooterContent {
         ctaHeadlineFirst: 'The numbers already exist.',
         ctaHeadlineSecond: "What's missing is turning them into decisions.",
         ctaSubheadline: 'See your company with more clarity and turn financial information into context for deciding what comes next.',
-        ctaPrimary: 'Book a Demo',
+        ctaPrimary: 'Become a Finer Pioneer',
         tagline: 'Financial intelligence for clearer decisions.',
         copyright: '© 2026 Finer One. All rights reserved.',
       }

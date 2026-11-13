@@ -15,7 +15,7 @@ export function ExcludedFeature({ label }: { label: string }) {
   return (
     <li className="flex items-center gap-2.5">
       <CircleX size={14} aria-hidden="true" className="shrink-0 text-white/25" />
-      <span className="text-[13px] leading-snug text-mist/60">{label}</span>
+      <span className="text-[13px] leading-snug text-mist/90">{label}</span>
     </li>
   )
 }

@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/Button'
+import { buttonClasses } from '@/components/ui/Button'
 import { Reveal } from '@/components/ui/Reveal'
 import { useFooterData } from '@/data/footer'
 
@@ -53,9 +53,9 @@ export function FinalCTA() {
           </p>
 
           <div className="mt-10 flex justify-center">
-            <Button size="lg" className="w-full sm:w-auto">
+            <a href="/pioneers/" className={buttonClasses({ size: "lg", className: "w-full font-semibold sm:w-auto" })}>
               {footerCopy.ctaPrimary}
-            </Button>
+            </a>
           </div>
         </Reveal>
       </div>

@@ -161,7 +161,7 @@ export function PricingSpotlightCard({ plan, recommended }: { plan: Plan; recomm
 
           {plan.excluded.length > 0 ? (
             <>
-              <p className="mt-6 flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-mist/70">
+              <p className="mt-6 flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-mist">
                 {pricingCopy.excludedLabel}
                 <span aria-hidden="true" className="h-px flex-1 bg-white/[0.06]" />
               </p>

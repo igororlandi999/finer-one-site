@@ -45,7 +45,7 @@ export function QuestionsCard({ className }: { className?: string }) {
                 'flex items-start gap-2 rounded-lg border-l-2 py-2 pl-2.5 pr-2 text-[13px] leading-snug transition-colors duration-500',
                 isActive
                   ? 'border-l-accent bg-white/[0.05] text-white'
-                  : 'border-l-white/[0.08] text-mist/70',
+                  : 'border-l-white/[0.08] text-mist',
               )}
             >
               <span

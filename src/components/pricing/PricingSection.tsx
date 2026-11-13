@@ -55,8 +55,8 @@ export function PricingSection() {
         </div>
 
         <p className="mx-auto mt-12 flex max-w-[64ch] items-start justify-center gap-2.5 text-center">
-          <Info size={14} aria-hidden="true" className="mt-0.5 shrink-0 text-mist/70" />
-          <span className="text-[12px] leading-relaxed text-mist/70">
+          <Info size={14} aria-hidden="true" className="mt-0.5 shrink-0 text-mist" />
+          <span className="text-[12px] leading-relaxed text-mist">
             {pricingCopy.noteLines[0]}
             <br />
             {pricingCopy.noteLines[1]}

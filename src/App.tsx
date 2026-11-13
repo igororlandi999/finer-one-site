@@ -1,14 +1,63 @@
 import { useEffect } from 'react'
 import { Navbar } from '@/components/layout/Navbar'
-import { Hero } from '@/components/hero/Hero'
+import { HeroDemo } from '@/components/v2/HeroDemo'
+import { HomeExperience } from '@/components/v2/HomeExperience'
+import { FinancialDiscovery } from '@/components/v2/FinancialDiscovery'
 import { ProblemSection } from '@/components/problem/ProblemSection'
-import { SolutionSection } from '@/components/solution/SolutionSection'
-import { DecisionsSection } from '@/components/decisions/DecisionsSection'
+import { Challenges } from '@/components/v2/Challenges'
+import { FinancialStory } from '@/components/v2/story/FinancialStory'
+import { FinanceDemo } from '@/components/v2/story/FinanceDemo'
+import { ClarityShowcase } from '@/components/v2/story/ClarityShowcase'
+import { ClarityStage } from '@/components/v2/story/ClarityStage'
+import { ClarityMotion } from '@/components/v2/story/ClarityMotion'
+import { PillarsScrolly } from '@/components/v2/PillarsScrolly'
+import { ProductTour } from '@/components/v2/ProductTour'
+import { CinematicBand } from '@/components/v2/CinematicBand'
+import { PlatformShowcase } from '@/components/v2/PlatformShowcase'
+import { PlatformShowcaseV1 } from '@/components/v2/PlatformShowcaseV1'
+import { Benefits } from '@/components/v2/Benefits'
+import { BenefitsStrip } from '@/components/v2/BenefitsStrip'
+import { BenefitsCards } from '@/components/v2/BenefitsCards'
+import { BenefitsMotion } from '@/components/v2/BenefitsMotion'
+import { HowItWorks } from '@/components/v2/HowItWorks'
+import { HowItWorksMotion } from '@/components/v2/HowItWorksMotion'
+import { HowItWorksDemo } from '@/components/v2/HowItWorksDemo'
+import { HowItWorksSteps } from '@/components/v2/HowItWorksSteps'
+import { HowItWorksFlow } from '@/components/v2/HowItWorksFlow'
+import { ForWhom } from '@/components/v2/ForWhom'
+import { ForWhomEditorial } from '@/components/v2/ForWhomEditorial'
+import { ForWhomStories } from '@/components/v2/ForWhomStories'
+import { ForWhomBlock } from '@/components/v2/ForWhomBlock'
+import { SecurityTrust } from '@/components/v2/SecurityTrust'
+import { SecurityTrustAccordion } from '@/components/v2/SecurityTrustAccordion'
+import { OfferSection } from '@/components/v2/OfferSection'
+import { HowItWorksDemoV1 } from '@/components/v2/HowItWorksDemoV1'
+import { HowItWorksDemoV2 } from '@/components/v2/HowItWorksDemoV2'
+import { Security } from '@/components/v2/Security'
 import { PricingSection } from '@/components/pricing/PricingSection'
+import { PlansSection } from '@/components/v2/PlansSection'
+import { EarlyAccess } from '@/components/v2/EarlyAccess'
 import { FAQSection } from '@/components/faq/FAQSection'
+import { FAQHome } from '@/components/v2/FAQHome'
 import { FinalCTA } from '@/components/footer/FinalCTA'
+import { FinalCTAWorld } from '@/components/v2/FinalCTAWorld'
 import { SiteFooter } from '@/components/footer/SiteFooter'
 
+// Comparação na versão de desenvolvimento: ?secao=antiga mostra a segunda secção anterior.
+// ?secao=antiga · desafios · scroll · exemplos · paineis (versões anteriores).
+const SECOND = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('secao') : null
+
+/**
+ * Homepage v2 (branch dev/homepage-v2).
+ *
+ * Narrativa: Hero (Finer Home) → problema → Compreender/Antecipar/Decidir
+ * (scroll) → [folha clara: demonstração Finer Home/Advisor → benefícios →
+ * como funciona] → faixa cinematográfica → segurança → planos → acesso
+ * antecipado → FAQ → encerramento.
+ *
+ * As secções da v1 que esta substitui (SolutionSection, DecisionsSection,
+ * Hero) continuam no repositório, sem uso, até a v2 ser aprovada.
+ */
 export default function App() {
   // O browser tenta resolver a âncora do URL antes do React renderizar a
   // página, por isso um link direto para /#problema não chegava ao destino.
@@ -23,14 +72,43 @@ export default function App() {
   return (
     <div className="min-h-screen bg-navy">
       <Navbar />
-      <main id="conteudo">
-        <Hero />
-        <ProblemSection />
-        <SolutionSection />
-        <DecisionsSection />
-        <PricingSection />
-        <FAQSection />
-        <FinalCTA />
+      <main id="conteudo" className="relative z-10 bg-navy">
+        <HeroDemo />
+        {/* Nova secção 2: experiência Finer Home (destino do CTA principal da hero) */}
+        <HomeExperience />
+        {SECOND === 'antiga' ? <ProblemSection /> : SECOND === 'desafios' ? <Challenges /> : SECOND === 'scroll' ? <FinancialStory /> : SECOND === 'exemplos' ? <FinanceDemo /> : SECOND === 'paineis' ? <ClarityShowcase /> : SECOND === 'etapas' ? <ClarityStage /> : SECOND === 'clareza' ? <ClarityMotion /> : <FinancialDiscovery />}
+        {/* Os três pilares já são demonstrados na secção anterior; versão antiga em ?pilares=sim */}
+        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('pilares') === 'sim' && <PillarsScrolly />}
+        {/* Folha clara contínua: demonstração, benefícios e funcionamento.
+            Cantos arredondados sobre o navy, em vez de cortes retos entre
+            secções escuras e claras. */}
+        <div className={typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('fundo') === 'antigo' ? 'relative z-10 rounded-[28px] bg-gradient-to-b from-ice via-white to-ice sm:mx-3 sm:rounded-[40px]' : 'relative z-10 rounded-b-[28px] bg-gradient-to-b from-[#F8FAFF] via-white to-ice sm:rounded-b-[40px]'}>
+          {/* Demonstração interativa retirada: a plataforma já aparece no vídeo da hero. Versão antiga em ?tour=sim */}
+          {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('tour') === 'sim' && <ProductTour />}
+          {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'antigo' ? <Benefits /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'cartoes' ? <BenefitsCards /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'faixa' ? <BenefitsStrip /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('beneficios') === 'motion' ? <BenefitsMotion /> : null /* os quatro temas passaram para a faixa da secção 3 */}
+          {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'antigo' ? <HowItWorks /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'v2' ? <HowItWorksMotion /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'v3' ? <HowItWorksDemoV1 /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'v4' ? <HowItWorksDemoV2 /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'v5' ? <HowItWorksDemo /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('funcionamento') === 'v7' ? <HowItWorksFlow /> : <HowItWorksSteps />}
+          {/* Secção 5, versão anterior (clara, quatro áreas) em ?plataforma=v1 */}
+          {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('plataforma') === 'v1' && <PlatformShowcaseV1 />}
+        </div>
+        {/* Nova secção 5: Para quem é. Versões anteriores: ?pessoas=antiga (editorial), ?pessoas=historias e ?pessoas=bloco */}
+        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('pessoas') === 'antiga' ? <ForWhomEditorial /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('pessoas') === 'historias' ? <ForWhomStories /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('pessoas') === 'bloco' ? <ForWhomBlock /> : <ForWhom />}
+        {/* Montra 'Experimente o que faz a diferença' retirada da nova homepage (fundador, 11/11/2026). Disponível em ?plataforma=sim */}
+        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('plataforma') === 'sim' && <PlatformShowcase />}
+        {/* Banda cinematográfica retirada (pedido do fundador, 11/11/2026). Versão anterior em ?banda=sim */}
+        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('banda') === 'sim' && <CinematicBand />}
+        {/* Nova secção 6: Segurança e confiança. Versão anterior em ?seguranca=antiga */}
+        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('seguranca') === 'antiga' ? <Security /> : typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('seguranca') === 'acordeao' ? <SecurityTrustAccordion /> : <SecurityTrust />}
+        {/* Nova secção 7: Oferta e conversão (Plus, Pioneers, lista de espera) */}
+        {/* 'Escolha como quer começar' retirada (fundador, 12/11/2026): repetia os planos. Versão anterior em ?oferta=sim */}
+        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('oferta') === 'sim' && <OfferSection />}
+        {/* Planos: nova versão (Searchable/Lovable). Versão anterior escura em ?precos=antigo */}
+        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('precos') === 'antigo' ? <PricingSection /> : <PlansSection />}
+        {/* Acesso antecipado substituído pela secção 7. Versão anterior em ?acesso=antigo */}
+        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('acesso') === 'antigo' && <EarlyAccess />}
+        {/* FAQ final (fundador, 12/11/2026). Versão anterior escura em ?faq=antigo */}
+        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('faq') === 'antigo' ? <FAQSection /> : <FAQHome />}
+        {/* CTA final com o mundo da hero (fundador, 12/11/2026). Versão anterior em ?cta=antigo */}
+        {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('cta') === 'antigo' ? <FinalCTA /> : <FinalCTAWorld />}
       </main>
 
       <SiteFooter />

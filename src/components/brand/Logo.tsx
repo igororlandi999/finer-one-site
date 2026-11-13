@@ -34,7 +34,7 @@ export function Logo({
     <span className={cn('inline-flex items-center gap-2.5 text-white', className)}>
       <LogoMark className={cn('h-[22px]', markClassName)} />
       {withWordmark ? (
-        <span className="font-display text-[15px] font-semibold leading-none tracking-[0.16em] text-white">
+        <span className="font-display text-[15px] font-semibold leading-none tracking-[0.16em]">
           FINER ONE
         </span>
       ) : null}

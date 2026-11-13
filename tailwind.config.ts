@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+import containerQueries from '@tailwindcss/container-queries'
 
 /**
  * Tokens oficiais da marca Finer One.
@@ -21,8 +22,12 @@ export default {
         accent: {
           DEFAULT: '#0052FF', // Accent Blue
           hover: '#1C63FF',
+          /** Azul profundo da marca para destaques sobre fundos claros (mais perto do navy do logótipo). */
+          deep: '#0A40C8',
         },
         glow: '#1E90FF', // Glow Blue
+        /** Branco azulado das secções claras (degradê branco→azul das apresentações). */
+        ice: '#F3F6FD',
         mist: '#A6A6A6', // Light Gray
         /**
          * Token semântico, NÃO faz parte da identidade principal da marca.
@@ -131,5 +136,5 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [containerQueries],
 } satisfies Config
