@@ -51,8 +51,11 @@ homepage v2 em `src/components/v2/`. Validar com `npm run build`.
 
 - Páginas independentes (multi-page Vite): `/pioneers/`, `/lista-espera/`,
   `/privacidade/` — cada uma com `index.html` próprio e entrada em `src/entries/`.
-- Envio: `src/lib/forms.ts`. Sem `VITE_FORMS_ENDPOINT` = modo de
-  pré-visualização (nada é enviado). Recetor previsto: Google Apps Script +
-  Folha Google da conta da empresa (`backend/google-apps-script/`). Só ativar
-  com autorização dos fundadores.
+- Envio: `src/lib/forms.ts`. Recetor: Google Apps Script + Folha Google da conta
+  da empresa (`backend/google-apps-script/`), que guarda cada submissão e envia
+  email para geral.finerone@gmail.com (Lista de Espera / Finer Pioneer).
+  Sem `VITE_FORMS_ENDPOINT`: `npm run dev` = pré-visualização (nada é enviado);
+  build de produção = "formulário indisponível" (nunca falso sucesso).
+  O endpoint entra no build pela variável de repositório `VITE_FORMS_ENDPOINT`
+  (GitHub Actions). Testes simulados do recetor: `npm run test:forms`.
 - O aviso de privacidade é um RASCUNHO — não publicar sem validação.

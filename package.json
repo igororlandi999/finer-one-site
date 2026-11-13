@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "test:forms": "node backend/google-apps-script/test/receiver.test.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",
