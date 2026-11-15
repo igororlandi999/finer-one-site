@@ -6,7 +6,7 @@ import { LuminousLine } from '@/components/v2/LuminousLine'
 import { AppShell } from '@/components/v2/finer-ui/AppShell'
 import { FinerHomeView } from '@/components/v2/finer-ui/FinerHomeView'
 import { ScaledCanvas } from '@/components/v2/finer-ui/ScaledCanvas'
-import { DEMO_VIDEO, DEMO_VIDEO_SAMPLES, HERO_BACKGROUND, TRY_DEMO_ANCHOR } from '@/config/demo'
+import { DEMO_VIDEO, HERO_BACKGROUND, TRY_DEMO_ANCHOR } from '@/config/demo'
 import type { DemoVideoSource } from '@/config/demo'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useInView } from '@/hooks/useInView'
@@ -62,9 +62,7 @@ type T = (typeof copy)['pt']
 export function HeroDemo() {
   const { lang } = useLanguage()
   const t = copy[lang]
-  // Vídeo final (config) ou, só para aprovação, uma amostra pedida com ?video=amostra
-  const sampleKey = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('video') : null
-  const activeVideo = (sampleKey && DEMO_VIDEO_SAMPLES[sampleKey]) || (DEMO_VIDEO.src ? DEMO_VIDEO : null)
+  const activeVideo = DEMO_VIDEO.src ? DEMO_VIDEO : null
 
   return (
     <section

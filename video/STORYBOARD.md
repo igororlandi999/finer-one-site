@@ -27,7 +27,12 @@ Referência visual (`previews/storyboard-video-A.jpg` e `-B.jpg`).
 | 9–10 s | Recomendação principal em destaque | contorno + barra azul |
 | 10–18 s | Plano de ação · recuo · linha regressa à Finer Home | loop sem corte |
 
-**Amostras produzidas** (remover `public/video/amostras/` antes de publicar):
+**Amostras produzidas** (15/11/2026: a V4 foi aprovada e está em `public/video/hero-demo*`; as amostras V1–V3 e o seletor `?video=` foram retirados do site):
+
+> **Tarefa futura — rever em janeiro de 2027:** o vídeo da hero mostra datas fixas
+> ("9 de novembro de 2026", "Nov 2026"). Gerar nova versão sem data absoluta (ou com
+> referência relativa) antes de parecer desatualizado. Não bloqueia o lançamento (decisão 15/11/2026).
+
 - V1 `HeroSample` → `hero-a.mp4` (referência; visível com `?video=v1`).
 - V2 `HeroSampleV2` (Product Film 2.0) → `hero-a-v2.mp4` + `hero-a-v2-720.mp4`
   (telemóvel) — visível por defeito no hero de desenvolvimento.
