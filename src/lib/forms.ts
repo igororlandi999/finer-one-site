@@ -2,9 +2,12 @@
  * Envio dos formulários (Finer Pioneers e Lista de Espera).
  *
  * O site é estático (GitHub Pages), por isso os dados seguem por HTTPS para um
- * recetor externo definido em VITE_FORMS_ENDPOINT (Google Apps Script — ver
- * backend/google-apps-script). O recetor guarda cada submissão numa Folha Google
- * e envia um email para geral.finerone@gmail.com.
+ * recetor externo definido em VITE_FORMS_ENDPOINT. Dois recetores possíveis,
+ * escolhidos por VITE_FORMS_PROVIDER (nunca os dois ao mesmo tempo):
+ *  - "google" (por omissão): Google Apps Script — guarda numa Folha Google e envia
+ *    email para geral.finerone@gmail.com (backend/google-apps-script);
+ *  - "cloudflare": Cloudflare Worker + D1, com Turnstile (workers/forms). Exige
+ *    VITE_TURNSTILE_SITEKEY; sem ela o formulário fica indisponível.
  *
  * Sem VITE_FORMS_ENDPOINT:
  *  - em desenvolvimento (npm run dev): MODO DE PRÉ-VISUALIZAÇÃO — valida, mostra a
@@ -13,8 +16,12 @@
  *    mostra sucesso sem o recetor ter confirmado que guardou a submissão.
  *
  * Proteção (aplicada aqui e repetida no recetor):
- *  - campo-armadilha invisível ("website"), que só robôs preenchem;
- *  - tempo mínimo de preenchimento;
+ *  - campo-armadilha invisível ("website"), que só robôs preenchem: o envio é recusado
+ *    com a mesma mensagem genérica de verificação, sem nada enviado;
+ *  - tempo mínimo de preenchimento: um envio mais rápido espera o tempo que falta
+ *    (fica em "A enviar…") e segue normalmente — nunca se finge sucesso;
+ *  - só há confirmação quando o recetor devolve o registo guardado (id) ou já
+ *    existente (duplicate);
  *  - um envio de cada vez; o mesmo identificador de submissão é reutilizado nas
  *    novas tentativas, para o recetor não guardar a mesma inscrição duas vezes;
  *  - limite de envios por navegador;
@@ -31,8 +38,10 @@ const TIMEOUT_MS = 20000
 
 export const endpoint: string | undefined = import.meta.env.VITE_FORMS_ENDPOINT || undefined
 export const isPreviewMode = !endpoint && import.meta.env.DEV
+export const FORMS_PROVIDER: 'google' | 'cloudflare' = import.meta.env.VITE_FORMS_PROVIDER === 'cloudflare' ? 'cloudflare' : 'google'
+const turnstileSiteKey: string | undefined = import.meta.env.VITE_TURNSTILE_SITEKEY || undefined
 
-export type SubmitFailure = 'bot' | 'rate' | 'network' | 'server' | 'unavailable' | 'duplicate'
+export type SubmitFailure = 'bot' | 'rate' | 'network' | 'server' | 'unavailable' | 'duplicate' | 'verification'
 export type SubmitResult = { ok: true; preview: boolean } | { ok: false; reason: SubmitFailure }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
@@ -78,11 +87,9 @@ export async function submitForm(
   rawFields: Record<string, string>,
   guard: { honeypot: string; startedAt: number },
 ): Promise<SubmitResult> {
-  // Robôs: preenchem o campo invisível ou submetem instantaneamente.
-  // Fingimos sucesso para não lhes dar pistas.
-  if (guard.honeypot.trim() !== '' || Date.now() - guard.startedAt < MIN_FILL_MS) {
-    return { ok: true, preview: isPreviewMode }
-  }
+  // Campo-armadilha preenchido: só robôs (ou preenchimento automático indevido) o fazem.
+  // Nunca se finge sucesso; a mensagem é a mesma de uma verificação Turnstile falhada.
+  if (guard.honeypot.trim() !== '') return { ok: false, reason: 'verification' }
   if (recentSubmissions().length >= LOCAL_LIMIT) return { ok: false, reason: 'rate' }
 
   // Envia exatamente o que o recetor vai guardar (sem espaços nas pontas).
@@ -94,13 +101,25 @@ export async function submitForm(
     return { ok: true, preview: true }
   }
 
+  if (FORMS_PROVIDER === 'cloudflare' && !turnstileSiteKey) return { ok: false, reason: 'unavailable' }
   if (inFlight[kind]) return { ok: false, reason: 'network' }
   inFlight[kind] = true
   const submissionId = (pendingIds[kind] ??= newId())
   const controller = new AbortController()
-  const timer = window.setTimeout(() => controller.abort(), TIMEOUT_MS)
+  let timer = 0
 
   try {
+    // Envio mais rápido do que o tempo mínimo: espera o que falta em vez de o descartar.
+    const wait = MIN_FILL_MS + 100 - (Date.now() - guard.startedAt)
+    if (wait > 0) await new Promise((resolve) => window.setTimeout(resolve, wait))
+    // Cloudflare: um token Turnstile novo a cada tentativa (só vale uma vez).
+    let turnstileToken: string | undefined
+    if (FORMS_PROVIDER === 'cloudflare') {
+      const { getTurnstileToken } = await import('@/lib/turnstile')
+      turnstileToken = (await getTurnstileToken(turnstileSiteKey!)) ?? undefined
+      if (!turnstileToken) return { ok: false, reason: 'verification' }
+    }
+    timer = window.setTimeout(() => controller.abort(), TIMEOUT_MS)
     // text/plain evita o pedido prévio (CORS) que o Google Apps Script não suporta.
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -113,12 +132,18 @@ export async function submitForm(
         elapsedMs: Date.now() - guard.startedAt,
         consentVersion: PRIVACY_VERSION,
         lang: document.documentElement.lang === 'en' ? 'en' : 'pt',
+        ...(turnstileToken ? { turnstileToken } : {}),
       }),
       signal: controller.signal,
     })
-    const data = (await response.json().catch(() => null)) as { ok?: boolean; error?: string } | null
-    if (!response.ok || data?.ok !== true) {
-      const reason: SubmitFailure = data?.error === 'rate' ? 'rate' : data?.error === 'duplicate' ? 'duplicate' : 'server'
+    const data = (await response.json().catch(() => null)) as { ok?: boolean; error?: string; id?: unknown; duplicate?: unknown } | null
+    // Sucesso só com registo guardado (id) ou já existente (duplicate). Um "ok" sem um
+    // dos dois (ex.: recetor antigo a descartar um envio suspeito) não é confirmação.
+    const confirmed = response.ok && data?.ok === true && ((typeof data.id === 'string' && data.id !== '') || data.duplicate === true)
+    if (!confirmed) {
+      if (response.ok && data?.ok === true) return { ok: false, reason: 'verification' }
+      const reason: SubmitFailure =
+        data?.error === 'rate' ? 'rate' : data?.error === 'duplicate' ? 'duplicate' : data?.error === 'verification' ? 'verification' : 'server'
       return { ok: false, reason }
     }
     delete pendingIds[kind]

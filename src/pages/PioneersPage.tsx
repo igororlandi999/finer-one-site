@@ -7,7 +7,7 @@ import { ConsentCheckbox, Field, Honeypot, SelectInput, TextArea, TextInput } fr
 import { buttonClasses } from '@/components/ui/Button'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { isPreviewMode, isValidEmail, submitForm } from '@/lib/forms'
-import { cn } from '@/lib/utils'
+import { cn, focusLater } from '@/lib/utils'
 import { FormSuccess } from '@/pages/FormSuccess'
 import { PioneersPageClassic } from '@/pages/PioneersPageClassic'
 
@@ -71,7 +71,7 @@ const copy = {
     challengeHint: 'Escolha um tema para começar ou escreva livremente.',
     challengeChips: ['Recebimentos em atraso', 'Pressão de tesouraria', 'Custos a subir', 'Falta de previsão', 'Informação dispersa'],
     challengeExamples: ['Ex.: Tenho dificuldade em prever quando vou ter falta de caixa…', 'Ex.: Faturo bem, mas os clientes pagam tarde…', 'Ex.: Não sei que custos estão a crescer mais…'],
-    consent: ['Li o ', 'aviso de privacidade', ' e aceito que a Finer One trate estes dados para avaliar a minha candidatura e contactar-me sobre o programa.'],
+    consent: ['Li o ', 'aviso de privacidade', ' e autorizo a Finer One a usar estes dados para avaliar a minha candidatura e contactar-me sobre o programa. Isto não me inscreve em comunicações promocionais.'],
     submit: 'Enviar candidatura',
     sending: 'A enviar…',
     secure: 'Os seus dados são usados apenas para avaliar a candidatura. Não pedimos dados bancários.',
@@ -86,6 +86,7 @@ const copy = {
       network: 'Não foi possível enviar. Verifique a ligação e tente novamente.',
       server: 'Ocorreu um erro ao enviar. Tente novamente dentro de alguns minutos.',
       unavailable: 'O formulário está temporariamente indisponível. Escreva-nos para geral.finerone@gmail.com.',
+      verification: 'Não foi possível confirmar o envio. Atualize a página e tente novamente.',
       duplicate: 'Já recebemos uma candidatura com este email há poucos minutos. Se precisar de corrigir algo, escreva para geral.finerone@gmail.com.',
     },
     successTitle: 'Candidatura recebida.',
@@ -144,7 +145,7 @@ const copy = {
     challengeHint: 'Pick a topic to start or write freely.',
     challengeChips: ['Late payments', 'Cash pressure', 'Rising costs', 'No forecasting', 'Scattered information'],
     challengeExamples: ['E.g. I find it hard to predict when I will run short of cash…', 'E.g. Sales are good, but customers pay late…', 'E.g. I don’t know which costs are growing fastest…'],
-    consent: ['I have read the ', 'privacy notice', ' and agree that Finer One may process this data to assess my application and contact me about the programme.'],
+    consent: ['I have read the ', 'privacy notice', ' and allow Finer One to use this data to assess my application and contact me about the programme. This does not sign me up for promotional communications.'],
     submit: 'Send application',
     sending: 'Sending…',
     secure: 'Your data is only used to assess your application. We never ask for bank details.',
@@ -159,6 +160,7 @@ const copy = {
       network: 'Could not send. Check your connection and try again.',
       server: 'Something went wrong. Please try again in a few minutes.',
       unavailable: 'This form is temporarily unavailable. Please email us at geral.finerone@gmail.com.',
+      verification: 'We could not verify this submission. Please refresh the page and try again.',
       duplicate: 'We received an application with this email a few minutes ago. If you need to change anything, email geral.finerone@gmail.com.',
     },
     successTitle: 'Application received.',
@@ -378,13 +380,13 @@ function ApplicationCard({ t }: { t: T }) {
 
   const focusFirst = (e: Errors) => {
     const first = Object.keys(e)[0]
-    if (first) window.setTimeout(() => document.getElementById(`pio-${first}`)?.focus(), 60)
+    if (first) focusLater(`pio-${first}`, 60)
   }
 
   const go = (to: number) => {
     setDir(to > step ? 1 : -1)
     setStep(to)
-    window.setTimeout(() => document.getElementById(`pio-${STEP_FIELDS[to][0]}`)?.focus({ preventScroll: true }), reduced ? 0 : 320)
+    focusLater(`pio-${STEP_FIELDS[to][0]}`, reduced ? 0 : 320, { preventScroll: true })
   }
 
   const next = () => {

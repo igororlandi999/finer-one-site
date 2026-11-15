@@ -26,9 +26,14 @@ jobs:
       - run: npm ci
       - run: npm run build
         env:
-          # URL /exec da aplicação Web do Google Apps Script (não é segredo; é um endereço público de envio).
-          # Definir em Settings → Secrets and variables → Actions → Variables.
+          # Endereço público do recetor dos formulários (não é segredo): Worker da Cloudflare ou,
+          # para reversão, URL /exec do Google Apps Script. Settings → Secrets and variables →
+          # Actions → Variables. Procedimento: docs/PUBLICACAO.md.
           VITE_FORMS_ENDPOINT: ${{ vars.VITE_FORMS_ENDPOINT }}
+          # Recetor ativo: "google" (omissão) ou "cloudflare" (workers/forms). Só um em produção.
+          VITE_FORMS_PROVIDER: ${{ vars.VITE_FORMS_PROVIDER }}
+          # Chave PÚBLICA do widget Turnstile (o segredo fica só no Worker).
+          VITE_TURNSTILE_SITEKEY: ${{ vars.VITE_TURNSTILE_SITEKEY }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
