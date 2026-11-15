@@ -30,7 +30,7 @@
 
 export type FormKind = 'pioneers' | 'waitlist'
 
-export const PRIVACY_VERSION = '2026-11-rascunho'
+export const PRIVACY_VERSION = '2026-11-v1'
 const MIN_FILL_MS = 3000
 const LOCAL_LIMIT = 5
 const LOCAL_WINDOW_MS = 60 * 60 * 1000

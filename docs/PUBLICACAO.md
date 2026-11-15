@@ -5,8 +5,8 @@ marcado com **[fundador]** só é feito com autorização explícita de um funda
 
 ## 0. Antes de começar
 
-- [ ] Política de privacidade aprovada pelos fundadores (ver "Proteção de dados" abaixo).
-      Enquanto não estiver, `APPROVED = false` e a página mostra "Rascunho em revisão".
+- [x] Política de privacidade aprovada pelos três fundadores a 15/11/2026 (versão `2026-11-v1`,
+      `APPROVED = true`). Responsáveis conjuntos (art. 26.º RGPD), acordo interno aceite na mesma data.
 - [ ] Verificação em dois passos ativa na conta Cloudflare (geral.finerone@gmail.com).
 - [ ] Recetor ativo: `https://finer-one-forms.geral-finerone.workers.dev/` responde
       `{"ok":true,"service":"finer-one-forms"}`; D1 `finer-one-forms` vazia ou só com dados reais.
@@ -118,6 +118,5 @@ Rollback (ver `workers/forms/README.md`, incluindo o aviso sobre o segredo do Tu
    no aviso; confirmar que o fundamento "interesse legítimo" da Finer One cobre a ativação.
 3. O processamento em trânsito (Workers, Turnstile) pode ocorrer fora do EEE; só o
    armazenamento D1 está restrito à UE.
-4. Responsável proposto (Henrique Santos Bértolo) pendente de concordância formal; a
-   política continua em rascunho (`APPROVED = false`, versão de consentimento
-   `2026-11-rascunho`).
+4. Responsáveis: resolvido a 15/11/2026 — os três fundadores são responsáveis conjuntos,
+   com Henrique Santos Bértolo como ponto de contacto; aviso `2026-11-v1` em vigor no ramo.
