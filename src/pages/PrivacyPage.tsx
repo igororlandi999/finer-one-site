@@ -79,7 +79,7 @@ const sectionsPt: Section[] = [
       ? [
           'Cada envio é recebido por um serviço da Finer One na Cloudflare (Cloudflare Workers), que valida os dados e os guarda numa base de dados da Finer One no Cloudflare D1, criada para guardar os dados na União Europeia. Os dados não são enviados por email.',
           'Só a equipa fundadora da Finer One lhes acede, através do painel da Cloudflare, com acesso autenticado à conta da Finer One.',
-          'A Cloudflare atua como subcontratante ao abrigo do seu Acordo de Tratamento de Dados (Data Processing Addendum). Os pedidos podem ser processados em servidores da Cloudflare fora do Espaço Económico Europeu; para essas transferências, o acordo prevê as cláusulas contratuais-tipo aprovadas pela Comissão Europeia.',
+          'A Cloudflare atua como subcontratante ao abrigo do seu Acordo de Tratamento de Dados (Data Processing Addendum). Os pedidos podem ser processados em servidores da Cloudflare fora do Espaço Económico Europeu; para essas transferências, o acordo recorre ao Quadro de Privacidade de Dados UE-EUA (EU-U.S. Data Privacy Framework) e, quando este não se aplica, às cláusulas contratuais-tipo aprovadas pela Comissão Europeia.',
           'Na verificação Turnstile, a Cloudflare trata sinais técnicos do navegador (como o endereço IP e o agente do utilizador) em nosso nome para proteger os formulários e, como responsável pelo tratamento, para melhorar a deteção de envios automáticos, nos termos do seu Aviso de Privacidade do Turnstile (Turnstile Privacy Addendum).',
         ]
       : [
@@ -167,7 +167,7 @@ const sectionsEn: Section[] = [
       ? [
           'Each submission is received by a Finer One service on Cloudflare (Cloudflare Workers), which validates the data and stores it in a Finer One database on Cloudflare D1, created to keep the data in the European Union. The data is not sent by email.',
           'Only the Finer One founding team can access it, through the Cloudflare dashboard, with authenticated access to Finer One’s account.',
-          'Cloudflare acts as a processor under its Data Processing Addendum. Requests may be processed on Cloudflare servers outside the European Economic Area; for those transfers, the addendum provides the standard contractual clauses approved by the European Commission.',
+          'Cloudflare acts as a processor under its Data Processing Addendum. Requests may be processed on Cloudflare servers outside the European Economic Area; for those transfers, the addendum relies on the EU-U.S. Data Privacy Framework and, where it does not apply, on the standard contractual clauses approved by the European Commission.',
           'For the Turnstile check, Cloudflare processes technical browser signals (such as the IP address and user agent) on our behalf to protect the forms and, as a controller, to improve its detection of automated submissions, under its Turnstile Privacy Addendum.',
         ]
       : [
