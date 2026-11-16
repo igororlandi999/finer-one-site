@@ -34,6 +34,7 @@ export const DEMO_VIDEO: DemoVideoSource = {
 export const HERO_BACKGROUND = {
   video: '/video/hero-earth.mp4',
   poster: '/images/hero-earth.jpg',
+  posterWebp: '/images/hero-earth.webp',
 }
 
 /**
