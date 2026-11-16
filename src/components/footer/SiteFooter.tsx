@@ -33,7 +33,7 @@ const copy: Record<Lang, { signature: string; tagline: [string, string]; cta: st
     cta: 'Ser Finer Pioneer',
     cols: [
       { title: 'Produto', links: [{ label: 'Experimentar', href: '/#experimentar-finer' }, { label: 'Como funciona', href: '/#funcionamento' }, { label: 'Planos', href: '/#precos' }] },
-      { title: 'Descobrir', links: [{ label: 'Sobre nós', href: '/sobre/' }, { label: 'Para quem é', href: '/#para-quem' }, { label: 'Segurança', href: '/#seguranca' }, { label: 'Perguntas frequentes', href: '/#faq' }, { label: 'Privacidade', href: '/privacidade/' }] },
+      { title: 'Descobrir', links: [{ label: 'Sobre nós', href: '/sobre/' }, { label: 'Para quem é', href: '/#para-quem' }, { label: 'Segurança', href: '/#seguranca' }, { label: 'Perguntas frequentes', href: '/#faq' }, { label: 'Guia: falta de liquidez', href: '/guias/falta-de-liquidez/' }, { label: 'Privacidade', href: '/privacidade/' }] },
       { title: 'Começar', links: [{ label: 'Finer Pioneers', href: '/pioneers/' }, { label: 'Lista de espera', href: '/lista-espera/' }, { label: 'LinkedIn', href: LINKEDIN, external: true }] },
     ],
     nav: 'Navegação do rodapé',
@@ -48,7 +48,7 @@ const copy: Record<Lang, { signature: string; tagline: [string, string]; cta: st
     cta: 'Become a Finer Pioneer',
     cols: [
       { title: 'Product', links: [{ label: 'Try it', href: '/#experimentar-finer' }, { label: 'How it works', href: '/#funcionamento' }, { label: 'Plans', href: '/#precos' }] },
-      { title: 'Discover', links: [{ label: 'About us', href: '/sobre/' }, { label: 'Who it’s for', href: '/#para-quem' }, { label: 'Security', href: '/#seguranca' }, { label: 'FAQ', href: '/#faq' }, { label: 'Privacy', href: '/privacidade/' }] },
+      { title: 'Discover', links: [{ label: 'About us', href: '/sobre/' }, { label: 'Who it’s for', href: '/#para-quem' }, { label: 'Security', href: '/#seguranca' }, { label: 'FAQ', href: '/#faq' }, { label: 'Guide: cash shortages (PT)', href: '/guias/falta-de-liquidez/' }, { label: 'Privacy', href: '/privacidade/' }] },
       { title: 'Get started', links: [{ label: 'Finer Pioneers', href: '/pioneers/' }, { label: 'Waitlist', href: '/lista-espera/' }, { label: 'LinkedIn', href: LINKEDIN, external: true }] },
     ],
     nav: 'Footer navigation',
