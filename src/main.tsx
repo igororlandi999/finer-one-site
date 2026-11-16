@@ -2,6 +2,8 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from '@/App'
 import { LanguageProvider } from '@/i18n/LanguageContext'
+import '@fontsource-variable/inter'
+import '@fontsource-variable/inter-tight'
 import '@/index.css'
 import { initTitleSweep } from '@/lib/titleSweep'
 

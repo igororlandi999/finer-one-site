@@ -1,0 +1,21 @@
+{
+  "name": "finer-one-forms-worker",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Recetor dos formulários do site Finer One em Cloudflare Workers + D1 + Turnstile (alternativa ao Google Apps Script).",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "db:migrate:local": "wrangler d1 migrations apply finer-one-forms-dev --env dev --local --persist-to .wrangler/state",
+    "dev": "wrangler dev --env dev --local --port 8787 --persist-to .wrangler/state",
+    "dev:admin": "wrangler dev --config wrangler.admin.jsonc --env dev --local --port 8788 --persist-to .wrangler/state"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "^1.8.2",
+    "@cloudflare/workers-types": "^5.20261115.1",
+    "typescript": "^5.9.3",
+    "vitest": "~4.1.0",
+    "wrangler": "^4.162.0"
+  }
+}

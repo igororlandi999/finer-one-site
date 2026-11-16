@@ -1,0 +1,28 @@
+// Recetor público dos formulários. Publica em <nome>.<subdominio>.workers.dev — sem mexer no DNS.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "finer-one-forms",
+  "main": "src/public.ts",
+  "compatibility_date": "2026-11-01",
+  "workers_dev": true,
+  "preview_urls": false,
+  "observability": { "enabled": false },
+  "vars": {
+    "ALLOWED_ORIGINS": "https://www.finer-one.com,https://finer-one.com",
+    "ALLOWED_HOSTNAMES": "www.finer-one.com,finer-one.com"
+  },
+  // Criar com: npx wrangler d1 create finer-one-forms --jurisdiction=eu  (e colar o database_id)
+  "d1_databases": [{ "binding": "DB", "database_name": "finer-one-forms", "database_id": "5679c3bf-0d8b-4912-b699-09ad425bec0e", "migrations_dir": "migrations" }],
+  // Segredo (nunca no código): npx wrangler secret put TURNSTILE_SECRET
+  "env": {
+    // Só para desenvolvimento local (npx wrangler dev --env dev): chaves de teste do Turnstile e origens locais.
+    "dev": {
+      "vars": {
+        "ALLOWED_ORIGINS": "http://localhost:5173,http://localhost:4173",
+        "ALLOWED_HOSTNAMES": "",
+        "TURNSTILE_SECRET": "1x0000000000000000000000000000000AA"
+      },
+      "d1_databases": [{ "binding": "DB", "database_name": "finer-one-forms-dev", "database_id": "local-dev", "migrations_dir": "migrations" }]
+    }
+  }
+}

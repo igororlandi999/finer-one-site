@@ -16,7 +16,8 @@ const copy = {
     formTitle: 'Entrar na lista de espera',
     name: 'Nome',
     email: 'Email profissional',
-    consent: ['Li o ', 'aviso de privacidade', ' e aceito receber comunicações da Finer One sobre o acesso à plataforma. Posso cancelar a qualquer momento.'],
+    emailPh: 'nome@empresa.pt',
+    consent: ['Li o ', 'aviso de privacidade', ' e aceito receber emails da Finer One sobre o lançamento e a abertura do acesso à plataforma. Posso cancelar a qualquer momento.'],
     submit: 'Quero entrar na lista de espera',
     sending: 'A enviar…',
     fine: 'A inscrição não exige ligação bancária nem partilha de dados financeiros.',
@@ -27,6 +28,9 @@ const copy = {
       rate: 'Recebemos vários envios deste dispositivo. Tente novamente mais tarde.',
       network: 'Não foi possível enviar. Verifique a ligação e tente novamente.',
       server: 'Ocorreu um erro ao enviar. Tente novamente dentro de alguns minutos.',
+      unavailable: 'O formulário está temporariamente indisponível. Escreva-nos para geral.finerone@gmail.com.',
+      verification: 'Não foi possível confirmar o envio. Atualize a página e tente novamente.',
+      duplicate: 'Este email já está na lista de espera.',
     },
     successTitle: 'Está na lista.',
     successBody: 'Obrigado. Vamos enviar-lhe novidades sobre a Finer One e sobre o acesso à plataforma.',
@@ -43,7 +47,8 @@ const copy = {
     formTitle: 'Join the waitlist',
     name: 'Name',
     email: 'Work email',
-    consent: ['I have read the ', 'privacy notice', ' and agree to receive communications from Finer One about platform access. I can unsubscribe at any time.'],
+    emailPh: 'name@company.com',
+    consent: ['I have read the ', 'privacy notice', ' and agree to receive emails from Finer One about the launch and the opening of access to the platform. I can unsubscribe at any time.'],
     submit: 'Join the waitlist',
     sending: 'Sending…',
     fine: 'Signing up does not require a bank connection or sharing financial data.',
@@ -54,6 +59,9 @@ const copy = {
       rate: 'We received several submissions from this device. Please try again later.',
       network: 'Could not send. Check your connection and try again.',
       server: 'Something went wrong. Please try again in a few minutes.',
+      unavailable: 'This form is temporarily unavailable. Please email us at geral.finerone@gmail.com.',
+      verification: 'We could not verify this submission. Please refresh the page and try again.',
+      duplicate: 'This email is already on the waitlist.',
     },
     successTitle: 'You are on the list.',
     successBody: 'Thank you. We will send you news about Finer One and platform access.',
@@ -89,6 +97,7 @@ export function WaitlistPageClassic() {
       document.getElementById(`wl-${Object.keys(e)[0]}`)?.focus()
       return
     }
+    if (status === 'sending') return
     setStatus('sending')
     const result = await submitForm('waitlist', { name, email }, { honeypot, startedAt: startedAt.current })
     if (result.ok) {
@@ -152,7 +161,7 @@ export function WaitlistPageClassic() {
                   <TextInput id="wl-name" autoComplete="name" maxLength={100} value={name} onChange={(e) => { setName(e.target.value); setErrors((x) => ({ ...x, name: undefined, form: undefined })) }} error={errors.name} />
                 </Field>
                 <Field id="wl-email" label={t.email} error={errors.email}>
-                  <TextInput id="wl-email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder="nome@empresa.pt" value={email} onChange={(e) => { setEmail(e.target.value); setErrors((x) => ({ ...x, email: undefined, form: undefined })) }} error={errors.email} />
+                  <TextInput id="wl-email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder={t.emailPh} value={email} onChange={(e) => { setEmail(e.target.value); setErrors((x) => ({ ...x, email: undefined, form: undefined })) }} error={errors.email} />
                 </Field>
                 <ConsentCheckbox id="wl-consent" checked={consent} onChange={(v) => { setConsent(v); setErrors((x) => ({ ...x, consent: undefined })) }} error={errors.consent}>
                   {t.consent[0]}

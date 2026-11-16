@@ -112,8 +112,10 @@ export function ConsentCheckbox({ id, checked, onChange, error, children }: { id
 export function Honeypot({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
     <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
-      <label htmlFor="website">Website</label>
-      <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" value={value} onChange={(e) => onChange(e.target.value)} />
+      {/* Nome e rótulo neutros e marcas para gestores de palavras-passe ignorarem: evita que
+          o preenchimento automático do navegador encha a armadilha num envio legítimo. */}
+      <label htmlFor="fo-hp">Não preencher</label>
+      <input id="fo-hp" name="fo-hp" type="text" tabIndex={-1} autoComplete="off" data-1p-ignore="" data-lpignore="true" data-form-type="other" value={value} onChange={(e) => onChange(e.target.value)} />
     </div>
   )
 }

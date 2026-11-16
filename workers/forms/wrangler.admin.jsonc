@@ -1,0 +1,26 @@
+// Consulta administrativa — Worker separado do recetor público, protegido por Cloudflare Access.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "finer-one-admin",
+  "main": "src/admin.ts",
+  "compatibility_date": "2026-11-01",
+  "workers_dev": true,
+  "preview_urls": false,
+  "observability": { "enabled": false },
+  "vars": {
+    // Preencher depois de ativar o Access neste Worker (Settings > Domains & Routes > workers.dev > Enable Cloudflare Access):
+    "ACCESS_TEAM_DOMAIN": "",
+    "ACCESS_AUD": "",
+    "ADMIN_EMAILS": "geral.finerone@gmail.com"
+  },
+  // Mesma base de dados do recetor público.
+  "d1_databases": [{ "binding": "DB", "database_name": "finer-one-forms", "database_id": "5679c3bf-0d8b-4912-b699-09ad425bec0e", "migrations_dir": "migrations" }],
+  "env": {
+    // Só local (npm run dev:admin): mesma base de dados local do recetor em modo dev. Token em .dev.vars (ADMIN_TOKEN=...).
+    "dev": {
+      "vars": { "ACCESS_TEAM_DOMAIN": "", "ACCESS_AUD": "", "ADMIN_EMAILS": "" },
+      "d1_databases": [{ "binding": "DB", "database_name": "finer-one-forms-dev", "database_id": "local-dev", "migrations_dir": "migrations" }]
+    }
+  }
+  // Alternativa sem Access: npx wrangler secret put ADMIN_TOKEN --config wrangler.admin.jsonc (32+ caracteres aleatórios)
+}
