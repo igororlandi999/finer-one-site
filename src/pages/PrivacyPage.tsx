@@ -29,7 +29,7 @@ const sectionsPt: Section[] = [
       [
         'Lista de espera: nome, email, dimensão da empresa e os temas que quer acompanhar.',
         'Finer Pioneers: nome, empresa, setor de atividade, email profissional e a descrição do principal desafio financeiro que decidir partilhar.',
-        'Explorar (simulador de tesouraria): nome da empresa, país, setor, dimensão, o seu nome, email profissional, telefone e função, e os valores e resultados das simulações que decidir enviar. Guardamos estes dados em conjunto. A opção de receber novidades é separada, opcional e desligada por defeito.',
+        'Explorar (simulador de tesouraria): o seu nome, email profissional, empresa e país; opcionalmente, dimensão, setor e telefone; a moeda, o tipo de simulação e o horizonte escolhidos; e se pediu contacto comercial. Os valores que introduz na simulação ficam no seu navegador e não são enviados nem guardados. A opção de receber novidades é separada, opcional e desligada por defeito.',
       ],
       'Registamos também a data do envio e a versão deste aviso que aceitou. Não pedimos dados bancários, acessos bancários, IBAN, extratos nem documentos da empresa nestes formulários.',
     ],
@@ -41,7 +41,7 @@ const sectionsPt: Section[] = [
       [
         'Lista de espera: enviar-lhe novidades sobre a Finer One e sobre o acesso à plataforma.',
         'Finer Pioneers: avaliar a sua candidatura e contactá-lo sobre o programa.',
-        'Explorar: preparar o resultado da simulação pedida e contactá-lo sobre ele; enviar novidades só se o tiver pedido.',
+        'Explorar: preparar e enviar a análise pedida e, se o pedir, contactá-lo sobre a Finer One; enviar novidades só se o tiver pedido.',
       ],
       'Não vendemos nem cedemos os seus dados a terceiros para fins de marketing.',
     ],
@@ -81,7 +81,7 @@ const sectionsEn: Section[] = [
       [
         'Waitlist: name, email, company size and the topics you want to follow.',
         'Finer Pioneers: name, company, industry, work email and the description of the main financial challenge you choose to share.',
-        'Explore (cash-flow simulator): company name, country, industry, size, your name, work email, phone number and role, and the values and results of the simulations you choose to send. We store this data together. The option to receive news is separate, optional and off by default.',
+        'Explore (cash-flow simulator): your name, work email, company and country; optionally, size, industry and phone number; the currency, simulation type and horizon you chose; and whether you asked to be contacted. The values you enter in the simulation stay in your browser and are not sent or stored. The option to receive news is separate, optional and off by default.',
       ],
       'We also record the submission date and the version of this notice you accepted. We do not ask for bank details, bank logins, IBANs, statements or company documents in these forms.',
     ],
@@ -90,7 +90,7 @@ const sectionsEn: Section[] = [
     id: 'finalidades',
     title: 'What we use the data for',
     body: [
-      ['Waitlist: sending you news about Finer One and about access to the platform.', 'Finer Pioneers: assessing your application and contacting you about the programme.', 'Explore: preparing the result of the simulation you requested and contacting you about it; sending news only if you asked for it.'],
+      ['Waitlist: sending you news about Finer One and about access to the platform.', 'Finer Pioneers: assessing your application and contacting you about the programme.', 'Explore: preparing and sending the analysis you requested and, if you ask, contacting you about Finer One; sending news only if you asked for it.'],
       'We do not sell or pass your data to third parties for marketing purposes.',
     ],
   },

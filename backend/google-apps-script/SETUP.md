@@ -45,14 +45,27 @@ Para dar acesso a outro fundador: botão **Partilhar** da folha.
 ## Explorar (simulador de tesouraria)
 
 A página `/explorar/` usa o mesmo recetor e a mesma `VITE_FORMS_ENDPOINT`.
-Grava em dois separadores novos, criados automaticamente:
+O visitante experimenta sem registo; o formulário só aparece quando pede a
+análise completa. Grava no separador **Explorar — leads** (criado
+automaticamente), uma linha por email:
 
-- **Explorar — leads**: empresa, país, setor, dimensão, nome, email, telefone, função,
-  cenário inicial, origem (`explore`), versão do aviso de privacidade,
-  marketing (sim/não, opcional e desligado por defeito), idioma e um **Lead ID**.
-- **Explorar — simulações**: Lead ID, email, cenário, país, valores e
-  resultados da simulação (JSON). Cada envio de simulação fica numa linha nova,
-  ligada ao lead pelo Lead ID.
+- Data, última atividade, Lead ID, nome, email, empresa, país (obrigatórios:
+  nome, email, empresa, país); dimensão, setor e telefone (opcionais); moeda.
+- Origem (`Explore Finer One`), tipo de simulação (`treasury` / `clients`),
+  horizonte (3 ou 6 meses), estado do relatório, **fase**, contacto comercial
+  (sim/não), marketing (sim/não, desligado por defeito), versão do aviso,
+  idioma e número de pedidos.
+- **Fases:** `captado` · `pediu_relatorio` · `pediu_contacto` ·
+  `oportunidade`. As duas do meio vêm do site; `oportunidade` é marcada à
+  mão pela equipa. Um email repetido atualiza a mesma linha (a fase nunca desce).
+- **Os valores da simulação não são enviados nem guardados.** Só devem passar a
+  ser guardados se os fundadores confirmarem a finalidade (e o aviso de
+  privacidade for atualizado em conformidade).
+- O envio da análise por email **ainda não está implementado**; o site mostra a
+  análise no navegador e permite guardá-la em PDF.
+
+Se existir um separador "Explorar — leads" ou "Explorar — simulações" de uma
+versão de teste anterior, apagá-lo antes de ativar (as colunas mudaram).
 
 Se o recetor já estava implementado antes desta alteração, é preciso
 **atualizar a implementação** (Implementar → Gerir implementações → editar →

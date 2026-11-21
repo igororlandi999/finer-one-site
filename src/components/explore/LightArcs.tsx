@@ -6,8 +6,7 @@ import type { RefObject } from 'react'
  * Arcos de luz da identidade Finer One (como na imagem da marca): duas faixas
  * azuis luminosas — uma a entrar pelo canto superior direito, outra pelo canto
  * inferior esquerdo — com halo largo, faixa média e um núcleo quase branco.
- * Um brilho percorre cada arco devagar e os arcos deslizam ligeiramente com o
- * scroll. Com movimento reduzido ficam parados.
+ * Os arcos deslizam ligeiramente com o scroll (sem animações em ciclo). Com movimento reduzido ficam parados.
  */
 type ArcsProps = { target?: RefObject<HTMLElement | null>; variant?: 'hero' | 'card' | 'mobile'; className?: string }
 
@@ -59,8 +58,6 @@ export function LightArcs({ target, variant = 'hero', className }: ArcsProps) {
       <path d={d} fill="none" stroke={`url(#${id}-g-${uid})`} strokeWidth={halo} opacity="0.5" filter={`url(#blurL-${uid})`} />
       <path d={d} fill="none" stroke={`url(#${id}-g-${uid})`} strokeWidth={mid} opacity="0.9" filter={`url(#blurM-${uid})`} />
       <path d={d} fill="none" stroke="#F4F8FF" strokeWidth="2.6" style={{ filter: 'drop-shadow(0 0 6px #7CB8FF) drop-shadow(0 0 18px #1E6BFF) drop-shadow(0 0 42px #0052FF)' }} />
-      {/* Brilho que percorre o arco */}
-      {!reduced && <path d={d} fill="none" stroke="#FFFFFF" strokeWidth="3.4" strokeLinecap="round" pathLength={1000} strokeDasharray="70 1930" className="fo-arc-shine" style={{ filter: 'drop-shadow(0 0 10px #CFE3FF)' }} />}
     </g>
   )
 
@@ -78,20 +75,18 @@ export function LightArcs({ target, variant = 'hero', className }: ArcsProps) {
         <motion.g style={{ y: yTop }}>{arc(p.top, 'top', 'start')}</motion.g>
         <motion.g style={{ y: yBottom }}>{arc(p.bottom, 'bottom', 'end')}</motion.g>
       </svg>
-      <style>{'@keyframes fo-arc-shine{from{stroke-dashoffset:2000}to{stroke-dashoffset:0}}.fo-arc-shine{animation:fo-arc-shine 7s linear infinite}@media (prefers-reduced-motion:reduce){.fo-arc-shine{animation:none;opacity:0}}'}</style>
     </div>
   )
 }
 
-/** Nevoeiro azul à maneira da Lovable: manchas desfocadas que se movem devagar. */
+/** Nevoeiro azul à maneira da Lovable: manchas desfocadas, paradas. */
 export function BlueFog({ className }: { className?: string }) {
   return (
     <div aria-hidden="true" className={className ?? 'pointer-events-none absolute inset-0 -z-10 overflow-hidden'}>
-      <div className="absolute left-1/2 top-[48%] h-[720px] w-[1300px] -translate-x-1/2"><div className="fo-fog-a h-full w-full rounded-full bg-[radial-gradient(closest-side,rgba(30,144,255,0.62),rgba(0,82,255,0.3)_55%,transparent)] blur-[90px]" /></div>
-      <div className="absolute left-1/2 top-[64%] h-[380px] w-[900px] -translate-x-1/2"><div className="fo-fog-b h-full w-full rounded-full bg-[radial-gradient(closest-side,rgba(200,226,255,0.42),transparent)] blur-[80px]" /></div>
-      <div className="absolute left-[4%] top-[58%] h-[420px] w-[640px]"><div className="fo-fog-b h-full w-full rounded-full bg-[radial-gradient(closest-side,rgba(124,184,255,0.32),transparent)] blur-[90px]" /></div>
-      <div className="absolute right-[2%] top-[54%] h-[380px] w-[600px]"><div className="fo-fog-a h-full w-full rounded-full bg-[radial-gradient(closest-side,rgba(61,134,255,0.34),transparent)] blur-[90px]" /></div>
-      <style>{'@keyframes fo-fog-a{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(3%,-2%,0) scale(1.06)}}@keyframes fo-fog-b{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(-3%,2%,0) scale(1.08)}}.fo-fog-a{animation:fo-fog-a 14s ease-in-out infinite}.fo-fog-b{animation:fo-fog-b 18s ease-in-out infinite}@media (prefers-reduced-motion:reduce){.fo-fog-a,.fo-fog-b{animation:none}}'}</style>
+      <div className="absolute left-1/2 top-[48%] h-[720px] w-[1300px] -translate-x-1/2"><div className="h-full w-full rounded-full bg-[radial-gradient(closest-side,rgba(30,144,255,0.62),rgba(0,82,255,0.3)_55%,transparent)] blur-[90px]" /></div>
+      <div className="absolute left-1/2 top-[64%] h-[380px] w-[900px] -translate-x-1/2"><div className="h-full w-full rounded-full bg-[radial-gradient(closest-side,rgba(200,226,255,0.42),transparent)] blur-[80px]" /></div>
+      <div className="absolute left-[4%] top-[58%] h-[420px] w-[640px]"><div className="h-full w-full rounded-full bg-[radial-gradient(closest-side,rgba(124,184,255,0.32),transparent)] blur-[90px]" /></div>
+      <div className="absolute right-[2%] top-[54%] h-[380px] w-[600px]"><div className="h-full w-full rounded-full bg-[radial-gradient(closest-side,rgba(61,134,255,0.34),transparent)] blur-[90px]" /></div>
     </div>
   )
 }
