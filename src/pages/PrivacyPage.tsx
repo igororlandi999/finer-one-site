@@ -29,8 +29,9 @@ const sectionsPt: Section[] = [
       [
         'Lista de espera: nome, email, dimensão da empresa e os temas que quer acompanhar.',
         'Finer Pioneers: nome, empresa, setor de atividade, email profissional e a descrição do principal desafio financeiro que decidir partilhar.',
+        'Explorar (simulador de tesouraria): nome da empresa, país, setor, dimensão, o seu nome, email profissional e função, e os valores e resultados das simulações que decidir enviar. Guardamos estes dados em conjunto. A opção de receber novidades é separada, opcional e desligada por defeito.',
       ],
-      'Registamos também a data do envio e a versão deste aviso que aceitou. Não pedimos dados bancários nem documentos da empresa nestes formulários.',
+      'Registamos também a data do envio e a versão deste aviso que aceitou. Não pedimos dados bancários, acessos bancários, IBAN, extratos nem documentos da empresa nestes formulários.',
     ],
   },
   {
@@ -40,6 +41,7 @@ const sectionsPt: Section[] = [
       [
         'Lista de espera: enviar-lhe novidades sobre a Finer One e sobre o acesso à plataforma.',
         'Finer Pioneers: avaliar a sua candidatura e contactá-lo sobre o programa.',
+        'Explorar: preparar o resultado da simulação pedida e contactá-lo sobre ele; enviar novidades só se o tiver pedido.',
       ],
       'Não vendemos nem cedemos os seus dados a terceiros para fins de marketing.',
     ],
@@ -79,15 +81,16 @@ const sectionsEn: Section[] = [
       [
         'Waitlist: name, email, company size and the topics you want to follow.',
         'Finer Pioneers: name, company, industry, work email and the description of the main financial challenge you choose to share.',
+        'Explore (cash-flow simulator): company name, country, industry, size, your name, work email and role, and the values and results of the simulations you choose to send. We store this data together. The option to receive news is separate, optional and off by default.',
       ],
-      'We also record the submission date and the version of this notice you accepted. We do not ask for bank details or company documents in these forms.',
+      'We also record the submission date and the version of this notice you accepted. We do not ask for bank details, bank logins, IBANs, statements or company documents in these forms.',
     ],
   },
   {
     id: 'finalidades',
     title: 'What we use the data for',
     body: [
-      ['Waitlist: sending you news about Finer One and about access to the platform.', 'Finer Pioneers: assessing your application and contacting you about the programme.'],
+      ['Waitlist: sending you news about Finer One and about access to the platform.', 'Finer Pioneers: assessing your application and contacting you about the programme.', 'Explore: preparing the result of the simulation you requested and contacting you about it; sending news only if you asked for it.'],
       'We do not sell or pass your data to third parties for marketing purposes.',
     ],
   },
@@ -107,7 +110,7 @@ const sectionsEn: Section[] = [
 const ui = {
   pt: {
     title: ['Aviso de ', 'privacidade'],
-    sub: 'Como tratamos os dados que nos envia nos formulários da Lista de espera e do programa Finer Pioneers.',
+    sub: 'Como tratamos os dados que nos envia nos formulários da Lista de espera, do programa Finer Pioneers e do simulador Explorar.',
     status: 'Estado', statusValue: 'Rascunho em revisão',
     updated: 'Última atualização', updatedValue: '[data a confirmar na publicação]',
     applies: 'Aplica-se a', appliesValue: 'Formulários do site finer-one.com',
@@ -120,7 +123,7 @@ const ui = {
   },
   en: {
     title: ['Privacy ', 'notice'],
-    sub: 'How we handle the data you send us through the Waitlist and Finer Pioneers forms.',
+    sub: 'How we handle the data you send us through the Waitlist, Finer Pioneers and Explore simulator forms.',
     status: 'Status', statusValue: 'Draft under review',
     updated: 'Last updated', updatedValue: '[date to be confirmed on publication]',
     applies: 'Applies to', appliesValue: 'Forms on finer-one.com',

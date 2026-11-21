@@ -19,12 +19,14 @@ const links = {
     { label: 'Como funciona', href: '/#funcionamento' },
     { label: 'Segurança', href: '/#seguranca' },
     { label: 'Preços', href: '/#precos' },
+    { label: 'Explorar', href: '/explorar/' },
   ],
   en: [
     { label: 'Product', href: '/#demo' },
     { label: 'How it works', href: '/#funcionamento' },
     { label: 'Security', href: '/#seguranca' },
     { label: 'Pricing', href: '/#precos' },
+    { label: 'Explore', href: '/explorar/' },
   ],
 }
 
@@ -195,10 +197,10 @@ export function Navbar() {
             <Logo className={cn('transition-colors duration-300', light && 'text-[#070D2B]')} />
           </a>
 
-          <ul className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-9 lg:flex">
+          <ul className="mx-6 hidden min-w-0 items-center gap-6 lg:flex xl:gap-8">
             {links[lang].map((link) => (
               <li key={link.label}>
-                <a href={link.href} className={cn('text-sm transition-colors duration-300', light ? 'text-[#0B1030]/65 hover:text-[#070D2B]' : 'text-mist hover:text-white')}>
+                <a href={link.href} className={cn('whitespace-nowrap text-sm transition-colors duration-300', light ? 'text-[#0B1030]/65 hover:text-[#070D2B]' : 'text-mist hover:text-white')}>
                   {link.label}
                 </a>
               </li>

@@ -1,5 +1,8 @@
 /**
- * Envio dos formulários (Finer Pioneers e Lista de Espera).
+ * Envio dos formulários (Finer Pioneers, Lista de Espera e Explorar).
+ *
+ * Explorar envia dois registos: "explore" (empresa + contacto, antes da simulação)
+ * e "explore-sim" (valores e resultados da simulação, ligados ao mesmo leadId).
  *
  * O site é estático (GitHub Pages), por isso os dados seguem para um recetor
  * externo definido em VITE_FORMS_ENDPOINT (ver backend/google-apps-script).
@@ -13,7 +16,7 @@
  *  - validação e limites de tamanho de todos os campos.
  */
 
-export type FormKind = 'pioneers' | 'waitlist'
+export type FormKind = 'pioneers' | 'waitlist' | 'explore' | 'explore-sim'
 
 export const PRIVACY_VERSION = '2026-11-rascunho'
 const MIN_FILL_MS = 3000
@@ -59,10 +62,12 @@ export async function submitForm(
   if (guard.honeypot.trim() !== '' || Date.now() - guard.startedAt < MIN_FILL_MS) {
     return { ok: true, preview: isPreviewMode }
   }
-  if (recentSubmissions().length >= LOCAL_LIMIT) return { ok: false, reason: 'rate' }
+  // As simulações do Explorar podem ser enviadas várias vezes; o recetor limita por email.
+  const counted = kind !== 'explore-sim'
+  if (counted && recentSubmissions().length >= LOCAL_LIMIT) return { ok: false, reason: 'rate' }
 
   if (!endpoint) {
-    rememberSubmission()
+    if (counted) rememberSubmission()
     return { ok: true, preview: true }
   }
 
@@ -82,7 +87,7 @@ export async function submitForm(
     })
     const data = (await response.json().catch(() => null)) as { ok?: boolean; error?: string } | null
     if (!response.ok || !data?.ok) return { ok: false, reason: data?.error === 'rate' ? 'rate' : 'server' }
-    rememberSubmission()
+    if (counted) rememberSubmission()
     return { ok: true, preview: false }
   } catch {
     return { ok: false, reason: 'network' }

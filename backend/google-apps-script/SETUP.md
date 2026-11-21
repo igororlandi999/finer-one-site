@@ -41,3 +41,20 @@ Para dar acesso a outro fundador: botão **Partilhar** da folha.
   editar → nova versão).
 - Proteção extra contra robôs (Cloudflare Turnstile, gratuito): só se
   aparecerem inscrições automáticas; requer criar conta Cloudflare.
+
+## Explorar (simulador de tesouraria)
+
+A página `/explorar/` usa o mesmo recetor e a mesma `VITE_FORMS_ENDPOINT`.
+Grava em dois separadores novos, criados automaticamente:
+
+- **Explorar — leads**: empresa, país, setor, dimensão, nome, email, função,
+  cenário inicial, origem (`explore`), versão do aviso de privacidade,
+  marketing (sim/não, opcional e desligado por defeito), idioma e um **Lead ID**.
+- **Explorar — simulações**: Lead ID, email, cenário, país, valores e
+  resultados da simulação (JSON). Cada envio de simulação fica numa linha nova,
+  ligada ao lead pelo Lead ID.
+
+Se o recetor já estava implementado antes desta alteração, é preciso
+**atualizar a implementação** (Implementar → Gerir implementações → editar →
+nova versão) para o `Code.gs` novo entrar em funcionamento. O endereço `/exec`
+não muda.
