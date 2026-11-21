@@ -47,7 +47,7 @@ Para dar acesso a outro fundador: botão **Partilhar** da folha.
 A página `/explorar/` usa o mesmo recetor e a mesma `VITE_FORMS_ENDPOINT`.
 Grava em dois separadores novos, criados automaticamente:
 
-- **Explorar — leads**: empresa, país, setor, dimensão, nome, email, função,
+- **Explorar — leads**: empresa, país, setor, dimensão, nome, email, telefone, função,
   cenário inicial, origem (`explore`), versão do aviso de privacidade,
   marketing (sim/não, opcional e desligado por defeito), idioma e um **Lead ID**.
 - **Explorar — simulações**: Lead ID, email, cenário, país, valores e

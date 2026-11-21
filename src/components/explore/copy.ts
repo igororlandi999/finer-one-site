@@ -7,29 +7,35 @@ import type { ScenarioKind } from '@/lib/explore/model'
 
 export type Lang = 'pt' | 'en'
 
-export type Country = { code: string; pt: string; en: string; locale: string; currency: string }
+export type Country = { code: string; pt: string; en: string; locale: string; currency: string; dial: string }
 export const COUNTRIES: Country[] = [
-  { code: 'PT', pt: 'Portugal', en: 'Portugal', locale: 'pt-PT', currency: 'EUR' },
-  { code: 'ES', pt: 'Espanha', en: 'Spain', locale: 'es-ES', currency: 'EUR' },
-  { code: 'FR', pt: 'França', en: 'France', locale: 'fr-FR', currency: 'EUR' },
-  { code: 'DE', pt: 'Alemanha', en: 'Germany', locale: 'de-DE', currency: 'EUR' },
-  { code: 'IT', pt: 'Itália', en: 'Italy', locale: 'it-IT', currency: 'EUR' },
-  { code: 'NL', pt: 'Países Baixos', en: 'Netherlands', locale: 'nl-NL', currency: 'EUR' },
-  { code: 'BE', pt: 'Bélgica', en: 'Belgium', locale: 'fr-BE', currency: 'EUR' },
-  { code: 'IE', pt: 'Irlanda', en: 'Ireland', locale: 'en-IE', currency: 'EUR' },
-  { code: 'LU', pt: 'Luxemburgo', en: 'Luxembourg', locale: 'fr-LU', currency: 'EUR' },
-  { code: 'GB', pt: 'Reino Unido', en: 'United Kingdom', locale: 'en-GB', currency: 'GBP' },
-  { code: 'CH', pt: 'Suíça', en: 'Switzerland', locale: 'de-CH', currency: 'CHF' },
-  { code: 'US', pt: 'Estados Unidos', en: 'United States', locale: 'en-US', currency: 'USD' },
-  { code: 'BR', pt: 'Brasil', en: 'Brazil', locale: 'pt-BR', currency: 'BRL' },
-  { code: 'AO', pt: 'Angola', en: 'Angola', locale: 'pt-AO', currency: 'AOA' },
-  { code: 'MZ', pt: 'Moçambique', en: 'Mozambique', locale: 'pt-MZ', currency: 'MZN' },
-  { code: 'OTHER', pt: 'Outro país', en: 'Other country', locale: '', currency: 'EUR' },
+  { code: 'PT', pt: 'Portugal', en: 'Portugal', locale: 'pt-PT', currency: 'EUR', dial: '+351' },
+  { code: 'ES', pt: 'Espanha', en: 'Spain', locale: 'es-ES', currency: 'EUR', dial: '+34' },
+  { code: 'FR', pt: 'França', en: 'France', locale: 'fr-FR', currency: 'EUR', dial: '+33' },
+  { code: 'DE', pt: 'Alemanha', en: 'Germany', locale: 'de-DE', currency: 'EUR', dial: '+49' },
+  { code: 'IT', pt: 'Itália', en: 'Italy', locale: 'it-IT', currency: 'EUR', dial: '+39' },
+  { code: 'NL', pt: 'Países Baixos', en: 'Netherlands', locale: 'nl-NL', currency: 'EUR', dial: '+31' },
+  { code: 'BE', pt: 'Bélgica', en: 'Belgium', locale: 'fr-BE', currency: 'EUR', dial: '+32' },
+  { code: 'IE', pt: 'Irlanda', en: 'Ireland', locale: 'en-IE', currency: 'EUR', dial: '+353' },
+  { code: 'LU', pt: 'Luxemburgo', en: 'Luxembourg', locale: 'fr-LU', currency: 'EUR', dial: '+352' },
+  { code: 'GB', pt: 'Reino Unido', en: 'United Kingdom', locale: 'en-GB', currency: 'GBP', dial: '+44' },
+  { code: 'CH', pt: 'Suíça', en: 'Switzerland', locale: 'de-CH', currency: 'CHF', dial: '+41' },
+  { code: 'US', pt: 'Estados Unidos', en: 'United States', locale: 'en-US', currency: 'USD', dial: '+1' },
+  { code: 'BR', pt: 'Brasil', en: 'Brazil', locale: 'pt-BR', currency: 'BRL', dial: '+55' },
+  { code: 'AO', pt: 'Angola', en: 'Angola', locale: 'pt-AO', currency: 'AOA', dial: '+244' },
+  { code: 'MZ', pt: 'Moçambique', en: 'Mozambique', locale: 'pt-MZ', currency: 'MZN', dial: '+258' },
+  { code: 'OTHER', pt: 'Outro país', en: 'Other country', locale: '', currency: 'EUR', dial: '' },
 ]
+
+export type Count = { to: number; prefix?: string; suffix?: string; decimals?: number }
 
 export type Evidence = {
   id: string
   value: { pt: string; en: string }
+  /** Para o número a contar no scroll-telling. */
+  count: { pt: Count; en: Count }
+  /** Factos complementares da mesma fonte. */
+  extra?: { pt: string[]; en: string[] }
   label: { pt: string; en: string }
   institution: string
   geography: { pt: string; en: string }
@@ -43,6 +49,8 @@ export const EVIDENCE: Evidence[] = [
   {
     id: 'eu',
     value: { pt: '52%', en: '52%' },
+    count: { pt: { to: 52, suffix: '%' }, en: { to: 52, suffix: '%' } },
+    extra: { pt: ['60,3 dias de prazo médio entre empresas', '69,8 dias do Estado para empresas'], en: ['60.3 days average B2B payment period', '69.8 days government-to-business'] },
     label: { pt: 'das empresas europeias reportaram problemas por pagamentos em atraso', en: 'of European companies reported problems due to late payments' },
     institution: 'European Commission — EU Payment Observatory',
     geography: { pt: 'União Europeia', en: 'European Union' },
@@ -57,6 +65,7 @@ export const EVIDENCE: Evidence[] = [
   {
     id: 'fed',
     value: { pt: '51%', en: '51%' },
+    count: { pt: { to: 51, suffix: '%' }, en: { to: 51, suffix: '%' } },
     label: { pt: 'das pequenas empresas inquiridas nos EUA apontaram fluxos de caixa irregulares como desafio', en: 'of surveyed US small firms cited uneven cash flows as a challenge' },
     institution: 'Federal Reserve Banks — 2025 Small Business Credit Survey',
     geography: { pt: 'Estados Unidos', en: 'United States' },
@@ -67,8 +76,9 @@ export const EVIDENCE: Evidence[] = [
   },
   {
     id: 'bdp',
-    value: { pt: '52', en: '52' },
-    label: { pt: 'dias de prazo médio de recebimento das PME portuguesas', en: 'days average receivables period for Portuguese SMEs' },
+    value: { pt: '52 dias', en: '52 days' },
+    count: { pt: { to: 52, suffix: ' dias' }, en: { to: 52, suffix: ' days' } },
+    label: { pt: 'de prazo médio de recebimento das PME portuguesas', en: 'average receivables period for Portuguese SMEs' },
     institution: 'Banco de Portugal — BPstat',
     geography: { pt: 'Portugal', en: 'Portugal' },
     period: { pt: '2.º trimestre de 2026', en: 'Q2 2026' },
@@ -82,6 +92,8 @@ export const EVIDENCE: Evidence[] = [
   {
     id: 'uk',
     value: { pt: '28%', en: '28%' },
+    count: { pt: { to: 28, suffix: '%' }, en: { to: 28, suffix: '%' } },
+    extra: { pt: ['17.000 £ em dívida, em média', '86 horas por ano a cobrar'], en: ['£17,000 owed on average', '86 hours a year chasing payments'] },
     label: { pt: 'das empresas do Reino Unido são afetadas por pagamentos em atraso', en: 'of UK businesses are affected by late payments' },
     institution: 'UK Small Business Commissioner',
     geography: { pt: 'Reino Unido', en: 'United Kingdom' },
@@ -96,6 +108,7 @@ export const EVIDENCE: Evidence[] = [
   {
     id: 'ifc',
     value: { pt: '4 biliões US$', en: '$4 trillion' },
+    count: { pt: { to: 4, suffix: ' biliões US$' }, en: { to: 4, prefix: '$', suffix: ' trillion' } },
     label: { pt: 'défice estimado de acesso a financiamento das micro, pequenas e médias empresas', en: 'estimated MSME access-to-finance gap' },
     institution: 'IFC (Banco Mundial)',
     geography: { pt: '114 economias emergentes e em desenvolvimento', en: '114 emerging and developing economies' },
@@ -117,6 +130,28 @@ const pt = {
   example: 'Explorar um exemplo',
   heroNote: 'Gratuito · cerca de 3 minutos · sem ligação bancária',
   heroChartLabel: 'Exemplo de projeção do saldo de tesouraria a 90 dias, com um momento abaixo de zero.',
+  heroBadge: 'Explorar · simulador de tesouraria',
+  prompts: [
+    { chip: 'Atraso de um cliente', q: ['E se o ', 'Cliente D', ' pagar ', '20 dias', ' mais tarde?'] },
+    { chip: 'Adiar um pagamento', q: ['E se adiar o ', 'fornecedor principal', ' ', '15 dias', '?'] },
+    { chip: 'Nova encomenda', q: ['E se aceitar uma ', 'encomenda', ' de ', '31 000 €', '?'] },
+  ],
+  promptRun: 'Ver a simulação',
+  promptOwn: 'Ou simule com os números da sua empresa',
+  storyEyebrow: 'Porque é que isto importa',
+  storyIntroTitle: ['O problema é real. ', 'E é de muitas empresas.'],
+  storyIntroSub: 'Dados públicos de instituições europeias, norte-americanas, internacionais e do Banco de Portugal.',
+  storyOutroTitle: ['Ver antes ', 'faz a diferença.'],
+  storyOutroSub: 'Um atraso só se torna um problema quando ninguém o vê a tempo. Simule o efeito na sua tesouraria e veja o que pode testar.',
+  storyCta: 'Simular agora',
+  scrollHint: 'Continue a deslizar',
+  phone: 'Telefone',
+  phonePh: '912 345 678',
+  chartInflow: 'Entradas',
+  chartOutflow: 'Saídas',
+  chartBalance: 'Saldo',
+  chartWeek: (d: string) => `Semana de ${d}`,
+  chartSub: 'Entradas e saídas por semana e saldo projetado',
 
   contextEyebrow: 'Contexto',
   contextTitle: ['O problema não é só seu. ', 'É de muitas empresas.'],
@@ -150,7 +185,7 @@ const pt = {
   role: 'Função',
   roles: ['Sócio(a) / CEO', 'Diretor(a) financeiro(a)', 'Gestor(a) / Diretor(a)', 'Contabilista', 'Outra'],
   privacyBox:
-    'Guardamos os dados da empresa, o seu contacto e a simulação que enviar, em conjunto, para preparar o resultado e o contactar sobre ele. Não pedimos acessos bancários, IBAN nem extratos. Pode pedir para consultar ou apagar os seus dados a qualquer momento.',
+    'Guardamos os dados da empresa, o seu contacto (incluindo o telefone) e a simulação que enviar, em conjunto, para preparar o resultado e o contactar sobre ele. Não pedimos acessos bancários, IBAN nem extratos. Pode pedir para consultar ou apagar os seus dados a qualquer momento.',
   privacyLink: 'aviso de privacidade',
   consent: (link: string) => `Li o ${link} e aceito que estes dados sejam guardados com a minha simulação para a Finer One preparar o resultado e me contactar sobre ele.`,
   marketing: 'Quero receber novidades da Finer One por email (opcional).',
@@ -166,6 +201,7 @@ const pt = {
     name: 'Indique o seu nome.',
     email: 'Indique um email profissional válido.',
     role: 'Escolha a sua função.',
+    phone: 'Indique um número de telefone válido.',
     consent: 'Para guardar a simulação precisamos do seu consentimento.',
     network: 'Não foi possível ligar ao servidor. Verifique a ligação e tente outra vez.',
     server: 'Não conseguimos guardar os seus dados. Tente outra vez dentro de momentos.',
@@ -308,6 +344,28 @@ const en: Copy = {
   example: 'Explore an example',
   heroNote: 'Free · about 3 minutes · no bank connection',
   heroChartLabel: 'Example of a 90-day cash balance projection, with a moment below zero.',
+  heroBadge: 'Explore · cash-flow simulator',
+  prompts: [
+    { chip: 'A late customer', q: ['What if ', 'Client D', ' pays ', '20 days', ' late?'] },
+    { chip: 'Delay a payment', q: ['What if I delay the ', 'main supplier', ' by ', '15 days', '?'] },
+    { chip: 'New order', q: ['What if I take an ', 'order', ' of ', '€31,000', '?'] },
+  ],
+  promptRun: 'See the simulation',
+  promptOwn: 'Or simulate with your company’s numbers',
+  storyEyebrow: 'Why this matters',
+  storyIntroTitle: ['The problem is real. ', 'And it affects many companies.'],
+  storyIntroSub: 'Public data from European, US and international institutions and from Banco de Portugal.',
+  storyOutroTitle: ['Seeing it early ', 'makes the difference.'],
+  storyOutroSub: 'A delay only becomes a problem when nobody sees it in time. Simulate the effect on your cash and see what you can test.',
+  storyCta: 'Simulate now',
+  scrollHint: 'Keep scrolling',
+  phone: 'Phone',
+  phonePh: '20 7946 0000',
+  chartInflow: 'Inflows',
+  chartOutflow: 'Outflows',
+  chartBalance: 'Balance',
+  chartWeek: (d: string) => `Week of ${d}`,
+  chartSub: 'Weekly inflows and outflows and projected balance',
 
   contextEyebrow: 'Context',
   contextTitle: ["It's not just you. ", 'Many companies face it.'],
@@ -341,7 +399,7 @@ const en: Copy = {
   role: 'Role',
   roles: ['Partner / CEO', 'Finance director', 'Manager / Director', 'Accountant', 'Other'],
   privacyBox:
-    'We store your company details, your contact and the simulation you send together, to prepare the result and contact you about it. We never ask for bank logins, IBANs or statements. You can ask to see or delete your data at any time.',
+    'We store your company details, your contact (including your phone number) and the simulation you send together, to prepare the result and contact you about it. We never ask for bank logins, IBANs or statements. You can ask to see or delete your data at any time.',
   privacyLink: 'privacy notice',
   consent: (link: string) => `I have read the ${link} and agree that this data is stored with my simulation so Finer One can prepare the result and contact me about it.`,
   marketing: 'I want to receive Finer One news by email (optional).',
@@ -357,6 +415,7 @@ const en: Copy = {
     name: 'Enter your name.',
     email: 'Enter a valid work email.',
     role: 'Choose your role.',
+    phone: 'Enter a valid phone number.',
     consent: 'We need your consent to store the simulation.',
     network: 'Could not reach the server. Check your connection and try again.',
     server: 'We could not save your details. Please try again in a moment.',

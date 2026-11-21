@@ -1,4 +1,4 @@
-import { useDeferredValue, useMemo, useRef, useState } from 'react'
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { ArrowLeft, ArrowRight, Check, ChevronDown, Lock, Plus, RotateCcw, Sparkles, X } from 'lucide-react'
@@ -18,21 +18,23 @@ import {
   today,
 } from '@/lib/explore/model'
 import type { Adjust, Comparison, Flow, Inputs, Invoice, ScenarioKind } from '@/lib/explore/model'
-import { CashChart } from './CashChart'
+import { CashflowChart } from './CashflowChart'
+import { LightArcs } from './LightArcs'
 import { COUNTRIES, sampleLabel } from './copy'
 import type { ExploreCopy, Lang } from './copy'
 
 export type Phase = 'intro' | 'lead' | 'sim'
 export type Mode = 'example' | 'own'
+export type Preset = { key: number; scenario: ScenarioKind; adjust: Partial<Adjust> }
 
 const EASE = [0.22, 1, 0.36, 1] as const
 const SCENARIOS: ScenarioKind[] = ['treasury', 'clients', 'order']
 
-type Lead = { company: string; country: string; sector: string; size: string; name: string; email: string; role: string }
-const EMPTY_LEAD: Lead = { company: '', country: 'PT', sector: '', size: '', name: '', email: '', role: '' }
+type Lead = { company: string; country: string; sector: string; size: string; name: string; email: string; phone: string; role: string }
+const EMPTY_LEAD: Lead = { company: '', country: 'PT', sector: '', size: '', name: '', email: '', phone: '', role: '' }
 const STEP_FIELDS: (keyof Lead)[][] = [
   ['company', 'country', 'sector', 'size'],
-  ['name', 'email', 'role'],
+  ['name', 'email', 'phone', 'role'],
 ]
 
 function newId() {
@@ -60,9 +62,12 @@ function useFormat(countryCode: string, lang: Lang) {
     const dl = new Intl.DateTimeFormat(dateLocale, { day: 'numeric', month: 'long' })
     const base = today()
     const money = (n: number) => nf.format(Math.round(n) || 0)
+    const cf = new Intl.NumberFormat(moneyLocale, { style: 'currency', currency: c.currency, notation: 'compact', maximumFractionDigits: 0 })
+    const axisMoney = (n: number) => cf.format(Math.round(n) || 0)
     return {
       currency: c.currency,
       money,
+      axisMoney,
       shortDate: (d: number) => df.format(addDays(base, d)),
       longDate: (d: number) => dl.format(addDays(base, d)),
     }
@@ -76,6 +81,7 @@ export function Workspace({
   setPhase,
   mode,
   setMode,
+  preset,
 }: {
   t: ExploreCopy
   lang: Lang
@@ -83,6 +89,7 @@ export function Workspace({
   setPhase: (p: Phase) => void
   mode: Mode
   setMode: (m: Mode) => void
+  preset?: Preset
 }) {
   const [lead, setLead] = useState<Lead>(EMPTY_LEAD)
   const [leadId] = useState(newId)
@@ -91,6 +98,14 @@ export function Workspace({
   const [inputs, setInputs] = useState<Inputs>(() => localized(sampleInputs(), lang))
   const [adjust, setAdjust] = useState<Adjust>(NO_ADJUST)
   const [applied, setApplied] = useState<string[]>([])
+
+  // A pergunta escolhida na abertura define o cenário e o ajuste do simulado.
+  useEffect(() => {
+    if (!preset) return
+    setScenario(preset.scenario)
+    setAdjust({ ...NO_ADJUST, ...preset.adjust, itemShift: { ...(preset.adjust.itemShift ?? {}) } })
+    setApplied([])
+  }, [preset])
 
   const country = mode === 'own' ? lead.country : lang === 'pt' ? 'PT' : 'OTHER'
   const fmt = useFormat(country, lang)
@@ -277,6 +292,9 @@ function LeadForm({
       const v = lead[k].trim()
       if (k === 'email') {
         if (!isValidEmail(v)) e.email = t.errors.email
+      } else if (k === 'phone') {
+        const digits = v.replace(/\D/g, '')
+        if (digits.length < 7 || digits.length > 15) e.phone = t.errors.phone
       } else if (k === 'company' || k === 'name') {
         if (v.length < 2) e[k] = t.errors[k]
       } else if (!v) e[k] = t.errors[k]
@@ -317,6 +335,7 @@ function LeadForm({
         size: lead.size,
         name: lead.name.trim(),
         email: lead.email.trim(),
+        phone: `${COUNTRIES.find((c) => c.code === lead.country)?.dial ?? ''} ${lead.phone.trim()}`.trim(),
         role: lead.role,
         scenario,
         source: 'explore',
@@ -404,6 +423,12 @@ function LeadForm({
                     </SelectInput>
                   </Field>
                 </div>
+                <Field id="ex-phone" label={t.phone} error={errors.phone}>
+                  <div className="relative">
+                    <span aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[15px] text-navy/55">{COUNTRIES.find((c) => c.code === lead.country)?.dial || '+'}</span>
+                    <TextInput id="ex-phone" type="tel" inputMode="tel" autoComplete="tel-national" maxLength={20} placeholder={t.phonePh} value={lead.phone} onChange={(e) => set('phone')(e.target.value)} error={errors.phone} className="pl-[4.4rem]" />
+                  </div>
+                </Field>
                 <p className="flex gap-3 rounded-2xl bg-[#F7F9FE] p-4 text-[13.5px] leading-[1.6] text-[#0B1030]/75">
                   <Lock className="mt-0.5 h-4 w-4 shrink-0 text-accent-deep" aria-hidden="true" />
                   <span>
@@ -707,7 +732,7 @@ function InputsPanel({
 
 /* ---------------- Resultados ---------------- */
 
-type Fmt = { money: (n: number) => string; shortDate: (d: number) => string; longDate: (d: number) => string; currency: string }
+type Fmt = { money: (n: number) => string; axisMoney: (n: number) => string; shortDate: (d: number) => string; longDate: (d: number) => string; currency: string }
 
 function Results({ t, scenario, cmp, fmt, hasData, stale, rate }: { t: ExploreCopy; scenario: ScenarioKind; cmp: Comparison; fmt: Fmt; hasData: boolean; stale: boolean; rate: number }) {
   const s = cmp.simulated
@@ -725,22 +750,21 @@ function Results({ t, scenario, cmp, fmt, hasData, stale, rate }: { t: ExploreCo
 
   return (
     <div className="space-y-4">
-      <div className="rounded-[24px] border border-[#0B1030]/[0.08] bg-white p-5 shadow-[0_40px_80px_-60px_rgba(7,13,43,0.45)] sm:p-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="font-display text-[17px] font-bold tracking-[-0.01em] text-[#070D2B]">{t.chartTitle}</h3>
-          <div className="flex items-center gap-4 text-[12.5px] text-[#0B1030]/65">
-            <span className="inline-flex items-center gap-1.5">
-              <span aria-hidden="true" className="h-0 w-5 border-t-2 border-dashed border-[#0B1030]/40" />
-              {curLabel}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span aria-hidden="true" className="h-[3px] w-5 rounded-full bg-accent" />
-              {simLabel}
-            </span>
-          </div>
+      <div className="rounded-[24px] border border-[#0B1030]/[0.07] bg-white p-5 sm:p-7">
+        <div>
+          <h3 className="font-display text-[19px] font-semibold tracking-[-0.02em] text-[#070D2B]">{t.chartTitle}</h3>
+          <p className="mt-1 text-[12.5px] text-[#0B1030]/50">{t.chartSub}</p>
         </div>
         <div className="relative mt-4">
-          <CashChart current={c.series} simulated={s.series} minDay={s.minDay} money={fmt.money} shortDate={fmt.shortDate} zeroLabel={t.zero} label={t.chartLabel(fmt.money(s.min), fmt.longDate(s.minDay))} />
+          <CashflowChart
+            current={c}
+            simulated={s}
+            money={fmt.money}
+            axisMoney={fmt.axisMoney}
+            shortDate={fmt.shortDate}
+            labels={{ inflow: t.chartInflow, outflow: t.chartOutflow, current: curLabel, simulated: simLabel, week: t.chartWeek, balance: t.chartBalance }}
+            ariaLabel={t.chartLabel(fmt.money(s.min), fmt.longDate(s.minDay))}
+          />
           <span aria-live="polite" className={cn('absolute right-0 top-0 rounded-full bg-white/90 px-2.5 py-1 text-[11.5px] font-medium text-[#0B1030]/55 transition-opacity', stale ? 'opacity-100' : 'opacity-0')}>
             {stale ? t.calculating : ''}
           </span>
@@ -834,12 +858,12 @@ function Results({ t, scenario, cmp, fmt, hasData, stale, rate }: { t: ExploreCo
 
 function Kpi({ label, value, sub, tone, estimate }: { label: string; value: string; sub?: string; tone?: 'ok' | 'bad' | 'good'; estimate: string }) {
   return (
-    <div className="rounded-[20px] border border-[#0B1030]/[0.08] bg-white p-5">
-      <p className="flex items-center justify-between gap-2 text-[12.5px] font-medium text-[#0B1030]/60">
+    <div className="rounded-[20px] border border-[#0B1030]/[0.07] bg-white p-5">
+      <p className="flex items-start justify-between gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#0B1030]/50">
         {label}
-        <span className="rounded-full bg-[#F2F4F8] px-2 py-0.5 text-[10.5px] font-semibold uppercase tracking-[0.08em] text-[#0B1030]/50">{estimate}</span>
+        <span className="shrink-0 rounded-full bg-[#F2F6FF] px-2 py-0.5 text-[9.5px] font-semibold tracking-[0.08em] text-accent-deep">{estimate}</span>
       </p>
-      <motion.p key={value} initial={{ opacity: 0.4, y: 3 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className={cn('mt-2 font-display text-[24px] font-bold tracking-[-0.02em] tabular-nums', tone === 'bad' ? 'text-[#B4232A]' : tone === 'good' ? 'text-[#15803D]' : 'text-[#070D2B]')}>
+      <motion.p key={value} initial={{ opacity: 0.4, y: 3 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className={cn('mt-3 font-display text-[28px] font-semibold tracking-[-0.03em] tabular-nums', tone === 'bad' ? 'text-[#B4232A]' : tone === 'good' ? 'text-[#15803D]' : 'text-[#070D2B]')}>
         {value}
       </motion.p>
       {sub && <p className="mt-1 text-[12.5px] text-[#0B1030]/55">{sub}</p>}
@@ -850,63 +874,60 @@ function Kpi({ label, value, sub, tone, estimate }: { label: string; value: stri
 /* ---------------- Finer Advisor ---------------- */
 
 function Advisor({ t, lang, reading, applied, onApply }: { t: ExploreCopy; lang: Lang; reading: ReturnType<typeof advise>; applied: string[]; onApply: (key: string, a: Partial<Adjust>) => void }) {
+  const [headline, ...rest] = reading.identified
   return (
-    <section aria-labelledby="ex-advisor" className="relative overflow-hidden rounded-[28px] bg-[#070D2B] p-6 text-white sm:p-9">
-      <img src="/images/sobre-linha.webp" alt="" aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-24 w-full object-cover opacity-40 mix-blend-screen" style={{ maskImage: 'linear-gradient(to bottom, #000, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, #000, transparent)' }} />
+    <section aria-labelledby="ex-advisor" className="relative isolate overflow-hidden rounded-[30px] bg-[#040817] p-6 text-white sm:p-10">
+      <LightArcs variant="card" />
+      <div aria-hidden="true" className="pointer-events-none absolute -right-20 -top-16 -z-10 h-[300px] w-[520px] rounded-full bg-[radial-gradient(closest-side,rgba(30,144,255,0.35),transparent)] blur-[60px]" />
       <div className="relative">
-        <p className="inline-flex items-center gap-2 text-[11.5px] font-semibold uppercase tracking-[0.26em] text-[#7CB8FF]">
+        <p className="inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.24em] text-[#7CB8FF]">
           <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
           {t.advisorEyebrow}
         </p>
-        <h3 id="ex-advisor" className="mt-3 font-display text-[28px] font-bold tracking-[-0.03em] sm:text-[34px]">
-          {t.advisorTitle[0]}
-          <span className="text-[#3D86FF]">{t.advisorTitle[1]}</span>
+        <h3 id="ex-advisor" className="mt-4 max-w-[800px] font-display text-[24px] font-medium leading-[1.3] tracking-[-0.02em] sm:text-[32px]">
+          {headline?.[lang]}
         </h3>
-        <div className="mt-7 grid gap-6 lg:grid-cols-3">
-          <AdvisorBlock title={t.advisorIdentified} items={reading.identified.map((x) => x[lang])} />
+        <div className="mt-8 grid gap-4 lg:grid-cols-3">
+          <AdvisorBlock title={t.advisorIdentified} items={rest.map((x) => x[lang])} />
           <AdvisorBlock title={t.advisorPressure} items={reading.pressure.map((x) => x[lang])} />
-          <div>
-            <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-white/55">{t.advisorTests}</p>
-            <ul className="mt-3 space-y-3">
-              {reading.tests.map((r) => {
-                const done = applied.includes(r.key)
-                return (
-                  <li key={r.key} className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                    <p className="text-[14.5px] leading-[1.55] text-white/85">{r.text[lang]}</p>
-                    {r.adjust &&
-                      (done ? (
-                        <p className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#7CB8FF]">
-                          <Check className="h-4 w-4" aria-hidden="true" />
-                          {t.recApplied}
-                        </p>
-                      ) : (
-                        <button type="button" onClick={() => onApply(r.key, r.adjust!)} className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-[13px] font-semibold text-[#070D2B] transition-colors hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-glow">
-                          {t.simulateRec}
-                          <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-                        </button>
-                      ))}
-                  </li>
-                )
-              })}
-            </ul>
+          <div className="space-y-3">
+            {reading.tests.map((r, i) => {
+              const done = applied.includes(r.key)
+              return (
+                <div key={r.key} className={cn('rounded-2xl p-5', i === 0 ? 'bg-white text-[#070D2B]' : 'border border-white/10 bg-white/[0.05] text-white')}>
+                  {i === 0 && <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent-deep">{t.advisorTests}</p>}
+                  <p className={cn('text-[14.5px] leading-[1.55]', i === 0 ? 'mt-2' : 'text-white/85')}>{r.text[lang]}</p>
+                  {r.adjust &&
+                    (done ? (
+                      <p className={cn('mt-3 inline-flex items-center gap-1.5 text-[13px] font-semibold', i === 0 ? 'text-accent-deep' : 'text-[#7CB8FF]')}>
+                        <Check className="h-4 w-4" aria-hidden="true" />
+                        {t.recApplied}
+                      </p>
+                    ) : (
+                      <button type="button" onClick={() => onApply(r.key, r.adjust!)} className={cn('mt-3 inline-flex items-center gap-1.5 text-[13.5px] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-glow', i === 0 ? 'text-accent' : 'text-white')}>
+                        {t.simulateRec}
+                        <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                      </button>
+                    ))}
+                </div>
+              )
+            })}
           </div>
         </div>
-        <p className="mt-6 text-[12.5px] text-white/50">{t.advisorNote}</p>
+        <p className="mt-6 text-[12.5px] text-white/45">{t.advisorNote}</p>
       </div>
     </section>
   )
 }
 
 function AdvisorBlock({ title, items }: { title: string; items: string[] }) {
+  if (!items.length) return <div className="hidden lg:block" />
   return (
-    <div>
-      <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-white/55">{title}</p>
-      <ul className="mt-3 space-y-3">
+    <div className="rounded-2xl border border-white/10 bg-white/[0.05] p-5 backdrop-blur">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/45">{title}</p>
+      <ul className="mt-2 space-y-2.5">
         {items.map((x) => (
-          <li key={x} className="relative pl-4 text-[14.5px] leading-[1.55] text-white/85">
-            <span aria-hidden="true" className="absolute left-0 top-[9px] h-1.5 w-1.5 rounded-full bg-[#3D86FF]" />
-            {x}
-          </li>
+          <li key={x} className="text-[14.5px] leading-[1.55] text-white/85">{x}</li>
         ))}
       </ul>
     </div>

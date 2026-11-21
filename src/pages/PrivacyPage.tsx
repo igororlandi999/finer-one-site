@@ -29,7 +29,7 @@ const sectionsPt: Section[] = [
       [
         'Lista de espera: nome, email, dimensão da empresa e os temas que quer acompanhar.',
         'Finer Pioneers: nome, empresa, setor de atividade, email profissional e a descrição do principal desafio financeiro que decidir partilhar.',
-        'Explorar (simulador de tesouraria): nome da empresa, país, setor, dimensão, o seu nome, email profissional e função, e os valores e resultados das simulações que decidir enviar. Guardamos estes dados em conjunto. A opção de receber novidades é separada, opcional e desligada por defeito.',
+        'Explorar (simulador de tesouraria): nome da empresa, país, setor, dimensão, o seu nome, email profissional, telefone e função, e os valores e resultados das simulações que decidir enviar. Guardamos estes dados em conjunto. A opção de receber novidades é separada, opcional e desligada por defeito.',
       ],
       'Registamos também a data do envio e a versão deste aviso que aceitou. Não pedimos dados bancários, acessos bancários, IBAN, extratos nem documentos da empresa nestes formulários.',
     ],
@@ -81,7 +81,7 @@ const sectionsEn: Section[] = [
       [
         'Waitlist: name, email, company size and the topics you want to follow.',
         'Finer Pioneers: name, company, industry, work email and the description of the main financial challenge you choose to share.',
-        'Explore (cash-flow simulator): company name, country, industry, size, your name, work email and role, and the values and results of the simulations you choose to send. We store this data together. The option to receive news is separate, optional and off by default.',
+        'Explore (cash-flow simulator): company name, country, industry, size, your name, work email, phone number and role, and the values and results of the simulations you choose to send. We store this data together. The option to receive news is separate, optional and off by default.',
       ],
       'We also record the submission date and the version of this notice you accepted. We do not ask for bank details, bank logins, IBANs, statements or company documents in these forms.',
     ],
