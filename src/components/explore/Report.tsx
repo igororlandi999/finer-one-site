@@ -1,301 +1,417 @@
 import { useEffect, useMemo } from 'react'
 import { motion } from 'motion/react'
 import type { Variants } from 'motion/react'
-import { ArrowRight, Info, Printer, RotateCcw, Sparkles } from 'lucide-react'
-import { advise, simulate } from '@/lib/explore/monthly'
-import type { Kpi, Light, MonthlyInputs, ScenarioKind } from '@/lib/explore/monthly'
+import { ArrowRight, Printer } from 'lucide-react'
+import { deepen, simulate } from '@/lib/explore/monthly'
+import type { Kpi, Light, MonthlyInputs, Result, ScenarioKind } from '@/lib/explore/monthly'
 import { track } from '@/lib/analytics'
 import { cn } from '@/lib/utils'
-import { MonthlyChart } from './MonthlyChart'
-import { insightOf, movedTotal, useFmt } from './Simulator'
-import type { ExploreText, Lang } from './content'
+import { useFmt } from './Simulator'
+import type { Fmt } from './Simulator'
+import type { Lang } from './content'
+import { REPORT } from './reportText'
+import type { ReportText } from './reportText'
 
+/**
+ * Análise completa, com a estrutura de uma análise de tesouraria de consultora:
+ * sumário executivo → ponte de tesouraria → previsão direta e margem de segurança →
+ * cenários → sensibilidade → indicadores → alavancas → pressupostos.
+ * Layout editorial (título à esquerda, conteúdo à direita, linhas finas).
+ */
 const EASE = [0.22, 1, 0.36, 1] as const
-const group: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.07 } } }
-const rise: Variants = { hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE } } }
+const rise: Variants = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE } } }
+const group: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } }
 const inView = { initial: 'hidden', whileInView: 'show', viewport: { once: true, margin: '0px 0px -10% 0px' } } as const
-
 const LIGHT: Record<Light, string> = { green: '#18A957', amber: '#E8A317', red: '#E5484D', na: '#B8C0D0' }
+const NEG = 'text-[#C62D33]'
 
-type Props = { t: ExploreText; lang: Lang; inp: MonthlyInputs; scenario: ScenarioKind; company: string; currency: string; preview: boolean; onAgain: () => void }
+type Props = { lang: Lang; inp: MonthlyInputs; scenario: ScenarioKind; company: string; currency: string; preview: boolean; onAgain: () => void }
 
-/** Análise completa — só aparece depois da confirmação do recetor (ou em pré-visualização, assinalada). */
-export function Report({ t, lang, inp, scenario, company, currency, preview, onAgain }: Props) {
-  const R = t.report
+export function Report({ lang, inp, scenario, company, currency, preview, onAgain }: Props) {
+  const R = REPORT[lang]
   const f = useFmt(currency, lang)
   const r = useMemo(() => simulate(inp), [inp])
-  const r3 = useMemo(() => simulate({ ...inp, horizon: 3 }), [inp])
-  const r6 = useMemo(() => simulate({ ...inp, horizon: 6 }), [inp])
-  const notes = advise(inp, r, { money: f.money, month: (m, l) => f.monthLong(m, l) })
-  const insight = insightOf(inp, r, t.insight, f)
+  const d = useMemo(() => deepen(inp), [inp])
   const H = inp.horizon
-  const last = (p: typeof r.base) => p.months[p.months.length - 1]?.closing ?? 0
+  const bal = inp.hasBalance
+  const yours = d.scenarios[1].r
+  const stress = d.scenarios[2].r
 
   useEffect(() => {
     track('full_report_viewed', { scenario, horizon: H, preview })
   }, [scenario, H, preview])
 
-  const summary = inp.hasBalance
-    ? r.maxGap > 0.5
-      ? R.summaryText({ h: H, share: inp.delayShare, days: inp.delayDays, gap: f.money(r.maxGap), month: f.monthLong(r.maxGapMonth), end: f.money(last(r.delayed)), endBase: f.money(last(r.base)) })
-      : R.summaryNone(H, f.money(last(r.delayed)))
-    : R.summaryCal({ h: H, share: inp.delayShare, days: inp.delayDays, moved: f.money(movedTotal(inp)), pushed: f.money(r.delayed.pushedOut) })
-
-  const avg = (a: number[]) => a.slice(0, H).reduce((x, y) => x + y, 0) / H
-  const situation: [string, string][] = [
-    ...(inp.hasBalance ? ([[t.f.balance, f.money(inp.balance)]] as [string, string][]) : []),
-    [scenario === 'clients' ? t.f.toReceive : t.f.receipts, `${f.money(avg(inp.receipts))} (${lang === 'pt' ? 'média' : 'average'})`],
-    ...(inp.hasBalance ? ([[t.f.payments, `${f.money(avg(inp.payments))} (${lang === 'pt' ? 'média' : 'average'})`]] as [string, string][]) : []),
-    [scenario === 'clients' ? t.f.delayShareClients : t.f.delayShare, `${inp.delayShare}%`],
-    [t.f.delayDays, `${inp.delayDays} ${t.f.days}`],
-    [t.f.horizon, `${H} ${t.f.months}`],
-  ]
-
-  const cmp: [string, number, number][] = [
-    [R.rows.totalIn, r.base.totalIn, r.delayed.totalIn],
-    ...(inp.hasBalance
-      ? ([
-          [R.rows.totalOut, r.base.totalOut, r.delayed.totalOut],
-          [R.rows.min, r.base.minClosing, r.delayed.minClosing],
-          [R.rows.end, last(r.base), last(r.delayed)],
-        ] as [string, number, number][])
-      : []),
-    [R.rows.pushed, 0, r.delayed.pushedOut],
-  ]
-
-  const kpiValue = (k: Kpi) => {
-    if (k.value === null) return R.na
-    if (k.id === 'days') return `${Math.round(k.value)} ${t.f.days}`
-    if (k.id === 'cover') return k.value.toLocaleString(lang === 'pt' ? 'pt-PT' : 'en-GB', { maximumFractionDigits: 2, minimumFractionDigits: 2 })
-    return `${(k.value * 100).toLocaleString(lang === 'pt' ? 'pt-PT' : 'en-GB', { maximumFractionDigits: 1 })}%`
+  const dropOf = (x: Result) => {
+    let v = 0
+    let m = 0
+    x.base.months.forEach((b, i) => {
+      const g = b.inflow - x.delayed.months[i].inflow
+      if (g > v) {
+        v = g
+        m = i
+      }
+    })
+    return { v, m }
   }
 
+  const findings: string[] = bal
+    ? [
+        r.delayed.minClosing < 0 ? R.findings.lowNeg(f.money(r.delayed.minClosing), f.monthLong(r.delayed.minMonth)) : R.findings.low(f.money(r.delayed.minClosing), f.monthLong(r.delayed.minMonth)),
+        R.findings.tied(f.money(d.tied), d.dsoIncrease),
+        stress.delayed.minClosing < r.delayed.minClosing ? R.findings.stress(f.money(stress.delayed.minClosing), f.monthLong(stress.delayed.minMonth)) : R.findings.stressOk(f.money(stress.delayed.minClosing)),
+      ]
+    : [R.findings.cal(f.money(dropOf(r).v), f.monthLong(dropOf(r).m)), R.findings.tied(f.money(d.tied), d.dsoIncrease), R.findings.noBalance]
+
   return (
-    <section id="relatorio" aria-labelledby="rel-titulo" className="relative scroll-mt-20 bg-[#F6F8FC] px-3 py-20 text-navy sm:px-6 lg:py-28">
-      <style>{'@media print{body *{visibility:hidden!important}#relatorio,#relatorio *{visibility:visible!important}#relatorio{position:absolute;left:0;top:0;width:100%;padding:0!important;background:#fff!important}.no-print{display:none!important}}'}</style>
-      <motion.div variants={group} initial="hidden" animate="show" className="mx-auto max-w-[1080px]">
-        <motion.div variants={rise} className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+    <section id="relatorio" aria-labelledby="rel-titulo" className="relative scroll-mt-20 bg-white px-5 py-20 text-navy sm:px-6 lg:py-28">
+      <style>{'@media print{body *{visibility:hidden!important}#relatorio,#relatorio *{visibility:visible!important}#relatorio{position:absolute;left:0;top:0;width:100%;padding:0!important}.no-print{display:none!important}}'}</style>
+      <div className="mx-auto max-w-[1120px]">
+        {/* Cabeçalho */}
+        <motion.header variants={group} {...inView} className="flex flex-col gap-6 border-b border-[#0B1030]/10 pb-10 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="inline-flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent">
-              <span className="h-px w-8 bg-gradient-to-r from-transparent to-accent" aria-hidden="true" />
-              {R.eyebrow}
-            </p>
-            <h2 id="rel-titulo" className="mt-3 font-display text-[32px] font-bold leading-[1.05] tracking-[-0.035em] text-[#070D2B] sm:text-[44px]">
-              {R.title(company)}
-            </h2>
-            <p className="mt-2 text-[13.5px] capitalize text-[#0B1030]/50">
-              {f.monthLong(0)} — {f.monthLong(H - 1)}
-            </p>
+            <motion.p variants={rise} className="text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">{R.eyebrow}</motion.p>
+            <h2 id="rel-titulo" className="mt-4 text-balance font-display text-[34px] font-bold leading-[1.04] tracking-[-0.035em] text-[#070D2B] sm:text-[48px]">{R.title(company)}</h2>
+            <motion.p variants={rise} className="mt-3 text-[14px] text-[#0B1030]/50">
+              <span className="capitalize">{f.monthLong(0)}</span> — {f.monthLong(H - 1)}
+            </motion.p>
           </div>
-          <button type="button" onClick={() => window.print()} className="no-print inline-flex h-11 items-center gap-2 self-start rounded-lg border border-[#0B1030]/12 bg-white px-4 text-[14px] font-semibold text-[#070D2B] transition-colors hover:border-accent sm:self-auto">
-            <Printer className="h-4 w-4" aria-hidden="true" />
-            {R.print}
-          </button>
-        </motion.div>
+          <motion.div variants={rise} className="no-print flex flex-col items-start gap-2 sm:items-end">
+            <button type="button" onClick={() => window.print()} className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#0B1030]/15 px-4 text-[14px] font-semibold text-[#070D2B] transition-colors hover:border-[#070D2B]">
+              <Printer className="h-4 w-4" aria-hidden="true" />
+              {R.print}
+            </button>
+            <p className="max-w-[300px] text-[12px] leading-snug text-[#0B1030]/45 sm:text-right">{preview ? `${R.previewNote} ` : ''}{R.emailNote}</p>
+          </motion.div>
+        </motion.header>
 
-        <motion.div variants={rise} className="no-print mt-6 space-y-2">
-          {preview && <Notice tone="warn">{R.previewNote}</Notice>}
-          <Notice>{R.emailNote}</Notice>
-        </motion.div>
+        {/* 01 · Sumário executivo */}
+        <Section n="01" title={R.s1}>
+          <motion.ol variants={group} {...inView} className="space-y-4">
+            {findings.map((x, i) => (
+              <motion.li key={x} variants={rise} className="flex gap-4 text-[18px] leading-[1.45] tracking-[-0.01em] text-[#070D2B] sm:text-[20px]">
+                <span className="mt-[3px] font-display text-[13px] font-bold tabular-nums text-accent-deep">{i + 1}</span>
+                {x}
+              </motion.li>
+            ))}
+          </motion.ol>
+          <motion.dl variants={group} {...inView} className="mt-10 grid grid-cols-1 gap-px overflow-hidden rounded-2xl bg-[#0B1030]/[0.08] sm:grid-cols-3">
+            {bal ? (
+              <>
+                <Fig k={R.figLow} v={f.money(r.delayed.minClosing)} sub={R.figLowSub(f.monthLong(r.delayed.minMonth))} neg={r.delayed.minClosing < 0} />
+                <Fig k={R.figTied} v={f.money(d.tied)} sub={R.figTiedSub(d.dsoIncrease)} />
+                <Fig k={R.figNeed} v={d.fundingNeed > 0 ? f.money(d.fundingNeed) : R.figNeedNone} sub={R.figNeedSub} neg={d.fundingNeed > 0} />
+              </>
+            ) : (
+              <>
+                <Fig k={R.figMoved} v={f.money(r.base.totalIn * (inp.delayShare / 100) * (inp.delayDays > 0 ? 1 : 0))} />
+                <Fig k={R.figTied} v={f.money(d.tied)} sub={R.figTiedSub(d.dsoIncrease)} />
+                <Fig k={R.figPushed} v={f.money(r.delayed.pushedOut)} />
+              </>
+            )}
+          </motion.dl>
+        </Section>
 
-        {/* Resumo executivo */}
-        <Card title={R.summary} className="mt-8">
-          <p className={cn('font-display text-[22px] font-bold leading-[1.25] tracking-[-0.02em] sm:text-[26px]', insight.tone === 'risk' ? 'text-[#D13438]' : 'text-[#070D2B]')}>{insight.title}</p>
-          <p className="mt-3 max-w-[780px] text-[15px] leading-[1.65] text-[#0B1030]/65">{summary}</p>
-        </Card>
+        {/* 02 · Ponte de tesouraria */}
+        <Section n="02" title={R.s2} sub={R.s2Sub}>
+          <Waterfall R={R} f={f} steps={bal ? [
+            { k: R.bridge.opening, v: d.bridge.opening, total: true },
+            { k: R.bridge.inflow, v: d.bridge.inflow },
+            { k: R.bridge.delay, v: d.bridge.delayEffect, risk: true },
+            { k: R.bridge.outflow, v: d.bridge.outflow },
+            { k: R.bridge.closing, v: d.bridge.closing, total: true },
+          ] : [
+            { k: R.bridge.receipts, v: r.base.totalIn, total: true },
+            { k: R.bridge.late, v: -r.delayed.pushedOut, risk: true },
+            { k: R.bridge.received, v: r.delayed.totalIn, total: true },
+          ]} />
+        </Section>
 
-        <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-          {/* Situação simulada */}
-          <Card title={R.situation}>
-            <dl className="divide-y divide-[#0B1030]/[0.06]">
-              {situation.map(([k, v]) => (
-                <div key={k} className="flex items-baseline justify-between gap-4 py-2.5 text-[14px]">
-                  <dt className="text-[#0B1030]/60">{k}</dt>
-                  <dd className="text-right font-semibold tabular-nums text-[#070D2B]">{v}</dd>
-                </div>
-              ))}
-            </dl>
-          </Card>
-
-          {/* Comparação */}
-          <Card title={R.comparison}>
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[420px] text-[14px] tabular-nums">
-                <thead>
-                  <tr className="text-left text-[12px] text-[#0B1030]/50">
-                    <th className="pb-2 font-medium" />
-                    <th className="pb-2 text-right font-medium">{R.base}</th>
-                    <th className="pb-2 text-right font-medium">{R.delayed}</th>
-                    <th className="pb-2 text-right font-medium">{R.diff}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#0B1030]/[0.06]">
-                  {cmp.map(([k, a, b]) => (
-                    <tr key={k}>
-                      <td className="py-2.5 text-[#0B1030]/65">{k}</td>
-                      <td className="py-2.5 text-right text-[#070D2B]/80">{f.money(a)}</td>
-                      <td className={cn('py-2.5 text-right font-semibold', b < 0 ? 'text-[#D13438]' : 'text-[#070D2B]')}>{f.money(b)}</td>
-                      <td className={cn('py-2.5 text-right', b - a < 0 ? 'text-[#D13438]' : 'text-[#0B1030]/55')}>{b - a === 0 ? '—' : f.money(b - a)}</td>
-                    </tr>
+        {/* 03 · Previsão direta */}
+        <Section n="03" title={R.s3} sub={bal ? R.s3Sub(f.money(d.buffer)) : undefined}>
+          <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
+            <table className="w-full min-w-[620px] text-[13.5px] tabular-nums">
+              <thead>
+                <tr className="text-[12px] text-[#0B1030]/45">
+                  <th className="pb-3 text-left font-medium" />
+                  {r.delayed.months.map((_, i) => (
+                    <th key={i} className="pb-3 text-right font-medium capitalize">{f.month(i)}</th>
                   ))}
-                </tbody>
-              </table>
-            </div>
-          </Card>
-        </div>
-
-        {/* Perspetiva */}
-        <Card title={R.outlook(H)} className="mt-5">
-          {inp.hasBalance && (
-            <div className="mb-6 grid gap-3 sm:grid-cols-2">
-              {[
-                { h: 3, p: r3 },
-                { h: 6, p: r6 },
-              ].map(({ h, p }) => (
-                <div key={h} className="rounded-2xl border border-[#0B1030]/[0.07] bg-[#FAFBFD] p-4">
-                  <p className="text-[12px] font-medium text-[#0B1030]/50">
-                    {R.rows.end} · {h} {t.f.months}
-                  </p>
-                  <p className={cn('mt-1 font-display text-[24px] font-bold tabular-nums tracking-[-0.02em]', last(p.delayed) < 0 ? 'text-[#D13438]' : 'text-[#070D2B]')}>{f.money(last(p.delayed))}</p>
-                  <p className="text-[12px] text-[#0B1030]/45">
-                    {f.money(last(p.base))} {t.insight.lowestBase}
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
-          <MonthlyChart r={r} hasBalance={inp.hasBalance} t={t.chart} money={f.money} axis={f.axis} month={(m) => f.month(m)} compact />
-          {inp.hasBalance && (
-            <div className="mt-6 overflow-x-auto">
-              <table className="w-full min-w-[560px] text-[13.5px] tabular-nums">
-                <caption className="mb-2 text-left text-[12px] text-[#0B1030]/50">{R.delayed}</caption>
-                <thead>
-                  <tr className="text-[12px] text-[#0B1030]/50">
-                    {[R.month, R.opening, R.inflow, R.outflow, R.net, R.closing].map((h, i) => (
-                      <th key={h} className={cn('pb-2 font-medium', i ? 'text-right' : 'text-left')}>{h}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(bal
+                  ? [
+                      [R.rows.opening, yours.delayed.months.map((m) => m.opening), ''],
+                      [R.rows.inflow, yours.delayed.months.map((m) => m.inflow), ''],
+                      [R.rows.outflow, yours.delayed.months.map((m) => -m.outflow), ''],
+                      [R.rows.net, yours.delayed.months.map((m) => m.net), 'line'],
+                      [R.rows.closing, yours.delayed.months.map((m) => m.closing), 'strong'],
+                      [R.rows.buffer, yours.delayed.months.map(() => d.buffer), 'muted'],
+                      [R.rows.headroom, d.headroom, 'strong'],
+                    ]
+                  : [
+                      [R.rows.planned, r.base.months.map((m) => m.inflow), ''],
+                      [R.rows.delayed, r.delayed.months.map((m) => m.inflow), 'strong'],
+                      [R.rows.diff, r.delayed.months.map((m, i) => m.inflow - r.base.months[i].inflow), 'line'],
+                    ]
+                ).map(([k, vals, kind]) => (
+                  <tr key={k as string} className={cn(kind === 'line' || kind === 'strong' ? 'border-t border-[#0B1030]/10' : '')}>
+                    <td className={cn('py-2 pr-4 text-left', kind === 'strong' ? 'font-semibold text-[#070D2B]' : 'text-[#0B1030]/60')}>{k as string}</td>
+                    {(vals as number[]).map((v, i) => (
+                      <td key={i} className={cn('py-2 text-right', v < 0 && kind !== '' ? NEG : kind === 'muted' ? 'text-[#0B1030]/40' : kind === 'strong' ? 'font-semibold text-[#070D2B]' : 'text-[#070D2B]/75')}>{f.money(v)}</td>
                     ))}
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-[#0B1030]/[0.06]">
-                  {r.delayed.months.map((m, i) => (
-                    <tr key={i}>
-                      <td className="py-2 capitalize text-[#0B1030]/65">{f.month(i)}</td>
-                      <td className="py-2 text-right text-[#070D2B]/75">{f.money(m.opening)}</td>
-                      <td className="py-2 text-right text-[#070D2B]/75">{f.money(m.inflow)}</td>
-                      <td className="py-2 text-right text-[#070D2B]/75">{f.money(m.outflow)}</td>
-                      <td className={cn('py-2 text-right', m.net < 0 ? 'text-[#D13438]' : 'text-[#070D2B]/75')}>{f.money(m.net)}</td>
-                      <td className={cn('py-2 text-right font-semibold', m.closing < 0 ? 'text-[#D13438]' : 'text-[#070D2B]')}>{f.money(m.closing)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </Card>
-
-        {/* Indicadores */}
-        <Card title={R.indicators} sub={R.indicatorsSub} className="mt-5">
-          <motion.ul variants={group} {...inView} className="grid gap-3 sm:grid-cols-2">
-            {r.kpis.delayed.map((k, i) => {
-              const meta = R.kpi[k.id]
-              const b = r.kpis.base[i]
-              return (
-                <motion.li key={k.id} variants={rise} className="rounded-2xl border border-[#0B1030]/[0.07] bg-white p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <p className="text-[13.5px] font-semibold text-[#070D2B]">{meta.name}</p>
-                    <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#F2F4F9] px-2.5 py-1 text-[11.5px] font-medium text-[#0B1030]/70">
-                      <span className="h-2 w-2 rounded-full" style={{ background: LIGHT[k.light], boxShadow: `0 0 8px ${LIGHT[k.light]}` }} />
-                      {R.lights[k.light]}
-                    </span>
-                  </div>
-                  <p className="mt-2 font-display text-[26px] font-bold tabular-nums tracking-[-0.02em] text-[#070D2B]">{kpiValue(k)}</p>
-                  {k.value === null ? (
-                    <p className="text-[12px] text-[#0B1030]/45">{R.naHint}</p>
-                  ) : (
-                    <p className="text-[12px] text-[#0B1030]/45">
-                      {kpiValue(b)} {t.insight.lowestBase}
-                    </p>
-                  )}
-                  <p className="mt-3 border-t border-[#0B1030]/[0.06] pt-3 text-[12px] leading-snug text-[#0B1030]/55">{meta.how}</p>
-                  <p className="mt-1 text-[11.5px] leading-snug text-[#0B1030]/40">{meta.ref}</p>
-                </motion.li>
-              )
-            })}
-          </motion.ul>
-          <p className="mt-4 flex gap-2 text-[12.5px] leading-snug text-[#0B1030]/50">
-            <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-            {R.notInExplore}
-          </p>
-        </Card>
-
-        {/* Finer Advisor */}
-        <div className="relative mt-5 overflow-hidden rounded-[24px] bg-[#070D2B] p-6 text-white sm:p-8">
-          <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,#1E90FF,transparent)]" />
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent/20 text-[#7CB8FF]">
-              <Sparkles className="h-4 w-4" aria-hidden="true" />
-            </span>
-            <h3 data-no-sweep className="font-display text-[22px] font-bold tracking-[-0.02em]">{R.advisor}</h3>
-            <span className="rounded-full border border-white/15 px-2.5 py-1 text-[11px] text-white/60">{R.advisorTag}</span>
+                ))}
+              </tbody>
+            </table>
           </div>
-          <motion.ul variants={group} {...inView} className="mt-5 space-y-3">
-            {notes.map((n) => (
-              <motion.li key={n.pt} variants={rise} className="flex gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-4 text-[14.5px] leading-relaxed text-white/80">
-                <span className="mt-2 h-2 w-2 shrink-0 rounded-full" style={{ background: n.tone === 'risk' ? '#FF6B6B' : n.tone === 'warn' ? '#F5B83D' : '#5CA8FF' }} />
-                {n[lang]}
+        </Section>
+
+        {/* 04 · Cenários */}
+        <Section n="04" title={R.s4} sub={R.s4Sub}>
+          <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
+            <table className="w-full min-w-[520px] text-[14px] tabular-nums">
+              <thead>
+                <tr>
+                  <th className="pb-3" />
+                  {d.scenarios.map((s) => (
+                    <th key={s.id} className={cn('pb-3 text-right align-bottom', s.id === 'yours' && 'text-accent-deep')}>
+                      <span className="block font-display text-[16px] font-bold tracking-[-0.01em]">{R.sc[s.id]}</span>
+                      <span className="block text-[11.5px] font-normal text-[#0B1030]/45">{R.sc.params(s.share, s.days)}</span>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#0B1030]/[0.08] border-t border-[#0B1030]/10">
+                {(bal
+                  ? [
+                      [R.sc.low, (x: Result) => f.money(x.delayed.minClosing), (x: Result) => x.delayed.minClosing < 0],
+                      [R.sc.lowMonth, (x: Result) => f.month(x.delayed.minMonth), () => false],
+                      [R.sc.end, (x: Result) => f.money(x.delayed.months[H - 1].closing), (x: Result) => x.delayed.months[H - 1].closing < 0],
+                      [R.sc.need, (x: Result) => { const n = Math.max(0, d.buffer - x.delayed.minClosing); return n > 0 ? f.money(n) : '—' }, (x: Result) => d.buffer - x.delayed.minClosing > 0],
+                    ]
+                  : [
+                      [R.sc.drop, (x: Result) => f.money(dropOf(x).v), () => false],
+                      [R.sc.pushed, (x: Result) => f.money(x.delayed.pushedOut), () => false],
+                    ]
+                ).map(([k, val, neg]) => (
+                  <tr key={k as string}>
+                    <td className="py-3 pr-4 text-[#0B1030]/60">{k as string}</td>
+                    {d.scenarios.map((s) => (
+                      <td key={s.id} className={cn('py-3 text-right capitalize', (neg as (x: Result) => boolean)(s.r) ? `font-semibold ${NEG}` : s.id === 'yours' ? 'font-semibold text-[#070D2B]' : 'text-[#070D2B]/75')}>
+                        {(val as (x: Result) => string)(s.r)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+                <tr>
+                  <td className="py-3 pr-4 text-[#0B1030]/60">{R.sc.tied}</td>
+                  {d.scenarios.map((s) => (
+                    <td key={s.id} className={cn('py-3 text-right', s.id === 'yours' ? 'font-semibold text-[#070D2B]' : 'text-[#070D2B]/75')}>
+                      {f.money(((inp.receipts.slice(0, H).reduce((a, b) => a + b, 0) / H) / 30) * (s.share / 100) * s.days)}
+                    </td>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </Section>
+
+        {/* 05 · Sensibilidade */}
+        <Section n="05" title={R.s5} sub={bal ? R.s5Sub : R.s5SubCal}>
+          <Heatmap R={R} f={f} d={d} inp={inp} />
+        </Section>
+
+        {/* 06 · Indicadores */}
+        <Section n="06" title={R.s6} sub={R.s6Sub}>
+          <motion.ul variants={group} {...inView} className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl bg-[#0B1030]/[0.08] sm:grid-cols-2 lg:grid-cols-4">
+            {r.kpis.delayed.map((k) => (
+              <motion.li key={k.id} variants={rise} className="bg-white p-5">
+                <p className="text-[13px] font-medium text-[#0B1030]/60">{R.kpi[k.id].name}</p>
+                <p className="mt-2 font-display text-[26px] font-bold tabular-nums tracking-[-0.02em] text-[#070D2B]">{kpiValue(k, R, lang)}</p>
+                <p className="mt-1 flex items-center gap-1.5 text-[12px] text-[#0B1030]/55">
+                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: LIGHT[k.light] }} />
+                  {R.lights[k.light]}
+                </p>
+                <p className="mt-4 text-[11.5px] leading-snug text-[#0B1030]/40">{R.kpi[k.id].how}</p>
               </motion.li>
             ))}
           </motion.ul>
-        </div>
+        </Section>
 
-        {/* Pressupostos */}
-        <Card title={R.assumptions} className="mt-5">
-          <ul className="grid gap-x-8 gap-y-2.5 text-[13.5px] leading-snug text-[#0B1030]/60 sm:grid-cols-2">
-            {R.assumptionsList.map((a) => (
-              <li key={a} className="flex gap-2.5">
-                <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-accent" />
+        {/* 07 · Alavancas (Finer Advisor) */}
+        <Section n="07" title={R.s7} sub={R.s7Tag}>
+          <motion.ul variants={group} {...inView} className="divide-y divide-[#0B1030]/[0.08] border-y border-[#0B1030]/[0.08]">
+            {d.levers.filter((l) => l.gain > 0.5).map((l) => (
+              <motion.li key={l.id} variants={rise} className="py-4 text-[16px] leading-relaxed text-[#070D2B]">
+                {l.id === 'share' ? R.lever.share(l.to, f.money(l.gain)) : R.lever.days(f.money(l.gain))}
+              </motion.li>
+            ))}
+            <motion.li variants={rise} className="py-4 text-[16px] leading-relaxed text-[#070D2B]">
+              {!bal ? R.lever.noBalance : d.fundingNeed > 0 ? R.lever.buffer(f.money(d.fundingNeed), f.monthLong(d.minHeadroomMonth)) : R.lever.none}
+            </motion.li>
+          </motion.ul>
+        </Section>
+
+        {/* 08 · Pressupostos */}
+        <Section n="08" title={R.s8}>
+          <ul className="grid gap-x-10 gap-y-2.5 text-[13.5px] leading-snug text-[#0B1030]/55 sm:grid-cols-2">
+            {R.assumptions.map((a) => (
+              <li key={a} className="flex gap-3">
+                <span className="mt-[8px] h-px w-3 shrink-0 bg-[#0B1030]/30" />
                 {a}
               </li>
             ))}
           </ul>
-        </Card>
+        </Section>
 
         {/* Finer Pioneers */}
-        <motion.div variants={rise} {...inView} className="no-print relative mt-10 overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#0A1440,#070D2B_60%)] p-8 text-center text-white sm:p-12">
-          <span aria-hidden="true" className="absolute inset-x-10 top-0 h-[2px] bg-[linear-gradient(90deg,transparent,#0052FF,#5CA8FF,transparent)] shadow-[0_0_18px_rgba(30,144,255,0.8)]" />
-          <h3 data-no-sweep className="mx-auto max-w-[640px] text-balance font-display text-[26px] font-bold leading-[1.1] tracking-[-0.03em] sm:text-[34px]">{R.pioneersTitle}</h3>
-          <p className="mx-auto mt-3 max-w-[520px] text-[15px] leading-relaxed text-white/65">{R.pioneersSub}</p>
-          <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <motion.div variants={group} {...inView} className="no-print relative mt-16 overflow-hidden rounded-[28px] bg-[#070D2B] px-6 py-14 text-center text-white sm:px-12">
+          <span aria-hidden="true" className="absolute inset-x-12 top-0 h-px bg-[linear-gradient(90deg,transparent,#1E90FF,transparent)]" />
+          <h3 className="mx-auto max-w-[620px] text-balance font-display text-[28px] font-bold leading-[1.1] tracking-[-0.03em] sm:text-[36px]">{R.pioneersTitle}</h3>
+          <motion.p variants={rise} className="mx-auto mt-3 max-w-[480px] text-[15.5px] leading-relaxed text-white/65">{R.pioneersSub}</motion.p>
+          <motion.div variants={rise} className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <a href="/pioneers/" onClick={() => track('pioneers_cta_clicked', { location: 'report' })} className="group inline-flex h-12 items-center gap-2 rounded-lg bg-accent px-6 text-[15px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_10px_30px_-10px_rgba(0,82,255,0.95)] transition-transform hover:-translate-y-px">
               {R.pioneersCta}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
             </a>
-            <button type="button" onClick={onAgain} className="inline-flex h-12 items-center gap-2 rounded-lg border border-white/15 px-5 text-[14.5px] font-semibold text-white/85 transition-colors hover:border-white/40">
-              <RotateCcw className="h-4 w-4" aria-hidden="true" />
+            <button type="button" onClick={onAgain} className="text-[14px] font-semibold text-white/70 underline decoration-white/25 underline-offset-4 hover:text-white">
               {R.again}
             </button>
-          </div>
+          </motion.div>
         </motion.div>
-      </motion.div>
+      </div>
     </section>
   )
 }
 
-function Card({ title, sub, className, children }: { title: string; sub?: string; className?: string; children: React.ReactNode }) {
+function kpiValue(k: Kpi, R: ReportText, lang: Lang) {
+  const loc = lang === 'pt' ? 'pt-PT' : 'en-GB'
+  if (k.value === null) return R.na
+  if (k.id === 'days') return `${Math.round(k.value)} ${lang === 'pt' ? 'dias' : 'days'}`
+  if (k.id === 'cover') return `${k.value.toLocaleString(loc, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}×`
+  return `${(k.value * 100).toLocaleString(loc, { maximumFractionDigits: 1 })}%`
+}
+
+function Section({ n, title, sub, children }: { n: string; title: string; sub?: string; children: React.ReactNode }) {
   return (
-    <motion.div variants={rise} {...inView} className={cn('rounded-[24px] border border-[#0B1030]/[0.07] bg-white p-5 shadow-[0_24px_60px_-40px_rgba(7,13,43,0.35)] sm:p-7', className)}>
-      <h3 data-no-sweep className="font-display text-[19px] font-bold tracking-[-0.02em] text-[#070D2B]">{title}</h3>
-      {sub && <p className="mt-1 text-[13px] text-[#0B1030]/50">{sub}</p>}
-      <div className="mt-4">{children}</div>
+    <motion.div variants={group} {...inView} className="grid grid-cols-[minmax(0,1fr)] gap-6 border-b border-[#0B1030]/10 py-12 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-12 lg:py-16">
+      <div>
+        <motion.p variants={rise} className="font-display text-[13px] font-bold tabular-nums text-accent-deep">{n}</motion.p>
+        <h3 className="mt-2 font-display text-[24px] font-bold leading-[1.12] tracking-[-0.025em] text-[#070D2B] sm:text-[28px]">{title}</h3>
+        {sub && <motion.p variants={rise} className="mt-3 max-w-[300px] text-[13.5px] leading-relaxed text-[#0B1030]/50">{sub}</motion.p>}
+      </div>
+      <motion.div variants={rise} className="min-w-0">{children}</motion.div>
     </motion.div>
   )
 }
 
-function Notice({ children, tone }: { children: React.ReactNode; tone?: 'warn' }) {
+function Fig({ k, v, sub, neg }: { k: string; v: string; sub?: string; neg?: boolean }) {
   return (
-    <p className={cn('flex gap-2.5 rounded-xl border px-4 py-3 text-[13px] leading-snug', tone === 'warn' ? 'border-[#E8A317]/30 bg-[#FFF8E6] text-[#7A5600]' : 'border-[#0052FF]/15 bg-[#F2F7FF] text-[#0B1030]/70')}>
-      <Info className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-      {children}
-    </p>
+    <motion.div variants={rise} className="bg-white p-5 sm:p-6">
+      <dt className="text-[12.5px] text-[#0B1030]/55">{k}</dt>
+      <dd className={cn('mt-2 font-display text-[28px] font-bold tabular-nums tracking-[-0.025em] sm:text-[32px]', neg ? NEG : 'text-[#070D2B]')}>{v}</dd>
+      {sub && <dd className="mt-1 text-[12px] leading-snug text-[#0B1030]/45">{sub}</dd>}
+    </motion.div>
+  )
+}
+
+type Step = { k: string; v: number; total?: boolean; risk?: boolean }
+
+function Waterfall({ steps, f }: { steps: Step[]; f: Fmt; R: ReportText }) {
+  let run = 0
+  const bars = steps.map((s) => {
+    const from = s.total ? 0 : run
+    const to = s.total ? s.v : run + s.v
+    run = to
+    return { ...s, lo: Math.min(from, to), hi: Math.max(from, to) }
+  })
+  const max = Math.max(1, ...bars.map((b) => b.hi))
+  const min = Math.min(0, ...bars.map((b) => b.lo))
+  const H = 220
+  const y = (v: number) => ((max - v) / (max - min)) * H
+  return (
+    <div>
+      <div className="relative" style={{ height: H + 28 }}>
+        {min < 0 && <span className="absolute inset-x-0 border-t border-dashed border-[#0B1030]/25" style={{ top: y(0) + 24 }} />}
+        <div className="absolute inset-x-0 bottom-0 top-6 grid gap-3 sm:gap-6" style={{ gridTemplateColumns: `repeat(${bars.length}, minmax(0,1fr))` }}>
+          {bars.map((b, i) => (
+            <div key={b.k} className="relative">
+              <motion.div
+                initial={{ opacity: 0, scaleY: 0 }}
+                whileInView={{ opacity: 1, scaleY: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, ease: EASE, delay: 0.1 + i * 0.12 }}
+                className={cn('absolute inset-x-0 origin-bottom rounded-[6px]', b.total ? 'bg-[#070D2B]' : b.risk ? 'bg-[#E5484D]' : b.v >= 0 ? 'bg-accent' : 'bg-[#AFC3EA]')}
+                style={{ top: y(b.hi), height: Math.max(2, y(b.lo) - y(b.hi)) }}
+              />
+              <span className={cn('absolute inset-x-0 -translate-y-full pb-1.5 text-center text-[12px] font-semibold tabular-nums sm:text-[13px]', b.risk || b.v < 0 && b.total ? 'text-[#C62D33]' : 'text-[#070D2B]')} style={{ top: y(b.hi) }}>
+                {b.total ? f.money(b.v) : `${b.v >= 0 ? '+' : '−'}${f.money(Math.abs(b.v))}`}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="mt-3 grid gap-3 sm:gap-6" style={{ gridTemplateColumns: `repeat(${bars.length}, minmax(0,1fr))` }}>
+        {bars.map((b) => (
+          <p key={b.k} className="text-center text-[11.5px] leading-snug text-[#0B1030]/55 sm:text-[12.5px]">{b.k}</p>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function Heatmap({ R, f, d, inp }: { R: ReportText; f: Fmt; d: ReturnType<typeof deepen>; inp: MonthlyInputs }) {
+  const all = d.sensitivity.cells.flat()
+  const lo = Math.min(...all)
+  const hi = Math.max(...all)
+  const tone = (v: number) => {
+    if (v < 0) {
+      const t = lo < 0 ? v / lo : 0
+      return { background: `rgba(229,72,77,${0.08 + t * 0.5})`, color: t > 0.55 ? '#fff' : '#8E1F24' }
+    }
+    const t = hi > 0 ? v / hi : 0
+    return { background: `rgba(10,64,200,${0.05 + t * 0.55})`, color: t > 0.55 ? '#fff' : '#070D2B' }
+  }
+  const near = (arr: number[], v: number) => arr.reduce((a, b) => (Math.abs(b - v) < Math.abs(a - v) ? b : a))
+  const cs = near(d.sensitivity.shares, inp.delayShare)
+  const cd = near(d.sensitivity.days, inp.delayDays)
+  return (
+    <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
+      <table className="w-full min-w-[460px] border-separate border-spacing-1.5 text-[13px] tabular-nums">
+        <thead>
+          <tr>
+            <th className="pb-1 text-left text-[11.5px] font-medium text-[#0B1030]/45">{R.share} ↓ · {R.days} →</th>
+            {d.sensitivity.days.map((x) => (
+              <th key={x} className="pb-1 text-center text-[12px] font-semibold text-[#070D2B]">{x}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {d.sensitivity.shares.map((s, i) => (
+            <tr key={s}>
+              <th className="pr-2 text-left text-[12px] font-semibold text-[#070D2B]">{s}%</th>
+              {d.sensitivity.days.map((x, j) => {
+                const v = d.sensitivity.cells[i][j]
+                const cur = s === cs && x === cd
+                return (
+                  <motion.td
+                    key={x}
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: (i + j) * 0.05 }}
+                    className={cn('rounded-lg px-2 py-3 text-center font-semibold', cur && 'ring-2 ring-[#070D2B] ring-offset-1')}
+                    style={tone(v)}
+                  >
+                    {f.axis(v)}
+                  </motion.td>
+                )
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   )
 }

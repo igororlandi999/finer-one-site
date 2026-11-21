@@ -215,3 +215,60 @@ export const SAMPLE: Record<ScenarioKind, MonthlyInputs> = {
     hasBalance: false,
   },
 }
+
+// ---------- Análise ao estilo das consultoras (liquidez, cenários, fundo de maneio) ----------
+/**
+ * Método inspirado nas práticas públicas de PwC, Deloitte e KPMG para previsão de
+ * tesouraria: previsão direta (recebimentos e pagamentos), ponto mais baixo de
+ * liquidez face a uma reserva mínima ("headroom"), cenários base / o seu / stress,
+ * capital preso em fundo de maneio e ponte de tesouraria. Tudo calculado só com os
+ * valores introduzidos pelo visitante.
+ */
+export type Scenario3 = { id: 'base' | 'yours' | 'stress'; share: number; days: number; r: Result }
+
+export type Deep = {
+  buffer: number // reserva mínima de referência: 1 mês de pagamentos médios
+  headroom: number[] // saldo final − reserva, por mês (cenário do visitante)
+  minHeadroom: number
+  minHeadroomMonth: number
+  fundingNeed: number // valor a assegurar para manter a reserva no pior mês
+  tied: number // capital preso em recebimentos pelo atraso
+  dsoIncrease: number // aumento do prazo médio de recebimento ponderado (dias)
+  scenarios: Scenario3[]
+  bridge: { opening: number; inflow: number; delayEffect: number; outflow: number; closing: number }
+  sensitivity: { shares: number[]; days: number[]; cells: number[][] } // ponto mais baixo (ou maior quebra mensal)
+  levers: { id: 'share' | 'days'; gain: number; to: number }[]
+}
+
+const maxDrop = (r: Result) => Math.max(0, ...r.base.months.map((m, i) => m.inflow - r.delayed.months[i].inflow))
+
+export function deepen(inp: MonthlyInputs): Deep {
+  const r = simulate(inp)
+  const H = inp.horizon
+  const avg = (a: number[]) => a.slice(0, H).reduce((x, y) => x + Math.max(0, y), 0) / H
+  const buffer = inp.hasBalance ? avg(inp.payments) : 0
+  const headroom = r.delayed.months.map((m) => m.closing - buffer)
+  let minHeadroomMonth = 0
+  headroom.forEach((h, i) => { if (h < headroom[minHeadroomMonth]) minHeadroomMonth = i })
+  const minHeadroom = headroom[minHeadroomMonth] ?? 0
+  const dsoIncrease = (inp.delayShare / 100) * inp.delayDays
+  const tied = (avg(inp.receipts) / 30) * dsoIncrease
+  const mk = (id: Scenario3['id'], share: number, days: number): Scenario3 => ({ id, share, days, r: simulate({ ...inp, delayShare: share, delayDays: days }) })
+  const stressShare = Math.min(100, inp.delayShare + 20)
+  const stressDays = Math.min(120, Math.max(30, inp.delayDays * 2))
+  const scenarios = [mk('base', 0, 0), mk('yours', inp.delayShare, inp.delayDays), mk('stress', stressShare, stressDays)]
+  const last = r.delayed.months[H - 1]
+  const bridge = { opening: inp.hasBalance ? Math.max(0, inp.balance) : 0, inflow: r.base.totalIn, delayEffect: r.delayed.totalIn - r.base.totalIn, outflow: -r.base.totalOut, closing: last?.closing ?? 0 }
+  const shares = [20, 40, 60, 80]
+  const days = [15, 30, 60, 90]
+  const cells = shares.map((s) => days.map((d) => { const x = simulate({ ...inp, delayShare: s, delayDays: d }); return inp.hasBalance ? x.delayed.minClosing : -maxDrop(x) }))
+  const metric = (x: Result) => (inp.hasBalance ? x.delayed.minClosing : -maxDrop(x))
+  const now = metric(r)
+  const levers: Deep['levers'] = []
+  if (inp.delayShare > 0 && inp.delayDays > 0) {
+    const s2 = Math.max(0, inp.delayShare - 10)
+    levers.push({ id: 'share', to: s2, gain: metric(simulate({ ...inp, delayShare: s2 })) - now })
+    if (inp.delayDays > 15) levers.push({ id: 'days', to: 15, gain: metric(simulate({ ...inp, delayDays: 15 })) - now })
+  }
+  return { buffer, headroom, minHeadroom, minHeadroomMonth, fundingNeed: Math.max(0, -minHeadroom), tied, dsoIncrease, scenarios, bridge, sensitivity: { shares, days, cells }, levers }
+}

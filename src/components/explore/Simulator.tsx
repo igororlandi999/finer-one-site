@@ -1,6 +1,6 @@
 import { useEffect, useId, useMemo, useRef } from 'react'
 import { AnimatePresence, LayoutGroup, motion } from 'motion/react'
-import { ArrowRight, Check, RotateCcw } from 'lucide-react'
+import { ArrowRight, RotateCcw } from 'lucide-react'
 import { SAMPLE, simulate } from '@/lib/explore/monthly'
 import type { Horizon, MonthlyInputs, Result, ScenarioKind } from '@/lib/explore/monthly'
 import { track } from '@/lib/analytics'
@@ -103,6 +103,7 @@ export function Simulator({ t, lang, sim, setSim, currency, onReady, formOpen, c
   const inp = sim.inputs[sim.scenario]
   const r = useMemo(() => simulate(inp), [inp])
   const insight = insightOf(inp, r, t.insight, f)
+  const tied = (inp.receipts.slice(0, inp.horizon).reduce((x, y) => x + Math.max(0, y), 0) / inp.horizon / 30) * (inp.delayShare / 100) * inp.delayDays
   const touched = useRef(false)
 
   const update = (patch: Partial<MonthlyInputs>) => {
@@ -157,7 +158,7 @@ export function Simulator({ t, lang, sim, setSim, currency, onReady, formOpen, c
       <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[340px_minmax(0,1fr)] lg:gap-8">
         {/* Valores */}
         <AnimatePresence mode="wait" initial={false}>
-          <motion.div key={sim.scenario} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.25, ease: EASE }} className="space-y-5 rounded-[22px] border border-[#0B1030]/[0.07] bg-[#FAFBFD] p-5">
+          <motion.div key={sim.scenario} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.25, ease: EASE }} className="space-y-5 rounded-[22px] bg-[#F5F7FB] p-5 sm:p-6">
             {sim.scenario === 'treasury' ? (
               <>
                 <MoneyField label={t.f.balance} value={inp.balance} onChange={(v) => update({ balance: v })} f={f} />
@@ -197,56 +198,43 @@ export function Simulator({ t, lang, sim, setSim, currency, onReady, formOpen, c
 
         {/* Resultado */}
         <div className="min-w-0">
-          <div className="rounded-[22px] border border-[#0B1030]/[0.07] bg-white p-4 sm:p-6">
-            <p className="text-[13px] font-semibold text-[#070D2B]">{inp.hasBalance ? t.chart.title : t.chart.titleCal}</p>
-            <div className="mt-3">
-              <MonthlyChart r={r} hasBalance={inp.hasBalance} t={t.chart} money={f.money} axis={f.axis} month={(m) => f.month(m)} />
-            </div>
+          <p className="text-[13px] font-semibold text-[#070D2B]">{inp.hasBalance ? t.chart.title : t.chart.titleCal}</p>
+          <div className="mt-3">
+            <MonthlyChart r={r} hasBalance={inp.hasBalance} t={t.chart} money={f.money} axis={f.axis} month={(m) => f.month(m)} />
           </div>
 
-          <div ref={insightRef} className="relative mt-4 overflow-hidden rounded-[22px] border border-[#0052FF]/15 bg-[linear-gradient(180deg,#F5F9FF,#FFFFFF)] p-5 sm:p-6">
-            <span aria-hidden="true" className="absolute inset-x-6 top-0 h-[2px] bg-[linear-gradient(90deg,transparent,#0052FF,#5CA8FF,transparent)] shadow-[0_0_14px_rgba(30,144,255,0.7)]" />
-            <p className="text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent">{t.insight.eyebrow}</p>
+          <div ref={insightRef} className="mt-8 border-t border-[#0B1030]/10 pt-6">
+            <p className="text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">{t.insight.eyebrow}</p>
             <AnimatePresence mode="wait" initial={false}>
-              <motion.p key={insight.title} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.25, ease: EASE }} data-no-sweep className={cn('mt-2.5 font-display text-[21px] font-bold leading-[1.2] tracking-[-0.025em] sm:text-[24px]', tone)} aria-live="polite">
+              <motion.p key={insight.title} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.3, ease: EASE }} className={cn('mt-3 max-w-[640px] text-balance font-display text-[22px] font-bold leading-[1.2] tracking-[-0.025em] sm:text-[26px]', tone)} aria-live="polite">
                 {insight.title}
               </motion.p>
             </AnimatePresence>
-            <dl className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3">
+            <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3">
               {inp.hasBalance ? (
                 <>
                   <Stat k={t.insight.lowest} v={f.money(r.delayed.minClosing)} sub={`${f.money(r.base.minClosing)} ${t.insight.lowestBase}`} neg={r.delayed.minClosing < 0} />
                   <Stat k={t.insight.pressure} v={r.pressure.length ? r.pressure.map((m) => f.month(m)).join(', ') : t.insight.none} />
-                  <Stat k={t.insight.pushed} v={f.money(r.delayed.pushedOut)} />
+                  <Stat k={t.insight.tied} v={f.money(tied)} />
                 </>
               ) : (
                 <>
                   <Stat k={t.insight.moved} v={f.money(movedTotal(inp))} />
-                  <Stat k={t.insight.pushed} v={f.money(r.delayed.pushedOut)} />
+                  <Stat k={t.insight.tied} v={f.money(tied)} />
                 </>
               )}
             </dl>
-            <p className="mt-5 text-[13px] leading-relaxed text-[#0B1030]/55">{t.insight.explain}</p>
           </div>
         </div>
       </div>
 
       {/* Convite para a análise completa */}
-      <div ref={readyRef} className="relative mt-6 overflow-hidden rounded-[24px] bg-[#070D2B] p-6 text-white sm:p-8">
-        <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,#1E90FF,transparent)]" />
-        <span aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-[radial-gradient(closest-side,rgba(30,144,255,0.35),transparent)] blur-2xl" />
+      <div ref={readyRef} className="relative mt-10 overflow-hidden rounded-[24px] bg-[#070D2B] p-6 text-white sm:p-9">
+        <span aria-hidden="true" className="absolute inset-x-10 top-0 h-px bg-[linear-gradient(90deg,transparent,#1E90FF,transparent)]" />
         <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
           <div>
-            <h3 data-no-sweep className="font-display text-[24px] font-bold leading-[1.1] tracking-[-0.03em] sm:text-[30px]">{t.ready.title}</h3>
-            <p className="mt-2 max-w-[560px] text-[14.5px] leading-relaxed text-white/65">{t.ready.sub}</p>
-            <ul className="mt-4 grid grid-cols-1 gap-x-6 gap-y-1.5 text-[13px] text-white/75 sm:grid-cols-3">
-              {t.ready.items.map((it) => (
-                <li key={it} className="flex items-center gap-2">
-                  <Check className="h-3.5 w-3.5 shrink-0 text-[#5CA8FF]" aria-hidden="true" />
-                  {it}
-                </li>
-              ))}
-            </ul>
+            <h3 className="font-display text-[26px] font-bold leading-[1.1] tracking-[-0.03em] sm:text-[32px]">{t.ready.title}</h3>
+            <p className="mt-3 max-w-[560px] text-[15px] leading-relaxed text-white/65">{t.ready.sub}</p>
           </div>
           {!formOpen && (
             <div className="flex flex-col items-start gap-2 lg:items-end">

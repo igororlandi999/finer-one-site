@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { MotionConfig, motion } from 'motion/react'
+import { MotionConfig, motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
 import type { Variants } from 'motion/react'
 import { ArrowRight, Check } from 'lucide-react'
 import { useLanguage } from '@/i18n/LanguageContext'
@@ -48,16 +48,16 @@ export function ExplorePage() {
       <Hero t={t} onStart={() => scrollTo('simulacao')} />
 
       <section id="simulacao" aria-labelledby="ex-sim" className="relative flow-root scroll-mt-20 bg-white px-3 pb-24 text-navy sm:px-6 lg:pb-32">
-        <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: EASE, delay: 0.3 }} className="relative z-10 mx-auto -mt-24 max-w-[1180px] rounded-[32px] border border-[#0B1030]/[0.06] bg-white p-4 shadow-[0_60px_140px_-60px_rgba(7,13,43,0.55)] sm:-mt-28 sm:p-8 lg:p-10">
+        <SimCard className="relative z-10 mx-auto -mt-24 max-w-[1180px] rounded-[32px] border border-[#0B1030]/[0.06] bg-white p-4 shadow-[0_60px_140px_-60px_rgba(7,13,43,0.55)] sm:-mt-28 sm:p-8 lg:p-10">
           <div className="mb-7 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="inline-flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent">
-                <span className="h-px w-8 bg-gradient-to-r from-transparent to-accent" aria-hidden="true" />
+              <p className="inline-flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">
+                <span className="h-px w-8 bg-gradient-to-r from-transparent to-accent-deep" aria-hidden="true" />
                 {t.simEyebrow}
               </p>
               <h2 id="ex-sim" className="mt-3 text-balance font-display text-[30px] font-bold leading-[1.06] tracking-[-0.035em] text-[#070D2B] sm:text-[40px]">
                 {t.simTitle[0]}
-                <span className="text-accent">{t.simTitle[1]}</span>
+                <span className="text-accent-deep">{t.simTitle[1]}</span>
               </h2>
             </div>
             <p className="max-w-[400px] text-[14.5px] leading-relaxed text-[#0B1030]/55">{t.simSub}</p>
@@ -78,15 +78,29 @@ export function ExplorePage() {
               }}
             />
           </Simulator>
-        </motion.div>
+        </SimCard>
       </section>
 
-      {report && <Report t={t} lang={lang} inp={inp} scenario={sim.scenario} company={lead.company.trim()} currency={lead.currency} preview={report.preview} onAgain={() => scrollTo('simulacao')} />}
+      {report && <Report lang={lang} inp={inp} scenario={sim.scenario} company={lead.company.trim()} currency={lead.currency} preview={report.preview} onAgain={() => scrollTo('simulacao')} />}
 
-      <Sources t={t} lang={lang} onSimulate={() => scrollTo('simulacao')} />
+      <Sources t={t} lang={lang} />
       <Bridge t={t} />
       <FinalCta t={t} onStart={() => scrollTo('simulacao')} />
     </MotionConfig>
+  )
+}
+
+/** Cartão do simulador: entra por baixo e abre-se com o scroll (como o palco da homepage). */
+function SimCard({ className, children }: { className: string; children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const reduced = useReducedMotion() ?? false
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'start 0.35'] })
+  const inset = useTransform(scrollYProgress, [0, 1], [5, 0])
+  const clipPath = useTransform(inset, (v) => `inset(0 ${v}% 0 ${v}% round 32px)`)
+  return (
+    <motion.div ref={ref} initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: EASE, delay: 0.25 }} style={reduced ? undefined : { clipPath }} className={className}>
+      {children}
+    </motion.div>
   )
 }
 
@@ -105,10 +119,10 @@ function Hero({ t, onStart }: { t: ExploreText; onStart: () => void }) {
           {t.heroEyebrow}
           <span className="h-px w-8 bg-gradient-to-l from-transparent to-glow" aria-hidden="true" />
         </motion.p>
-        <motion.h1 variants={rise} id="ex-titulo" className="mt-7 max-w-[980px] text-balance font-display text-[34px] font-bold leading-[1.08] tracking-[-0.03em] text-white sm:text-[48px] lg:text-[58px]">
+        <h1 id="ex-titulo" className="mt-7 max-w-[980px] text-balance font-display text-[34px] font-bold leading-[1.08] tracking-[-0.03em] text-white sm:text-[48px] lg:text-[58px]">
           {t.heroTitle[0]}
           <span className="text-accent [text-shadow:0_0_32px_rgba(0,82,255,0.45)]">{t.heroTitle[1]}</span>
-        </motion.h1>
+        </h1>
         <motion.p variants={rise} className="mt-7 max-w-[600px] text-[16.5px] leading-[1.6] text-white/[0.78] sm:text-[18px]">{t.heroSub}</motion.p>
         <motion.div variants={rise} className="mt-10 flex flex-col items-center gap-4">
           <button
@@ -124,7 +138,6 @@ function Hero({ t, onStart }: { t: ExploreText; onStart: () => void }) {
             {t.heroNote}
           </p>
         </motion.div>
-        <motion.p variants={rise} className="mt-8 max-w-[520px] text-[13px] leading-relaxed text-white/45">{t.heroFree}</motion.p>
       </motion.div>
     </section>
   )
@@ -137,27 +150,23 @@ function Bridge({ t }: { t: ExploreText }) {
     <section aria-labelledby="ex-bridge" className="bg-white py-24 text-navy lg:py-32">
       <motion.div variants={group} {...inView} className="mx-auto max-w-content px-5 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[760px] text-center">
-          <motion.p variants={rise} className="inline-flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent">
-            <span className="h-px w-8 bg-gradient-to-r from-transparent to-accent" aria-hidden="true" />
+          <motion.p variants={rise} className="inline-flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">
+            <span className="h-px w-8 bg-gradient-to-r from-transparent to-accent-deep" aria-hidden="true" />
             {t.bridgeEyebrow}
-            <span className="h-px w-8 bg-gradient-to-l from-transparent to-accent" aria-hidden="true" />
+            <span className="h-px w-8 bg-gradient-to-l from-transparent to-accent-deep" aria-hidden="true" />
           </motion.p>
-          <motion.h2 variants={rise} id="ex-bridge" className="mt-4 font-display text-[32px] font-bold leading-[1.05] tracking-[-0.035em] text-[#070D2B] sm:text-[44px] lg:text-[48px]">
+          <h2 id="ex-bridge" className="mt-4 font-display text-[32px] font-bold leading-[1.05] tracking-[-0.035em] text-[#070D2B] sm:text-[44px] lg:text-[48px]">
             {t.bridgeTitle[0]}
-            <span className="text-accent">{t.bridgeTitle[1]}</span>
-          </motion.h2>
+            <span className="text-accent-deep">{t.bridgeTitle[1]}</span>
+          </h2>
           <motion.p variants={rise} className="mx-auto mt-5 max-w-[580px] text-[17px] leading-[1.6] text-[#0B1030]/60">{t.bridgeSub}</motion.p>
         </div>
-        <ul className="mt-16 grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-          {t.bridge.map((b, i) => (
-            <motion.li key={b.name} variants={rise} className="relative pt-7">
+        <ul className="mx-auto mt-16 grid max-w-[980px] grid-cols-2 gap-x-8 gap-y-10 lg:grid-cols-4">
+          {t.bridge.map((name, i) => (
+            <motion.li key={name} variants={rise} className="relative pt-6 text-center">
               <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-[#0B1030]/10" />
               <motion.span aria-hidden="true" className="absolute left-0 top-0 h-[2px] w-full origin-left bg-[linear-gradient(90deg,#0052FF,#5CA8FF)] shadow-[0_0_12px_rgba(30,144,255,0.6)]" initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }} transition={{ duration: 0.9, ease: EASE, delay: 0.15 + i * 0.12 }} />
-              <h3 className="flex flex-wrap items-center gap-2 font-display text-[20px] font-bold tracking-[-0.02em] text-[#070D2B]">
-                {b.name}
-                {b.tag && <span className="rounded-full bg-accent/[0.08] px-2 py-0.5 font-sans text-[10.5px] font-semibold uppercase tracking-[0.08em] text-accent">{b.tag}</span>}
-              </h3>
-              <p className="mt-2 text-[14.5px] leading-[1.6] text-[#0B1030]/60">{b.text}</p>
+              <h3 className="font-display text-[22px] font-bold tracking-[-0.025em] text-[#070D2B] sm:text-[26px]">{name}</h3>
             </motion.li>
           ))}
         </ul>
@@ -176,10 +185,10 @@ function FinalCta({ t, onStart }: { t: ExploreText; onStart: () => void }) {
       <LightArcs target={ref} variant="mobile" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden sm:hidden" />
       <BlueFog />
       <motion.div variants={group} {...inView} className="relative mx-auto max-w-[860px] px-5 text-center sm:px-6">
-        <motion.h2 variants={rise} id="ex-cta" className="text-balance font-display text-[34px] font-bold leading-[1.06] tracking-[-0.035em] sm:text-[52px]">
+        <h2 id="ex-cta" className="text-balance font-display text-[34px] font-bold leading-[1.06] tracking-[-0.035em] sm:text-[52px]">
           {t.ctaTitle[0]}
-          <span className="text-accent [text-shadow:0_0_32px_rgba(0,82,255,0.45)]">{t.ctaTitle[1]}</span>
-        </motion.h2>
+          <span className="text-glow">{t.ctaTitle[1]}</span>
+        </h2>
         <motion.p variants={rise} className="mx-auto mt-5 max-w-[580px] text-[17px] leading-[1.6] text-white/70">{t.ctaSub}</motion.p>
         <motion.div variants={rise} className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
           <button type="button" onClick={onStart} className="group inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-accent px-6 text-[15px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_10px_30px_-10px_rgba(0,82,255,0.95)] transition-transform hover:-translate-y-px">

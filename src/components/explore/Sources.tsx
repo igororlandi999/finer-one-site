@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import type { Variants } from 'motion/react'
-import { ArrowRight, ArrowUpRight, Plus } from 'lucide-react'
+import { ArrowUpRight, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { SOURCES } from './content'
 import type { ExploreText, Lang } from './content'
@@ -15,7 +15,7 @@ const group: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.0
 const rise: Variants = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { duration: 0.65, ease: EASE } } }
 const inView = { initial: 'hidden', whileInView: 'show', viewport: { once: true, margin: '0px 0px -12% 0px' } } as const
 
-export function Sources({ t, lang, onSimulate }: { t: ExploreText; lang: Lang; onSimulate: () => void }) {
+export function Sources({ t, lang }: { t: ExploreText; lang: Lang }) {
   const [open, setOpen] = useState<string | null>(null)
   return (
     <section aria-labelledby="ex-fontes" className="relative isolate overflow-hidden bg-[#040817] py-24 text-white lg:py-32">
@@ -27,10 +27,10 @@ export function Sources({ t, lang, onSimulate }: { t: ExploreText; lang: Lang; o
             {t.sourcesEyebrow}
             <span className="h-px w-8 bg-gradient-to-l from-transparent to-glow" aria-hidden="true" />
           </motion.p>
-          <motion.h2 variants={rise} id="ex-fontes" className="mt-4 text-balance font-display text-[32px] font-bold leading-[1.06] tracking-[-0.035em] sm:text-[46px]">
+          <h2 id="ex-fontes" className="mt-4 text-balance font-display text-[32px] font-bold leading-[1.06] tracking-[-0.035em] sm:text-[46px]">
             {t.sourcesTitle[0]}
-            <span className="text-accent [text-shadow:0_0_32px_rgba(0,82,255,0.45)]">{t.sourcesTitle[1]}</span>
-          </motion.h2>
+            <span className="text-glow">{t.sourcesTitle[1]}</span>
+          </h2>
           <motion.p variants={rise} className="mx-auto mt-5 max-w-[600px] text-[16.5px] leading-[1.6] text-white/65">{t.sourcesSub}</motion.p>
         </motion.div>
 
@@ -85,12 +85,6 @@ export function Sources({ t, lang, onSimulate }: { t: ExploreText; lang: Lang; o
           })}
         </motion.ul>
 
-        <motion.div variants={rise} {...inView} className="mt-12 text-center">
-          <button type="button" onClick={onSimulate} className="group inline-flex h-12 items-center gap-2 rounded-lg bg-accent px-6 text-[15px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_10px_30px_-10px_rgba(0,82,255,0.95)] transition-transform hover:-translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-glow">
-            {t.sourcesCta}
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-          </button>
-        </motion.div>
       </div>
     </section>
   )
