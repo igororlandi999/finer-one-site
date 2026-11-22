@@ -20,7 +20,7 @@ const EN_META: Record<string, { title: string; description: string }> = {
   '/sobre/': { title: 'About us | Finer One', description: 'Finer One is building the financial operating system for Portuguese SMEs. Read our story, meet the founders and see what we believe in.' },
   '/pioneers/': { title: 'Finer Pioneers — Apply | Finer One', description: 'We are looking for business owners to try Finer One first-hand and help shape how the platform evolves.' },
   '/lista-espera/': { title: 'Waitlist | Finer One', description: 'Be among the first to hear about access to Finer One. Signing up does not require a bank connection.' },
-  '/privacidade/': { title: 'Privacy notice | Finer One', description: 'How Finer One handles the data collected through the Waitlist and Finer Pioneers forms.' },
+  '/privacidade/': { title: 'Privacy notice | Finer One', description: 'How Finer One handles the data collected through the Waitlist, Finer Pioneers and Explore forms.' },
 }
 let ptMeta: { title: string; description: string } | null = null
 

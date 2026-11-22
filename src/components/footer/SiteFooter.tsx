@@ -19,7 +19,7 @@ import { devFlags } from '@/lib/devFlags'
  *
  * Referências: Lovable (o rodapé continua a atmosfera do CTA), Searchable
  * (marca à esquerda, colunas à direita, linha legal), Ramp (repete a ação).
- * Só ligações que existem; Privacidade aponta para o aviso (versão 2026-11-v1, aprovada a 15/11/2026). Sem Termos (não existem).
+ * Só ligações que existem; Privacidade aponta para o aviso (versão 2026-11-v3, aprovada a 22/11/2026). Sem Termos (não existem).
  * Versão anterior em ?rodape=antigo.
  */
 type Col = { title: string; links: { label: string; href: string; external?: boolean }[] }
