@@ -56,6 +56,19 @@ type Row = {
   notify_last_attempt_at: string | null
 }
 
+/**
+ * Endereço de resposta (Reply-To): só um endereço simples, validado de forma estrita.
+ * Sem vírgulas, aspas, <>, espaços, ponto e vírgula nem caracteres de controlo — por isso
+ * não é possível injetar cabeçalhos nem acrescentar destinatários. O lead continua aceite
+ * pela validação geral; se o endereço não passar aqui, o email sai sem Reply-To.
+ */
+const REPLY_RE = /^[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,63}$/
+export function replyTo(email: string): string | null {
+  const e = String(email ?? '').trim().toLowerCase()
+  if (e.length > 254 || e.split('@')[0].length > 64) return null
+  return REPLY_RE.test(e) ? e : null
+}
+
 export const configured = (env: NotifyEnv) => !!(env.RESEND_API_KEY && env.NOTIFY_TO && env.NOTIFY_FROM)
 
 /** Tenta notificar um lead. Nunca lança: o resultado fica registado na linha. */
@@ -75,11 +88,12 @@ export async function notifyLead(env: NotifyEnv, id: string): Promise<'sent' | '
     const attempt = row.notify_attempts + 1
 
     let error = ''
+    const reply = replyTo(row.email)
     try {
       const res = await fetch(RESEND_URL, {
         method: 'POST',
         headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json', 'Idempotency-Key': `explore-${row.id}` },
-        body: JSON.stringify({ from: env.NOTIFY_FROM, to: [env.NOTIFY_TO], reply_to: row.email, subject: subject(row), text: body(row) }),
+        body: JSON.stringify({ from: env.NOTIFY_FROM, to: [env.NOTIFY_TO], ...(reply ? { reply_to: [reply] } : {}), subject: subject(row), text: body(row, reply) }),
       })
       if (!res.ok) error = `http_${res.status}`
     } catch {
@@ -131,7 +145,7 @@ function subject(row: Row) {
   return `Novo lead Explorar — ${row.company} | Finer One`
 }
 
-function body(row: Row): string {
+function body(row: Row, reply: string | null): string {
   return [
     'Novo pedido da análise completa no Explorar.',
     '',
@@ -146,6 +160,8 @@ function body(row: Row): string {
     `ID da simulação: ${row.simulation_id}`,
     '',
     'Os valores e resultados da simulação estão só na base de dados: painel da Cloudflare → D1 → finer-one-forms → tabela explore_leads (procurar pelo ID da simulação).',
-    'Responder a este email responde ao contacto.',
+    reply
+      ? `Para responder ao contacto, use "Responder": a resposta segue para ${reply}. O remetente onboarding@resend.dev é apenas técnico e não recebe respostas.`
+      : 'Este email não tem resposta automática (endereço do contacto fora do formato simples): escreva diretamente para o email acima.',
   ].join('\n')
 }
