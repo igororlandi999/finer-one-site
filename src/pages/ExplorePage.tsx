@@ -65,11 +65,10 @@ export function ExplorePage() {
           <Simulator t={t} lang={lang} sim={sim} setSim={setSim} currency={lead.currency} onReady={openForm} formOpen={formOpen} unlocked={!!report}>
             <LeadForm
               t={t.form}
-              lang={lang}
               lead={lead}
               setLead={setLead}
               scenario={sim.scenario}
-              horizon={inp.horizon}
+              inputs={inp}
               onBack={() => setFormOpen(false)}
               onSuccess={(preview) => {
                 setReport({ preview })

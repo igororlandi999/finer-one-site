@@ -30,8 +30,8 @@
 
 export type FormKind = 'pioneers' | 'waitlist' | 'explore'
 
-
-export const PRIVACY_VERSION = '2026-11-v2'
+// 2026-11-v3: aviso aprovado pelos três fundadores a 22/11/2026 (inclui o Explorar).
+export const PRIVACY_VERSION = '2026-11-v3'
 const MIN_FILL_MS = 3000
 const LOCAL_LIMIT = 5
 const LOCAL_WINDOW_MS = 60 * 60 * 1000
@@ -83,10 +83,20 @@ function newId(): string {
 const pendingIds: Partial<Record<FormKind, string>> = {}
 const inFlight: Partial<Record<FormKind, boolean>> = {}
 
+/** Esquece o identificador pendente (ex.: o Explorar mudou de simulação entre tentativas). */
+export function resetSubmission(kind: FormKind) {
+  if (!inFlight[kind]) delete pendingIds[kind]
+}
+
+/**
+ * `extra` acrescenta propriedades ao corpo do pedido (só o Explorar o usa, para enviar
+ * os valores da simulação). Os outros formulários enviam exatamente o mesmo de antes.
+ */
 export async function submitForm(
   kind: FormKind,
   rawFields: Record<string, string>,
   guard: { honeypot: string; startedAt: number },
+  extra: Record<string, unknown> = {},
 ): Promise<SubmitResult> {
   // Campo-armadilha preenchido: só robôs (ou preenchimento automático indevido) o fazem.
   // Nunca se finge sucesso; a mensagem é a mesma de uma verificação Turnstile falhada.
@@ -133,6 +143,7 @@ export async function submitForm(
         elapsedMs: Date.now() - guard.startedAt,
         consentVersion: PRIVACY_VERSION,
         lang: document.documentElement.lang === 'en' ? 'en' : 'pt',
+        ...extra,
         ...(turnstileToken ? { turnstileToken } : {}),
       }),
       signal: controller.signal,

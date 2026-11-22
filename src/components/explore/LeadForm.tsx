@@ -1,86 +1,114 @@
 import { useRef, useState } from 'react'
 import { ArrowRight, Loader2 } from 'lucide-react'
-import { isValidEmail, submitForm } from '@/lib/forms'
+import { isValidEmail, resetSubmission, submitForm } from '@/lib/forms'
 import { track } from '@/lib/analytics'
 import { cn } from '@/lib/utils'
-import { COUNTRIES, CURRENCIES, SECTORS, SIZES } from './content'
-import type { ExploreText, Lang } from './content'
-import type { Horizon, ScenarioKind } from '@/lib/explore/monthly'
+import { CURRENCIES, DIAL_CODES } from './content'
+import type { ExploreText } from './content'
+import type { MonthlyInputs, ScenarioKind } from '@/lib/explore/monthly'
 
-export type Lead = { name: string; email: string; company: string; country: string; size: string; sector: string; phone: string; currency: string; contact: boolean; marketing: boolean }
-export const EMPTY_LEAD: Lead = { name: '', email: '', company: '', country: '', size: '', sector: '', phone: '', currency: 'EUR', contact: false, marketing: false }
+export type Lead = { name: string; email: string; company: string; dial: string; phone: string; currency: string; request: boolean; contact: boolean; marketing: boolean }
+export const EMPTY_LEAD: Lead = { name: '', email: '', company: '', dial: '+351', phone: '', currency: 'EUR', request: false, contact: false, marketing: false }
 
 type Props = {
   t: ExploreText['form']
-  lang: Lang
   lead: Lead
   setLead: (l: Lead) => void
   scenario: ScenarioKind
-  horizon: Horizon
+  inputs: MonthlyInputs
   onBack: () => void
   onSuccess: (preview: boolean) => void
 }
 
+function newId() {
+  try {
+    return crypto.randomUUID()
+  } catch {
+    return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`
+  }
+}
+
+/** Valores da simulação que entram no cálculo (meses do horizonte; saldo e pagamentos só se indicados). */
+function snapshot(scenario: ScenarioKind, inp: MonthlyInputs, currency: string) {
+  const H = inp.horizon
+  const hasBalance = scenario === 'treasury' ? true : inp.hasBalance
+  return {
+    scenario,
+    horizon: H,
+    currency,
+    inputs: {
+      balance: hasBalance ? inp.balance : null,
+      receipts: inp.receipts.slice(0, H),
+      payments: hasBalance ? inp.payments.slice(0, H) : null,
+      delayShare: inp.delayShare,
+      delayDays: inp.delayDays,
+      hasBalance,
+    },
+  }
+}
 
 /**
- * Formulário curto (estratégia B: depois da primeira descoberta).
- * Obrigatórios: nome, email, empresa e país. Não envia valores da simulação.
+ * Formulário curto do Explorar, aberto por "Ver a minha análise completa".
+ * Obrigatórios: nome, email, empresa e a confirmação do pedido. Telefone opcional.
+ * Os valores da simulação seguem automaticamente com o pedido (não se repetem) e os
+ * resultados são recalculados no recetor. A análise só abre com a confirmação do
+ * recetor (id ou duplicate); comunicações comerciais são uma opção separada, desmarcada.
  */
-export function LeadForm({ t, lang, lead, setLead, scenario, horizon, onBack, onSuccess }: Props) {
-  const [errors, setErrors] = useState<Partial<Record<keyof Lead | 'form', string>>>({})
+export function LeadForm({ t, lead, setLead, scenario, inputs, onBack, onSuccess }: Props) {
+  const [errors, setErrors] = useState<Partial<Record<'name' | 'email' | 'company' | 'phone' | 'request' | 'form', string>>>({})
   const [sending, setSending] = useState(false)
   const inFlight = useRef(false) // trava o duplo clique antes de o botão ficar desativado
   const honeypot = useRef<HTMLInputElement>(null)
   const startedAt = useRef(Date.now())
+  const simRef = useRef<{ key: string; id: string } | null>(null)
 
   const set = <K extends keyof Lead>(k: K, v: Lead[K]) => {
-    const next = { ...lead, [k]: v }
-    if (k === 'country') {
-      const c = COUNTRIES.find((x) => x.code === v)
-      if (c) next.currency = c.currency
-    }
-    setLead(next)
-    if (errors[k]) setErrors({ ...errors, [k]: undefined })
+    setLead({ ...lead, [k]: v })
+    if (k in errors) setErrors({ ...errors, [k]: undefined })
   }
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (inFlight.current) return
     const err: typeof errors = {}
+    const phoneDigits = lead.phone.replace(/\D/g, '')
+    const totalDigits = lead.dial.replace(/\D/g, '').length + phoneDigits.length
     if (lead.name.trim().length < 2) err.name = t.errors.name
     if (!isValidEmail(lead.email)) err.email = t.errors.email
     if (lead.company.trim().length < 2) err.company = t.errors.company
-    if (!lead.country) err.country = t.errors.country
+    if (phoneDigits && (totalDigits < 7 || totalDigits > 15)) err.phone = t.errors.phone
+    if (!lead.request) err.request = t.errors.request
     setErrors(err)
     if (Object.keys(err).length) {
       document.getElementById(`lf-${Object.keys(err)[0]}`)?.focus()
       return
     }
+
+    // A mesma simulação mantém o mesmo identificador entre tentativas; uma simulação
+    // diferente é um pedido novo (novo identificador de simulação e de submissão).
+    const snap = snapshot(scenario, inputs, lead.currency)
+    const key = JSON.stringify(snap)
+    if (simRef.current?.key !== key) {
+      if (simRef.current) resetSubmission('explore')
+      simRef.current = { key, id: newId() }
+    }
+
     inFlight.current = true
     setSending(true)
-    track('lead_form_submitted', { scenario, horizon })
-    // Mesmo recetor da Lista de Espera e dos Finer Pioneers (Google Apps Script → Folha + email).
-    // Os nomes vão em português, legíveis na folha. Os valores da simulação não são enviados.
-    const label = <T extends { pt: string }>(list: (T & { value?: string; code?: string })[], v: string) => list.find((x) => (x.value ?? x.code) === v)?.pt ?? ''
+    track('lead_form_submitted', { scenario, horizon: inputs.horizon })
     const res = await submitForm(
       'explore',
       {
         name: lead.name.trim(),
         email: lead.email.trim(),
         company: lead.company.trim(),
-        country: label(COUNTRIES, lead.country),
-        size: label(SIZES, lead.size),
-        sector: label(SECTORS, lead.sector),
-        phone: lead.phone.trim(),
-        currency: lead.currency,
-        scenario,
-        horizon: String(horizon),
-        stage: lead.contact ? 'pediu_contacto' : 'pediu_relatorio',
-        contact: lead.contact ? 'sim' : 'não',
-        marketing: lead.marketing ? 'sim' : 'não',
-        source: 'Explore Finer One',
+        phone: phoneDigits ? `${lead.dial} ${phoneDigits}` : '',
+        contact: lead.contact ? '1' : '0',
+        marketing: lead.marketing ? '1' : '0',
+        privacy: '1',
       },
       { honeypot: honeypot.current?.value ?? '', startedAt: startedAt.current },
+      { simulation: { id: simRef.current.id, ...snap } },
     )
     inFlight.current = false
     setSending(false)
@@ -89,7 +117,7 @@ export function LeadForm({ t, lang, lead, setLead, scenario, horizon, onBack, on
       setErrors({ form: t.errors[key] })
       return
     }
-    track('lead_form_success', { scenario, horizon, preview: res.preview })
+    track('lead_form_success', { scenario, horizon: inputs.horizon, preview: res.preview })
     onSuccess(res.preview)
   }
 
@@ -119,32 +147,15 @@ export function LeadForm({ t, lang, lead, setLead, scenario, horizon, onBack, on
         <Field id="lf-company" label={t.company} error={errors.company}>
           <input id="lf-company" className={input} autoComplete="organization" value={lead.company} onChange={(e) => set('company', e.target.value)} maxLength={120} aria-invalid={!!errors.company} />
         </Field>
-        <Field id="lf-country" label={t.country} error={errors.country}>
-          <select id="lf-country" className={cn(input, 'appearance-none [&>option]:text-[#070D2B]')} value={lead.country} onChange={(e) => set('country', e.target.value)} aria-invalid={!!errors.country}>
-            <option value="">{t.choose}</option>
-            {COUNTRIES.map((c) => (
-              <option key={c.code} value={c.code}>{c[lang]}</option>
-            ))}
-          </select>
-        </Field>
-        <Field id="lf-size" label={<>{t.size}{opt}</>}>
-          <select id="lf-size" className={cn(input, 'appearance-none [&>option]:text-[#070D2B]')} value={lead.size} onChange={(e) => set('size', e.target.value)}>
-            <option value="">{t.choose}</option>
-            {SIZES.map((s) => (
-              <option key={s.value} value={s.value}>{s[lang]}</option>
-            ))}
-          </select>
-        </Field>
-        <Field id="lf-sector" label={<>{t.sector}{opt}</>}>
-          <select id="lf-sector" className={cn(input, 'appearance-none [&>option]:text-[#070D2B]')} value={lead.sector} onChange={(e) => set('sector', e.target.value)}>
-            <option value="">{t.choose}</option>
-            {SECTORS.map((s) => (
-              <option key={s.value} value={s.value}>{s[lang]}</option>
-            ))}
-          </select>
-        </Field>
-        <Field id="lf-phone" label={<>{t.phone}{opt}</>}>
-          <input id="lf-phone" type="tel" className={input} autoComplete="tel" value={lead.phone} onChange={(e) => set('phone', e.target.value.replace(/[^\d+ ()-]/g, ''))} maxLength={30} />
+        <Field id="lf-phone" label={<>{t.phone}{opt}</>} error={errors.phone}>
+          <div className="flex gap-2">
+            <select aria-label={t.dial} className={cn(input, 'w-[108px] shrink-0 appearance-none px-3 [&>option]:text-[#070D2B]')} value={lead.dial} onChange={(e) => set('dial', e.target.value)}>
+              {DIAL_CODES.map((c) => (
+                <option key={c.code} value={c.dial}>{`${c.code} ${c.dial}`}</option>
+              ))}
+            </select>
+            <input id="lf-phone" type="tel" inputMode="tel" className={input} autoComplete="tel-national" value={lead.phone} onChange={(e) => set('phone', e.target.value.replace(/[^\d ]/g, ''))} maxLength={20} aria-invalid={!!errors.phone} />
+          </div>
         </Field>
         <Field id="lf-currency" label={t.currency}>
           <select id="lf-currency" className={cn(input, 'appearance-none [&>option]:text-[#070D2B]')} value={lead.currency} onChange={(e) => set('currency', e.target.value)}>
@@ -156,6 +167,10 @@ export function LeadForm({ t, lang, lead, setLead, scenario, horizon, onBack, on
       </div>
 
       <div className="mt-5 space-y-3">
+        <Check id="lf-request" checked={lead.request} onChange={(v) => set('request', v)} invalid={!!errors.request}>
+          {t.request}
+        </Check>
+        {errors.request && <p className="-mt-1 pl-7 text-[12px] text-[#C62D33]">{errors.request}</p>}
         <Check checked={lead.contact} onChange={(v) => set('contact', v)}>{t.contact}</Check>
         <Check checked={lead.marketing} onChange={(v) => set('marketing', v)}>{t.marketing}</Check>
       </div>
@@ -207,10 +222,10 @@ function Field({ id, label, error, children }: { id: string; label: React.ReactN
   )
 }
 
-function Check({ checked, onChange, children }: { checked: boolean; onChange: (v: boolean) => void; children: React.ReactNode }) {
+function Check({ id, checked, onChange, invalid, children }: { id?: string; checked: boolean; onChange: (v: boolean) => void; invalid?: boolean; children: React.ReactNode }) {
   return (
     <label className="flex cursor-pointer items-start gap-3 text-[13px] leading-snug text-[#0B1030]/65">
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="mt-0.5 h-4 w-4 shrink-0 accent-[#070D2B]" />
+      <input id={id} type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} aria-invalid={invalid || undefined} className="mt-0.5 h-4 w-4 shrink-0 accent-[#070D2B]" />
       {children}
     </label>
   )
