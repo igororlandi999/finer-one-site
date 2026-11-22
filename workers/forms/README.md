@@ -9,7 +9,7 @@ Estado (15/11/2026): recetor ativo na conta gratuita `geral.finerone@gmail.com`
 ligado à D1 `finer-one-forms` (jurisdição UE, id no `wrangler.jsonc`) e ao widget Turnstile
 "Finer One - formularios do site" (sitekey pública `0x4AAAAAAGCZmNaMZOnS986M`; hostnames
 `finer-one.com` e `www.finer-one.com`; segredo rodado a 15/11/2026). Logs do Worker
-desligados. O site em produção ainda usa o Google.
+desligados. Verificado a 22/11/2026: o site publicado usa este recetor (VITE_FORMS_PROVIDER=cloudflare), que não envia emails nem aceita o Explorar — ver backend/google-apps-script/SETUP.md, secção Explorar.
 
 **Decisão dos fundadores (15/11/2026): sem área de administração própria.** O Cloudflare
 Access exige cartão e o modo token não será publicado. O Worker `finer-one-admin`
@@ -127,13 +127,77 @@ permite restaurar a base a qualquer minuto dos **últimos 7 dias**; um registo e
 pode, portanto, ser recuperável até 7 dias depois, deixando de o ser a seguir. Não usar
 "restore" sem acordo dos fundadores: repõe a base inteira, incluindo registos já eliminados.
 
+## Explorar (pedido da análise completa) — branch `dev/explorar-leads`, 22/11/2026
+
+O recetor aceita `kind: "explore"` e grava na tabela própria `explore_leads`
+(`migrations/0002_explore_leads.sql`); a tabela `submissions` não muda.
+
+- **Dados:** nome, email, empresa, telefone (opcional, formato internacional), pedido de
+  contacto e novidades (opções separadas), versão do aviso, idioma; o contexto da simulação
+  (`simulation_id`, tipo, horizonte, moeda, primeiro mês simulado), os valores que entram no
+  cálculo (`sim_inputs`: só os meses do horizonte; saldo e pagamentos só se indicados) e os
+  resultados (`sim_results`), **recalculados no Worker** com `src/lib/explore/monthly.ts`.
+  Sem IP, NIF ou dados bancários.
+- **Proteções:** as mesmas dos outros formulários (Origin, 16 KB, Turnstile, campo-armadilha,
+  tempo mínimo, 30/min global) + validação de cada valor do simulador, o mesmo envio ou a mesma
+  simulação do mesmo email em 24 h não duplicam, e no máximo 5 pedidos por email por dia.
+- **Notificação por email (Resend, gratuito):** depois de gravar, o Worker envia para
+  `NOTIFY_TO` só nome, email, empresa, telefone, tipo e ID da simulação (aviso v3); os valores
+  e resultados ficam só na D1. A gravação nunca depende do email. Estado em `notify_status`
+  (`pending` → `sent`, ou `failed` após 5 tentativas), com o código do erro em `notify_error`
+  e a hora em `notify_last_attempt_at`. O acionador agendado (`*/15 * * * *`) reenvia as
+  pendentes com intervalos crescentes: 15 min, 1 h, 4 h e 12 h (cerca de 17 h no total, dentro
+  das 24 h em que o Resend reconhece a chave de idempotência `explore-<id>`).
+- **Cron Trigger:** está declarado em `wrangler.jsonc`, mas só fica ativo na Cloudflare depois
+  do `wrangler deploy` (o deploy substitui os crons do Worker pelos da configuração). O plano
+  gratuito permite 5 Cron Triggers por conta. Confirmar em Workers → `finer-one-forms` →
+  Settings → Triggers e, depois, em Cron Events.
+
+### Ativar o email (precisa de autorização dos fundadores)
+
+1. Criar conta gratuita em resend.com **com o email geral.finerone@gmail.com** (sem domínio
+   verificado o Resend só entrega no email da conta — é exatamente o destinatário).
+2. Criar uma chave com permissão **Sending access** apenas (sem domínio próprio, não há
+   restrição por domínio a escolher).
+3. `npx wrangler secret put RESEND_API_KEY` (nunca no código nem no frontend).
+4. Aplicar a migração: `npx wrangler d1 migrations apply finer-one-forms --remote`.
+5. `npx wrangler deploy` (publica também o acionador agendado).
+6. Teste real com dados fictícios a partir de um ambiente de pré-visualização; confirmar
+   a linha em `explore_leads` com `notify_status = 'sent'` e o email recebido; apagar a linha.
+
+Pedidos recebidos antes do passo 3 ficam `pending` e saem automaticamente depois.
+
+### Consultas
+
+```sql
+-- Leads do Explorar (mais recentes primeiro)
+SELECT created_at, name, email, company, phone, contact_requested, marketing_opt_in,
+       scenario, horizon, currency, lowest_balance, max_gap, funding_need, status, notify_status
+FROM explore_leads ORDER BY created_at DESC;
+
+-- Valores e resultados de um pedido
+SELECT sim_inputs, sim_results FROM explore_leads WHERE id = 'ID-DO-LEAD';
+
+-- Notificações por enviar ou falhadas
+SELECT id, created_at, notify_status, notify_attempts, notify_error
+FROM explore_leads WHERE notify_status != 'sent' ORDER BY created_at;
+
+-- Voltar a tentar uma notificação falhada (o acionador envia nos 15 min seguintes)
+UPDATE explore_leads SET notify_status = 'pending', notify_attempts = 0 WHERE id = 'ID-DO-LEAD';
+
+-- Conservação (rascunho do aviso: 12 meses após o último pedido ou contacto)
+DELETE FROM explore_leads WHERE email IN (
+  SELECT email FROM explore_leads GROUP BY email HAVING MAX(created_at) < 'AAAA-MM-DD'
+) AND status NOT IN ('contactada', 'oportunidade');
+```
+
 ## Desenvolvimento e testes
 
 ```
 cd workers/forms
 npm install            # .npmrc usa legacy-peer-deps (bug do npm 10 com o vitest 4)
 npm run typecheck
-npm test               # 38 testes (Miniflare: Worker + D1 reais em memória)
+npm test               # 78 testes (Miniflare: Worker + D1 reais em memória)
 npm run db:migrate:local
 npm run dev            # recetor em http://localhost:8787 (chaves de teste do Turnstile)
 npm run dev:admin      # admin em http://localhost:8788 (ADMIN_TOKEN em .dev.vars)

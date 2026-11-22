@@ -4,7 +4,7 @@
  * Fluxo de cada submissão válida:
  *   1. valida e limpa os dados (os mesmos limites do site);
  *   2. GUARDA a linha na Folha de Cálculo da conta da empresa
- *      (separadores "Lista de espera" e "Finer Pioneers") — o lead nunca se perde;
+ *      (separadores "Lista de espera", "Finer Pioneers" e "Explorar — leads") — o lead nunca se perde;
  *   3. envia um email para NOTIFY_EMAIL com os dados;
  *   4. se o email falhar, a linha fica com Notificação = "Pendente" e a função
  *      resendPending() (acionador de 15 em 15 min) volta a tentar.
@@ -20,7 +20,9 @@
  *   - limite global por minuto;
  *   - validação e limites de tamanho de todos os campos;
  *   - neutralização de fórmulas (=, +, -, @) para a folha não executar nada;
- *   - lista de espera: o mesmo email não é inscrito duas vezes;
+ *   - lista de espera e Explorar: o mesmo email não é inscrito duas vezes (no Explorar,
+ *     um novo pedido do mesmo email atualiza a linha existente: último pedido, n.º de
+ *     pedidos e fase; só há novo email se passar a pedir contacto comercial);
  *   - bloqueio (LockService) para envios simultâneos.
  */
 
@@ -41,9 +43,22 @@ var SOURCES = {
     headers: ['Data', 'Nome', 'Empresa', 'Setor', 'Email', 'Principal desafio financeiro', 'Consentimento (versão)', 'Idioma', 'Estado', 'ID', 'Notificação'],
     labels: [['name', 'Nome'], ['email', 'Email'], ['company', 'Empresa'], ['sector', 'Setor de atividade'], ['challenge', 'Principal desafio financeiro']],
   },
+  // Explorar (simulador de tesouraria): pedidos da análise completa. Não recebe valores da simulação.
+  // O email fica na coluna 3 (verificação de duplicados). Colunas novas vão sempre para o fim.
+  explore: {
+    sheet: 'Explorar — leads',
+    subject: 'Finer One — Explorar',
+    // A "Notificação" é sempre a última coluna (usada pelo reenvio).
+    headers: ['Data', 'Nome', 'Email', 'Empresa', 'País', 'Dimensão da empresa', 'Setor', 'Telefone', 'Moeda', 'Tipo de simulação', 'Horizonte (meses)', 'Fase', 'Contacto comercial', 'Novidades', 'Origem', 'Consentimento (versão)', 'Idioma', 'Estado', 'Último pedido', 'N.º de pedidos', 'ID', 'Notificação'],
+    labels: [['name', 'Nome'], ['email', 'Email'], ['company', 'Empresa'], ['country', 'País'], ['size', 'Dimensão da empresa'], ['sector', 'Setor'], ['phone', 'Telefone'], ['currency', 'Moeda'], ['scenario', 'Tipo de simulação'], ['horizon', 'Horizonte (meses)'], ['stage', 'Fase'], ['contact', 'Pediu contacto comercial'], ['marketing', 'Aceitou receber novidades']],
+  },
 };
 
-var LIMITS = { name: 100, company: 120, sector: 80, email: 254, challenge: 1500, size: 40, interests: 200 };
+/** Fases do lead no Explorar. "Oportunidade" é marcada à mão pela equipa. */
+var EXPLORE_STAGES = ['Pediu relatório', 'Pediu contacto comercial', 'Oportunidade'];
+var EXPLORE_SCENARIOS = { treasury: 'A minha tesouraria', clients: 'Os meus clientes' };
+
+var LIMITS = { name: 100, company: 120, sector: 80, email: 254, challenge: 1500, size: 40, interests: 200, country: 60, phone: 30, currency: 3, scenario: 20, horizon: 1, stage: 20, flag: 3, source: 40 };
 var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 var MIN_FILL_MS = 3000;
 var PER_EMAIL_SECONDS = 600; // o mesmo email, no mesmo formulário, 1 vez a cada 10 minutos
@@ -71,7 +86,17 @@ function doPost(e) {
       challenge: text(f.challenge, LIMITS.challenge, true),
       size: text(f.size, LIMITS.size),
       interests: text(f.interests, LIMITS.interests),
+      country: text(f.country, LIMITS.country),
+      phone: text(f.phone, LIMITS.phone).replace(/[^\d+ ()-]/g, ''),
+      currency: text(f.currency, LIMITS.currency).toUpperCase().replace(/[^A-Z]/g, ''),
+      scenario: text(f.scenario, LIMITS.scenario),
+      horizon: text(f.horizon, LIMITS.horizon),
+      stage: text(f.stage, LIMITS.stage) === 'pediu_contacto' ? EXPLORE_STAGES[1] : EXPLORE_STAGES[0],
+      contact: text(f.contact, LIMITS.flag) === 'sim' ? 'Sim' : 'Não',
+      marketing: text(f.marketing, LIMITS.flag) === 'sim' ? 'Sim' : 'Não',
+      source: text(f.source, LIMITS.source) || 'Explore Finer One',
     };
+    if (kind === 'explore') clean.scenario = EXPLORE_SCENARIOS[clean.scenario] || '';
     var invalid = validate(kind, clean);
     if (invalid) return reply({ ok: false, error: 'invalid', field: invalid });
 
@@ -84,7 +109,8 @@ function doPost(e) {
     if (idKey && cache.get(idKey)) return reply({ ok: true, duplicate: true });
     // O mesmo email acabado de aceitar: na lista de espera já está inscrito; numa
     // candidatura Pioneers diferente avisamos, em vez de fingir que a guardámos.
-    if (cache.get(emailKey)) return reply(kind === 'waitlist' ? { ok: true, duplicate: true } : { ok: false, error: 'duplicate' });
+    // (No Explorar, um novo pedido do mesmo email segue para a folha e atualiza a linha existente.)
+    if (kind !== 'explore' && cache.get(emailKey)) return reply(kind === 'pioneers' ? { ok: false, error: 'duplicate' } : { ok: true, duplicate: true });
 
     var minuteKey = 'g:' + Math.floor(Date.now() / 60000);
     var count = Number(cache.get(minuteKey) || 0);
@@ -105,6 +131,26 @@ function doPost(e) {
           return reply({ ok: true, duplicate: true }); // já inscrito
         }
         sheet.appendRow([new Date(), safe(clean.name), safe(clean.email), consent, lang, safe(clean.size), safe(clean.interests), id, 'A enviar']);
+      } else if (kind === 'explore') {
+        var existing = findEmailRow(sheet, clean.email, 3);
+        if (existing) {
+          // Já é lead: não cria linha nova. Regista o novo pedido (data e contagem) e
+          // sobe a fase se agora pediu contacto comercial — nesse caso avisa a equipa.
+          sheet.getRange(existing, 19).setValue(new Date());
+          var countCell = sheet.getRange(existing, 20);
+          countCell.setValue((Number(countCell.getValue()) || 1) + 1);
+          var raised = false;
+          if (clean.stage === EXPLORE_STAGES[1]) {
+            var stageCell = sheet.getRange(existing, 12);
+            if (EXPLORE_STAGES.indexOf(String(stageCell.getValue())) < 1) { stageCell.setValue(clean.stage); raised = true; }
+            sheet.getRange(existing, 13).setValue('Sim');
+          }
+          SpreadsheetApp.flush();
+          remember(cache, idKey, emailKey);
+          if (raised) notify(kind, clean, { id: id, lang: lang, consent: consent, date: new Date(), update: true });
+          return reply({ ok: true, duplicate: true });
+        }
+        sheet.appendRow([new Date(), safe(clean.name), safe(clean.email), safe(clean.company), safe(clean.country), safe(clean.size), safe(clean.sector), safe(clean.phone), clean.currency, clean.scenario, clean.horizon, clean.stage, clean.contact, clean.marketing, safe(clean.source), consent, lang, 'Nova', new Date(), 1, id, 'A enviar']);
       } else {
         sheet.appendRow([new Date(), safe(clean.name), safe(clean.company), safe(clean.sector), safe(clean.email), safe(clean.challenge), consent, lang, 'Nova', id, 'A enviar']);
       }
@@ -139,6 +185,12 @@ function validate(kind, c) {
   if (kind === 'waitlist') {
     if (!c.size) return 'size';
     if (!c.interests) return 'interests';
+  } else if (kind === 'explore') {
+    if (c.company.length < 2) return 'company';
+    if (!c.country) return 'country';
+    if (!c.scenario) return 'scenario';
+    if (c.horizon !== '3' && c.horizon !== '6') return 'horizon';
+    if (c.phone && c.phone.replace(/\D/g, '').length < 7) c.phone = '';
   } else {
     if (c.company.length < 2) return 'company';
     if (!c.sector) return 'sector';
@@ -154,6 +206,7 @@ function remember(cache, idKey, emailKey) {
 
 /** Envia o email de notificação. Devolve true se o Google aceitou o envio. */
 function notify(kind, c, meta) {
+  if (kind === 'explore') return notifyExplore(c, meta);
   var src = SOURCES[kind];
   try {
     var when = Utilities.formatDate(meta.date, 'Europe/Lisbon', 'dd/MM/yyyy HH:mm');
@@ -190,6 +243,59 @@ function notify(kind, c, meta) {
   }
 }
 
+/**
+ * Email interno de um lead do Explorar (só para a equipa; o empresário não recebe nada).
+ * Sem anexos e sem valores da simulação. Responder ao email escreve ao empresário.
+ */
+function notifyExplore(c, meta) {
+  try {
+    var when = Utilities.formatDate(meta.date, 'Europe/Lisbon', 'dd/MM/yyyy HH:mm');
+    var v = function (x) { return x ? String(x) : '—'; };
+    var sim = /clientes/i.test(c.scenario) ? 'Clientes' : /tesouraria/i.test(c.scenario) ? 'Tesouraria' : v(c.scenario);
+    var sections = [
+      ['DADOS DO EMPRESÁRIO', [['Nome', v(c.name)], ['Email', v(c.email)], ['Empresa', v(c.company)], ['País', v(c.country)], ['Telefone', v(c.phone)], ['Dimensão', v(c.size)], ['Setor', v(c.sector)]]],
+      ['INTERESSE DEMONSTRADO', [['Simulação', sim], ['Horizonte', c.horizon ? c.horizon + ' meses' : '—'], ['Moeda', v(c.currency)], ['Pediu contacto comercial', v(c.contact)], ['Data e hora', when]]],
+      ['ORIGEM', [['', 'Explore Finer One']]],
+      ['ESTADO', [['', 'Contacto guardado no Google Sheets (separador "Explorar — leads").'], ['Preferência de comunicações comerciais', c.marketing === 'Sim' ? 'Aceita receber novidades' : 'Não aceita receber novidades']]],
+    ];
+    var title = 'FINER ONE — ' + (meta.update ? 'LEAD ATUALIZADO' : 'NOVO LEAD');
+    var intro = meta.update
+      ? 'Um empresário que já estava registado voltou ao Explore e pediu contacto comercial.'
+      : 'Um empresário acabou de registar-se através do Explore.';
+    var line = function (r) { return r[0] ? r[0] + ': ' + r[1] : r[1]; };
+    var footer = 'ID da submissão: ' + v(meta.id) + ' · Aviso de privacidade ' + v(meta.consent);
+    var plain = title + '\n\n' + intro + '\n\n' +
+      sections.map(function (s) { return s[0] + '\n' + s[1].map(line).join('\n'); }).join('\n\n') + '\n\n' + footer;
+    var html = '<div style="font-family:Arial,Helvetica,sans-serif;color:#070D2B;max-width:640px">' +
+      '<p style="margin:0 0 6px;font-size:12px;letter-spacing:.18em;color:#0A40C8;font-weight:bold">' + esc(title) + '</p>' +
+      '<p style="margin:0 0 12px;font-size:15px">' + esc(intro) + '</p>' +
+      sections.map(function (s) {
+        return '<p style="margin:20px 0 6px;font-size:11px;letter-spacing:.16em;color:#5A6280;font-weight:bold">' + esc(s[0]) + '</p>' +
+          '<table cellpadding="7" style="border-collapse:collapse;font-size:14px;width:100%">' +
+          s[1].map(function (r) {
+            return r[0]
+              ? '<tr><td style="border-bottom:1px solid #E6EAF2;color:#5A6280;white-space:nowrap;width:40%">' + esc(r[0]) + '</td><td style="border-bottom:1px solid #E6EAF2">' + esc(r[1]) + '</td></tr>'
+              : '<tr><td colspan="2" style="border-bottom:1px solid #E6EAF2">' + esc(r[1]) + '</td></tr>';
+          }).join('') + '</table>';
+      }).join('') +
+      '<p style="margin:20px 0 0;color:#8A90A8;font-size:11px">' + esc(footer) + '</p></div>';
+
+    MailApp.sendEmail({
+      to: NOTIFY_EMAIL,
+      subject: (meta.update ? 'Lead Explore pediu contacto — ' : 'Novo Lead Explore — ') + (c.company || c.name) + ' | Finer One',
+      body: plain,
+      htmlBody: html,
+      replyTo: c.email,
+      name: 'Website Finer One',
+    });
+    return true;
+  } catch (err) {
+    // Sem dados pessoais no registo: só o tipo de erro.
+    console.error('Notificação do Explorar falhou: ' + (err && err.name ? err.name : 'erro'));
+    return false;
+  }
+}
+
 function setNotification(sheet, row, column, notified) {
   try {
     sheet.getRange(row, column).setValue(notified ? 'Enviada ' + Utilities.formatDate(new Date(), 'Europe/Lisbon', 'dd/MM HH:mm') : 'Pendente');
@@ -214,12 +320,17 @@ function resendPending() {
       var state = String(v[cols - 1]);
       var stale = state === 'A enviar' && Date.now() - new Date(v[0]).getTime() > 10 * 60 * 1000;
       if (state !== 'Pendente' && !stale) return;
-      var c = kind === 'waitlist'
-        ? { name: unsafe(v[1]), email: unsafe(v[2]), size: unsafe(v[5]), interests: unsafe(v[6]) }
-        : { name: unsafe(v[1]), company: unsafe(v[2]), sector: unsafe(v[3]), email: unsafe(v[4]), challenge: unsafe(v[5]) };
-      var meta = kind === 'waitlist'
-        ? { id: v[7], consent: v[3], lang: v[4], date: new Date(v[0]) }
-        : { id: v[9], consent: v[6], lang: v[7], date: new Date(v[0]) };
+      var c, meta;
+      if (kind === 'waitlist') {
+        c = { name: unsafe(v[1]), email: unsafe(v[2]), size: unsafe(v[5]), interests: unsafe(v[6]) };
+        meta = { id: v[7], consent: v[3], lang: v[4], date: new Date(v[0]) };
+      } else if (kind === 'explore') {
+        c = { name: unsafe(v[1]), email: unsafe(v[2]), company: unsafe(v[3]), country: unsafe(v[4]), size: unsafe(v[5]), sector: unsafe(v[6]), phone: unsafe(v[7]), currency: v[8], scenario: v[9], horizon: v[10], stage: v[11], contact: v[12], marketing: v[13] };
+        meta = { id: v[20], consent: v[15], lang: v[16], date: new Date(v[0]) };
+      } else {
+        c = { name: unsafe(v[1]), company: unsafe(v[2]), sector: unsafe(v[3]), email: unsafe(v[4]), challenge: unsafe(v[5]) };
+        meta = { id: v[9], consent: v[6], lang: v[7], date: new Date(v[0]) };
+      }
       setNotification(sheet, i + 2, cols, notify(kind, c, meta));
     });
   });

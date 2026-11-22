@@ -10,6 +10,7 @@ import { isPreviewMode, isValidEmail, submitForm } from '@/lib/forms'
 import { cn, focusLater } from '@/lib/utils'
 import { FormSuccess } from '@/pages/FormSuccess'
 import { PioneersPageClassic } from '@/pages/PioneersPageClassic'
+import { devFlags } from '@/lib/devFlags'
 
 /**
  * Finer Pioneers (12/11/2026) — a partir da Searchable (candidatura ao programa
@@ -25,7 +26,7 @@ const copy = {
     joinTitle: ['Torne-se ', 'Finer Pioneer'],
     askExamples: ['Como está a tesouraria da minha empresa?', 'Quanto tenho por receber?', 'O que merece mais atenção este mês?'],
     title: ['As melhores soluções constroem‑se ', 'com quem vive os desafios.'],
-    sub: 'Procuramos 10 empresários para testar a Finer One em primeira mão, partilhar a sua experiência e ajudar a definir a evolução da plataforma.',
+    sub: 'Procuramos empresários para testar a Finer One em primeira mão, partilhar a sua experiência e ajudar a definir a evolução da plataforma.',
     cta: 'Candidatar-me',
     facts: ['10 lugares', 'Candidatura em 2 minutos', 'Sem ligar contas para se candidatar'],
     offerLabel: 'Oferta Finer Pioneers',
@@ -99,7 +100,7 @@ const copy = {
     joinTitle: ['Become a ', 'Finer Pioneer'],
     askExamples: ['How is my company’s cash position?', 'How much is owed to me?', 'What needs the most attention this month?'],
     title: ['The best solutions are built ', 'with those who live the challenges.'],
-    sub: 'We are looking for 10 business owners to try Finer One first-hand, share their experience and help shape how the platform evolves.',
+    sub: 'We are looking for business owners to try Finer One first-hand, share their experience and help shape how the platform evolves.',
     cta: 'Apply now',
     facts: ['10 places', '2-minute application', 'No bank connection needed to apply'],
     offerLabel: 'Finer Pioneers offer',
@@ -181,7 +182,7 @@ const group: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.0
 const rise: Variants = { hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE } } }
 
 export function PioneersPage() {
-  if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('versao') === 'anterior') return <PioneersPageClassic />
+  if (typeof window !== 'undefined' && devFlags.get('versao') === 'anterior') return <PioneersPageClassic />
   return (
     <MotionConfig reducedMotion="user">
       <PioneersStory />

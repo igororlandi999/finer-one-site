@@ -24,6 +24,7 @@ function makeEnv({ mailFails = false } = {}) {
       setFrozenRows() {},
       getRange: (row, col, nRows = 1, nCols = 1) => ({
         setFontWeight() { return this },
+        getValue: () => rows[row - 1][col - 1],
         setValue: (v) => { rows[row - 1][col - 1] = v },
         setValues: (vals) => { vals.forEach((r, i) => r.forEach((v, j) => { (rows[row - 1 + i] ||= [])[col - 1 + j] = v })) ; return { setFontWeight() {} } },
         getValues: () => rows.slice(row - 1, row - 1 + nRows).map((r) => r.slice(col - 1, col - 1 + nCols)),
@@ -52,6 +53,8 @@ function makeEnv({ mailFails = false } = {}) {
 
 const wl = (over = {}) => ({ kind: 'waitlist', fields: { name: 'Ana Silva', email: 'Ana@Empresa.pt', size: '2 a 9 pessoas', interests: 'Tesouraria, Previsões' }, submissionId: 'wl-1', website: '', elapsedMs: 9000, consentVersion: '2026-11-rascunho', lang: 'pt', ...over })
 const pio = (over = {}) => ({ kind: 'pioneers', fields: { name: 'Rui Costa', email: 'rui@empresa.pt', company: 'Costa Lda', sector: 'Comércio', challenge: '=Recebimentos em atraso.\nClientes pagam tarde.' }, submissionId: 'pio-1', website: '', elapsedMs: 12000, consentVersion: '2026-11-rascunho', lang: 'en', ...over })
+
+const exp = (over = {}) => ({ kind: 'explore', fields: { name: 'Marta Lopes', email: 'Marta@Loja.pt', company: 'Loja Lopes', country: 'Portugal', size: '10–49 colaboradores', sector: 'Comércio', phone: '+351 912 345 678', currency: 'eur', scenario: 'treasury', horizon: '6', stage: 'pediu_relatorio', contact: 'não', marketing: 'sim', source: 'Explore Finer One' }, submissionId: 'exp-1', website: '', elapsedMs: 9000, consentVersion: '2026-11-v2', lang: 'pt', ...over })
 
 let passed = 0
 const test = (name, f) => { f(); passed++; console.log('  ok  ' + name) }
@@ -145,6 +148,74 @@ test('nome com quebras de linha não chega ao assunto do email', () => {
   const e = makeEnv()
   e.post(wl({ fields: { ...wl().fields, name: 'Ana\r\nBcc: x@y.pt' } }))
   assert.ok(!/[\r\n]/.test(e.mails[0].subject))
+})
+
+test('explorar: guarda o pedido no separador próprio, sem valores da simulação, e notifica', () => {
+  const e = makeEnv()
+  const r = e.post(exp())
+  assert.equal(r.ok, true); assert.equal(r.notified, true)
+  const rows = e.sheets['Explorar — leads']
+  assert.equal(rows.length, 2)
+  const row = Object.fromEntries(rows[0].map((h, i) => [h, rows[1][i]]))
+  assert.equal(row['Email'], 'marta@loja.pt')
+  assert.equal(row['Moeda'], 'EUR')
+  assert.equal(row['Tipo de simulação'], 'A minha tesouraria')
+  assert.equal(row['Fase'], 'Pediu relatório')
+  assert.equal(row['Novidades'], 'Sim')
+  assert.equal(row['Estado'], 'Nova')
+  assert.match(row['Notificação'], /^Enviada/)
+  assert.equal(row['N.º de pedidos'], 1)
+  assert.equal(row['Telefone'], "'+351 912 345 678") // começa por "+": neutralizado como texto
+  const m = e.mails[0]
+  assert.equal(m.to, 'geral.finerone@gmail.com')
+  assert.equal(m.subject, 'Novo Lead Explore — Loja Lopes | Finer One')
+  assert.equal(m.replyTo, 'marta@loja.pt')
+  assert.equal(m.attachments, undefined)
+  for (const part of ['FINER ONE — NOVO LEAD', 'Um empresário acabou de registar-se através do Explore.', 'DADOS DO EMPRESÁRIO', 'Nome: Marta Lopes', 'Empresa: Loja Lopes', 'País: Portugal', 'Telefone: +351 912 345 678', 'INTERESSE DEMONSTRADO', 'Simulação: Tesouraria', 'Horizonte: 6 meses', 'Moeda: EUR', 'ORIGEM\nExplore Finer One', 'Contacto guardado no Google Sheets', 'Preferência de comunicações comerciais: Aceita receber novidades']) {
+    assert.ok(m.body.includes(part), 'falta no email: ' + part)
+  }
+})
+
+test('explorar: envio repetido (mesmo ID) não cria linha nem email; novo pedido do mesmo email atualiza a linha', () => {
+  const e = makeEnv()
+  e.post(exp())
+  assert.equal(e.post(exp()).duplicate, true) // duplo clique / nova tentativa
+  const rows = e.sheets['Explorar — leads']
+  assert.equal(rows.length, 2); assert.equal(e.mails.length, 1)
+  // nova simulação legítima, mesmo email, logo a seguir: aceite e registada na mesma linha
+  const r = e.post(exp({ submissionId: 'exp-2', fields: { ...exp().fields, scenario: 'clients', horizon: '3' } }))
+  assert.equal(r.ok, true); assert.equal(r.duplicate, true)
+  assert.equal(rows.length, 2); assert.equal(rows[1][19], 2); assert.equal(e.mails.length, 1)
+  // passa a pedir contacto comercial: sobe a fase e avisa a equipa uma vez
+  e.post(exp({ submissionId: 'exp-3', fields: { ...exp().fields, stage: 'pediu_contacto', contact: 'sim' } }))
+  assert.equal(rows[1][11], 'Pediu contacto comercial'); assert.equal(rows[1][12], 'Sim'); assert.equal(rows[1][19], 3)
+  assert.equal(e.mails.length, 2)
+  assert.equal(e.mails[1].subject, 'Lead Explore pediu contacto — Loja Lopes | Finer One')
+  // um pedido posterior sem contacto não desce a fase nem envia mais emails
+  e.post(exp({ submissionId: 'exp-4' }))
+  assert.equal(rows[1][11], 'Pediu contacto comercial'); assert.equal(e.mails.length, 2)
+})
+
+test('explorar: email falha depois de guardar — lead mantido como "Pendente" e reenviado sem duplicar', () => {
+  const e = makeEnv({ mailFails: true })
+  const r = e.post(exp())
+  assert.equal(r.ok, true); assert.ok(r.id); assert.equal(r.notified, false)
+  const rows = e.sheets['Explorar — leads']
+  assert.equal(rows[1][21], 'Pendente')
+  e.setMail(false)
+  e.resendPending()
+  assert.match(rows[1][21], /^Enviada/)
+  assert.equal(rows.length, 2); assert.equal(e.mails.length, 1)
+  assert.equal(e.mails[0].subject, 'Novo Lead Explore — Loja Lopes | Finer One')
+  assert.ok(e.mails[0].body.includes('Simulação: Tesouraria'))
+})
+
+test('explorar: sem empresa, país ou horizonte válido é recusado sem guardar', () => {
+  const e = makeEnv()
+  assert.equal(e.post(exp({ fields: { ...exp().fields, country: '' } })).ok, false)
+  assert.equal(e.post(exp({ submissionId: 'b', fields: { ...exp().fields, company: '' } })).ok, false)
+  assert.equal(e.post(exp({ submissionId: 'c', fields: { ...exp().fields, horizon: '12' } })).ok, false)
+  assert.equal(e.sheets['Explorar — leads'], undefined)
 })
 
 console.log(`\n${passed} testes simulados passaram.`)

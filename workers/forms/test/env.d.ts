@@ -8,6 +8,9 @@ declare global {
       TURNSTILE_SECRET: string
       ALLOWED_ORIGINS: string
       ALLOWED_HOSTNAMES: string
+      NOTIFY_TO: string
+      NOTIFY_FROM: string
+      RESEND_API_KEY?: string
     }
   }
 }

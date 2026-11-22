@@ -19,6 +19,7 @@ const links = {
     { label: 'Como funciona', href: '/#funcionamento' },
     { label: 'Segurança', href: '/#seguranca' },
     { label: 'Preços', href: '/#precos' },
+    { label: 'Explorar', href: '/explorar/' },
     { label: 'Sobre nós', href: '/sobre/' },
   ],
   en: [
@@ -26,6 +27,7 @@ const links = {
     { label: 'How it works', href: '/#funcionamento' },
     { label: 'Security', href: '/#seguranca' },
     { label: 'Pricing', href: '/#precos' },
+    { label: 'Explore', href: '/explorar/' },
     { label: 'About us', href: '/sobre/' },
   ],
 }

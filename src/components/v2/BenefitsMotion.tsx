@@ -2,6 +2,7 @@ import { MotionConfig, motion } from 'motion/react'
 import type { Variants } from 'motion/react'
 import { useLanguage } from '@/i18n/LanguageContext'
 import type { Lang } from '@/i18n/LanguageContext'
+import { devFlags } from '@/lib/devFlags'
 
 const copy: Record<Lang, { eyebrow: string; title: [string, string]; items: { n: string; name: string; text: string }[] }> = {
   pt: {
@@ -29,7 +30,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; items: { n:
 const EASE = [0.22, 1, 0.36, 1] as const
 
 /** Versão anterior dos fundos em ?fundo=antigo. */
-const OLD_BG = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('fundo') === 'antigo'
+const OLD_BG = typeof window !== 'undefined' && devFlags.get('fundo') === 'antigo'
 
 // Sequência: eyebrow → título → quatro benefícios (stagger 80 ms) → linha.
 const head: Variants = {

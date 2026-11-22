@@ -28,7 +28,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
     price: 'A anunciar',
     period: '/mês',
     note: 'Os valores do Pro e do Team serão anunciados.',
-    billing: { monthly: 'Mensal', annual: 'Anual', saveM: 'Poupe 120 € por ano com o plano anual', saveA: 'Poupa 120 € por ano face ao plano mensal.', priceM: '67,90 €', priceA: '57,90 €', per: '/mês', noteM: 'Plano mensal · IVA incluído', noteA: 'Por mês, no plano anual · IVA incluído', tbd: 'Funcionalidades e valores a anunciar.', pioneerLabel: 'Para Finer Pioneers', pioneerLines: ['primeiro mês grátis', '10% de desconto nos planos mensal e anual'] },
+    billing: { monthly: 'Mensal', annual: 'Anual', saveM: 'Poupe 120 € por ano com o plano anual', saveA: 'Poupe 120 € por ano face ao plano mensal.', priceM: '67,90 €', priceA: '57,90 €', per: '/mês', noteM: 'Plano mensal · IVA incluído', noteA: 'Por mês, no plano anual · IVA incluído', tbd: 'Funcionalidades e valores a anunciar.', pioneerLabel: 'Para Finer Pioneers', pioneerLines: ['primeiro mês grátis', '10% de desconto nos planos mensal e anual'] },
     plans: [
       {
         id: 'plus',
@@ -37,7 +37,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
         promise: 'Perceber o que está a acontecer.',
         desc: 'Clareza financeira para acompanhar a operação e compreender melhor o desempenho da empresa.',
         listLabel: 'Inclui',
-        items: ['Finer Home', 'Cashflow', 'Receitas', 'Despesas', 'Clientes e Fornecedores', 'Finer Advisor', 'Alertas'],
+        items: ['Finer Home', 'Cashflow', 'Receitas', 'Despesas', 'Clientes e Fornecedores', 'Indicadores', 'Finer Advisor', 'Alertas'],
         cta: 'Ser Finer Pioneer',
         href: '/pioneers/',
       },
@@ -81,7 +81,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
         promise: 'Understand what’s happening.',
         desc: 'Financial clarity to track the operation and better understand company performance.',
         listLabel: 'Includes',
-        items: ['Finer Home', 'Cashflow', 'Revenue', 'Expenses', 'Customers and Suppliers', 'Finer Advisor', 'Alerts'],
+        items: ['Finer Home', 'Cashflow', 'Revenue', 'Expenses', 'Customers and Suppliers', 'Indicators', 'Finer Advisor', 'Alerts'],
         cta: 'Become a Finer Pioneer',
         href: '/pioneers/',
       },

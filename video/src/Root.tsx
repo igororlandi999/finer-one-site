@@ -1,3 +1,4 @@
+import './lib/lang'
 import { Composition, Series } from 'remotion'
 import { loadFont as loadInter } from '@remotion/google-fonts/Inter'
 import { loadFont as loadInterTight } from '@remotion/google-fonts/InterTight'

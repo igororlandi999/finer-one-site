@@ -82,3 +82,83 @@ Depois de editar o `Code.gs`: **Implementar → Gerir implementações → edita
 Abrir a folha **Finer One — Inscrições do site**. A coluna **Estado** das
 candidaturas Pioneers pode ser usada para marcar "Contactado",
 "Selecionado", etc. Para dar acesso a outro fundador: botão **Partilhar**.
+
+## Explorar (simulador de tesouraria) — atualizado a 22/11/2026
+
+Quando o empresário pede a análise completa no Explorar, o site envia os dados
+do formulário para este mesmo script (`kind: "explore"`). O script:
+
+1. guarda o pedido no separador **Explorar — leads** (criado automaticamente no
+   primeiro pedido), com: data, nome, email, empresa, país, dimensão, setor,
+   telefone, moeda, tipo de simulação, horizonte, **fase**, contacto comercial,
+   novidades, origem, versão do aviso, idioma, estado, último pedido, n.º de
+   pedidos, ID e notificação;
+2. só depois responde ao site com o ID — e só então a análise abre no ecrã;
+3. envia um email **só para geral.finerone@gmail.com** com o assunto
+   **Novo Lead Explore — Empresa | Finer One** (dados do empresário, interesse
+   demonstrado, origem e estado). Responder ao email responde ao empresário.
+   **O empresário não recebe nenhum email**, nem a análise por email.
+
+Os valores introduzidos no simulador **não** são enviados nem guardados.
+
+**Repetições:** o mesmo envio (duplo clique, nova tentativa) não cria linha nem
+email. Um novo pedido do mesmo email não cria linha nova: atualiza "Último pedido"
+e "N.º de pedidos". Se nesse novo pedido marcar contacto comercial, a fase sobe
+para "Pediu contacto comercial" e a equipa recebe **um** email
+"Lead Explore pediu contacto — Empresa | Finer One". "Oportunidade" marca-se à mão.
+
+**Se o email falhar:** a linha fica "Pendente" e o acionador `resendPending`
+reenvia (de 15 em 15 min). O empresário vê a análise na mesma, porque o contacto
+já ficou guardado. **Se a folha falhar:** o site mostra um erro, mantém os dados
+escritos no formulário e permite tentar outra vez (nunca um falso sucesso).
+
+### Estado verificado a 22/11/2026 — porque os contactos não chegavam
+
+O site publicado (www.finer-one.com) está compilado com
+`VITE_FORMS_PROVIDER=cloudflare` e envia os formulários para
+`finer-one-forms.geral-finerone.workers.dev` (recetor Cloudflare + D1). Esse
+recetor **não envia emails** e **não aceita** pedidos do Explorar. Por isso:
+
+- os pedidos da Lista de Espera e dos Finer Pioneers feitos no site publicado estão
+  na base D1 da Cloudflare (painel da Cloudflare → D1 → `finer-one-forms`), **não**
+  nesta folha, e não geraram email;
+- o Explorar, publicado assim, mostraria sempre um erro.
+
+### Ativar (passos manuais, por esta ordem)
+
+Na conta **geral.finerone@gmail.com**:
+
+1. Abrir a folha **Finer One — Inscrições do site** → **Extensões → Apps Script**.
+2. Substituir todo o conteúdo de `Code.gs` pelo ficheiro
+   `backend/google-apps-script/Code.gs` deste projeto. Guardar (Ctrl+S).
+3. Confirmar as autorizações: escolher `testNotification` → **Executar**. Se o
+   Google pedir autorização (Folhas de cálculo, enviar email, acionadores),
+   aceitar com a conta da empresa. Tem de chegar um email de teste a
+   geral.finerone@gmail.com (ver também Spam).
+4. Confirmar o reenvio automático: menu **Acionadores** (ícone do relógio) deve
+   ter `resendPending` de 15 em 15 minutos. Se não tiver, escolher
+   `installTriggers` → **Executar** (uma vez).
+5. **Implementar → Gerir implementações** → na implementação existente, lápis
+   (**Editar**) → Versão: **Nova versão** → **Implementar**.
+   Manter: Executar como **Eu**; Quem tem acesso **Qualquer pessoa**.
+   O endereço `/exec` **mantém-se**. (Não criar uma implementação nova — isso
+   gera outro endereço.)
+6. Copiar esse endereço `/exec` e abri-lo no browser: deve mostrar
+   `{"ok":true,"service":"finer-one-forms"}`.
+
+No GitHub (quem tem acesso às definições do repositório):
+
+7. **Settings → Secrets and variables → Actions → Variables**:
+   - `VITE_FORMS_PROVIDER` → `google`
+   - `VITE_FORMS_ENDPOINT` → o endereço `/exec` do passo 6
+   (Só um recetor ativo: com isto os três formulários passam a usar a folha e o
+   email. Os registos antigos continuam na D1 da Cloudflare.)
+
+Teste real antes de publicar (sem publicar o site):
+
+8. Criar `.env.local` na raiz do projeto com
+   `VITE_FORMS_ENDPOINT=<endereço /exec>` e correr `npm run dev`.
+9. Em `http://localhost:5173/explorar/`, fazer uma simulação e pedir a análise com
+   dados fictícios. Confirmar: a análise abre; aparece a linha em
+   **Explorar — leads** com Notificação "Enviada …"; chega o email
+   "Novo Lead Explore — … | Finer One". Apagar depois as linhas de teste.

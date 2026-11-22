@@ -5,6 +5,7 @@ import { useLanguage } from '@/i18n/LanguageContext'
 import type { Lang } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
 import { SiteFooterClassic } from './SiteFooterClassic'
+import { devFlags } from '@/lib/devFlags'
 
 /**
  * Rodapé (12/11/2026) — limpo, sem caixas, na linguagem da hero e das secções:
@@ -18,12 +19,12 @@ import { SiteFooterClassic } from './SiteFooterClassic'
  *
  * Referências: Lovable (o rodapé continua a atmosfera do CTA), Searchable
  * (marca à esquerda, colunas à direita, linha legal), Ramp (repete a ação).
- * Só ligações que existem; Privacidade aponta para o aviso (versão 2026-11-v1, aprovada a 15/11/2026). Sem Termos (não existem).
+ * Só ligações que existem; Privacidade aponta para o aviso (versão 2026-11-v3, aprovada a 22/11/2026). Sem Termos (não existem).
  * Versão anterior em ?rodape=antigo.
  */
 type Col = { title: string; links: { label: string; href: string; external?: boolean }[] }
 
-const LINKEDIN = 'https://linkedin.com/company/finerone?skipRedirect=true&viewAsMember=true'
+const LINKEDIN = 'https://www.linkedin.com/company/finerone/'
 
 const copy: Record<Lang, { signature: string; tagline: [string, string]; cta: string; cols: Col[]; nav: string; copyright: string; top: string; lang: string; privacy: string }> = {
   pt: {
@@ -32,8 +33,8 @@ const copy: Record<Lang, { signature: string; tagline: [string, string]; cta: st
     tagline: ['Compreender hoje. Antecipar amanhã. ', 'Decidir melhor.'],
     cta: 'Ser Finer Pioneer',
     cols: [
-      { title: 'Produto', links: [{ label: 'Experimentar', href: '/#experimentar-finer' }, { label: 'Como funciona', href: '/#funcionamento' }, { label: 'Planos', href: '/#precos' }] },
-      { title: 'Descobrir', links: [{ label: 'Sobre nós', href: '/sobre/' }, { label: 'Para quem é', href: '/#para-quem' }, { label: 'Segurança', href: '/#seguranca' }, { label: 'Perguntas frequentes', href: '/#faq' }, { label: 'Guia: falta de liquidez', href: '/guias/falta-de-liquidez/' }, { label: 'Privacidade', href: '/privacidade/' }] },
+      { title: 'Produto', links: [{ label: 'Explorar', href: '/explorar/' }, { label: 'Experimentar', href: '/#experimentar-finer' }, { label: 'Como funciona', href: '/#funcionamento' }, { label: 'Planos', href: '/#precos' }] },
+      { title: 'Descobrir', links: [{ label: 'Sobre nós', href: '/sobre/' }, { label: 'Para quem é', href: '/#para-quem' }, { label: 'Segurança', href: '/#seguranca' }, { label: 'Perguntas frequentes', href: '/#faq' }, { label: 'Privacidade', href: '/privacidade/' }] },
       { title: 'Começar', links: [{ label: 'Finer Pioneers', href: '/pioneers/' }, { label: 'Lista de espera', href: '/lista-espera/' }, { label: 'LinkedIn', href: LINKEDIN, external: true }] },
     ],
     nav: 'Navegação do rodapé',
@@ -47,8 +48,8 @@ const copy: Record<Lang, { signature: string; tagline: [string, string]; cta: st
     tagline: ['Understand today. Anticipate tomorrow. ', 'Decide better.'],
     cta: 'Become a Finer Pioneer',
     cols: [
-      { title: 'Product', links: [{ label: 'Try it', href: '/#experimentar-finer' }, { label: 'How it works', href: '/#funcionamento' }, { label: 'Plans', href: '/#precos' }] },
-      { title: 'Discover', links: [{ label: 'About us', href: '/sobre/' }, { label: 'Who it’s for', href: '/#para-quem' }, { label: 'Security', href: '/#seguranca' }, { label: 'FAQ', href: '/#faq' }, { label: 'Guide: cash shortages (PT)', href: '/guias/falta-de-liquidez/' }, { label: 'Privacy', href: '/privacidade/' }] },
+      { title: 'Product', links: [{ label: 'Explore', href: '/explorar/' }, { label: 'Try it', href: '/#experimentar-finer' }, { label: 'How it works', href: '/#funcionamento' }, { label: 'Plans', href: '/#precos' }] },
+      { title: 'Discover', links: [{ label: 'About us', href: '/sobre/' }, { label: 'Who it’s for', href: '/#para-quem' }, { label: 'Security', href: '/#seguranca' }, { label: 'FAQ', href: '/#faq' }, { label: 'Privacy', href: '/privacidade/' }] },
       { title: 'Get started', links: [{ label: 'Finer Pioneers', href: '/pioneers/' }, { label: 'Waitlist', href: '/lista-espera/' }, { label: 'LinkedIn', href: LINKEDIN, external: true }] },
     ],
     nav: 'Footer navigation',
@@ -60,7 +61,7 @@ const copy: Record<Lang, { signature: string; tagline: [string, string]; cta: st
 }
 
 export function SiteFooter() {
-  if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('rodape') === 'antigo') return <SiteFooterClassic />
+  if (typeof window !== 'undefined' && devFlags.get('rodape') === 'antigo') return <SiteFooterClassic />
   return (
     <MotionConfig reducedMotion="user">
       <RevealFooter />

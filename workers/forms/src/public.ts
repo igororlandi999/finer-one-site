@@ -6,8 +6,13 @@
  *           responde { ok: true } depois de a linha estar gravada.
  * GET  /  — verificação simples de que o serviço está ativo.
  *
- * Não envia emails nem regista dados pessoais nos logs. A consulta, exportação
- * e eliminação estão num Worker separado (admin.ts), protegido por autenticação.
+ * POST / com kind "explore" — pedido da análise completa do Explorar: grava o lead
+ *           e o contexto da simulação na tabela explore_leads (ver explore.ts) e
+ *           só então confirma; a notificação interna por email (notify.ts) corre
+ *           depois e é repetida pelo acionador agendado se falhar.
+ *
+ * Não regista dados pessoais nos logs. A Lista de Espera e o Finer Pioneers não
+ * geram email. A consulta faz-se no painel autenticado da Cloudflare.
  *
  * Proteções: Turnstile validado no servidor; campo-armadilha e tempo mínimo;
  * identificador de submissão (repetições não duplicam); lista de espera sem
@@ -16,8 +21,10 @@
  * CORS e Origin restritos ao site (não é autenticação — só reduz abuso).
  */
 import { KINDS, type Kind, clean, json, list, logError, text, validate } from './shared'
+import { cleanLead, cleanSimulation, referenceMonth, simHash, summarize } from './explore'
+import { type NotifyEnv, notifyLead, retryPending } from './notify'
 
-export interface Env {
+export interface Env extends NotifyEnv {
   DB: D1Database
   /** Segredo do widget Turnstile (wrangler secret put TURNSTILE_SECRET). */
   TURNSTILE_SECRET: string
@@ -34,9 +41,12 @@ const MIN_FILL_MS = 3000
 const PIONEERS_EMAIL_WINDOW_MS = 10 * 60 * 1000
 const GLOBAL_PER_MINUTE = 30
 const SITEVERIFY = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
+// Explorar: o mesmo email pode pedir várias análises (simulações diferentes), com limite.
+const EXPLORE_SAME_SIM_WINDOW_MS = 24 * 60 * 60 * 1000
+const EXPLORE_PER_EMAIL_DAY = 5
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx?: ExecutionContext): Promise<Response> {
     const origin = request.headers.get('Origin') ?? ''
     const allowed = list(env.ALLOWED_ORIGINS).includes(origin)
     const cors: Record<string, string> = allowed ? { 'Access-Control-Allow-Origin': origin, Vary: 'Origin' } : { Vary: 'Origin' }
@@ -53,11 +63,21 @@ export default {
     if (!allowed) return json({ ok: false, error: 'forbidden' }, 403, cors)
 
     try {
-      return await submit(request, env, cors)
+      return await submit(request, env, cors, ctx)
     } catch (err) {
       logError('submit_failed', err)
       return json({ ok: false, error: 'server' }, 500, cors)
     }
+  },
+
+  /** De 15 em 15 minutos: reenvia as notificações do Explorar que ainda não saíram. */
+  async scheduled(_controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
+    ctx.waitUntil(
+      retryPending(env).then(
+        () => undefined,
+        (err) => logError('retry_failed', err),
+      ),
+    )
   },
 } satisfies ExportedHandler<Env>
 
@@ -68,7 +88,7 @@ async function readBody(request: Request): Promise<string | null> {
   return raw.length > MAX_BODY ? null : raw
 }
 
-async function submit(request: Request, env: Env, cors: Record<string, string>): Promise<Response> {
+async function submit(request: Request, env: Env, cors: Record<string, string>, ctx?: ExecutionContext): Promise<Response> {
   const raw = await readBody(request)
   if (raw === null) return json({ ok: false, error: 'invalid' }, 413, cors)
 
@@ -80,6 +100,8 @@ async function submit(request: Request, env: Env, cors: Record<string, string>):
   } catch {
     return json({ ok: false, error: 'invalid' }, 400, cors)
   }
+
+  if (body.kind === 'explore') return explore(body, request, env, cors, ctx)
 
   const kind = body.kind as Kind
   if (!KINDS.includes(kind)) return json({ ok: false, error: 'invalid' }, 400, cors)
@@ -150,6 +172,83 @@ async function submit(request: Request, env: Env, cors: Record<string, string>):
 
   // Corrida entre dois pedidos iguais: o outro já gravou.
   if (!result.meta.changes) return json({ ok: true, duplicate: true }, 200, cors)
+  return json({ ok: true, id }, 200, cors)
+}
+
+/**
+ * Explorar: pedido da análise completa. Grava o lead e o contexto da simulação na
+ * tabela explore_leads e só depois responde { ok, id }. A notificação por email
+ * corre a seguir, fora da resposta, e nunca impede a gravação nem a confirmação.
+ */
+async function explore(body: Record<string, unknown>, request: Request, env: Env, cors: Record<string, string>, ctx?: ExecutionContext): Promise<Response> {
+  const lead = cleanLead(body.fields)
+  if (typeof lead === 'string') return json({ ok: false, error: 'invalid', field: lead }, 400, cors)
+  const sim = cleanSimulation(body.simulation)
+  if (typeof sim === 'string') return json({ ok: false, error: 'invalid', field: sim }, 400, cors)
+
+  const id = text(body.submissionId, 64).replace(/[^A-Za-z0-9-]/g, '') || crypto.randomUUID()
+  if (await env.DB.prepare('SELECT 1 FROM explore_leads WHERE id = ?').bind(id).first()) return json({ ok: true, duplicate: true }, 200, cors)
+
+  if (!(await verifyTurnstile(body.turnstileToken, env, request.headers.get('CF-Connecting-IP')))) {
+    return json({ ok: false, error: 'verification' }, 403, cors)
+  }
+  if (String(body.website ?? '').trim() !== '' || !(Number(body.elapsedMs) >= MIN_FILL_MS)) {
+    return json({ ok: false, error: 'verification' }, 403, cors)
+  }
+
+  const now = Date.now()
+  const minuteAgo = new Date(now - 60_000).toISOString()
+  const recent = await env.DB.prepare('SELECT (SELECT COUNT(*) FROM submissions WHERE created_at > ?1) + (SELECT COUNT(*) FROM explore_leads WHERE created_at > ?1) AS n')
+    .bind(minuteAgo)
+    .first<{ n: number }>()
+  if ((recent?.n ?? 0) >= GLOBAL_PER_MINUTE) return json({ ok: false, error: 'rate' }, 429, cors)
+
+  // A mesma simulação, pelo mesmo email, já pedida nas últimas 24 h: o pedido já está registado
+  // (sem nova linha nem novo email) e a análise abre na mesma.
+  const hash = await simHash(sim)
+  const dayAgo = new Date(now - EXPLORE_SAME_SIM_WINDOW_MS).toISOString()
+  if (await env.DB.prepare('SELECT 1 FROM explore_leads WHERE email = ? AND sim_hash = ? AND created_at > ?').bind(lead.email, hash, dayAgo).first()) {
+    return json({ ok: true, duplicate: true }, 200, cors)
+  }
+  const perEmail = await env.DB.prepare('SELECT COUNT(*) AS n FROM explore_leads WHERE email = ? AND created_at > ?').bind(lead.email, dayAgo).first<{ n: number }>()
+  if ((perEmail?.n ?? 0) >= EXPLORE_PER_EMAIL_DAY) return json({ ok: false, error: 'rate' }, 429, cors)
+
+  const s = summarize(sim)
+  const result = await env.DB.prepare(
+    `INSERT INTO explore_leads (id, created_at, name, email, company, phone, contact_requested, marketing_opt_in,
+       simulation_id, scenario, horizon, currency, reference_month, sim_hash, sim_inputs, sim_results,
+       lowest_balance, max_gap, funding_need, lang, consent_version)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING`,
+  )
+    .bind(
+      id,
+      new Date(now).toISOString(),
+      lead.name,
+      lead.email,
+      lead.company,
+      lead.phone,
+      lead.contact ? 1 : 0,
+      lead.marketing ? 1 : 0,
+      sim.id,
+      sim.scenario,
+      sim.horizon,
+      sim.currency,
+      referenceMonth(now),
+      hash,
+      JSON.stringify(sim.inputs),
+      JSON.stringify(s),
+      s.lowestBalance,
+      s.maxGap,
+      s.fundingNeed,
+      body.lang === 'en' ? 'en' : 'pt',
+      text(body.consentVersion, 40),
+    )
+    .run()
+  if (!result.meta.changes) return json({ ok: true, duplicate: true }, 200, cors)
+
+  const sending = notifyLead(env, id)
+  if (ctx) ctx.waitUntil(sending)
+  else await sending
   return json({ ok: true, id }, 200, cors)
 }
 
