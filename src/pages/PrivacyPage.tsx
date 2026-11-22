@@ -17,7 +17,9 @@ import { cn } from '@/lib/utils'
  * As secções sobre infraestrutura seguem o recetor ativo (VITE_FORMS_PROVIDER); o texto
  * aprovado é o da Cloudflare, o ramo Google existe só para reversão. A versão PT prevalece.
  */
-const APPROVED = true
+// v2 (22/11/2026): acrescenta a alínea c) Explorar. Aguarda aprovação dos três fundadores;
+// depois de aprovada, pôr APPROVED = true e atualizar NOTICE_DATE.
+const APPROVED = false
 const NOTICE_DATE = { pt: '15 de novembro de 2026', en: '15 November 2026' }
 const CONTACT = 'geral.finerone@gmail.com'
 const CF = FORMS_PROVIDER === 'cloudflare'
@@ -53,10 +55,17 @@ const sectionsPt: Section[] = [
         'Fundamento: o seu consentimento (artigo 6.º, n.º 1, alínea a), do RGPD), dado ao enviar a candidatura.',
         'Conservação: candidaturas não selecionadas são eliminadas até 6 meses após o fim do processo de seleção; candidaturas selecionadas são conservadas enquanto durar a participação no programa e eliminadas até 6 meses depois do seu fim.',
       ],
-      'Em ambos os formulários registamos também a data do envio, o idioma em que usou o site, a versão deste aviso que tinha à frente, um identificador técnico do envio e o estado da inscrição no nosso acompanhamento (por exemplo, contactada ou selecionada). Servem para demonstrar quando e como nos deu o consentimento, evitar inscrições duplicadas e organizar os contactos. Fundamento: o nosso interesse legítimo em cumprir o dever de demonstrar o consentimento (artigos 6.º, n.º 1, alínea f), e 7.º, n.º 1, do RGPD). São conservados e eliminados com a respetiva inscrição.',
+      { h: 'c) Explorar (simulador de tesouraria)' },
+      [
+        'Dados: nome, email profissional, empresa e país; opcionalmente, dimensão da empresa, setor e telefone; a moeda, o tipo de simulação e o horizonte escolhidos; se pediu contacto comercial e se aceitou receber novidades. Os valores que introduz no simulador ficam no seu navegador e não nos são enviados.',
+        'Finalidade: registar o seu pedido da análise completa e, se o pedir, contactá-lo sobre a Finer One. Só lhe enviamos novidades se tiver marcado essa opção, que é separada e opcional.',
+        'Fundamento: o seu consentimento (artigo 6.º, n.º 1, alínea a), do RGPD), dado ao pedir a análise.',
+        'Conservação: até 12 meses após o último pedido ou contacto, ou até pedir para sair, se isso acontecer antes.',
+      ],
+      'Em todos os formulários registamos também a data do envio, o idioma em que usou o site, a versão deste aviso que tinha à frente, um identificador técnico do envio e o estado da inscrição no nosso acompanhamento (por exemplo, contactada ou selecionada). Servem para demonstrar quando e como nos deu o consentimento, evitar inscrições duplicadas e organizar os contactos. Fundamento: o nosso interesse legítimo em cumprir o dever de demonstrar o consentimento (artigos 6.º, n.º 1, alínea f), e 7.º, n.º 1, do RGPD). São conservados e eliminados com a respetiva inscrição.',
       ...(CF
         ? [
-            { h: 'c) Verificação contra envios automáticos (Cloudflare Turnstile)' },
+            { h: 'd) Verificação contra envios automáticos (Cloudflare Turnstile)' },
             [
               'Dados: no momento do envio, o seu endereço IP e sinais técnicos do navegador (como o agente do utilizador) são transmitidos à Cloudflare. Não guardamos o endereço IP na nossa base de dados.',
               'Finalidade: proteger os formulários contra abuso e envios em massa.',
@@ -171,10 +180,17 @@ const sectionsEn: Section[] = [
         'Legal basis: your consent (Article 6(1)(a) GDPR), given when you submit the application.',
         'Retention: applications not selected are deleted within 6 months after the end of the selection process; selected applications are kept for as long as you take part in the programme and deleted within 6 months after it ends.',
       ],
-      'For both forms we also record the submission date, the language you used on the site, the version of this notice you had in front of you, a technical submission identifier and the status of the sign-up in our follow-up (for example, contacted or selected). These are used to demonstrate when and how you gave consent, to avoid duplicate sign-ups and to organise follow-up. Legal basis: our legitimate interest in meeting the obligation to demonstrate consent (Articles 6(1)(f) and 7(1) GDPR). They are kept and deleted together with the sign-up.',
+      { h: 'c) Explore (cash-flow simulator)' },
+      [
+        'Data: name, work email, company and country; optionally, company size, sector and phone number; the currency, simulation type and horizon you chose; whether you asked to be contacted and whether you agreed to receive news. The values you enter in the simulator stay in your browser and are not sent to us.',
+        'Purpose: to record your request for the full analysis and, if you ask, to contact you about Finer One. We only send you news if you ticked that option, which is separate and optional.',
+        'Legal basis: your consent (Article 6(1)(a) GDPR), given when you request the analysis.',
+        'Retention: up to 12 months after your last request or contact, or until you ask to leave, if earlier.',
+      ],
+      'For all forms we also record the submission date, the language you used on the site, the version of this notice you had in front of you, a technical submission identifier and the status of the sign-up in our follow-up (for example, contacted or selected). These are used to demonstrate when and how you gave consent, to avoid duplicate sign-ups and to organise follow-up. Legal basis: our legitimate interest in meeting the obligation to demonstrate consent (Articles 6(1)(f) and 7(1) GDPR). They are kept and deleted together with the sign-up.',
       ...(CF
         ? [
-            { h: 'c) Automated-submission check (Cloudflare Turnstile)' },
+            { h: 'd) Automated-submission check (Cloudflare Turnstile)' },
             [
               'Data: when you submit, your IP address and technical browser signals (such as the user agent) are sent to Cloudflare. We do not store your IP address in our database.',
               'Purpose: to protect the forms against abuse and mass submissions.',

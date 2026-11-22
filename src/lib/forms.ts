@@ -1,5 +1,5 @@
 /**
- * Envio dos formulários (Finer Pioneers e Lista de Espera).
+ * Envio dos formulários (Finer Pioneers, Lista de Espera e Explorar).
  *
  * O site é estático (GitHub Pages), por isso os dados seguem por HTTPS para um
  * recetor externo definido em VITE_FORMS_ENDPOINT. Dois recetores possíveis,
@@ -30,10 +30,8 @@
 
 export type FormKind = 'pioneers' | 'waitlist' | 'explore'
 
-/** Explorar: o recetor só aceita pedidos do simulador quando os fundadores o ativarem (VITE_EXPLORE_LEADS=on). */
-export const exploreLeadsEnabled = import.meta.env.VITE_EXPLORE_LEADS === 'on'
 
-export const PRIVACY_VERSION = '2026-11-v1'
+export const PRIVACY_VERSION = '2026-11-v2'
 const MIN_FILL_MS = 3000
 const LOCAL_LIMIT = 5
 const LOCAL_WINDOW_MS = 60 * 60 * 1000

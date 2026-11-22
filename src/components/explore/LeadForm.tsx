@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { ArrowRight, Loader2 } from 'lucide-react'
-import { exploreLeadsEnabled, isValidEmail, submitForm } from '@/lib/forms'
+import { isValidEmail, submitForm } from '@/lib/forms'
 import { track } from '@/lib/analytics'
 import { cn } from '@/lib/utils'
 import { COUNTRIES, CURRENCIES, SECTORS, SIZES } from './content'
@@ -21,7 +21,6 @@ type Props = {
   onSuccess: (preview: boolean) => void
 }
 
-const newId = () => (typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`)
 
 /**
  * Formulário curto (estratégia B: depois da primeira descoberta).
@@ -32,7 +31,6 @@ export function LeadForm({ t, lang, lead, setLead, scenario, horizon, onBack, on
   const [sending, setSending] = useState(false)
   const honeypot = useRef<HTMLInputElement>(null)
   const startedAt = useRef(Date.now())
-  const leadId = useRef(newId())
 
   const set = <K extends keyof Lead>(k: K, v: Lead[K]) => {
     const next = { ...lead, [k]: v }
@@ -59,23 +57,23 @@ export function LeadForm({ t, lang, lead, setLead, scenario, horizon, onBack, on
     }
     setSending(true)
     track('lead_form_submitted', { scenario, horizon })
-    // Sem recetor do Explorar ativo: nada é enviado e a análise abre em pré-visualização (assinalada).
-    const res = !exploreLeadsEnabled ? ({ ok: true, preview: true } as const) : await submitForm(
+    // Mesmo recetor da Lista de Espera e dos Finer Pioneers (Google Apps Script → Folha + email).
+    // Os nomes vão em português, legíveis na folha. Os valores da simulação não são enviados.
+    const label = <T extends { pt: string }>(list: (T & { value?: string; code?: string })[], v: string) => list.find((x) => (x.value ?? x.code) === v)?.pt ?? ''
+    const res = await submitForm(
       'explore',
       {
-        leadId: leadId.current,
         name: lead.name.trim(),
         email: lead.email.trim(),
         company: lead.company.trim(),
-        country: lead.country,
-        size: lead.size,
-        sector: lead.sector,
+        country: label(COUNTRIES, lead.country),
+        size: label(SIZES, lead.size),
+        sector: label(SECTORS, lead.sector),
         phone: lead.phone.trim(),
         currency: lead.currency,
         scenario,
         horizon: String(horizon),
         stage: lead.contact ? 'pediu_contacto' : 'pediu_relatorio',
-        reportStatus: 'pedido',
         contact: lead.contact ? 'sim' : 'não',
         marketing: lead.marketing ? 'sim' : 'não',
         source: 'Explore Finer One',
@@ -84,7 +82,7 @@ export function LeadForm({ t, lang, lead, setLead, scenario, horizon, onBack, on
     )
     setSending(false)
     if (!res.ok) {
-      const key = res.reason === 'rate' ? 'rate' : res.reason === 'network' ? 'network' : 'server'
+      const key = res.reason === 'rate' ? 'rate' : res.reason === 'network' ? 'network' : res.reason === 'unavailable' ? 'unavailable' : res.reason === 'verification' ? 'verification' : 'server'
       setErrors({ form: t.errors[key] })
       return
     }

@@ -82,3 +82,31 @@ Depois de editar o `Code.gs`: **Implementar → Gerir implementações → edita
 Abrir a folha **Finer One — Inscrições do site**. A coluna **Estado** das
 candidaturas Pioneers pode ser usada para marcar "Contactado",
 "Selecionado", etc. Para dar acesso a outro fundador: botão **Partilhar**.
+
+## Explorar (simulador de tesouraria) — acrescentado a 22/11/2026
+
+O pedido da análise completa em `/explorar/` usa **o mesmo recetor e o mesmo
+endereço `/exec`** da Lista de Espera e dos Finer Pioneers. Cada pedido:
+
+1. é guardado no separador **Explorar — leads** (criado automaticamente no
+   primeiro pedido), com: data, nome, email, empresa, país, dimensão, setor,
+   telefone, moeda, tipo de simulação, horizonte, **fase**, contacto comercial,
+   novidades, origem, versão do aviso, idioma, estado, ID e notificação;
+2. gera um email para geral.finerone@gmail.com com o assunto
+   **Finer One — Explorar — Nome (Empresa)**; responder ao email responde ao lead.
+
+Os valores introduzidos no simulador **não** são enviados nem guardados.
+
+**Fases:** "Pediu relatório" ou "Pediu contacto comercial" (vêm do site);
+"Oportunidade" marca-se à mão. Um email que já existe não cria nova linha: se
+voltar a pedir e marcar contacto comercial, a fase sobe na linha existente.
+
+**Para ativar (uma vez):** colar o `Code.gs` novo no editor do Apps Script e
+fazer **Implementar → Gerir implementações → editar → Nova versão →
+Implementar**. O URL `/exec` não muda. **Fazer isto antes de publicar o site
+com o Explorar**; caso contrário o formulário do Explorar mostra um erro (nunca
+um falso sucesso).
+
+Nota: o recetor Cloudflare (`workers/forms`) ainda não aceita pedidos do
+Explorar. Se o site passar a usar `VITE_FORMS_PROVIDER=cloudflare`, é preciso
+acrescentá-lo lá também.
