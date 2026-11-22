@@ -17,6 +17,7 @@ export default defineConfig({
         privacidade: fileURLToPath(new URL('./privacidade/index.html', import.meta.url)),
         sobre: fileURLToPath(new URL('./sobre/index.html', import.meta.url)),
         explorar: fileURLToPath(new URL('./explorar/index.html', import.meta.url)),
+        guiaFaltaLiquidez: fileURLToPath(new URL('./guias/falta-de-liquidez/index.html', import.meta.url)),
       },
     },
   },

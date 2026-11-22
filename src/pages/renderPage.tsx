@@ -4,6 +4,8 @@ import { createRoot } from 'react-dom/client'
 import { Navbar } from '@/components/layout/Navbar'
 import { SiteFooter } from '@/components/footer/SiteFooter'
 import { LanguageProvider } from '@/i18n/LanguageContext'
+import '@fontsource-variable/inter'
+import '@fontsource-variable/inter-tight'
 import '@/index.css'
 import { initTitleSweep } from '@/lib/titleSweep'
 

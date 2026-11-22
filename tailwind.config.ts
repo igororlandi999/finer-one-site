@@ -37,8 +37,9 @@ export default {
         signal: '#F0B429',
       },
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        display: ['"Inter Tight"', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        // Fontes alojadas no próprio site (@fontsource-variable), sem pedidos à Google.
+        sans: ['"Inter Variable"', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['"Inter Tight Variable"', '"Inter Tight"', '"Inter Variable"', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       maxWidth: {
         content: '1200px',

@@ -16,7 +16,7 @@ const EASE = [0.22, 1, 0.36, 1] as const
  * fornecedores em avaliação; sem nomear bancos, tempos ou garantias), FAQ
  * publicada em main ("a informação da empresa é utilizada para produzir as
  * análises"). NÃO existem neste repositório: código da plataforma, política de
- * privacidade aprovada (só um rascunho dos formulários), documentação de
+ * privacidade da plataforma (só o aviso dos formulários, aprovado a 15/11/2026), documentação de
  * permissões, nem documentação/contratos dos serviços de IA.
  *
  * 01 Informação utilizada ........ PARCIALMENTE CONFIRMADO → publicada (só o verificado)
@@ -86,8 +86,8 @@ const item: Variants = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0
 /**
  * Nova secção 6 — Segurança e confiança. Layout editorial branco (40/60) com
  * acordeões acessíveis (um aberto de cada vez). Só mostra respostas verificadas.
- * Sem ligação: não existe página de segurança e a política de privacidade é um
- * rascunho por aprovar. Versão anterior em ?seguranca=antiga.
+ * Sem ligação: não existe página de segurança e o aviso de privacidade aprovado
+ * cobre só os formulários do site. Versão anterior em ?seguranca=antiga.
  */
 export function SecurityTrustAccordion() {
   const { lang } = useLanguage()

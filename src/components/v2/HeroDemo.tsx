@@ -6,7 +6,7 @@ import { LuminousLine } from '@/components/v2/LuminousLine'
 import { AppShell } from '@/components/v2/finer-ui/AppShell'
 import { FinerHomeView } from '@/components/v2/finer-ui/FinerHomeView'
 import { ScaledCanvas } from '@/components/v2/finer-ui/ScaledCanvas'
-import { DEMO_VIDEO, DEMO_VIDEO_SAMPLES, HERO_BACKGROUND, TRY_DEMO_ANCHOR } from '@/config/demo'
+import { DEMO_VIDEO, HERO_BACKGROUND, TRY_DEMO_ANCHOR } from '@/config/demo'
 import type { DemoVideoSource } from '@/config/demo'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useInView } from '@/hooks/useInView'
@@ -62,9 +62,7 @@ type T = (typeof copy)['pt']
 export function HeroDemo() {
   const { lang } = useLanguage()
   const t = copy[lang]
-  // Vídeo final (config) ou, só para aprovação, uma amostra pedida com ?video=amostra
-  const sampleKey = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('video') : null
-  const activeVideo = (sampleKey && DEMO_VIDEO_SAMPLES[sampleKey]) || (DEMO_VIDEO.src ? DEMO_VIDEO : null)
+  const activeVideo = DEMO_VIDEO.src ? DEMO_VIDEO : null
 
   return (
     <section
@@ -166,7 +164,11 @@ function Backdrop() {
           tabIndex={-1}
         />
       ) : (
-        <img src={HERO_BACKGROUND.poster} alt="" className="absolute inset-0 h-full w-full translate-y-[3%] scale-[1.03] object-cover object-[50%_72%]" />
+        // Elemento LCP em mobile: WebP (metade do peso do JPG), prioridade alta e pré-carregado no index.html.
+        <picture>
+          <source srcSet={HERO_BACKGROUND.posterWebp} type="image/webp" />
+          <img src={HERO_BACKGROUND.poster} alt="" width={1920} height={1080} fetchPriority="high" decoding="async" className="absolute inset-0 h-full w-full translate-y-[3%] scale-[1.03] object-cover object-[50%_72%]" />
+        </picture>
       )}
       {/* Leitura: navy forte à esquerda (texto), aliviando para a direita */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(3,6,15,0.93)_0%,rgba(3,6,15,0.72)_34%,rgba(3,6,15,0.12)_66%,rgba(3,6,15,0.22)_100%)]" />

@@ -2,107 +2,260 @@ import { useEffect, useState } from 'react'
 import { MotionConfig, motion } from 'motion/react'
 import { ArrowUpRight, ChevronDown, Mail } from 'lucide-react'
 import { useLanguage } from '@/i18n/LanguageContext'
+import { FORMS_PROVIDER } from '@/lib/forms'
 import { cn } from '@/lib/utils'
 
 /**
- * Aviso de privacidade dos formulários — RASCUNHO.
- * Visual (12/11/2026) à maneira das páginas legais da Ramp (índice fixo ao lado,
- * secções numeradas, leitura confortável), da Searchable (bloco "como nos contactar"
- * e identificação da empresa) e da Lovable (página branca e sóbria, datas no topo).
- * Versão inglesa traduzida do rascunho (a portuguesa prevalece). Os elementos entre
- * [colchetes] têm de ser confirmados pelos fundadores antes de publicar.
+ * Aviso de privacidade dos formulários (Lista de Espera e Finer Pioneers).
+ * Visual (12/11/2026) à maneira das páginas legais da Ramp, Searchable e Lovable.
+ *
+ * Versão 2026-11-v1, aprovada pelos três fundadores a 15/11/2026 (responsáveis conjuntos,
+ * artigo 26.º do RGPD, com acordo interno aceite na mesma data). Finer One em constituição:
+ * não inventar NIF, sede nem denominação. Texto de origem: doc "Finer One — Aviso de
+ * privacidade: versão final para aprovação". Qualquer alteração de conteúdo exige nova
+ * aprovação dos três e nova PRIVACY_VERSION em src/lib/forms.ts.
+ * As secções sobre infraestrutura seguem o recetor ativo (VITE_FORMS_PROVIDER); o texto
+ * aprovado é o da Cloudflare, o ramo Google existe só para reversão. A versão PT prevalece.
  */
+const APPROVED = true
+const NOTICE_DATE = { pt: '15 de novembro de 2026', en: '15 November 2026' }
 const CONTACT = 'geral.finerone@gmail.com'
+const CF = FORMS_PROVIDER === 'cloudflare'
 
-type Section = { id: string; title: string; body: (string | string[])[] }
+type Block = string | string[] | { h: string }
+type Section = { id: string; title: string; body: Block[] }
 const sectionsPt: Section[] = [
   {
     id: 'responsavel',
-    title: 'Quem é o responsável pelos dados',
-    body: [`Finer One [denominação legal, NIF e morada a confirmar]. Para qualquer questão sobre privacidade, escreva para ${CONTACT}.`],
-  },
-  {
-    id: 'dados',
-    title: 'Que dados recolhemos',
+    title: 'Quem é responsável pelos dados',
     body: [
-      'Apenas o que nos indica nos formulários do site:',
-      [
-        'Lista de espera: nome, email, dimensão da empresa e os temas que quer acompanhar.',
-        'Finer Pioneers: nome, empresa, setor de atividade, email profissional e a descrição do principal desafio financeiro que decidir partilhar.',
-        'Explorar (simulador de tesouraria): o seu nome, email profissional, empresa e país; opcionalmente, dimensão, setor e telefone; a moeda, o tipo de simulação e o horizonte escolhidos; e se pediu contacto comercial. Os valores que introduz na simulação ficam no seu navegador e não são enviados nem guardados. A opção de receber novidades é separada, opcional e desligada por defeito.',
-      ],
-      'Registamos também a data do envio e a versão deste aviso que aceitou. Não pedimos dados bancários, acessos bancários, IBAN, extratos nem documentos da empresa nestes formulários.',
+      'A Finer One é um projeto em fase de constituição: a sociedade ainda não está registada, pelo que não tem, para já, denominação social, NIF nem sede.',
+      `Até à constituição, os dados recolhidos nestes formulários são tratados pelos três fundadores da Finer One — Henrique Santos Bértolo, Sebastião Andrade e Igor Orlandi Barros —, que determinam em conjunto as finalidades e os meios do tratamento e são, por isso, responsáveis conjuntos pelo tratamento (artigo 26.º do RGPD). Definimos num acordo entre nós as responsabilidades de cada um. No essencial, Henrique Santos Bértolo é o ponto de contacto principal para questões de privacidade e coordena a resposta aos pedidos, e cada um de nós responde pela segurança dos acessos aos dados. Escreva para ${CONTACT}. Pode também exercer os seus direitos junto de qualquer um de nós, e o pedido é tratado da mesma forma.`,
+      'Quando a sociedade for constituída, passará a ser a responsável pelo tratamento. Atualizaremos este aviso com a sua identificação e informaremos quem estiver inscrito.',
     ],
   },
   {
     id: 'finalidades',
-    title: 'Para que usamos os dados',
+    title: 'O que fazemos com os seus dados',
     body: [
+      'Cada formulário é um tratamento separado. Inscrever-se num não o inscreve no outro.',
+      { h: 'a) Lista de espera' },
       [
-        'Lista de espera: enviar-lhe novidades sobre a Finer One e sobre o acesso à plataforma.',
-        'Finer Pioneers: avaliar a sua candidatura e contactá-lo sobre o programa.',
-        'Explorar: preparar e enviar a análise pedida e, se o pedir, contactá-lo sobre a Finer One; enviar novidades só se o tiver pedido.',
+        'Dados: nome, email, dimensão da empresa e os temas que quer acompanhar.',
+        'Finalidade: enviar-lhe comunicações de lançamento — o aviso de que a plataforma está disponível, a abertura do acesso e as respetivas condições de adesão. Não inclui newsletters, promoções, convites para eventos nem ofertas de terceiros.',
+        'Fundamento: o seu consentimento (artigo 6.º, n.º 1, alínea a), do RGPD), dado ao inscrever-se.',
+        'Conservação: até 12 meses após o lançamento comercial da plataforma e, em qualquer caso, não mais de 24 meses após a inscrição; ou até pedir para sair, se isso acontecer antes.',
       ],
-      'Não vendemos nem cedemos os seus dados a terceiros para fins de marketing.',
+      { h: 'b) Programa Finer Pioneers' },
+      [
+        'Dados: nome, email, empresa, setor de atividade e a descrição do principal desafio financeiro que decidir partilhar.',
+        'Finalidade: avaliar a sua candidatura e contactá-lo sobre o programa. Não é usada para outras comunicações.',
+        'Fundamento: o seu consentimento (artigo 6.º, n.º 1, alínea a), do RGPD), dado ao enviar a candidatura.',
+        'Conservação: candidaturas não selecionadas são eliminadas até 6 meses após o fim do processo de seleção; candidaturas selecionadas são conservadas enquanto durar a participação no programa e eliminadas até 6 meses depois do seu fim.',
+      ],
+      'Em ambos os formulários registamos também a data do envio, o idioma em que usou o site, a versão deste aviso que tinha à frente, um identificador técnico do envio e o estado da inscrição no nosso acompanhamento (por exemplo, contactada ou selecionada). Servem para demonstrar quando e como nos deu o consentimento, evitar inscrições duplicadas e organizar os contactos. Fundamento: o nosso interesse legítimo em cumprir o dever de demonstrar o consentimento (artigos 6.º, n.º 1, alínea f), e 7.º, n.º 1, do RGPD). São conservados e eliminados com a respetiva inscrição.',
+      ...(CF
+        ? [
+            { h: 'c) Verificação contra envios automáticos (Cloudflare Turnstile)' },
+            [
+              'Dados: no momento do envio, o seu endereço IP e sinais técnicos do navegador (como o agente do utilizador) são transmitidos à Cloudflare. Não guardamos o endereço IP na nossa base de dados.',
+              'Finalidade: proteger os formulários contra abuso e envios em massa.',
+              'Fundamento: o nosso interesse legítimo na segurança dos formulários (artigo 6.º, n.º 1, alínea f), do RGPD). Pode opor-se, escrevendo-nos.',
+              'A Cloudflare usa também estes sinais, como responsável pelo tratamento, para melhorar a deteção de envios automáticos, nos termos do seu Aviso de Privacidade do Turnstile (Turnstile Privacy Addendum), e conserva-os de acordo com esse aviso.',
+            ],
+          ]
+        : []),
+      'O envio dos formulários é voluntário; sem os campos obrigatórios não conseguimos inscrevê-lo nem avaliar a candidatura. Não pedimos dados bancários, documentos da empresa nem dados financeiros; pedimos que não inclua dados de terceiros no campo de texto livre. Não vendemos os seus dados, não os cedemos a terceiros para fins próprios destes e não tomamos decisões automatizadas nem fazemos perfis com eles.',
     ],
   },
   {
-    id: 'fundamento',
-    title: 'Com que fundamento',
-    body: ['O tratamento baseia-se no seu consentimento, que pode retirar a qualquer momento, sem afetar o tratamento realizado até então.'],
+    id: 'sair',
+    title: 'Como sair ou retirar o consentimento',
+    body: [
+      `Pode retirar o consentimento a qualquer momento, sem afetar o tratamento já realizado: responda "Sair" a qualquer email que lhe enviarmos ou escreva para ${CONTACT}. Tratamos o pedido em até 5 dias úteis e confirmamos por email. Se retirar o consentimento de uma candidatura Finer Pioneers, deixamos de a considerar e eliminamos os dados.`,
+    ],
   },
   {
     id: 'onde',
-    title: 'Onde ficam os dados',
-    body: ['Os dados são guardados [no serviço escolhido pela Finer One — a confirmar], com acesso restrito à equipa da Finer One.'],
+    title: 'Onde ficam os dados e quem lhes acede',
+    body: [
+      ...(CF
+        ? [
+            'Cada envio é recebido por um serviço da Finer One na Cloudflare (Cloudflare Workers) e guardado numa base de dados no Cloudflare D1, configurada para armazenar os dados na União Europeia. A Cloudflare, Inc. trata estes dados como subcontratante, ao abrigo do seu Acordo de Tratamento de Dados (Data Processing Addendum).',
+            'O acesso está restrito aos fundadores, através do painel da Cloudflare, com acesso autenticado à conta da Finer One. Os dados não são enviados por email quando se inscreve.',
+          ]
+        : [
+            'Cada envio é registado numa folha de cálculo Google (Google Sheets) da conta Google da Finer One, através de um script (Google Apps Script) dessa mesma conta, que também envia uma notificação por email (Gmail) para a caixa da equipa com os dados enviados. Só os fundadores têm acesso a esta conta.',
+          ]),
+      `Os emails que trocamos consigo (respostas a pedidos e comunicações de lançamento) são enviados e guardados na conta ${CONTACT}, um serviço Gmail da Google prestado através de uma conta gratuita, regido pelos termos e pela política de privacidade da Google; não existe um contrato de subcontratação com a Google nos termos do artigo 28.º do RGPD.`,
+    ],
   },
   {
-    id: 'prazo',
-    title: 'Durante quanto tempo',
-    body: ['Conservamos os dados enquanto o programa ou a lista de espera estiverem ativos, ou até retirar o consentimento [prazo máximo a confirmar].'],
+    id: 'transferencias',
+    title: 'Transferências para fora do Espaço Económico Europeu',
+    body: CF
+      ? [
+          'A base de dados fica na União Europeia, mas parte do processamento pode ocorrer fora do Espaço Económico Europeu, incluindo nos Estados Unidos:',
+          [
+            'Cloudflare (Workers e Turnstile, como subcontratante): o pedido é processado no centro de dados da Cloudflare mais próximo de quem o envia. Para as transferências, o acordo da Cloudflare recorre ao Quadro de Privacidade de Dados UE-EUA (decisão de adequação da Comissão Europeia de 10 de julho de 2023) e, quando este não se aplica, às cláusulas contratuais-tipo aprovadas pela Comissão Europeia.',
+            'Cloudflare (Turnstile, como responsável) e Google (Gmail): cada uma trata os dados ao abrigo das suas próprias políticas e mecanismos de transferência.',
+          ],
+          'Pode pedir-nos mais informação sobre estas garantias.',
+        ]
+      : [
+          'A Google pode tratar dados em servidores fora do Espaço Económico Europeu, incluindo nos Estados Unidos, ao abrigo das suas próprias políticas e mecanismos de transferência. Pode pedir-nos mais informação sobre estas garantias.',
+        ],
+  },
+  {
+    id: 'eliminacao',
+    title: 'Eliminação e cópias de recuperação',
+    body: [
+      CF
+        ? 'Revemos os dados pelo menos de três em três meses e eliminamos o que atingiu os prazos acima, incluindo os emails relacionados. Depois de eliminados da base de dados, os registos podem permanecer até 7 dias nas cópias automáticas de recuperação (Cloudflare D1 Time Travel), após o que deixam de poder ser recuperados.'
+        : 'Revemos os dados pelo menos de três em três meses e eliminamos o que atingiu os prazos acima, da folha, das notificações e dos emails relacionados.',
+    ],
   },
   {
     id: 'direitos',
     title: 'Os seus direitos',
     body: [
-      `Pode pedir acesso, retificação, apagamento, limitação ou portabilidade dos seus dados, e opor-se ao tratamento, escrevendo para ${CONTACT}.`,
-      'Tem também o direito de apresentar reclamação à Comissão Nacional de Proteção de Dados (CNPD).',
+      `Pode pedir acesso, retificação, eliminação, limitação ou portabilidade dos seus dados, retirar o consentimento e opor-se ao tratamento baseado no nosso interesse legítimo, escrevendo para ${CONTACT}. Respondemos no prazo de um mês; em pedidos complexos, este prazo pode ser prorrogado nos termos do RGPD, e informamo-lo disso.`,
+      'Tem também o direito de apresentar reclamação à Comissão Nacional de Proteção de Dados (CNPD, www.cnpd.pt).',
+    ],
+  },
+  {
+    id: 'site',
+    title: 'Navegação no site',
+    body: [
+      'O site não usa cookies de publicidade nem de análise. Guarda no seu navegador apenas a preferência de idioma, o fecho do aviso do topo e a data dos envios recentes de formulários (para limitar envios repetidos).',
+      CF
+        ? 'Os tipos de letra e as imagens são servidos pelo próprio site; só ao enviar um formulário o navegador carrega o Cloudflare Turnstile.'
+        : 'Os tipos de letra e as imagens são servidos pelo próprio site; a navegação não faz pedidos a serviços da Google.',
+    ],
+  },
+  {
+    id: 'alteracoes',
+    title: 'Alterações a este aviso',
+    body: [
+      'Se este aviso mudar de forma relevante, atualizamos a data no topo e, quando a alteração afetar inscrições existentes, informamos por email quem estiver inscrito.',
     ],
   },
 ]
 
 const sectionsEn: Section[] = [
-  { id: 'responsavel', title: 'Who is responsible for your data', body: [`Finer One [legal name, tax number and address to be confirmed]. For any privacy question, write to ${CONTACT}.`] },
   {
-    id: 'dados',
-    title: 'What data we collect',
+    id: 'responsavel',
+    title: 'Who is responsible for your data',
     body: [
-      'Only what you give us in the website forms:',
-      [
-        'Waitlist: name, email, company size and the topics you want to follow.',
-        'Finer Pioneers: name, company, industry, work email and the description of the main financial challenge you choose to share.',
-        'Explore (cash-flow simulator): your name, work email, company and country; optionally, size, industry and phone number; the currency, simulation type and horizon you chose; and whether you asked to be contacted. The values you enter in the simulation stay in your browser and are not sent or stored. The option to receive news is separate, optional and off by default.',
-      ],
-      'We also record the submission date and the version of this notice you accepted. We do not ask for bank details, bank logins, IBANs, statements or company documents in these forms.',
+      'Finer One is a project in the process of incorporation: the company is not yet registered, so it does not yet have a registered name, tax number or registered office.',
+      `Until incorporation, the data collected through these forms is handled by Finer One’s three founders — Henrique Santos Bértolo, Sebastião Andrade and Igor Orlandi Barros —, who jointly determine the purposes and means of the processing and are therefore joint controllers (Article 26 GDPR). We have set out each person’s responsibilities in an agreement between us. In essence, Henrique Santos Bértolo is the main point of contact for privacy matters and coordinates replies to requests, and each of us is responsible for the security of our access to the data. Write to ${CONTACT}. You may also exercise your rights with any one of us, and the request will be handled in the same way.`,
+      'Once the company is incorporated, it will become the controller. We will update this notice with its details and inform everyone who has signed up.',
     ],
   },
   {
     id: 'finalidades',
-    title: 'What we use the data for',
+    title: 'What we do with your data',
     body: [
-      ['Waitlist: sending you news about Finer One and about access to the platform.', 'Finer Pioneers: assessing your application and contacting you about the programme.', 'Explore: preparing and sending the analysis you requested and, if you ask, contacting you about Finer One; sending news only if you asked for it.'],
-      'We do not sell or pass your data to third parties for marketing purposes.',
+      'Each form is a separate processing activity. Signing up for one does not sign you up for the other.',
+      { h: 'a) Waitlist' },
+      [
+        'Data: name, email, company size and the topics you want to follow.',
+        'Purpose: to send you launch communications — notice that the platform is available, the opening of access and the related sign-up terms. It does not include newsletters, promotions, event invitations or third-party offers.',
+        'Legal basis: your consent (Article 6(1)(a) GDPR), given when you sign up.',
+        'Retention: up to 12 months after the platform’s commercial launch and, in any case, no more than 24 months after sign-up; or until you ask to leave, if earlier.',
+      ],
+      { h: 'b) Finer Pioneers programme' },
+      [
+        'Data: name, email, company, sector and the description of your main financial challenge that you choose to share.',
+        'Purpose: to assess your application and contact you about the programme. It is not used for other communications.',
+        'Legal basis: your consent (Article 6(1)(a) GDPR), given when you submit the application.',
+        'Retention: applications not selected are deleted within 6 months after the end of the selection process; selected applications are kept for as long as you take part in the programme and deleted within 6 months after it ends.',
+      ],
+      'For both forms we also record the submission date, the language you used on the site, the version of this notice you had in front of you, a technical submission identifier and the status of the sign-up in our follow-up (for example, contacted or selected). These are used to demonstrate when and how you gave consent, to avoid duplicate sign-ups and to organise follow-up. Legal basis: our legitimate interest in meeting the obligation to demonstrate consent (Articles 6(1)(f) and 7(1) GDPR). They are kept and deleted together with the sign-up.',
+      ...(CF
+        ? [
+            { h: 'c) Automated-submission check (Cloudflare Turnstile)' },
+            [
+              'Data: when you submit, your IP address and technical browser signals (such as the user agent) are sent to Cloudflare. We do not store your IP address in our database.',
+              'Purpose: to protect the forms against abuse and mass submissions.',
+              'Legal basis: our legitimate interest in keeping the forms secure (Article 6(1)(f) GDPR). You can object by writing to us.',
+              'Cloudflare also uses these signals, as a controller, to improve its detection of automated submissions, under its Turnstile Privacy Addendum, and keeps them in accordance with that notice.',
+            ],
+          ]
+        : []),
+      'Submitting the forms is voluntary; without the required fields we cannot sign you up or assess your application. We do not ask for bank details, company documents or financial data; please do not include third-party data in the free-text field. We do not sell your data, do not share it with third parties for their own purposes, and do not use it for automated decision-making or profiling.',
     ],
   },
-  { id: 'fundamento', title: 'Legal basis', body: ['Processing is based on your consent, which you can withdraw at any time, without affecting processing carried out until then.'] },
-  { id: 'onde', title: 'Where the data is kept', body: ['The data is stored [in the service chosen by Finer One — to be confirmed], with access restricted to the Finer One team.'] },
-  { id: 'prazo', title: 'How long we keep it', body: ['We keep the data while the programme or the waitlist is active, or until you withdraw your consent [maximum period to be confirmed].'] },
+  {
+    id: 'sair',
+    title: 'How to leave or withdraw consent',
+    body: [
+      `You can withdraw consent at any time, without affecting processing already carried out: reply "Leave" (or "Sair") to any email we send you, or write to ${CONTACT}. We handle the request within 5 working days and confirm by email. If you withdraw consent for a Finer Pioneers application, we stop considering it and delete the data.`,
+    ],
+  },
+  {
+    id: 'onde',
+    title: 'Where the data is kept and who can access it',
+    body: [
+      ...(CF
+        ? [
+            'Each submission is received by a Finer One service on Cloudflare (Cloudflare Workers) and stored in a Cloudflare D1 database configured to store data in the European Union. Cloudflare, Inc. processes this data as a processor under its Data Processing Addendum.',
+            'Access is restricted to the founders, through the Cloudflare dashboard, with authenticated access to Finer One’s account. Your data is not sent by email when you sign up.',
+          ]
+        : [
+            'Each submission is recorded in a Google spreadsheet (Google Sheets) in Finer One’s Google account, through a script (Google Apps Script) in that same account, which also sends an email notification (Gmail) with the submitted data to the team’s inbox. Only the founders have access to this account.',
+          ]),
+      `The emails we exchange with you (replies to requests and launch communications) are sent and stored in the ${CONTACT} account, a Google Gmail service provided through a free account and governed by Google’s terms and privacy policy; there is no processor agreement with Google under Article 28 GDPR.`,
+    ],
+  },
+  {
+    id: 'transferencias',
+    title: 'Transfers outside the European Economic Area',
+    body: CF
+      ? [
+          'The database is in the European Union, but some processing may take place outside the European Economic Area, including in the United States:',
+          [
+            'Cloudflare (Workers and Turnstile, as processor): requests are handled in the Cloudflare data centre closest to the sender. For transfers, Cloudflare’s agreement relies on the EU-US Data Privacy Framework (European Commission adequacy decision of 10 July 2023) and, where that does not apply, on the standard contractual clauses approved by the European Commission.',
+            'Cloudflare (Turnstile, as controller) and Google (Gmail): each processes data under its own policies and transfer mechanisms.',
+          ],
+          'You can ask us for more information about these safeguards.',
+        ]
+      : [
+          'Google may process data on servers outside the European Economic Area, including in the United States, under its own policies and transfer mechanisms. You can ask us for more information about these safeguards.',
+        ],
+  },
+  {
+    id: 'eliminacao',
+    title: 'Deletion and recovery copies',
+    body: [
+      CF
+        ? 'We review the data at least every three months and delete whatever has reached the periods above, including related emails. Once deleted from the database, records may remain for up to 7 days in automatic recovery copies (Cloudflare D1 Time Travel), after which they can no longer be recovered.'
+        : 'We review the data at least every three months and delete whatever has reached the periods above from the spreadsheet, the notifications and related emails.',
+    ],
+  },
   {
     id: 'direitos',
     title: 'Your rights',
     body: [
-      `You can ask to access, correct, erase, restrict or port your data, and object to its processing, by writing to ${CONTACT}.`,
-      'You also have the right to lodge a complaint with the Portuguese data protection authority (CNPD).',
+      `You can ask for access, rectification, erasure, restriction or portability of your data, withdraw consent and object to processing based on our legitimate interest, by writing to ${CONTACT}. We reply within one month; for complex requests this may be extended as allowed by the GDPR, and we will tell you if so.`,
+      'You also have the right to lodge a complaint with the Portuguese data protection authority (Comissão Nacional de Proteção de Dados, CNPD, www.cnpd.pt).',
+    ],
+  },
+  {
+    id: 'site',
+    title: 'Browsing the site',
+    body: [
+      'The site does not use advertising or analytics cookies. It stores in your browser only your language preference, whether you closed the top banner and the time of recent form submissions (to limit repeated submissions).',
+      CF
+        ? 'Fonts and images are served by the site itself; your browser loads Cloudflare Turnstile only when you submit a form.'
+        : 'Fonts and images are served by the site itself; browsing the site makes no requests to Google services.',
+    ],
+  },
+  {
+    id: 'alteracoes',
+    title: 'Changes to this notice',
+    body: [
+      'If this notice changes materially, we update the date at the top and, when the change affects existing sign-ups, we inform everyone who has signed up by email.',
     ],
   },
 ]
@@ -110,29 +263,29 @@ const sectionsEn: Section[] = [
 const ui = {
   pt: {
     title: ['Aviso de ', 'privacidade'],
-    sub: 'Como tratamos os dados que nos envia nos formulários da Lista de espera, do programa Finer Pioneers e do simulador Explorar.',
-    status: 'Estado', statusValue: 'Rascunho em revisão',
-    updated: 'Última atualização', updatedValue: '[data a confirmar na publicação]',
+    sub: 'Como tratamos os dados que nos envia nos formulários da Lista de espera e do programa Finer Pioneers.',
+    status: 'Estado', statusValue: APPROVED ? 'Em vigor' : 'Rascunho em revisão',
+    updated: 'Última atualização', updatedValue: NOTICE_DATE.pt,
     applies: 'Aplica-se a', appliesValue: 'Formulários do site finer-one.com',
     note: '',
     toc: 'Nesta página',
     summaryLead: 'Em resumo:',
-    summary: 'pedimos só o necessário para o manter informado ou avaliar a sua candidatura, não vendemos os seus dados e pode pedir para os apagar a qualquer momento.',
+    summary: 'pedimos só o necessário para o manter informado ou avaliar a sua candidatura, não usamos a inscrição para outro marketing, não vendemos os seus dados e pode sair ou pedir para os apagar a qualquer momento.',
     contactTitle: ['Tem alguma questão sobre ', 'os seus dados?'],
-    contactText: 'Escreva-nos para pedir acesso, correção ou eliminação. Respondemos dentro dos prazos previstos na lei.',
+    contactText: 'Escreva-nos para sair da lista ou pedir acesso, correção ou eliminação. Respondemos no prazo de um mês.',
   },
   en: {
     title: ['Privacy ', 'notice'],
-    sub: 'How we handle the data you send us through the Waitlist, Finer Pioneers and Explore simulator forms.',
-    status: 'Status', statusValue: 'Draft under review',
-    updated: 'Last updated', updatedValue: '[date to be confirmed on publication]',
+    sub: 'How we handle the data you send us through the Waitlist and Finer Pioneers forms.',
+    status: 'Status', statusValue: APPROVED ? 'In force' : 'Draft under review',
+    updated: 'Last updated', updatedValue: NOTICE_DATE.en,
     applies: 'Applies to', appliesValue: 'Forms on finer-one.com',
-    note: 'Translation of the Portuguese draft. In case of doubt, the Portuguese version prevails.',
+    note: 'Translation of the Portuguese version. In case of doubt, the Portuguese version prevails.',
     toc: 'On this page',
     summaryLead: 'In short:',
-    summary: 'we only ask for what we need to keep you informed or assess your application, we do not sell your data and you can ask us to delete it at any time.',
+    summary: 'we ask only for what we need to keep you informed or to assess your application, we do not use your sign-up for other marketing, we do not sell your data, and you can leave or ask us to delete it at any time.',
     contactTitle: ['Any questions about ', 'your data?'],
-    contactText: 'Write to us to request access, correction or deletion. We reply within the time limits set by law.',
+    contactText: 'Write to us to leave the list or to request access, correction or deletion. We reply within one month.',
   },
 }
 
@@ -182,7 +335,7 @@ export function PrivacyPage() {
 
           <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-20">
             {/* Conteúdo */}
-            <div className="max-w-[700px]">
+            <div className="min-w-0 max-w-[700px] [overflow-wrap:anywhere]">
               <details className="group mb-6 rounded-2xl border border-[#0B1030]/[0.08] lg:hidden">
                 <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 text-[14px] font-semibold text-[#070D2B] [&::-webkit-details-marker]:hidden">
                   {t.toc}
@@ -211,7 +364,11 @@ export function PrivacyPage() {
                       {s.title}
                     </h2>
                     {s.body.map((p, j) =>
-                      Array.isArray(p) ? (
+                      typeof p === 'object' && !Array.isArray(p) ? (
+                        <h3 key={j} className="mt-7 font-display text-[17px] font-semibold tracking-[-0.01em] text-[#070D2B]">
+                          {p.h}
+                        </h3>
+                      ) : Array.isArray(p) ? (
                         <ul key={j} className="mt-4 space-y-2.5">
                           {p.map((li) => (
                             <li key={li} className="relative pl-5 text-[16px] leading-[1.7] text-[#0B1030]/75">

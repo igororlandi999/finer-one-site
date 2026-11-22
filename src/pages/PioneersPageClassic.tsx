@@ -46,11 +46,12 @@ const copy = {
     sectorPlaceholder: 'Selecione o setor',
     sectors: ['Agência / consultoria', 'Comércio', 'Construção', 'E-commerce', 'Indústria', 'Recrutamento / trabalho temporário', 'Restauração e hotelaria', 'Saúde', 'Serviços profissionais', 'Tecnologia', 'Transportes e logística', 'Outro'],
     email: 'Email profissional',
+    emailPh: 'nome@empresa.pt',
     challenge: 'Principal desafio financeiro',
     challengeHint: 'Escolha um tema para começar ou escreva livremente.',
     challengeChips: ['Recebimentos em atraso', 'Pressão de tesouraria', 'Custos a subir', 'Falta de previsão', 'Informação dispersa'],
     challengePlaceholder: 'Ex.: Tenho dificuldade em prever quando vou ter falta de caixa…',
-    consent: ['Li o ', 'aviso de privacidade', ' e aceito que a Finer One trate estes dados para avaliar a minha candidatura e contactar-me sobre o programa.'],
+    consent: ['Li o ', 'aviso de privacidade', ' e autorizo a Finer One a usar estes dados para avaliar a minha candidatura e contactar-me sobre o programa. Isto não me inscreve em comunicações promocionais.'],
     submit: 'Enviar candidatura',
     sending: 'A enviar…',
     secure: 'Os seus dados são usados apenas para avaliar a candidatura. Não pedimos dados bancários.',
@@ -64,6 +65,9 @@ const copy = {
       rate: 'Recebemos vários envios deste dispositivo. Tente novamente mais tarde.',
       network: 'Não foi possível enviar. Verifique a ligação e tente novamente.',
       server: 'Ocorreu um erro ao enviar. Tente novamente dentro de alguns minutos.',
+      unavailable: 'O formulário está temporariamente indisponível. Escreva-nos para geral.finerone@gmail.com.',
+      verification: 'Não foi possível confirmar o envio. Atualize a página e tente novamente.',
+      duplicate: 'Já recebemos uma candidatura com este email há poucos minutos. Se precisar de corrigir algo, escreva para geral.finerone@gmail.com.',
     },
     successTitle: 'Candidatura recebida.',
     successBody: 'Obrigado pelo interesse em construir a Finer One connosco. A equipa vai analisar a sua candidatura e entrará em contacto com os empresários selecionados.',
@@ -106,11 +110,12 @@ const copy = {
     sectorPlaceholder: 'Select the industry',
     sectors: ['Agency / consulting', 'Retail', 'Construction', 'E-commerce', 'Manufacturing', 'Staffing / recruitment', 'Hospitality', 'Health', 'Professional services', 'Technology', 'Transport and logistics', 'Other'],
     email: 'Work email',
+    emailPh: 'name@company.com',
     challenge: 'Main financial challenge',
     challengeHint: 'Pick a topic to start or write freely.',
     challengeChips: ['Late payments', 'Cash pressure', 'Rising costs', 'No forecasting', 'Scattered information'],
     challengePlaceholder: 'E.g. I find it hard to predict when I will run short of cash…',
-    consent: ['I have read the ', 'privacy notice', ' and agree that Finer One may process this data to assess my application and contact me about the programme.'],
+    consent: ['I have read the ', 'privacy notice', ' and allow Finer One to use this data to assess my application and contact me about the programme. This does not sign me up for promotional communications.'],
     submit: 'Send application',
     sending: 'Sending…',
     secure: 'Your data is only used to assess your application. We never ask for bank details.',
@@ -124,6 +129,9 @@ const copy = {
       rate: 'We received several submissions from this device. Please try again later.',
       network: 'Could not send. Check your connection and try again.',
       server: 'Something went wrong. Please try again in a few minutes.',
+      unavailable: 'This form is temporarily unavailable. Please email us at geral.finerone@gmail.com.',
+      verification: 'We could not verify this submission. Please refresh the page and try again.',
+      duplicate: 'We received an application with this email a few minutes ago. If you need to change anything, email geral.finerone@gmail.com.',
     },
     successTitle: 'Application received.',
     successBody: 'Thank you for your interest in building Finer One with us. The team will review your application and contact the selected business owners.',
@@ -172,6 +180,7 @@ export function PioneersPageClassic() {
       document.getElementById(`pio-${Object.keys(e)[0]}`)?.focus()
       return
     }
+    if (status === 'sending') return
     setStatus('sending')
     const result = await submitForm('pioneers', { ...values }, { honeypot, startedAt: startedAt.current })
     if (result.ok) {
@@ -333,7 +342,7 @@ export function PioneersPageClassic() {
                   </SelectInput>
                 </Field>
                 <Field id="pio-email" label={t.email} error={errors.email}>
-                  <TextInput id="pio-email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder="nome@empresa.pt" value={values.email} onChange={(e) => set('email')(e.target.value)} error={errors.email} />
+                  <TextInput id="pio-email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder={t.emailPh} value={values.email} onChange={(e) => set('email')(e.target.value)} error={errors.email} />
                 </Field>
               </div>
 

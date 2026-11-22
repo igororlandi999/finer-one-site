@@ -20,6 +20,7 @@ const links = {
     { label: 'Segurança', href: '/#seguranca' },
     { label: 'Preços', href: '/#precos' },
     { label: 'Explorar', href: '/explorar/' },
+    { label: 'Sobre nós', href: '/sobre/' },
   ],
   en: [
     { label: 'Product', href: '/#demo' },
@@ -27,7 +28,14 @@ const links = {
     { label: 'Security', href: '/#seguranca' },
     { label: 'Pricing', href: '/#precos' },
     { label: 'Explore', href: '/explorar/' },
+    { label: 'About us', href: '/sobre/' },
   ],
+}
+
+/** Página atual: só links para páginas (não âncoras) podem ficar ativos. */
+function isCurrent(href: string) {
+  if (typeof window === 'undefined' || href.includes('#')) return false
+  return window.location.pathname.replace(/\/?$/, '/') === href
 }
 
 const copy = {
@@ -197,10 +205,19 @@ export function Navbar() {
             <Logo className={cn('transition-colors duration-300', light && 'text-[#070D2B]')} />
           </a>
 
-          <ul className="mx-6 hidden min-w-0 items-center gap-6 lg:flex xl:gap-8">
+          <ul className="mx-4 hidden min-w-0 flex-1 items-center justify-center gap-5 lg:flex xl:gap-9">
             {links[lang].map((link) => (
               <li key={link.label}>
-                <a href={link.href} className={cn('whitespace-nowrap text-sm transition-colors duration-300', light ? 'text-[#0B1030]/65 hover:text-[#070D2B]' : 'text-mist hover:text-white')}>
+                <a
+                  href={link.href}
+                  aria-current={isCurrent(link.href) ? 'page' : undefined}
+                  className={cn(
+                    'whitespace-nowrap rounded-md text-sm transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-4',
+                    light ? 'text-[#0B1030]/65 hover:text-[#070D2B] aria-[current=page]:text-[#070D2B]' : 'text-mist hover:text-white aria-[current=page]:text-white',
+                    light ? 'focus-visible:ring-offset-white' : 'focus-visible:ring-offset-navy',
+                    'aria-[current=page]:font-medium',
+                  )}
+                >
                   {link.label}
                 </a>
               </li>
@@ -248,7 +265,8 @@ export function Navbar() {
                   <a
                     href={link.href}
                     onClick={() => setOpen(false)}
-                    className="block border-b border-white/[0.05] py-3.5 text-[15px] text-mist transition-colors hover:text-white"
+                    aria-current={isCurrent(link.href) ? 'page' : undefined}
+                    className="block border-b border-white/[0.05] py-3.5 text-[15px] text-mist transition-colors hover:text-white focus-visible:text-white focus-visible:outline-none aria-[current=page]:font-medium aria-[current=page]:text-white"
                   >
                     {link.label}
                   </a>

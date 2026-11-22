@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { ArrowRight, Loader2 } from 'lucide-react'
-import { isValidEmail, submitForm } from '@/lib/forms'
+import { exploreLeadsEnabled, isValidEmail, submitForm } from '@/lib/forms'
 import { track } from '@/lib/analytics'
 import { cn } from '@/lib/utils'
 import { COUNTRIES, CURRENCIES, SECTORS, SIZES } from './content'
@@ -59,7 +59,8 @@ export function LeadForm({ t, lang, lead, setLead, scenario, horizon, onBack, on
     }
     setSending(true)
     track('lead_form_submitted', { scenario, horizon })
-    const res = await submitForm(
+    // Sem recetor do Explorar ativo: nada é enviado e a análise abre em pré-visualização (assinalada).
+    const res = !exploreLeadsEnabled ? ({ ok: true, preview: true } as const) : await submitForm(
       'explore',
       {
         leadId: leadId.current,
@@ -83,7 +84,8 @@ export function LeadForm({ t, lang, lead, setLead, scenario, horizon, onBack, on
     )
     setSending(false)
     if (!res.ok) {
-      setErrors({ form: t.errors[res.reason === 'bot' ? 'server' : res.reason] })
+      const key = res.reason === 'rate' ? 'rate' : res.reason === 'network' ? 'network' : 'server'
+      setErrors({ form: t.errors[key] })
       return
     }
     track('lead_form_success', { scenario, horizon, preview: res.preview })

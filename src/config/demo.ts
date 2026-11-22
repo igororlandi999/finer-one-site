@@ -13,20 +13,15 @@
 /** portrait: versão vertical (4:5) para telemóvel, com a interface no formato de telemóvel. */
 export type DemoVideoSource = { src: string; mobile?: string; webm?: string; poster?: string; portrait?: string; portraitPoster?: string }
 
-// Versão de desenvolvimento: a amostra V4 (12/11/2026) fica visível no hero para avaliação.
-// V4 = a mesma história da V3 com planos ~1,6× mais próximos, para o texto se ler na
-// janela da hero. Substituir pelo vídeo final aprovado (fora de amostras/) antes de publicar.
-const V3: DemoVideoSource = {
-  src: '/video/amostras/hero-a-v3.mp4',
-  mobile: '/video/amostras/hero-a-v3-720.mp4',
-  poster: '/video/amostras/hero-a-v3.jpg',
-}
+// Vídeo definitivo (aprovado a 15/11/2026; antiga amostra V4 de 12/11/2026): a história
+// pergunta → diagnóstico → recomendação, com dados fictícios. Três versões: 16:9 (desktop),
+// 720p (ecrãs menores) e 4:5 (telemóvel, com a interface em formato de telemóvel).
 export const DEMO_VIDEO: DemoVideoSource = {
-  src: '/video/amostras/hero-a-v4.mp4',
-  mobile: '/video/amostras/hero-a-v4-720.mp4',
-  poster: '/video/amostras/hero-a-v4.jpg',
-  portrait: '/video/amostras/hero-a-v4-mobile.mp4',
-  portraitPoster: '/video/amostras/hero-a-v4-mobile.jpg',
+  src: '/video/hero-demo.mp4',
+  mobile: '/video/hero-demo-720.mp4',
+  poster: '/video/hero-demo.jpg',
+  portrait: '/video/hero-demo-mobile.mp4',
+  portraitPoster: '/video/hero-demo-mobile.jpg',
 }
 
 /**
@@ -39,17 +34,7 @@ export const DEMO_VIDEO: DemoVideoSource = {
 export const HERO_BACKGROUND = {
   video: '/video/hero-earth.mp4',
   poster: '/images/hero-earth.jpg',
-}
-
-/**
- * Versões para comparação: ?video=v1 (original), ?video=v2 (Product Film 2.0), ?video=v3.
- * Remover antes de publicar.
- */
-export const DEMO_VIDEO_SAMPLES: Record<string, DemoVideoSource> = {
-  v1: { src: '/video/amostras/hero-a.mp4', poster: '/video/amostras/hero-a.jpg' },
-  v2: { src: '/video/amostras/hero-a-v2.mp4', mobile: '/video/amostras/hero-a-v2-720.mp4', poster: '/video/amostras/hero-a-v2.jpg' },
-  v3: V3,
-  v4: DEMO_VIDEO,
+  posterWebp: '/images/hero-earth.webp',
 }
 
 /**

@@ -8,7 +8,7 @@ import { DEMO_VIDEO } from '@/config/demo'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { isPreviewMode, isValidEmail, submitForm } from '@/lib/forms'
-import { cn } from '@/lib/utils'
+import { cn, focusLater } from '@/lib/utils'
 import { FormSuccess } from '@/pages/FormSuccess'
 import { WaitlistPageClassic } from '@/pages/WaitlistPageClassic'
 
@@ -31,11 +31,12 @@ const copy = {
     name: 'Nome',
     namePh: 'O seu nome',
     email: 'Email profissional',
+    emailPh: 'nome@empresa.pt',
     sizes: ['Só eu', '2 a 9 pessoas', '10 a 49 pessoas', '50 a 249 pessoas', '250 ou mais'],
     interests: ['Tesouraria', 'Recebimentos', 'Custos e despesas', 'Previsões', 'Tudo num só lugar'],
     next: 'Continuar',
     back: 'Voltar',
-    consent: ['Li o ', 'aviso de privacidade', ' e aceito receber comunicações da Finer One sobre o acesso à plataforma. Posso cancelar a qualquer momento.'],
+    consent: ['Li o ', 'aviso de privacidade', ' e aceito receber emails da Finer One sobre o lançamento e a abertura do acesso à plataforma. Posso cancelar a qualquer momento.'],
     submit: 'Entrar na lista',
     sending: 'A enviar…',
     fine: 'A inscrição não exige ligação bancária nem partilha de dados financeiros.',
@@ -48,6 +49,9 @@ const copy = {
       rate: 'Recebemos vários envios deste dispositivo. Tente novamente mais tarde.',
       network: 'Não foi possível enviar. Verifique a ligação e tente novamente.',
       server: 'Ocorreu um erro ao enviar. Tente novamente dentro de alguns minutos.',
+      unavailable: 'O formulário está temporariamente indisponível. Escreva-nos para geral.finerone@gmail.com.',
+      verification: 'Não foi possível confirmar o envio. Atualize a página e tente novamente.',
+      duplicate: 'Este email já está na lista de espera.',
     },
     successTitle: 'Está na lista.',
     successBody: 'Obrigado. Vamos enviar-lhe novidades sobre a Finer One e sobre o acesso à plataforma.',
@@ -73,11 +77,12 @@ const copy = {
     name: 'Name',
     namePh: 'Your name',
     email: 'Work email',
+    emailPh: 'name@company.com',
     sizes: ['Just me', '2 to 9 people', '10 to 49 people', '50 to 249 people', '250 or more'],
     interests: ['Cash position', 'Receivables', 'Costs and expenses', 'Forecasts', 'Everything in one place'],
     next: 'Continue',
     back: 'Back',
-    consent: ['I have read the ', 'privacy notice', ' and agree to receive communications from Finer One about platform access. I can unsubscribe at any time.'],
+    consent: ['I have read the ', 'privacy notice', ' and agree to receive emails from Finer One about the launch and the opening of access to the platform. I can unsubscribe at any time.'],
     submit: 'Join the list',
     sending: 'Sending…',
     fine: 'Signing up does not require a bank connection or sharing financial data.',
@@ -90,6 +95,9 @@ const copy = {
       rate: 'We received several submissions from this device. Please try again later.',
       network: 'Could not send. Check your connection and try again.',
       server: 'Something went wrong. Please try again in a few minutes.',
+      unavailable: 'This form is temporarily unavailable. Please email us at geral.finerone@gmail.com.',
+      verification: 'We could not verify this submission. Please refresh the page and try again.',
+      duplicate: 'This email is already on the waitlist.',
     },
     successTitle: 'You are on the list.',
     successBody: 'Thank you. We will send you news about Finer One and platform access.',
@@ -217,6 +225,7 @@ function SignupBox({ t }: { t: T }) {
       return
     }
     if (step < 2) return go(step + 1)
+    if (status === 'sending') return
     setStatus('sending')
     const result = await submitForm('waitlist', { name, email, size, interests: interests.join(', ') }, { honeypot, startedAt: startedAt.current })
     if (result.ok) {
@@ -310,7 +319,7 @@ function SignupBox({ t }: { t: T }) {
                   {step === 0 && (
                     <div className="mt-1 grid gap-1 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)_auto] sm:items-center">
                       {field('name', t.name, <input id="wl-name" name="wl-name" autoComplete="name" maxLength={100} placeholder={t.namePh} value={name} aria-invalid={errors.name ? true : undefined} aria-describedby={errors.name ? 'wl-name-error' : undefined} onChange={(e) => { setName(e.target.value); setErrors((x) => ({ ...x, name: undefined, form: undefined })) }} className={inputCls} />)}
-                      {field('email', t.email, <input id="wl-email" name="wl-email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder="nome@empresa.pt" value={email} aria-invalid={errors.email ? true : undefined} aria-describedby={errors.email ? 'wl-email-error' : undefined} onChange={(e) => { setEmail(e.target.value); setErrors((x) => ({ ...x, email: undefined, form: undefined })) }} className={inputCls} />)}
+                      {field('email', t.email, <input id="wl-email" name="wl-email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder={t.emailPh} value={email} aria-invalid={errors.email ? true : undefined} aria-describedby={errors.email ? 'wl-email-error' : undefined} onChange={(e) => { setEmail(e.target.value); setErrors((x) => ({ ...x, email: undefined, form: undefined })) }} className={inputCls} />)}
                       <button type="submit" className="group m-1 inline-flex h-14 items-center justify-center gap-2 whitespace-nowrap rounded-[20px] bg-[#070D2B] px-6 text-[15px] font-semibold text-white shadow-[0_12px_30px_-12px_rgba(7,13,43,0.8)] transition-colors hover:bg-[#0E1A4D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2">
                         {t.next}
                         <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true" />
@@ -473,7 +482,7 @@ function PlusStrip({ t }: { t: T }) {
 function Choice({ t }: { t: T }) {
   const toTop = () => {
     document.getElementById('inscricao')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    window.setTimeout(() => document.getElementById('wl-name')?.focus({ preventScroll: true }), 600)
+    focusLater('wl-name', 600, { preventScroll: true })
   }
   return (
     <section aria-labelledby="wl-choice" className="bg-white px-4 pb-24 pt-10 text-navy sm:pb-28">
