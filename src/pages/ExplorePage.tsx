@@ -47,7 +47,7 @@ export function ExplorePage() {
     <MotionConfig reducedMotion="user">
       <Hero t={t} onStart={() => scrollTo('simulacao')} />
 
-      <section id="simulacao" aria-labelledby="ex-sim" className="relative flow-root scroll-mt-20 bg-white px-3 pb-24 text-navy sm:px-6 lg:pb-32">
+      <section id="simulacao" aria-labelledby="ex-sim" className="relative flow-root scroll-mt-20 bg-white px-3 pb-14 text-navy sm:px-6 lg:pb-16">
         <SimCard className="relative z-10 mx-auto -mt-24 max-w-[1180px] rounded-[32px] border border-[#0B1030]/[0.06] bg-white p-4 shadow-[0_60px_140px_-60px_rgba(7,13,43,0.55)] sm:-mt-28 sm:p-8 lg:p-10">
           <div className="mb-7 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div>
@@ -147,7 +147,7 @@ function Hero({ t, onStart }: { t: ExploreText; onStart: () => void }) {
 function FinalCta({ t, onStart }: { t: ExploreText; onStart: () => void }) {
   const ref = useRef<HTMLElement>(null)
   return (
-    <section ref={ref} aria-labelledby="ex-cta" className="relative isolate overflow-hidden bg-[#040817] py-28 text-white lg:py-36">
+    <section ref={ref} aria-labelledby="ex-cta" className="relative isolate overflow-hidden bg-[#040817] py-24 text-white lg:py-28">
       <LightArcs target={ref} className="pointer-events-none absolute inset-0 -z-10 hidden overflow-hidden sm:block" />
       <LightArcs target={ref} variant="mobile" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden sm:hidden" />
       <BlueFog />
@@ -157,15 +157,6 @@ function FinalCta({ t, onStart }: { t: ExploreText; onStart: () => void }) {
           <span className="text-glow">{t.ctaTitle[1]}</span>
         </h2>
         <motion.p variants={rise} className="mx-auto mt-5 max-w-[580px] text-[17px] leading-[1.6] text-white/70">{t.ctaSub}</motion.p>
-        <motion.ul variants={rise} aria-label={t.bridgeEyebrow} className="mx-auto mt-12 grid max-w-[720px] grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-4">
-          {t.bridge.map((name, i) => (
-            <li key={name} className="relative pt-4">
-              <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-white/15" />
-              <motion.span aria-hidden="true" className="absolute left-0 top-0 h-px w-full origin-left bg-[linear-gradient(90deg,#1E90FF,#7CB8FF)] shadow-[0_0_10px_rgba(30,144,255,0.8)]" initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }} transition={{ duration: 0.9, ease: EASE, delay: 0.2 + i * 0.12 }} />
-              <span className="font-display text-[16px] font-bold tracking-[-0.01em] text-white sm:text-[17px]">{name}</span>
-            </li>
-          ))}
-        </motion.ul>
         <motion.div variants={rise} className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
           <button type="button" onClick={onStart} className="group inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-accent px-6 text-[15px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_10px_30px_-10px_rgba(0,82,255,0.95)] transition-transform hover:-translate-y-px">
             {t.start}

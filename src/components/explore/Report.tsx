@@ -68,11 +68,11 @@ export function Report({ lang, inp, scenario, company, currency, preview, onAgai
     : [R.findings.cal(f.money(dropOf(r).v), f.monthLong(dropOf(r).m)), R.findings.tied(f.money(d.tied), d.dsoIncrease), R.findings.noBalance]
 
   return (
-    <section id="relatorio" aria-labelledby="rel-titulo" className="relative scroll-mt-20 bg-white px-5 py-20 text-navy sm:px-6 lg:py-28">
+    <section id="relatorio" aria-labelledby="rel-titulo" className="relative scroll-mt-20 bg-white px-5 pb-16 pt-14 text-navy sm:px-6 lg:pb-20 lg:pt-20">
       <style>{'@media print{body *{visibility:hidden!important}#relatorio,#relatorio *{visibility:visible!important}#relatorio{position:absolute;left:0;top:0;width:100%;padding:0!important}.no-print{display:none!important}}'}</style>
       <div className="mx-auto max-w-[1120px]">
         {/* Cabeçalho */}
-        <motion.header variants={group} {...inView} className="flex flex-col gap-6 border-b border-[#0B1030]/10 pb-10 sm:flex-row sm:items-end sm:justify-between">
+        <motion.header variants={group} {...inView} className="flex flex-col gap-6 border-b border-[#0B1030]/10 pb-8 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <motion.p variants={rise} className="text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">{R.eyebrow}</motion.p>
             <h2 id="rel-titulo" className="mt-4 text-balance font-display text-[34px] font-bold leading-[1.04] tracking-[-0.035em] text-[#070D2B] sm:text-[48px]">{R.title(company)}</h2>
@@ -329,20 +329,23 @@ export function Report({ lang, inp, scenario, company, currency, preview, onAgai
           </ul>
         </Section>
 
-        {/* Finer Pioneers */}
-        <motion.div variants={group} {...inView} className="no-print relative mt-16 overflow-hidden rounded-[28px] bg-[#070D2B] px-6 py-14 text-center text-white sm:px-12">
-          <span aria-hidden="true" className="absolute inset-x-12 top-0 h-px bg-[linear-gradient(90deg,transparent,#1E90FF,transparent)]" />
-          <h3 className="mx-auto max-w-[620px] text-balance font-display text-[28px] font-bold leading-[1.1] tracking-[-0.03em] sm:text-[36px]">{R.pioneersTitle}</h3>
-          <motion.p variants={rise} className="mx-auto mt-3 max-w-[480px] text-[15.5px] leading-relaxed text-white/65">{R.pioneersSub}</motion.p>
-          <motion.div variants={rise} className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <a href="/pioneers/" onClick={() => track('pioneers_cta_clicked', { location: 'report' })} className="group inline-flex h-12 items-center gap-2 rounded-lg bg-accent px-6 text-[15px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_10px_30px_-10px_rgba(0,82,255,0.95)] transition-transform hover:-translate-y-px">
-              {R.pioneersCta}
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-            </a>
-            <button type="button" onClick={onAgain} className="text-[14px] font-semibold text-white/70 underline decoration-white/25 underline-offset-4 hover:text-white">
-              {R.again}
-            </button>
-          </motion.div>
+        {/* Finer Pioneers: fotografia da identidade (estrada com luz) em vez de um bloco azul */}
+        <motion.div variants={group} {...inView} className="no-print relative mt-12 overflow-hidden rounded-[28px] text-white">
+          <img src="/images/para-quem-estrada.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" className="absolute inset-0 -z-0 h-full w-full object-cover" />
+          <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,10,32,0.94)_0%,rgba(5,10,32,0.82)_45%,rgba(5,10,32,0.35)_100%)]" />
+          <div className="relative max-w-[620px] px-6 py-14 sm:px-12 sm:py-16">
+            <h3 className="text-balance font-display text-[28px] font-bold leading-[1.08] tracking-[-0.03em] sm:text-[38px]">{R.pioneersTitle}</h3>
+            <motion.p variants={rise} className="mt-4 max-w-[520px] text-[16px] leading-[1.65] text-white/75">{R.pioneersSub}</motion.p>
+            <motion.div variants={rise} className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+              <a href="/pioneers/" onClick={() => track('pioneers_cta_clicked', { location: 'report' })} className="group inline-flex h-12 items-center gap-2 rounded-full bg-white px-7 text-[15px] font-semibold text-[#070D2B] shadow-[0_14px_40px_-16px_rgba(0,0,0,0.6)] transition-transform hover:-translate-y-px">
+                {R.pioneersCta}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+              </a>
+              <button type="button" onClick={onAgain} className="text-[14px] font-semibold text-white/75 underline decoration-white/30 underline-offset-4 hover:text-white">
+                {R.again}
+              </button>
+            </motion.div>
+          </div>
         </motion.div>
       </div>
     </section>
@@ -359,7 +362,7 @@ function kpiValue(k: Kpi, R: ReportText, lang: Lang) {
 
 function Section({ n, title, sub, children }: { n: string; title: string; sub?: string; children: React.ReactNode }) {
   return (
-    <motion.div variants={group} {...inView} className="grid grid-cols-[minmax(0,1fr)] gap-6 border-b border-[#0B1030]/10 py-12 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-12 lg:py-16">
+    <motion.div variants={group} {...inView} className="grid grid-cols-[minmax(0,1fr)] gap-6 border-b border-[#0B1030]/10 py-10 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-12 lg:py-12">
       <div>
         <motion.p variants={rise} className="font-display text-[13px] font-bold tabular-nums text-accent-deep">{n}</motion.p>
         <h3 className="mt-2 font-display text-[24px] font-bold leading-[1.12] tracking-[-0.025em] text-[#070D2B] sm:text-[28px]">{title}</h3>

@@ -130,7 +130,7 @@ const pt: ReportText = {
     'Não inclui impostos, financiamento existente, sazonalidade nem cobranças duvidosas. Não é aconselhamento financeiro.',
   ],
   pioneersTitle: 'Quer acompanhar estes números com os dados reais da sua empresa?',
-  pioneersSub: 'Os Finer Pioneers são as primeiras empresas a usar a plataforma.',
+  pioneersSub: 'Com a Finer One, esta análise deixa de ser um exercício: a previsão de tesouraria, os indicadores e os alertas passam a usar os seus dados, com o Finer Advisor a assinalar o que merece atenção. Os Finer Pioneers são as primeiras empresas a usá-la — e ajudam a definir o que vem a seguir.',
   pioneersCta: 'Conhecer os Finer Pioneers',
   again: 'Nova simulação',
 }
@@ -203,7 +203,7 @@ const en: ReportText = {
     'Excludes taxes, existing financing, seasonality and doubtful debts. Not financial advice.',
   ],
   pioneersTitle: 'Want to track these numbers with your company’s real data?',
-  pioneersSub: 'Finer Pioneers are the first companies to use the platform.',
+  pioneersSub: 'With Finer One, this analysis stops being an exercise: the cash forecast, indicators and alerts run on your data, with Finer Advisor flagging what needs attention. Finer Pioneers are the first companies to use it — and help shape what comes next.',
   pioneersCta: 'Meet the Finer Pioneers',
   again: 'New simulation',
 }
