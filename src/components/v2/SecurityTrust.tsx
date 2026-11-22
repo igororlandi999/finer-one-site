@@ -6,6 +6,7 @@ import { useLanguage } from '@/i18n/LanguageContext'
 import type { Lang } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
 import { SecurityAtmosphere, SecurityManifesto } from './SecurityVariants'
+import { devFlags } from '@/lib/devFlags'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -70,7 +71,7 @@ const copy: Record<Lang, {
 }
 
 /** Versão final: atmosfera (opção D, escolhida pelo fundador). Comparação: ?painel=manifesto | searchable | ramp | lovable | ceu. */
-const PANEL = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('painel') : null
+const PANEL = typeof window !== 'undefined' ? devFlags.get('painel') : null
 
 /** Atmosfera de cor à maneira da Lovable, nas cores Finer One. */
 const LOVABLE_BG = {

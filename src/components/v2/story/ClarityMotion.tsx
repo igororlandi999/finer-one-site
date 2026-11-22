@@ -5,6 +5,7 @@ import { useLanguage } from '@/i18n/LanguageContext'
 import type { Lang } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
 import { AVG_DAYS_LATE, CASH_GAP, MAIN_CLIENT_SHARE, MAIN_CLIENT_TOTAL, OVERDUE_COUNT, TOTAL_OVERDUE, eur, pct } from './storyData'
+import { devFlags } from '@/lib/devFlags'
 
 type Step = { n: string; name: string; hint: string; tag: string }
 
@@ -38,7 +39,7 @@ const copy: Record<Lang, { title: [string, string]; sub: string; note: string; w
 const EASE = [0.22, 1, 0.36, 1] as const
 
 /** Versão anterior dos fundos (contentor arredondado sobre navy) em ?fundo=antigo. */
-const OLD_BG = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('fundo') === 'antigo'
+const OLD_BG = typeof window !== 'undefined' && devFlags.get('fundo') === 'antigo'
 
 /**
  * Segunda secção com Motion (motion.dev):

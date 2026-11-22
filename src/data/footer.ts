@@ -86,14 +86,14 @@ function buildContent(lang: Lang): FooterContent {
 
   const linkedIn = pt
     ? {
-        href: 'https://linkedin.com/company/finerone?skipRedirect=true&viewAsMember=true',
+        href: 'https://www.linkedin.com/company/finerone/',
         network: 'LinkedIn',
         title: 'Acompanhe a evolução da Finer One.',
         description: 'Produto, novidades e conteúdos.',
         ariaLabel: 'Finer One no LinkedIn, abre numa nova janela',
       }
     : {
-        href: 'https://linkedin.com/company/finerone?skipRedirect=true&viewAsMember=true',
+        href: 'https://www.linkedin.com/company/finerone/',
         network: 'LinkedIn',
         title: "Follow Finer One's progress.",
         description: 'Product, news and content.',

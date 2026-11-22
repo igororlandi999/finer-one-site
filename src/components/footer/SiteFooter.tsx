@@ -5,6 +5,7 @@ import { useLanguage } from '@/i18n/LanguageContext'
 import type { Lang } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
 import { SiteFooterClassic } from './SiteFooterClassic'
+import { devFlags } from '@/lib/devFlags'
 
 /**
  * Rodapé (12/11/2026) — limpo, sem caixas, na linguagem da hero e das secções:
@@ -23,7 +24,7 @@ import { SiteFooterClassic } from './SiteFooterClassic'
  */
 type Col = { title: string; links: { label: string; href: string; external?: boolean }[] }
 
-const LINKEDIN = 'https://linkedin.com/company/finerone?skipRedirect=true&viewAsMember=true'
+const LINKEDIN = 'https://www.linkedin.com/company/finerone/'
 
 const copy: Record<Lang, { signature: string; tagline: [string, string]; cta: string; cols: Col[]; nav: string; copyright: string; top: string; lang: string; privacy: string }> = {
   pt: {
@@ -60,7 +61,7 @@ const copy: Record<Lang, { signature: string; tagline: [string, string]; cta: st
 }
 
 export function SiteFooter() {
-  if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('rodape') === 'antigo') return <SiteFooterClassic />
+  if (typeof window !== 'undefined' && devFlags.get('rodape') === 'antigo') return <SiteFooterClassic />
   return (
     <MotionConfig reducedMotion="user">
       <RevealFooter />

@@ -28,7 +28,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string]; sub: string
     price: 'A anunciar',
     period: '/mês',
     note: 'Os valores do Pro e do Team serão anunciados.',
-    billing: { monthly: 'Mensal', annual: 'Anual', saveM: 'Poupe 120 € por ano com o plano anual', saveA: 'Poupa 120 € por ano face ao plano mensal.', priceM: '67,90 €', priceA: '57,90 €', per: '/mês', noteM: 'Plano mensal · IVA incluído', noteA: 'Por mês, no plano anual · IVA incluído', tbd: 'Funcionalidades e valores a anunciar.', pioneerLabel: 'Para Finer Pioneers', pioneerLines: ['primeiro mês grátis', '10% de desconto nos planos mensal e anual'] },
+    billing: { monthly: 'Mensal', annual: 'Anual', saveM: 'Poupe 120 € por ano com o plano anual', saveA: 'Poupe 120 € por ano face ao plano mensal.', priceM: '67,90 €', priceA: '57,90 €', per: '/mês', noteM: 'Plano mensal · IVA incluído', noteA: 'Por mês, no plano anual · IVA incluído', tbd: 'Funcionalidades e valores a anunciar.', pioneerLabel: 'Para Finer Pioneers', pioneerLines: ['primeiro mês grátis', '10% de desconto nos planos mensal e anual'] },
     plans: [
       {
         id: 'plus',

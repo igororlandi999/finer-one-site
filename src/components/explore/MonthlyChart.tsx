@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useLayoutEffect, useId, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import type { Result } from '@/lib/explore/monthly'
 import type { ExploreText } from './content'
@@ -28,9 +28,10 @@ export function MonthlyChart({ r, hasBalance, t, money, axis, month, compact }: 
   const [w, setW] = useState(640)
   const [hover, setHover] = useState<number | null>(null)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const el = wrap.current
     if (!el) return
+    setW(Math.max(280, Math.round(el.clientWidth || 640)))
     const ro = new ResizeObserver(([e]) => setW(Math.max(280, Math.round(e.contentRect.width))))
     ro.observe(el)
     return () => ro.disconnect()
@@ -80,7 +81,7 @@ export function MonthlyChart({ r, hasBalance, t, money, axis, month, compact }: 
   }
 
   return (
-    <div ref={wrap} className="relative w-full select-none">
+    <div ref={wrap} className="relative w-full select-none overflow-x-clip">
       <svg width={w} height={H} viewBox={`0 0 ${w} ${H}`} role="img" aria-label={hasBalance ? t.aria : t.ariaCal} className="block" onMouseLeave={() => setHover(null)}>
         <defs>
           <linearGradient id={`in-${uid}`} x1="0" x2="0" y1="0" y2="1">

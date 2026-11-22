@@ -24,6 +24,7 @@ function makeEnv({ mailFails = false } = {}) {
       setFrozenRows() {},
       getRange: (row, col, nRows = 1, nCols = 1) => ({
         setFontWeight() { return this },
+        getValue: () => rows[row - 1][col - 1],
         setValue: (v) => { rows[row - 1][col - 1] = v },
         setValues: (vals) => { vals.forEach((r, i) => r.forEach((v, j) => { (rows[row - 1 + i] ||= [])[col - 1 + j] = v })) ; return { setFontWeight() {} } },
         getValues: () => rows.slice(row - 1, row - 1 + nRows).map((r) => r.slice(col - 1, col - 1 + nCols)),
@@ -52,6 +53,8 @@ function makeEnv({ mailFails = false } = {}) {
 
 const wl = (over = {}) => ({ kind: 'waitlist', fields: { name: 'Ana Silva', email: 'Ana@Empresa.pt', size: '2 a 9 pessoas', interests: 'Tesouraria, Previsões' }, submissionId: 'wl-1', website: '', elapsedMs: 9000, consentVersion: '2026-11-rascunho', lang: 'pt', ...over })
 const pio = (over = {}) => ({ kind: 'pioneers', fields: { name: 'Rui Costa', email: 'rui@empresa.pt', company: 'Costa Lda', sector: 'Comércio', challenge: '=Recebimentos em atraso.\nClientes pagam tarde.' }, submissionId: 'pio-1', website: '', elapsedMs: 12000, consentVersion: '2026-11-rascunho', lang: 'en', ...over })
+
+const exp = (over = {}) => ({ kind: 'explore', fields: { name: 'Marta Lopes', email: 'Marta@Loja.pt', company: 'Loja Lopes', country: 'Portugal', size: '10–49 colaboradores', sector: 'Comércio', phone: '+351 912 345 678', currency: 'eur', scenario: 'treasury', horizon: '6', stage: 'pediu_relatorio', contact: 'não', marketing: 'sim', source: 'Explore Finer One' }, submissionId: 'exp-1', website: '', elapsedMs: 9000, consentVersion: '2026-11-v2', lang: 'pt', ...over })
 
 let passed = 0
 const test = (name, f) => { f(); passed++; console.log('  ok  ' + name) }
@@ -145,6 +148,47 @@ test('nome com quebras de linha não chega ao assunto do email', () => {
   const e = makeEnv()
   e.post(wl({ fields: { ...wl().fields, name: 'Ana\r\nBcc: x@y.pt' } }))
   assert.ok(!/[\r\n]/.test(e.mails[0].subject))
+})
+
+test('explorar: guarda o pedido no separador próprio, sem valores da simulação, e notifica', () => {
+  const e = makeEnv()
+  const r = e.post(exp())
+  assert.equal(r.ok, true); assert.equal(r.notified, true)
+  const rows = e.sheets['Explorar — leads']
+  assert.equal(rows.length, 2)
+  const row = Object.fromEntries(rows[0].map((h, i) => [h, rows[1][i]]))
+  assert.equal(row['Email'], 'marta@loja.pt')
+  assert.equal(row['Moeda'], 'EUR')
+  assert.equal(row['Tipo de simulação'], 'A minha tesouraria')
+  assert.equal(row['Fase'], 'Pediu relatório')
+  assert.equal(row['Novidades'], 'Sim')
+  assert.equal(row['Estado'], 'Nova')
+  assert.match(row['Notificação'], /^Enviada/)
+  assert.match(e.mails[0].subject, /^Finer One — Explorar — Marta Lopes \(Loja Lopes\)/)
+  assert.equal(e.mails[0].replyTo, 'marta@loja.pt')
+})
+
+test('explorar: o mesmo email não duplica e só sobe a fase quando pede contacto', () => {
+  const e = makeEnv()
+  e.post(exp())
+  e.cache.clear()
+  const r = e.post(exp({ submissionId: 'exp-2', fields: { ...exp().fields, stage: 'pediu_contacto', contact: 'sim' } }))
+  assert.equal(r.ok, true); assert.equal(r.duplicate, true)
+  const rows = e.sheets['Explorar — leads']
+  assert.equal(rows.length, 2)
+  assert.equal(rows[1][11], 'Pediu contacto comercial'); assert.equal(rows[1][12], 'Sim')
+  e.cache.clear()
+  e.post(exp({ submissionId: 'exp-3' }))
+  assert.equal(rows[1][11], 'Pediu contacto comercial')
+  assert.equal(e.mails.length, 1)
+})
+
+test('explorar: sem empresa, país ou horizonte válido é recusado sem guardar', () => {
+  const e = makeEnv()
+  assert.equal(e.post(exp({ fields: { ...exp().fields, country: '' } })).ok, false)
+  assert.equal(e.post(exp({ submissionId: 'b', fields: { ...exp().fields, company: '' } })).ok, false)
+  assert.equal(e.post(exp({ submissionId: 'c', fields: { ...exp().fields, horizon: '12' } })).ok, false)
+  assert.equal(e.sheets['Explorar — leads'], undefined)
 })
 
 console.log(`\n${passed} testes simulados passaram.`)

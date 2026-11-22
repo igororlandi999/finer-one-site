@@ -181,7 +181,7 @@ export const SOURCES: Source[] = [
   {
     id: 'ec-days',
     value: { pt: '5 dias', en: '5 days' },
-    label: { pt: 'de trabalho por ano, no mínimo, são perdidos por cada empresa a cobrar devedores.', en: 'of work a year, at least, are lost by each company chasing debtors.' },
+    label: { pt: 'de trabalho por ano é o que cada empresa poderia poupar, no mínimo, com as novas regras europeias contra os atrasos.', en: 'of work a year is what each company could save, at least, under the new EU rules on late payments.' },
     short: 'Comissão Europeia',
     institution: 'Comissão Europeia — proposta de Regulamento relativo aos pagamentos em atraso (ficha informativa)',
     geography: { pt: 'União Europeia', en: 'European Union' },

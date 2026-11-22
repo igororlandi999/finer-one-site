@@ -10,6 +10,7 @@ import { isPreviewMode, isValidEmail, submitForm } from '@/lib/forms'
 import { cn, focusLater } from '@/lib/utils'
 import { FormSuccess } from '@/pages/FormSuccess'
 import { PioneersPageClassic } from '@/pages/PioneersPageClassic'
+import { devFlags } from '@/lib/devFlags'
 
 /**
  * Finer Pioneers (12/11/2026) — a partir da Searchable (candidatura ao programa
@@ -181,7 +182,7 @@ const group: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.0
 const rise: Variants = { hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE } } }
 
 export function PioneersPage() {
-  if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('versao') === 'anterior') return <PioneersPageClassic />
+  if (typeof window !== 'undefined' && devFlags.get('versao') === 'anterior') return <PioneersPageClassic />
   return (
     <MotionConfig reducedMotion="user">
       <PioneersStory />

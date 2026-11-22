@@ -130,7 +130,7 @@ const pt: ReportText = {
     'Não inclui impostos, financiamento existente, sazonalidade nem cobranças duvidosas. Não é aconselhamento financeiro.',
   ],
   pioneersTitle: 'Quer acompanhar estes números com os dados reais da sua empresa?',
-  pioneersSub: 'Ligue os seus dados e acompanhe a tesouraria, os indicadores e os alertas todos os dias — com o Finer Advisor a mostrar onde agir.',
+  pioneersSub: 'Ligue os seus dados e acompanhe a tesouraria, os indicadores e os alertas num só lugar — com o Finer Advisor a mostrar onde agir.',
   pioneersCta: 'Conhecer os Finer Pioneers',
   again: 'Nova simulação',
 }
@@ -203,7 +203,7 @@ const en: ReportText = {
     'Excludes taxes, existing financing, seasonality and doubtful debts. Not financial advice.',
   ],
   pioneersTitle: 'Want to track these numbers with your company’s real data?',
-  pioneersSub: 'Connect your data and follow cash, indicators and alerts every day — with Finer Advisor showing where to act.',
+  pioneersSub: 'Connect your data and follow cash, indicators and alerts in one place — with Finer Advisor showing where to act.',
   pioneersCta: 'Meet the Finer Pioneers',
   again: 'New simulation',
 }

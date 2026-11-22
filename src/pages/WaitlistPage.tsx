@@ -11,6 +11,7 @@ import { isPreviewMode, isValidEmail, submitForm } from '@/lib/forms'
 import { cn, focusLater } from '@/lib/utils'
 import { FormSuccess } from '@/pages/FormSuccess'
 import { WaitlistPageClassic } from '@/pages/WaitlistPageClassic'
+import { devFlags } from '@/lib/devFlags'
 
 /**
  * Lista de espera (12/11/2026, v2).
@@ -65,7 +66,7 @@ const copy = {
     choiceEyebrow: 'Duas formas de começar',
     choiceTitle: ['Lista de espera ou ', 'Finer Pioneers?'],
     waitlistCard: { name: 'Lista de espera', for: 'Para acompanhar de perto', items: ['Novidades sobre o lançamento', 'Primeiros a saber quando o acesso abrir', 'Sem ligar contas nem partilhar dados financeiros'], cta: 'Entrar na lista' },
-    pioneersCard: { name: 'Finer Pioneers', for: 'Para testar já, com a equipa', items: ['Experimenta a Finer One antes do lançamento', 'Contacto direto com a equipa', 'Primeiro mês grátis + 10% de desconto nos planos mensal e anual'], cta: 'Candidatar-me' },
+    pioneersCard: { name: 'Finer Pioneers', for: 'Para testar já, com a equipa', items: ['Experimente a Finer One antes do lançamento', 'Contacto direto com a equipa', 'Primeiro mês grátis + 10% de desconto nos planos mensal e anual'], cta: 'Candidatar-me' },
   },
   en: {
     kicker: 'Waitlist',
@@ -121,7 +122,7 @@ const group: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.0
 const rise: Variants = { hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0, transition: { duration: 0.65, ease: EASE } } }
 
 export function WaitlistPage() {
-  if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('versao') === 'anterior') return <WaitlistPageClassic />
+  if (typeof window !== 'undefined' && devFlags.get('versao') === 'anterior') return <WaitlistPageClassic />
   return (
     <MotionConfig reducedMotion="user">
       <Waitlist />

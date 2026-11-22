@@ -6,6 +6,14 @@ import { cn } from '@/lib/utils'
 import { SOURCES } from './content'
 import type { ExploreText, Lang } from './content'
 
+/** Nomes de instituições em inglês, quando o site está em EN. */
+const toEn = (v: string) =>
+  v
+    .replace('Comissão Europeia — proposta de Regulamento relativo aos pagamentos em atraso (ficha informativa)', 'European Commission — proposal for a Late Payment Regulation (factsheet)')
+    .replace('Comissão Europeia', 'European Commission')
+    .replace('Europa Ocidental', 'Western Europe')
+    .replace('Reserva Federal (Fed)', 'Federal Reserve (Fed)')
+
 /**
  * Fontes em estilo editorial (como as peças da identidade Finer One): fundo claro,
  * números grandes em azul-marinho, linhas finas e a linha de luz azul como único
@@ -20,7 +28,7 @@ const inView = { initial: 'hidden', whileInView: 'show', viewport: { once: true,
 export function Sources({ t, lang }: { t: ExploreText; lang: Lang }) {
   const [open, setOpen] = useState<string | null>(null)
   return (
-    <section aria-labelledby="ex-fontes" className="relative bg-gradient-to-b from-white via-[#F7F9FE] to-ice py-20 text-navy lg:py-28">
+    <section aria-labelledby="ex-fontes" className="relative bg-gradient-to-b from-white via-[#F7F9FE] to-ice pb-20 pt-10 text-navy lg:pb-28 lg:pt-14">
       <div className="mx-auto max-w-content px-5 sm:px-6 lg:px-8">
         <motion.div variants={group} {...inView} className="max-w-[760px]">
           <motion.p variants={rise} className="inline-flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">
@@ -44,7 +52,7 @@ export function Sources({ t, lang }: { t: ExploreText; lang: Lang }) {
                   <span className="block font-display text-[48px] font-bold leading-none tracking-[-0.045em] text-[#070D2B] sm:text-[56px]">{s.value[lang]}</span>
                   <span className="mt-4 block max-w-[320px] text-[15.5px] leading-[1.55] text-[#0B1030]/65">{s.label[lang]}</span>
                   <span className="mt-6 flex items-center justify-between gap-3 text-[12.5px]">
-                    <span className="truncate font-semibold uppercase tracking-[0.12em] text-[#0B1030]/40">{lang === 'en' && s.short === 'Comissão Europeia' ? 'European Commission' : s.short}</span>
+                    <span className="truncate font-semibold uppercase tracking-[0.12em] text-[#0B1030]/40">{lang === 'en' ? toEn(s.short) : s.short}</span>
                     <span aria-hidden="true" className={cn('flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-colors duration-300', on ? 'border-[#070D2B] bg-[#070D2B] text-white' : 'border-[#0B1030]/15 text-[#070D2B] group-hover:border-[#070D2B]')}>
                       <Plus className={cn('h-3.5 w-3.5 transition-transform duration-300', on && 'rotate-45')} />
                     </span>
@@ -69,7 +77,7 @@ export function Sources({ t, lang }: { t: ExploreText; lang: Lang }) {
                         </div>
                         <div className="pt-1">
                           <a href={s.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-semibold text-[#070D2B] underline decoration-[#0B1030]/20 underline-offset-4 hover:decoration-[#070D2B]">
-                            {s.institution}
+                            {lang === 'en' ? toEn(s.institution) : s.institution}
                             <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
                           </a>
                         </div>
