@@ -93,6 +93,61 @@ describe('Lista de Espera e Finer Pioneers', () => {
   })
 })
 
+// Regressão (22/11/2026): payloads iguais aos que o site publicado envia, com a versão v3 do aviso
+// de privacidade e o contexto de execução (ctx) que o Cloudflare passa em produção.
+describe('regressão: envios válidos do site com aviso de privacidade v3', () => {
+  const ctx = { waitUntil: () => {}, passThroughOnException: () => {} } as unknown as ExecutionContext
+  const send = (body: Body) =>
+    worker.fetch(
+      new Request('https://forms.test/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=UTF-8', Origin: ORIGIN },
+        body: JSON.stringify(body),
+      }),
+      env,
+      ctx,
+    )
+  const site = (kind: 'waitlist' | 'pioneers', fields: Body): Body => ({
+    kind, fields, consentVersion: '2026-11-v3', lang: 'pt', submissionId: crypto.randomUUID(),
+    website: '', elapsedMs: 45000, turnstileToken: 'tok-ok',
+  })
+
+  it('lista de espera: grava com consent_version v3 e só confirma com id', async () => {
+    const body = site('waitlist', { name: 'Teste Sintético', email: 'lista@exemplo-sintetico.pt', size: 'Só eu', interests: 'Tesouraria, Tudo num só lugar' })
+    const r = await send(body)
+    expect(r.status).toBe(200)
+    expect(await r.json()).toEqual({ ok: true, id: body.submissionId })
+    const all = await rows()
+    expect(all).toHaveLength(1)
+    expect(all[0]).toMatchObject({ id: body.submissionId, kind: 'waitlist', email: 'lista@exemplo-sintetico.pt', size: 'Só eu', consent_version: '2026-11-v3', status: 'nova' })
+    expect(verifyCalls).toHaveLength(1)
+  })
+
+  it('finer pioneers: grava com consent_version v3 e só confirma com id', async () => {
+    const body = site('pioneers', {
+      name: 'Teste Sintético', company: 'Empresa Sintética, Lda', sector: 'Comércio', email: 'pioneer@exemplo-sintetico.pt',
+      challenge: 'Pressão de tesouraria. Tenho dificuldade em prever a falta de caixa.',
+    })
+    const r = await send(body)
+    expect(r.status).toBe(200)
+    expect(await r.json()).toEqual({ ok: true, id: body.submissionId })
+    const all = await rows()
+    expect(all).toHaveLength(1)
+    expect(all[0]).toMatchObject({ id: body.submissionId, kind: 'pioneers', company: 'Empresa Sintética, Lda', sector: 'Comércio', consent_version: '2026-11-v3', size: null })
+  })
+
+  it('os dois formulários gravam em sequência, sem interferirem entre si nem com o Explorar', async () => {
+    const a = site('waitlist', { name: 'Teste A', email: 'a@exemplo-sintetico.pt', size: '2 a 9 pessoas', interests: 'Previsões' })
+    const b = site('pioneers', { name: 'Teste B', company: 'Empresa B, Lda', sector: 'Outro', email: 'b@exemplo-sintetico.pt', challenge: 'Informação dispersa por vários sítios.' })
+    expect((await send(a)).status).toBe(200)
+    expect((await send(b)).status).toBe(200)
+    const all = await rows()
+    expect(all.map((x) => [x.kind, x.consent_version])).toEqual([['waitlist', '2026-11-v3'], ['pioneers', '2026-11-v3']])
+    const explore = await env.DB.prepare('SELECT COUNT(*) AS n FROM explore_leads').first<{ n: number }>()
+    expect(explore?.n).toBe(0)
+  })
+})
+
 describe('validação no servidor', () => {
   it.each([
     ['email inválido', wl({ fields: { name: 'Ana', email: 'x@y', size: '1', interests: 'a' } }), 'email'],
