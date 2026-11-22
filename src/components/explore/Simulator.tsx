@@ -1,5 +1,5 @@
 import { useEffect, useId, useMemo, useRef } from 'react'
-import { AnimatePresence, LayoutGroup, motion } from 'motion/react'
+import { AnimatePresence, LayoutGroup, motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
 import { ArrowRight, RotateCcw } from 'lucide-react'
 import { SAMPLE, simulate } from '@/lib/explore/monthly'
 import type { Horizon, MonthlyInputs, Result, ScenarioKind } from '@/lib/explore/monthly'
@@ -228,37 +228,53 @@ export function Simulator({ t, lang, sim, setSim, currency, onReady, formOpen, c
         </div>
       </div>
 
-      {/* Convite para a análise completa */}
-      <div ref={readyRef} className="relative mt-10 overflow-hidden rounded-[24px] bg-[#070D2B] p-6 text-white sm:p-9">
-        <span aria-hidden="true" className="absolute inset-x-10 top-0 h-px bg-[linear-gradient(90deg,transparent,#1E90FF,transparent)]" />
-        <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-          <div>
-            <h3 className="font-display text-[26px] font-bold leading-[1.1] tracking-[-0.03em] sm:text-[32px]">{t.ready.title}</h3>
-            <p className="mt-3 max-w-[560px] text-[15px] leading-relaxed text-white/65">{t.ready.sub}</p>
+      {/* Convite para a análise completa: o céu Finer da homepage, com um cartão branco por cima */}
+      <SkyStage refEl={readyRef}>
+        <div className="mx-auto max-w-[760px] rounded-[24px] bg-white/[0.95] p-6 text-[#070D2B] shadow-[0_30px_70px_-35px_rgba(7,13,43,0.5)] ring-1 ring-white/70 backdrop-blur-sm sm:p-9">
+          <div className="text-center">
+            <h3 className="text-balance font-display text-[26px] font-bold leading-[1.1] tracking-[-0.03em] sm:text-[34px]">{t.ready.title}</h3>
+            <p className="mx-auto mt-3 max-w-[520px] text-[15px] leading-relaxed text-[#0B1030]/60">{t.ready.sub}</p>
           </div>
           {!formOpen && (
-            <div className="flex flex-col items-start gap-2 lg:items-end">
+            <div className="mt-7 flex flex-col items-center gap-2.5">
               <button
                 type="button"
                 onClick={onReady}
-                className="group inline-flex h-12 items-center gap-2 rounded-lg bg-accent px-6 text-[15px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_10px_30px_-10px_rgba(0,82,255,0.95)] transition-[transform,box-shadow] duration-300 hover:-translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-glow"
+                className="group inline-flex h-12 items-center gap-2 rounded-full bg-[#070D2B] px-7 text-[15px] font-semibold text-white shadow-[0_12px_30px_-14px_rgba(7,13,43,0.8)] transition-[transform,background-color] duration-300 hover:-translate-y-px hover:bg-[#0B1338] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#070D2B] focus-visible:ring-offset-2"
               >
                 {t.ready.cta}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
               </button>
-              <p className="text-[12px] text-white/45">{t.ready.keep}</p>
+              <p className="text-[12px] text-[#0B1030]/45">{t.ready.keep}</p>
             </div>
           )}
+          <AnimatePresence initial={false}>
+            {formOpen && (
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.45, ease: EASE }} className="overflow-hidden">
+                <div className="pt-7">{children}</div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-        <AnimatePresence initial={false}>
-          {formOpen && (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.4, ease: EASE }} className="relative overflow-hidden">
-              <div className="pt-6">{children}</div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+      </SkyStage>
     </div>
+  )
+}
+
+/** Palco com o céu Finer: abre-se do centro com o scroll e as nuvens descem devagar (como na homepage). */
+function SkyStage({ refEl, children }: { refEl: React.RefObject<HTMLDivElement | null>; children: React.ReactNode }) {
+  const reduced = useReducedMotion() ?? false
+  const { scrollYProgress } = useScroll({ target: refEl, offset: ['start end', 'start 0.4'] })
+  const clipPath = useTransform(scrollYProgress, [0, 1], ['inset(0% 10% 0% 10% round 28px)', 'inset(0% 0% 0% 0% round 28px)'])
+  const { scrollYProgress: pass } = useScroll({ target: refEl, offset: ['start end', 'end start'] })
+  const skyY = useTransform(pass, [0, 1], ['-6%', '6%'])
+  return (
+    <motion.div ref={refEl} style={reduced ? undefined : { clipPath }} className="relative isolate mt-12 overflow-hidden rounded-[28px] px-4 py-10 sm:px-10 sm:py-16">
+      <motion.div aria-hidden="true" className="absolute inset-x-0 -inset-y-[8%] -z-10" style={reduced ? undefined : { y: skyY }}>
+        <img src="/images/finer-sky.webp" alt="" decoding="async" loading="lazy" draggable={false} className="h-full w-full select-none object-cover" />
+      </motion.div>
+      {children}
+    </motion.div>
   )
 }
 

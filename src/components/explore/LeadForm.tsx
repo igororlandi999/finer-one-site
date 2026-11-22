@@ -90,13 +90,13 @@ export function LeadForm({ t, lang, lead, setLead, scenario, horizon, onBack, on
     onSuccess(res.preview)
   }
 
-  const input = 'h-11 w-full rounded-lg border border-white/15 bg-white/[0.06] px-3.5 text-[14.5px] text-white placeholder:text-white/35 outline-none transition-colors focus:border-[#5CA8FF] focus:bg-white/[0.09]'
-  const opt = <span className="font-normal text-white/40"> · {t.optional}</span>
+  const input = 'h-11 w-full rounded-xl border border-[#0B1030]/12 bg-white px-3.5 text-[14.5px] text-[#070D2B] placeholder:text-[#0B1030]/35 outline-none transition-[border-color,box-shadow] focus:border-[#070D2B] focus:ring-2 focus:ring-[#070D2B]/10'
+  const opt = <span className="font-normal text-[#0B1030]/40"> · {t.optional}</span>
 
   return (
-    <form onSubmit={submit} noValidate className="border-t border-white/10 pt-6">
-      <h4 className="font-display text-[20px] font-bold tracking-[-0.02em]">{t.title}</h4>
-      <p className="mt-1 text-[13.5px] text-white/55">{t.sub}</p>
+    <form onSubmit={submit} noValidate className="border-t border-[#0B1030]/10 pt-7 text-left">
+      <h4 className="font-display text-[20px] font-bold tracking-[-0.02em] text-[#070D2B]">{t.title}</h4>
+      <p className="mt-1 text-[13.5px] text-[#0B1030]/55">{t.sub}</p>
 
       {/* Campo-armadilha para robôs */}
       <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
@@ -157,32 +157,32 @@ export function LeadForm({ t, lang, lead, setLead, scenario, horizon, onBack, on
         <Check checked={lead.marketing} onChange={(v) => set('marketing', v)}>{t.marketing}</Check>
       </div>
 
-      <div className="mt-5 rounded-xl border border-white/10 bg-white/[0.03] p-4">
-        <p className="text-[12.5px] font-semibold text-white/80">{t.privacyTitle}</p>
+      <div className="mt-5 rounded-xl bg-[#F5F7FB] p-4">
+        <p className="text-[12.5px] font-semibold text-[#070D2B]">{t.privacyTitle}</p>
         <dl className="mt-2 grid gap-x-6 gap-y-1.5 text-[12px] leading-snug sm:grid-cols-2">
           {t.privacy.map(([k, v]) => (
             <div key={k}>
-              <dt className="inline font-medium text-white/70">{k}: </dt>
-              <dd className="inline text-white/50">{v}</dd>
+              <dt className="inline font-medium text-[#070D2B]/80">{k}: </dt>
+              <dd className="inline text-[#0B1030]/55">{v}</dd>
             </div>
           ))}
         </dl>
-        <a href="/privacidade/" target="_blank" rel="noopener" className="mt-2.5 inline-block text-[12px] font-medium text-[#7CB8FF] underline decoration-white/20 underline-offset-4 hover:text-white">
+        <a href="/privacidade/" target="_blank" rel="noopener" className="mt-2.5 inline-block text-[12px] font-medium text-[#070D2B] underline decoration-[#0B1030]/25 underline-offset-4 hover:decoration-[#070D2B]">
           {t.policy}
         </a>
       </div>
 
       {errors.form && (
-        <p role="alert" className="mt-4 rounded-lg border border-[#FF6B6B]/30 bg-[#FF6B6B]/10 px-3.5 py-2.5 text-[13px] text-[#FFB4B4]">
+        <p role="alert" className="mt-4 rounded-lg border border-[#E5484D]/25 bg-[#FDECEC] px-3.5 py-2.5 text-[13px] text-[#9F2228]">
           {errors.form}
         </p>
       )}
 
       <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <button type="button" onClick={onBack} className="text-[13px] font-medium text-white/55 underline decoration-white/20 underline-offset-4 hover:text-white">
+        <button type="button" onClick={onBack} className="text-[13px] font-medium text-[#0B1030]/55 underline decoration-[#0B1030]/20 underline-offset-4 hover:text-[#070D2B]">
           {t.back}
         </button>
-        <button type="submit" disabled={sending} className="group inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-accent px-6 text-[15px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_10px_30px_-10px_rgba(0,82,255,0.95)] transition-transform hover:-translate-y-px disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-glow">
+        <button type="submit" disabled={sending} className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#070D2B] px-7 text-[15px] font-semibold text-white shadow-[0_12px_30px_-14px_rgba(7,13,43,0.8)] transition-[transform,background-color] hover:-translate-y-px hover:bg-[#0B1338] disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#070D2B] focus-visible:ring-offset-2">
           {sending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : null}
           {sending ? t.sending : t.submit}
           {!sending && <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />}
@@ -195,19 +195,19 @@ export function LeadForm({ t, lang, lead, setLead, scenario, horizon, onBack, on
 function Field({ id, label, error, children }: { id: string; label: React.ReactNode; error?: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <label htmlFor={id} className="block text-[13px] font-medium text-white/80">
+      <label htmlFor={id} className="block text-[13px] font-medium text-[#070D2B]/80">
         {label}
       </label>
       {children}
-      {error && <p className="text-[12px] text-[#FFB4B4]">{error}</p>}
+      {error && <p className="text-[12px] text-[#C62D33]">{error}</p>}
     </div>
   )
 }
 
 function Check({ checked, onChange, children }: { checked: boolean; onChange: (v: boolean) => void; children: React.ReactNode }) {
   return (
-    <label className="flex cursor-pointer items-start gap-3 text-[13px] leading-snug text-white/70">
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="mt-0.5 h-4 w-4 shrink-0 accent-[#0052FF]" />
+    <label className="flex cursor-pointer items-start gap-3 text-[13px] leading-snug text-[#0B1030]/65">
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="mt-0.5 h-4 w-4 shrink-0 accent-[#070D2B]" />
       {children}
     </label>
   )

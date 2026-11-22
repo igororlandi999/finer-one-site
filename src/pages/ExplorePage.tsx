@@ -84,7 +84,6 @@ export function ExplorePage() {
       {report && <Report lang={lang} inp={inp} scenario={sim.scenario} company={lead.company.trim()} currency={lead.currency} preview={report.preview} onAgain={() => scrollTo('simulacao')} />}
 
       <Sources t={t} lang={lang} />
-      <Bridge t={t} />
       <FinalCta t={t} onStart={() => scrollTo('simulacao')} />
     </MotionConfig>
   )
@@ -143,38 +142,6 @@ function Hero({ t, onStart }: { t: ExploreText; onStart: () => void }) {
   )
 }
 
-/* ---------------- Ponte para a plataforma ---------------- */
-
-function Bridge({ t }: { t: ExploreText }) {
-  return (
-    <section aria-labelledby="ex-bridge" className="bg-white py-24 text-navy lg:py-32">
-      <motion.div variants={group} {...inView} className="mx-auto max-w-content px-5 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-[760px] text-center">
-          <motion.p variants={rise} className="inline-flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">
-            <span className="h-px w-8 bg-gradient-to-r from-transparent to-accent-deep" aria-hidden="true" />
-            {t.bridgeEyebrow}
-            <span className="h-px w-8 bg-gradient-to-l from-transparent to-accent-deep" aria-hidden="true" />
-          </motion.p>
-          <h2 id="ex-bridge" className="mt-4 font-display text-[32px] font-bold leading-[1.05] tracking-[-0.035em] text-[#070D2B] sm:text-[44px] lg:text-[48px]">
-            {t.bridgeTitle[0]}
-            <span className="text-accent-deep">{t.bridgeTitle[1]}</span>
-          </h2>
-          <motion.p variants={rise} className="mx-auto mt-5 max-w-[580px] text-[17px] leading-[1.6] text-[#0B1030]/60">{t.bridgeSub}</motion.p>
-        </div>
-        <ul className="mx-auto mt-16 grid max-w-[980px] grid-cols-2 gap-x-8 gap-y-10 lg:grid-cols-4">
-          {t.bridge.map((name, i) => (
-            <motion.li key={name} variants={rise} className="relative pt-6 text-center">
-              <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-[#0B1030]/10" />
-              <motion.span aria-hidden="true" className="absolute left-0 top-0 h-[2px] w-full origin-left bg-[linear-gradient(90deg,#0052FF,#5CA8FF)] shadow-[0_0_12px_rgba(30,144,255,0.6)]" initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }} transition={{ duration: 0.9, ease: EASE, delay: 0.15 + i * 0.12 }} />
-              <h3 className="font-display text-[22px] font-bold tracking-[-0.025em] text-[#070D2B] sm:text-[26px]">{name}</h3>
-            </motion.li>
-          ))}
-        </ul>
-      </motion.div>
-    </section>
-  )
-}
-
 /* ---------------- Convite final ---------------- */
 
 function FinalCta({ t, onStart }: { t: ExploreText; onStart: () => void }) {
@@ -190,6 +157,15 @@ function FinalCta({ t, onStart }: { t: ExploreText; onStart: () => void }) {
           <span className="text-glow">{t.ctaTitle[1]}</span>
         </h2>
         <motion.p variants={rise} className="mx-auto mt-5 max-w-[580px] text-[17px] leading-[1.6] text-white/70">{t.ctaSub}</motion.p>
+        <motion.ul variants={rise} aria-label={t.bridgeEyebrow} className="mx-auto mt-12 grid max-w-[720px] grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-4">
+          {t.bridge.map((name, i) => (
+            <li key={name} className="relative pt-4">
+              <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-white/15" />
+              <motion.span aria-hidden="true" className="absolute left-0 top-0 h-px w-full origin-left bg-[linear-gradient(90deg,#1E90FF,#7CB8FF)] shadow-[0_0_10px_rgba(30,144,255,0.8)]" initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }} transition={{ duration: 0.9, ease: EASE, delay: 0.2 + i * 0.12 }} />
+              <span className="font-display text-[16px] font-bold tracking-[-0.01em] text-white sm:text-[17px]">{name}</span>
+            </li>
+          ))}
+        </motion.ul>
         <motion.div variants={rise} className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
           <button type="button" onClick={onStart} className="group inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-accent px-6 text-[15px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_10px_30px_-10px_rgba(0,82,255,0.95)] transition-transform hover:-translate-y-px">
             {t.start}

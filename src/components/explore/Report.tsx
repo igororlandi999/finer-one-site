@@ -10,6 +10,7 @@ import { useFmt } from './Simulator'
 import type { Fmt } from './Simulator'
 import type { Lang } from './content'
 import { REPORT } from './reportText'
+import { buildCfo } from './cfo'
 import type { ReportText } from './reportText'
 
 /**
@@ -36,6 +37,10 @@ export function Report({ lang, inp, scenario, company, currency, preview, onAgai
   const bal = inp.hasBalance
   const yours = d.scenarios[1].r
   const stress = d.scenarios[2].r
+  const cfo = useMemo(() => buildCfo(inp, r, d, f, lang), [inp, r, d, f, lang])
+  const X = lang === 'pt'
+    ? { analysis: 'Análise da situação', analysisSub: 'A leitura de um CFO sobre os números da simulação.', calc: 'Como calculámos', calcSub: 'Cada número da análise, com a conta feita com os seus valores.', recs: 'Recomendações', high: 'Prioridade alta', medium: 'Prioridade média', plan: 'Plano de ação', planSub: 'O que fazer, quem faz e como medir. Para decidir já esta semana.', cols: ['Quando', 'Ação', 'Responsável', 'Indicador', 'Meta'] }
+    : { analysis: 'Situation analysis', analysisSub: 'A CFO’s reading of the simulation figures.', calc: 'How we calculated', calcSub: 'Every figure in the analysis, worked out with your values.', recs: 'Recommendations', high: 'High priority', medium: 'Medium priority', plan: 'Action plan', planSub: 'What to do, who does it and how to measure it. Ready to decide this week.', cols: ['When', 'Action', 'Owner', 'Indicator', 'Target'] }
 
   useEffect(() => {
     track('full_report_viewed', { scenario, horizon: H, preview })
@@ -86,6 +91,10 @@ export function Report({ lang, inp, scenario, company, currency, preview, onAgai
 
         {/* 01 · Sumário executivo */}
         <Section n="01" title={R.s1}>
+          <motion.p variants={rise} {...inView} className={cn('mb-6 inline-flex items-center gap-2.5 rounded-full px-3.5 py-1.5 text-[13px] font-semibold', cfo.level === 'risk' ? 'bg-[#FDECEC] text-[#9F2228]' : cfo.level === 'watch' ? 'bg-[#FFF5E0] text-[#7A5600]' : 'bg-[#E9F7EF] text-[#11703B]')}>
+            <span className="h-2 w-2 rounded-full" style={{ background: cfo.level === 'risk' ? '#E5484D' : cfo.level === 'watch' ? '#E8A317' : '#18A957' }} />
+            {cfo.diagnosis}
+          </motion.p>
           <motion.ol variants={group} {...inView} className="space-y-4">
             {findings.map((x, i) => (
               <motion.li key={x} variants={rise} className="flex gap-4 text-[18px] leading-[1.45] tracking-[-0.01em] text-[#070D2B] sm:text-[20px]">
@@ -111,8 +120,22 @@ export function Report({ lang, inp, scenario, company, currency, preview, onAgai
           </motion.dl>
         </Section>
 
-        {/* 02 · Ponte de tesouraria */}
-        <Section n="02" title={R.s2} sub={R.s2Sub}>
+        {/* 02 · Análise da situação */}
+        <Section n="02" title={X.analysis} sub={X.analysisSub}>
+          <motion.div variants={group} {...inView} className="max-w-[720px] space-y-5">
+            {cfo.analysis.map((p) => {
+              const [head, ...rest] = p.split('. ')
+              return (
+                <motion.p key={p} variants={rise} className="text-[16px] leading-[1.7] text-[#0B1030]/70">
+                  <strong className="font-semibold text-[#070D2B]">{head}.</strong> {rest.join('. ')}
+                </motion.p>
+              )
+            })}
+          </motion.div>
+        </Section>
+
+        {/* 03 · Ponte de tesouraria */}
+        <Section n="03" title={R.s2} sub={R.s2Sub}>
           <Waterfall R={R} f={f} steps={bal ? [
             { k: R.bridge.opening, v: d.bridge.opening, total: true },
             { k: R.bridge.inflow, v: d.bridge.inflow },
@@ -127,7 +150,7 @@ export function Report({ lang, inp, scenario, company, currency, preview, onAgai
         </Section>
 
         {/* 03 · Previsão direta */}
-        <Section n="03" title={R.s3} sub={bal ? R.s3Sub(f.money(d.buffer)) : undefined}>
+        <Section n="04" title={R.s3} sub={bal ? R.s3Sub(f.money(d.buffer)) : undefined}>
           <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
             <table className="w-full min-w-[620px] text-[13.5px] tabular-nums">
               <thead>
@@ -168,7 +191,7 @@ export function Report({ lang, inp, scenario, company, currency, preview, onAgai
         </Section>
 
         {/* 04 · Cenários */}
-        <Section n="04" title={R.s4} sub={R.s4Sub}>
+        <Section n="05" title={R.s4} sub={R.s4Sub}>
           <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
             <table className="w-full min-w-[520px] text-[14px] tabular-nums">
               <thead>
@@ -218,12 +241,12 @@ export function Report({ lang, inp, scenario, company, currency, preview, onAgai
         </Section>
 
         {/* 05 · Sensibilidade */}
-        <Section n="05" title={R.s5} sub={bal ? R.s5Sub : R.s5SubCal}>
+        <Section n="06" title={R.s5} sub={bal ? R.s5Sub : R.s5SubCal}>
           <Heatmap R={R} f={f} d={d} inp={inp} />
         </Section>
 
         {/* 06 · Indicadores */}
-        <Section n="06" title={R.s6} sub={R.s6Sub}>
+        <Section n="07" title={R.s6} sub={R.s6Sub}>
           <motion.ul variants={group} {...inView} className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl bg-[#0B1030]/[0.08] sm:grid-cols-2 lg:grid-cols-4">
             {r.kpis.delayed.map((k) => (
               <motion.li key={k.id} variants={rise} className="bg-white p-5">
@@ -239,22 +262,63 @@ export function Report({ lang, inp, scenario, company, currency, preview, onAgai
           </motion.ul>
         </Section>
 
-        {/* 07 · Alavancas (Finer Advisor) */}
-        <Section n="07" title={R.s7} sub={R.s7Tag}>
-          <motion.ul variants={group} {...inView} className="divide-y divide-[#0B1030]/[0.08] border-y border-[#0B1030]/[0.08]">
-            {d.levers.filter((l) => l.gain > 0.5).map((l) => (
-              <motion.li key={l.id} variants={rise} className="py-4 text-[16px] leading-relaxed text-[#070D2B]">
-                {l.id === 'share' ? R.lever.share(l.to, f.money(l.gain)) : R.lever.days(f.money(l.gain))}
-              </motion.li>
+        {/* 09 · Como calculámos */}
+        <Section n="08" title={X.calc} sub={X.calcSub}>
+          <motion.dl variants={group} {...inView} className="divide-y divide-[#0B1030]/[0.08] border-y border-[#0B1030]/[0.08]">
+            {cfo.calc.map((c) => (
+              <motion.div key={c.label} variants={rise} className="grid gap-1 py-3.5 sm:grid-cols-[220px_minmax(0,1fr)] sm:gap-6">
+                <dt className="text-[13.5px] text-[#0B1030]/55">{c.label}</dt>
+                <dd className="font-mono text-[13.5px] tabular-nums text-[#070D2B]">{c.formula}</dd>
+              </motion.div>
             ))}
-            <motion.li variants={rise} className="py-4 text-[16px] leading-relaxed text-[#070D2B]">
-              {!bal ? R.lever.noBalance : d.fundingNeed > 0 ? R.lever.buffer(f.money(d.fundingNeed), f.monthLong(d.minHeadroomMonth)) : R.lever.none}
-            </motion.li>
-          </motion.ul>
+          </motion.dl>
         </Section>
 
-        {/* 08 · Pressupostos */}
-        <Section n="08" title={R.s8}>
+        {/* 10 · Recomendações */}
+        <Section n="09" title={X.recs} sub={R.s7Tag}>
+          <motion.ol variants={group} {...inView} className="space-y-px overflow-hidden rounded-2xl bg-[#0B1030]/[0.08]">
+            {cfo.recs.map((rc, i) => (
+              <motion.li key={rc.title} variants={rise} className="bg-white p-5 sm:p-6">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="font-display text-[13px] font-bold tabular-nums text-accent-deep">{String(i + 1).padStart(2, '0')}</span>
+                  <span className={cn('rounded-full px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em]', rc.priority === 'high' ? 'bg-[#070D2B] text-white' : 'bg-[#EEF1F6] text-[#0B1030]/65')}>{rc.priority === 'high' ? X.high : X.medium}</span>
+                </div>
+                <h4 className="mt-3 font-display text-[19px] font-bold tracking-[-0.02em] text-[#070D2B]">{rc.title}</h4>
+                <p className="mt-1.5 text-[14.5px] leading-relaxed text-[#0B1030]/60">{rc.why}</p>
+                <p className="mt-3 border-l-2 border-accent-deep pl-3 text-[14px] font-medium leading-relaxed text-[#070D2B]">{rc.impact}</p>
+              </motion.li>
+            ))}
+          </motion.ol>
+        </Section>
+
+        {/* 11 · Plano de ação */}
+        <Section n="10" title={X.plan} sub={X.planSub}>
+          <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
+            <table className="w-full min-w-[640px] text-[13.5px]">
+              <thead>
+                <tr className="text-left text-[12px] text-[#0B1030]/45">
+                  {X.cols.map((c) => (
+                    <th key={c} className="pb-3 pr-4 font-medium">{c}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#0B1030]/[0.08] border-t border-[#0B1030]/10 align-top">
+                {cfo.plan.map((p) => (
+                  <tr key={p.action}>
+                    <td className="whitespace-nowrap py-3.5 pr-4 font-semibold text-accent-deep">{p.when}</td>
+                    <td className="py-3.5 pr-4 text-[#070D2B]">{p.action}</td>
+                    <td className="py-3.5 pr-4 text-[#0B1030]/60">{p.owner}</td>
+                    <td className="py-3.5 pr-4 text-[#0B1030]/60">{p.kpi}</td>
+                    <td className="whitespace-nowrap py-3.5 font-semibold tabular-nums text-[#070D2B]">{p.target}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Section>
+
+        {/* 12 · Pressupostos */}
+        <Section n="11" title={R.s8}>
           <ul className="grid gap-x-10 gap-y-2.5 text-[13.5px] leading-snug text-[#0B1030]/55 sm:grid-cols-2">
             {R.assumptions.map((a) => (
               <li key={a} className="flex gap-3">
