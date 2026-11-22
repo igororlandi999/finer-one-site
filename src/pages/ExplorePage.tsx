@@ -62,7 +62,7 @@ export function ExplorePage() {
             </div>
             <p className="max-w-[400px] text-[14.5px] leading-relaxed text-[#0B1030]/55">{t.simSub}</p>
           </div>
-          <Simulator t={t} lang={lang} sim={sim} setSim={setSim} currency={lead.currency} onReady={openForm} formOpen={formOpen}>
+          <Simulator t={t} lang={lang} sim={sim} setSim={setSim} currency={lead.currency} onReady={openForm} formOpen={formOpen} unlocked={!!report}>
             <LeadForm
               t={t.form}
               lang={lang}

@@ -6,8 +6,9 @@ import { deepen, simulate } from '@/lib/explore/monthly'
 import type { Kpi, Light, MonthlyInputs, Result, ScenarioKind } from '@/lib/explore/monthly'
 import { track } from '@/lib/analytics'
 import { cn } from '@/lib/utils'
-import { useFmt } from './Simulator'
+import { insightOf, useFmt } from './Simulator'
 import type { Fmt } from './Simulator'
+import { TEXT } from './content'
 import type { Lang } from './content'
 import { REPORT } from './reportText'
 import { buildCfo } from './cfo'
@@ -38,6 +39,8 @@ export function Report({ lang, inp, scenario, company, currency, preview, onAgai
   const yours = d.scenarios[1].r
   const stress = d.scenarios[2].r
   const cfo = useMemo(() => buildCfo(inp, r, d, f, lang), [inp, r, d, f, lang])
+  const T = TEXT[lang].insight
+  const insight = insightOf(inp, r, T, f)
   const X = lang === 'pt'
     ? { analysis: 'Análise da situação', analysisSub: 'A leitura de um CFO sobre os números da simulação.', calc: 'Como calculámos', calcSub: 'Cada número da análise, com a conta feita com os seus valores.', recs: 'Recomendações', high: 'Prioridade alta', medium: 'Prioridade média', plan: 'Plano de ação', planSub: 'O que fazer, quem faz e como medir. Para decidir já esta semana.', cols: ['Quando', 'Ação', 'Responsável', 'Indicador', 'Meta'] }
     : { analysis: 'Situation analysis', analysisSub: 'A CFO’s reading of the simulation figures.', calc: 'How we calculated', calcSub: 'Every figure in the analysis, worked out with your values.', recs: 'Recommendations', high: 'High priority', medium: 'Medium priority', plan: 'Action plan', planSub: 'What to do, who does it and how to measure it. Ready to decide this week.', cols: ['When', 'Action', 'Owner', 'Indicator', 'Target'] }
@@ -77,7 +80,7 @@ export function Report({ lang, inp, scenario, company, currency, preview, onAgai
             <motion.p variants={rise} className="text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">{R.eyebrow}</motion.p>
             <h2 id="rel-titulo" className="mt-4 text-balance font-display text-[34px] font-bold leading-[1.04] tracking-[-0.035em] text-[#070D2B] sm:text-[48px]">{R.title(company)}</h2>
             <motion.p variants={rise} className="mt-3 text-[14px] text-[#0B1030]/50">
-              <span className="capitalize">{f.monthLong(0)}</span> — {f.monthLong(H - 1)}
+              {f.monthLong(0).replace(/^./, (c) => c.toUpperCase())} — {f.monthLong(H - 1)}
             </motion.p>
           </div>
           <motion.div variants={rise} className="no-print flex flex-col items-start gap-2 sm:items-end">
@@ -95,6 +98,16 @@ export function Report({ lang, inp, scenario, company, currency, preview, onAgai
             <span className="h-2 w-2 rounded-full" style={{ background: cfo.level === 'risk' ? '#E5484D' : cfo.level === 'watch' ? '#E8A317' : '#18A957' }} />
             {cfo.diagnosis}
           </motion.p>
+          {/* A primeira descoberta do simulador, agora desbloqueada */}
+          <motion.div variants={rise} {...inView} className="mb-9">
+            <p className="text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep">{T.eyebrow}</p>
+            <p className={cn('mt-3 max-w-[760px] text-balance font-display text-[26px] font-bold leading-[1.15] tracking-[-0.03em] sm:text-[34px]', insight.tone === 'risk' ? NEG : 'text-[#070D2B]')}>{insight.title}</p>
+            {bal && (
+              <p className="mt-3 text-[15px] text-[#0B1030]/60">
+                {T.pressure}: <strong className="font-semibold text-[#070D2B]">{r.pressure.length ? r.pressure.map((m) => f.monthLong(m)).join(', ') : T.none}</strong>
+              </p>
+            )}
+          </motion.div>
           <motion.ol variants={group} {...inView} className="space-y-4">
             {findings.map((x, i) => (
               <motion.li key={x} variants={rise} className="flex gap-4 text-[18px] leading-[1.45] tracking-[-0.01em] text-[#070D2B] sm:text-[20px]">
