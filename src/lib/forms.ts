@@ -31,7 +31,8 @@
 export type FormKind = 'pioneers' | 'waitlist' | 'explore'
 
 // 2026-11-v3: aviso aprovado pelos três fundadores a 22/11/2026 (inclui o Explorar).
-export const PRIVACY_VERSION = '2026-11-v3'
+// 2026-11-v4: autorizada a 22/11/2026 — email interno também na Lista de Espera e no Finer Pioneers.
+export const PRIVACY_VERSION = '2026-11-v4'
 const MIN_FILL_MS = 3000
 const LOCAL_LIMIT = 5
 const LOCAL_WINDOW_MS = 60 * 60 * 1000
