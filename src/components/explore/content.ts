@@ -249,8 +249,6 @@ const pt = {
   },
   insight: {
     eyebrow: 'Primeira descoberta',
-    locked: 'Indique o seu email para ver quanto dinheiro estes atrasos lhe retiram, em que mês e quais os meses que ficam sob pressão.',
-    unlock: 'Ver a primeira descoberta',
     gapTitle: (money: string, month: string) => `Com estes atrasos, terá menos ${money} disponíveis em ${month}.`,
     negTitle: (month: string) => `Com estes atrasos, o saldo fica negativo em ${month}.`,
     calTitle: (money: string, month: string) => `Com estes atrasos, ${money} deixam de entrar em ${month}.`,
@@ -375,8 +373,6 @@ const en: ExploreText = {
   },
   insight: {
     eyebrow: 'First insight',
-    locked: 'Enter your email to see how much cash these delays take away, in which month, and which months come under pressure.',
-    unlock: 'See the first insight',
     gapTitle: (money, month) => `With these delays, you will have ${money} less available in ${month}.`,
     negTitle: (month) => `With these delays, the balance turns negative in ${month}.`,
     calTitle: (money, month) => `With these delays, ${money} no longer comes in during ${month}.`,
