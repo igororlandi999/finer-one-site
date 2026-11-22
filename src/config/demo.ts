@@ -24,6 +24,17 @@ export const DEMO_VIDEO: DemoVideoSource = {
   portraitPoster: '/video/hero-demo-mobile.jpg',
 }
 
+/** Versão inglesa do mesmo vídeo (mesma história, interface em inglês), usada com o site em EN. */
+export const DEMO_VIDEO_EN: DemoVideoSource = {
+  src: '/video/hero-demo-en.mp4',
+  mobile: '/video/hero-demo-en-720.mp4',
+  poster: '/video/hero-demo-en.jpg',
+  portrait: '/video/hero-demo-en-mobile.mp4',
+  portraitPoster: '/video/hero-demo-en-mobile.jpg',
+}
+
+export const demoVideoFor = (lang: 'pt' | 'en') => (lang === 'en' ? DEMO_VIDEO_EN : DEMO_VIDEO)
+
 /**
  * Fundo cinematográfico da Hero (Terra vista do espaço). Recurso próprio,
  * gerado em video/ (composição HeroEarth) a partir da fotografia oficial da

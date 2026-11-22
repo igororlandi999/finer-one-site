@@ -1,3 +1,4 @@
+import { SCRIPT } from '../lib/lang'
 import { useRef } from 'react'
 import type { ReactNode } from 'react'
 import { AbsoluteFill, Easing, Img, interpolate, random, staticFile, useCurrentFrame } from 'remotion'
@@ -12,8 +13,8 @@ import { Comet, curve, Pulse } from '../parts/Comet'
 import { Cursor } from '../parts/Cursor'
 import { Highlight } from '../parts/Highlight'
 
-const QUESTION = 'Como está a tesouraria da minha empresa?'
-const ANSWER = 'Há € 50.948,60 em faturas em atraso e um cliente concentra 88,3% deste valor.'
+const QUESTION = SCRIPT.question
+const ANSWER = SCRIPT.answer
 const WORDS = ANSWER.split(' ')
 /** O mundo do topo das páginas (como na plataforma real). */
 const SKY = <Img src={staticFile('images/finer-mundo.webp')} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 0%' }} />

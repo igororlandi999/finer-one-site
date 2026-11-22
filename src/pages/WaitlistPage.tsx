@@ -4,7 +4,7 @@ import { AnimatePresence, MotionConfig, motion, useReducedMotion, useScroll, use
 import type { Variants } from 'motion/react'
 import { ArrowLeft, ArrowRight, Check, Lock } from 'lucide-react'
 import { ConsentCheckbox, Honeypot } from '@/components/forms/fields'
-import { DEMO_VIDEO } from '@/config/demo'
+import { demoVideoFor } from '@/config/demo'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { isPreviewMode, isValidEmail, submitForm } from '@/lib/forms'
@@ -61,11 +61,11 @@ const copy = {
     lookSub: 'Faça perguntas sobre o seu negócio, acompanhe a tesouraria e descubra o que merece a sua atenção.',
     videoLabel: 'Demonstração da plataforma Finer One, com dados fictícios',
     plusLabel: 'O Finer Plus inclui',
-    plus: ['Finer Home', 'Cashflow', 'Receitas', 'Despesas', 'Clientes e Fornecedores', 'Finer Advisor', 'Alertas'],
+    plus: ['Finer Home', 'Cashflow', 'Receitas', 'Despesas', 'Clientes e Fornecedores', 'Indicadores', 'Finer Advisor', 'Alertas'],
     choiceEyebrow: 'Duas formas de começar',
     choiceTitle: ['Lista de espera ou ', 'Finer Pioneers?'],
     waitlistCard: { name: 'Lista de espera', for: 'Para acompanhar de perto', items: ['Novidades sobre o lançamento', 'Primeiros a saber quando o acesso abrir', 'Sem ligar contas nem partilhar dados financeiros'], cta: 'Entrar na lista' },
-    pioneersCard: { name: 'Finer Pioneers', for: 'Para testar já, com a equipa', items: ['Experimenta a Finer One antes do lançamento', 'Contacto direto com a equipa', 'Primeiro mês grátis + 10% de desconto nos planos mensal e anual', '10 lugares'], cta: 'Candidatar-me' },
+    pioneersCard: { name: 'Finer Pioneers', for: 'Para testar já, com a equipa', items: ['Experimenta a Finer One antes do lançamento', 'Contacto direto com a equipa', 'Primeiro mês grátis + 10% de desconto nos planos mensal e anual'], cta: 'Candidatar-me' },
   },
   en: {
     kicker: 'Waitlist',
@@ -107,11 +107,11 @@ const copy = {
     lookSub: 'Ask questions about your business, follow your cash and find out what deserves your attention.',
     videoLabel: 'Finer One platform demo, with fictitious data',
     plusLabel: 'Finer Plus includes',
-    plus: ['Finer Home', 'Cashflow', 'Revenue', 'Expenses', 'Customers and Suppliers', 'Finer Advisor', 'Alerts'],
+    plus: ['Finer Home', 'Cashflow', 'Revenue', 'Expenses', 'Customers and Suppliers', 'Indicators', 'Finer Advisor', 'Alerts'],
     choiceEyebrow: 'Two ways to start',
     choiceTitle: ['Waitlist or ', 'Finer Pioneers?'],
     waitlistCard: { name: 'Waitlist', for: 'To follow along closely', items: ['Launch news', 'First to know when access opens', 'No bank connection or financial data needed'], cta: 'Join the list' },
-    pioneersCard: { name: 'Finer Pioneers', for: 'To try it now, with the team', items: ['Try Finer One before launch', 'Direct contact with the team', 'First month free + 10% off the monthly and annual plans', '10 places'], cta: 'Apply now' },
+    pioneersCard: { name: 'Finer Pioneers', for: 'To try it now, with the team', items: ['Try Finer One before launch', 'Direct contact with the team', 'First month free + 10% off the monthly and annual plans'], cta: 'Apply now' },
   },
 }
 type T = (typeof copy)['pt']
@@ -395,6 +395,8 @@ function SignupBox({ t }: { t: T }) {
 /* Um primeiro olhar: o vídeo da hero, que cresce com o scroll */
 
 function FirstLook({ t }: { t: T }) {
+  const { lang } = useLanguage()
+  const DEMO_VIDEO = demoVideoFor(lang)
   const reduced = useReducedMotion() ?? false
   const small = !useMediaQuery('(min-width: 768px)')
   const ref = useRef<HTMLDivElement>(null)
@@ -435,7 +437,7 @@ function FirstLook({ t }: { t: T }) {
         <motion.div style={{ scale, borderRadius: radius, rotateX: tilt }} className="relative overflow-hidden border border-[#0B1030]/[0.08] bg-[#070D2B] p-1.5 shadow-[0_60px_120px_-50px_rgba(7,13,43,0.6)] will-change-transform">
           <div className={cn('relative overflow-hidden rounded-[18px] bg-white', portrait ? 'mx-auto aspect-[4/5] max-w-[420px]' : 'aspect-video')}>
             <video
-              key={portrait ? 'v' : 'h'}
+              key={(portrait ? 'v' : 'h') + lang}
               ref={video}
               className="absolute inset-0 h-full w-full object-cover"
               muted

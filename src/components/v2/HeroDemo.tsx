@@ -6,7 +6,7 @@ import { LuminousLine } from '@/components/v2/LuminousLine'
 import { AppShell } from '@/components/v2/finer-ui/AppShell'
 import { FinerHomeView } from '@/components/v2/finer-ui/FinerHomeView'
 import { ScaledCanvas } from '@/components/v2/finer-ui/ScaledCanvas'
-import { DEMO_VIDEO, HERO_BACKGROUND, TRY_DEMO_ANCHOR } from '@/config/demo'
+import { HERO_BACKGROUND, demoVideoFor } from '@/config/demo'
 import type { DemoVideoSource } from '@/config/demo'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useInView } from '@/hooks/useInView'
@@ -25,7 +25,7 @@ const copy: Record<Lang, {
     secondPrefix: 'Agora precisa de ',
     highlight: 'respostas',
     sub: 'Faça perguntas sobre o seu negócio, acompanhe a tesouraria e descubra o que merece a sua atenção.',
-    primary: 'Experimentar demonstração',
+    primary: 'Experimentar a Finer One',
     secondary: 'Ser Finer Pioneer',
     badge: 'Dados fictícios',
     play: 'Reproduzir vídeo',
@@ -39,7 +39,7 @@ const copy: Record<Lang, {
     secondPrefix: 'Now it needs ',
     highlight: 'answers',
     sub: 'Ask questions about your business, follow your cash and find out what deserves your attention.',
-    primary: 'Try the demo',
+    primary: 'Try Finer One',
     secondary: 'Become a Finer Pioneer',
     badge: 'Fictitious data',
     play: 'Play video',
@@ -62,7 +62,8 @@ type T = (typeof copy)['pt']
 export function HeroDemo() {
   const { lang } = useLanguage()
   const t = copy[lang]
-  const activeVideo = DEMO_VIDEO.src ? DEMO_VIDEO : null
+  const demo = demoVideoFor(lang)
+  const activeVideo = demo.src ? demo : null
 
   return (
     <section
@@ -93,7 +94,7 @@ export function HeroDemo() {
           </p>
           <div className="mt-11 flex animate-fade-up flex-col gap-3 [animation-delay:400ms] sm:flex-row sm:items-center sm:gap-3.5">
             <a
-              href={TRY_DEMO_ANCHOR}
+              href="/explorar/"
               className={buttonClasses({
                 size: 'lg',
                 className:
@@ -285,7 +286,7 @@ function DemoVideo({ t, video: source }: { t: T; video: DemoVideoSource }) {
         }
       >
         <video
-          key={portrait ? 'vertical' : 'horizontal'}
+          key={(portrait ? 'vertical' : 'horizontal') + source.src}
           ref={video}
           className="absolute inset-0 h-full w-full object-cover"
           muted

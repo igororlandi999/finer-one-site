@@ -43,7 +43,6 @@ const copy: Record<Lang, {
         tag: 'Ligações bancárias',
         title: 'Nada fica ligado sem a sua autorização.',
         text: 'A ligação é feita através de Open Banking e só fica ativa depois de a autorizar junto do seu banco.',
-        note: 'Nem todas as instituições bancárias estão necessariamente disponíveis.',
       },
     ],
     v1: { sources: ['Contas bancárias ligadas', 'Faturas enviadas por email'], hub: 'Finer One', hubSub: 'Organização e análises', caption: 'Ilustrativo' },
@@ -63,7 +62,6 @@ const copy: Record<Lang, {
         tag: 'Bank connections',
         title: 'Nothing is connected without your authorisation.',
         text: 'Connections are made through Open Banking and only become active after you authorise them with your bank.',
-        note: 'Not every banking institution is necessarily available.',
       },
     ],
     v1: { sources: ['Connected bank accounts', 'Invoices sent by email'], hub: 'Finer One', hubSub: 'Organisation and analyses', caption: 'Illustrative' },
@@ -295,7 +293,6 @@ const listCopy: Record<Lang, { title: string; text: string; caption: string; ite
       { icon: 'bank', t: 'Contas bancárias que decide ligar', d: 'Os movimentos das contas que escolhe ligar à Finer One.' },
       { icon: 'mail', t: 'Faturas que decide enviar', d: 'As faturas enviadas para o endereço de faturas da empresa na Finer One.' },
       { icon: 'link', t: 'Ligação por Open Banking', d: 'Só fica ativa depois de a autorizar junto do seu banco.' },
-      { icon: 'info', t: 'Disponibilidade', d: 'Nem todas as instituições bancárias estão necessariamente disponíveis.' },
     ],
   },
   en: {
@@ -306,7 +303,6 @@ const listCopy: Record<Lang, { title: string; text: string; caption: string; ite
       { icon: 'bank', t: 'Bank accounts you choose to connect', d: 'Transactions from the accounts you choose to connect to Finer One.' },
       { icon: 'mail', t: 'Invoices you choose to send', d: 'Invoices sent to your company’s Finer One invoice address.' },
       { icon: 'link', t: 'Open Banking connection', d: 'Only becomes active after you authorise it with your bank.' },
-      { icon: 'info', t: 'Availability', d: 'Not every banking institution is necessarily available.' },
     ],
   },
 }

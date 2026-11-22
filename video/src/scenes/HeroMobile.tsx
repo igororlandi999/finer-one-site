@@ -1,3 +1,4 @@
+import { SCRIPT } from '../lib/lang'
 import { useRef } from 'react'
 import type { ReactNode } from 'react'
 import { AbsoluteFill, Easing, Img, interpolate, random, staticFile, useCurrentFrame } from 'remotion'
@@ -21,8 +22,8 @@ const CW = 360 // largura da interface (px de telemóvel)
 const CH = 1900 // altura útil da página recriada
 const K = M_W / CW
 
-const QUESTION = 'Como está a tesouraria da minha empresa?'
-const ANSWER = 'Há € 50.948,60 em faturas em atraso e um cliente concentra 88,3% deste valor.'
+const QUESTION = SCRIPT.question
+const ANSWER = SCRIPT.answer
 const WORDS = ANSWER.split(' ')
 const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const
 const camEase = Easing.bezier(0.45, 0, 0.2, 1)

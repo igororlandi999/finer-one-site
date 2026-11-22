@@ -29,10 +29,6 @@ const facts: Record<Lang, { t: string; d: string }[]> = {
     { t: 'Active only with your authorisation', d: 'A connection only becomes active after you authorise it with your bank.' },
   ],
 }
-const note: Record<Lang, string> = {
-  pt: 'Nem todas as instituições bancárias estão necessariamente disponíveis.',
-  en: 'Not every banking institution is necessarily available.',
-}
 
 /* =================== D · Atmosfera (Lovable) =================== */
 
@@ -152,7 +148,6 @@ export function SecurityAtmosphere({ lang }: { lang: Lang }) {
           </motion.li>
         ))}
       </motion.ul>
-      <motion.p variants={rise} className="relative mt-6 text-[13px] text-white/65">{note[lang]}</motion.p>
     </motion.div>
   )
 }
@@ -194,7 +189,6 @@ export function SecurityManifesto({ lang }: { lang: Lang }) {
           </motion.div>
         ))}
       </motion.div>
-      <p className="mt-6 text-[13.5px] text-[#0B1030]/50">{note[lang]}</p>
     </div>
   )
 }
