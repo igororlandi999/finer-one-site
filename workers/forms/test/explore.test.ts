@@ -2,7 +2,7 @@ import { env } from 'cloudflare:workers'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import worker from '../src/public'
 import { createExecutionContext, createScheduledController, waitOnExecutionContext } from 'cloudflare:test'
-import { MAX_ATTEMPTS, RETRY_AFTER_MIN, due, retryPending } from '../src/notify'
+import { MAX_ATTEMPTS, RETRY_AFTER_MIN, due, replyTo, retryPending } from '../src/notify'
 import { simulate, deepen } from '../../../src/lib/explore/monthly'
 
 const ORIGIN = 'https://www.finer-one.com'
@@ -227,7 +227,8 @@ describe('Explorar — notificação por email', () => {
     expect(headers.get('Idempotency-Key')).toBe(`explore-${b.submissionId}`)
     expect(body.to).toEqual(['geral.finerone@gmail.com'])
     expect(body.from).toBe('Finer One <onboarding@resend.dev>')
-    expect(body.reply_to).toBe('teste@exemplo-sintetico.pt')
+    expect(body.reply_to).toEqual(['teste@exemplo-sintetico.pt'])
+    expect(String(body.text)).toContain('a resposta segue para teste@exemplo-sintetico.pt')
     expect(body.subject).toBe('Novo lead Explorar — Empresa Exemplo, Lda | Finer One')
     const text = String(body.text)
     const simId = (b.simulation as Body).id as string
@@ -250,6 +251,22 @@ describe('Explorar — notificação por email', () => {
     const text = String(resendCalls[0].body.text)
     expect(text).toContain('Pediu contacto da equipa: Não (não contactar comercialmente')
     expect(text).not.toContain('Pediu contacto da equipa: Sim')
+  })
+
+  it('Reply-To: endereço fora do formato simples sai sem Reply-To (sem injeção nem destinatários extra)', async () => {
+    for (const email of ['a,b@exemplo-sintetico.pt', '"x"@exemplo-sintetico.pt', 'a<b>@exemplo-sintetico.pt', 'a;b@exemplo-sintetico.pt']) {
+      resendCalls = []
+      const r = await post(ex({}, {}, { email }), withKey())
+      expect(r.status).toBe(200)
+      expect(resendCalls).toHaveLength(1)
+      expect(resendCalls[0].body).not.toHaveProperty('reply_to')
+      expect(String(resendCalls[0].body.text)).toContain('não tem resposta automática')
+    }
+  })
+
+  it('Reply-To: validação estrita', () => {
+    expect(replyTo('Nome.Apelido+tag@Empresa-Exemplo.pt')).toBe('nome.apelido+tag@empresa-exemplo.pt')
+    for (const bad of ['a,b@x.pt', 'a b@x.pt', 'a@x', 'a@-x.pt', 'a..b@x.pt', '.a@x.pt', 'a@x.pt\r\nBcc: y@z.pt', 'a@x.pt>', '<a@x.pt>', 'x'.repeat(65) + '@x.pt']) expect(replyTo(bad)).toBeNull()
   })
 
   it('email falha: o lead fica gravado, a análise é confirmada e a falha fica registada', async () => {
