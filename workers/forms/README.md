@@ -9,7 +9,7 @@ Estado (15/11/2026): recetor ativo na conta gratuita `geral.finerone@gmail.com`
 ligado à D1 `finer-one-forms` (jurisdição UE, id no `wrangler.jsonc`) e ao widget Turnstile
 "Finer One - formularios do site" (sitekey pública `0x4AAAAAAGCZmNaMZOnS986M`; hostnames
 `finer-one.com` e `www.finer-one.com`; segredo rodado a 15/11/2026). Logs do Worker
-desligados. O site em produção ainda usa o Google.
+desligados. Verificado a 22/11/2026: o site publicado usa este recetor (VITE_FORMS_PROVIDER=cloudflare), que não envia emails nem aceita o Explorar — ver backend/google-apps-script/SETUP.md, secção Explorar.
 
 **Decisão dos fundadores (15/11/2026): sem área de administração própria.** O Cloudflare
 Access exige cartão e o modo token não será publicado. O Worker `finer-one-admin`

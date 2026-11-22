@@ -209,7 +209,7 @@ const pt = {
   heroTitle: ['Descubra o que está a acontecer ', 'à tesouraria da sua empresa.'],
   heroSub: 'Simule recebimentos, pagamentos e atrasos. Veja como diferentes cenários podem afetar o dinheiro disponível.',
   start: 'Iniciar simulação',
-  heroNote: 'Sem ligar o banco. Sem instalar nada. Registe-se só para receber a análise completa.',
+  heroNote: 'Sem ligar o banco. Sem instalar nada. Registe-se só para ver a análise completa.',
 
   simEyebrow: 'Simulação',
   simTitle: ['Escolha um cenário. ', 'Veja o efeito mês a mês.'],
@@ -264,11 +264,11 @@ const pt = {
   ready: {
     title: 'A sua primeira análise está pronta.',
     sub: 'A análise completa mostra a sua margem de segurança, o capital preso em recebimentos e como a tesouraria reage num cenário de stress.',
-    cta: 'Receber a minha análise completa',
+    cta: 'Ver a minha análise completa',
     keep: 'Os valores que introduziu ficam guardados neste ecrã.',
   },
   form: {
-    title: 'Para onde enviamos a análise?',
+    title: 'Veja já a análise completa.',
     sub: 'Só pedimos o essencial. Os valores da simulação não são enviados.',
     name: 'Nome',
     email: 'Email profissional',
@@ -333,7 +333,7 @@ const en: ExploreText = {
   heroTitle: ['Discover what is happening ', 'to your company’s cash.'],
   heroSub: 'Simulate receipts, payments and delays. See how different scenarios can affect the cash available.',
   start: 'Start simulation',
-  heroNote: 'No bank connection. Nothing to install. Register only to receive the full analysis.',
+  heroNote: 'No bank connection. Nothing to install. Register only to see the full analysis.',
 
   simEyebrow: 'Simulation',
   simTitle: ['Choose a scenario. ', 'See the effect month by month.'],
@@ -388,11 +388,11 @@ const en: ExploreText = {
   ready: {
     title: 'Your first analysis is ready.',
     sub: 'The full analysis shows your safety margin, the cash tied up in receivables and how your cash reacts under stress.',
-    cta: 'Get my full analysis',
+    cta: 'See my full analysis',
     keep: 'The values you entered stay on this screen.',
   },
   form: {
-    title: 'Where should we send the analysis?',
+    title: 'See the full analysis now.',
     sub: 'We only ask for the essentials. Simulation values are not sent.',
     name: 'Name',
     email: 'Work email',

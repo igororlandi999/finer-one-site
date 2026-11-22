@@ -59,7 +59,9 @@ homepage v2 em `src/components/v2/`. Validar com `npm run build`.
   O endpoint entra no build pela variável de repositório `VITE_FORMS_ENDPOINT`
   (GitHub Actions). Testes simulados do recetor: `npm run test:forms`.
 - Cloudflare (Workers + D1 + Turnstile) em `workers/forms/` (ver o README dessa pasta):
-  recetor `finer-one-forms` ativo na conta gratuita, ainda não usado pelo site em produção.
+  recetor `finer-one-forms` ativo na conta gratuita. Verificado a 22/11/2026: o site publicado
+  usa-o (sem email, sem Explorar); a passagem para o Google está descrita em
+  `backend/google-apps-script/SETUP.md` (secção Explorar).
   Escolha por `VITE_FORMS_PROVIDER` (`google` por omissão | `cloudflare`); só um recetor
   ativo em produção; Google mantido só para reversão. Sem área de administração publicada
   (decisão 15/11/2026): leads consultados no painel autenticado da D1. Nunca mostrar

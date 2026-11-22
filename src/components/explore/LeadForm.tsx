@@ -29,6 +29,7 @@ type Props = {
 export function LeadForm({ t, lang, lead, setLead, scenario, horizon, onBack, onSuccess }: Props) {
   const [errors, setErrors] = useState<Partial<Record<keyof Lead | 'form', string>>>({})
   const [sending, setSending] = useState(false)
+  const inFlight = useRef(false) // trava o duplo clique antes de o botão ficar desativado
   const honeypot = useRef<HTMLInputElement>(null)
   const startedAt = useRef(Date.now())
 
@@ -44,7 +45,7 @@ export function LeadForm({ t, lang, lead, setLead, scenario, horizon, onBack, on
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (sending) return
+    if (inFlight.current) return
     const err: typeof errors = {}
     if (lead.name.trim().length < 2) err.name = t.errors.name
     if (!isValidEmail(lead.email)) err.email = t.errors.email
@@ -55,6 +56,7 @@ export function LeadForm({ t, lang, lead, setLead, scenario, horizon, onBack, on
       document.getElementById(`lf-${Object.keys(err)[0]}`)?.focus()
       return
     }
+    inFlight.current = true
     setSending(true)
     track('lead_form_submitted', { scenario, horizon })
     // Mesmo recetor da Lista de Espera e dos Finer Pioneers (Google Apps Script → Folha + email).
@@ -80,6 +82,7 @@ export function LeadForm({ t, lang, lead, setLead, scenario, horizon, onBack, on
       },
       { honeypot: honeypot.current?.value ?? '', startedAt: startedAt.current },
     )
+    inFlight.current = false
     setSending(false)
     if (!res.ok) {
       const key = res.reason === 'rate' ? 'rate' : res.reason === 'network' ? 'network' : res.reason === 'unavailable' ? 'unavailable' : res.reason === 'verification' ? 'verification' : 'server'

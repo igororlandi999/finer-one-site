@@ -164,23 +164,50 @@ test('explorar: guarda o pedido no separador próprio, sem valores da simulaçã
   assert.equal(row['Novidades'], 'Sim')
   assert.equal(row['Estado'], 'Nova')
   assert.match(row['Notificação'], /^Enviada/)
-  assert.match(e.mails[0].subject, /^Finer One — Explorar — Marta Lopes \(Loja Lopes\)/)
-  assert.equal(e.mails[0].replyTo, 'marta@loja.pt')
+  assert.equal(row['N.º de pedidos'], 1)
+  assert.equal(row['Telefone'], "'+351 912 345 678") // começa por "+": neutralizado como texto
+  const m = e.mails[0]
+  assert.equal(m.to, 'geral.finerone@gmail.com')
+  assert.equal(m.subject, 'Novo Lead Explore — Loja Lopes | Finer One')
+  assert.equal(m.replyTo, 'marta@loja.pt')
+  assert.equal(m.attachments, undefined)
+  for (const part of ['FINER ONE — NOVO LEAD', 'Um empresário acabou de registar-se através do Explore.', 'DADOS DO EMPRESÁRIO', 'Nome: Marta Lopes', 'Empresa: Loja Lopes', 'País: Portugal', 'Telefone: +351 912 345 678', 'INTERESSE DEMONSTRADO', 'Simulação: Tesouraria', 'Horizonte: 6 meses', 'Moeda: EUR', 'ORIGEM\nExplore Finer One', 'Contacto guardado no Google Sheets', 'Preferência de comunicações comerciais: Aceita receber novidades']) {
+    assert.ok(m.body.includes(part), 'falta no email: ' + part)
+  }
 })
 
-test('explorar: o mesmo email não duplica e só sobe a fase quando pede contacto', () => {
+test('explorar: envio repetido (mesmo ID) não cria linha nem email; novo pedido do mesmo email atualiza a linha', () => {
   const e = makeEnv()
   e.post(exp())
-  e.cache.clear()
-  const r = e.post(exp({ submissionId: 'exp-2', fields: { ...exp().fields, stage: 'pediu_contacto', contact: 'sim' } }))
-  assert.equal(r.ok, true); assert.equal(r.duplicate, true)
+  assert.equal(e.post(exp()).duplicate, true) // duplo clique / nova tentativa
   const rows = e.sheets['Explorar — leads']
-  assert.equal(rows.length, 2)
-  assert.equal(rows[1][11], 'Pediu contacto comercial'); assert.equal(rows[1][12], 'Sim')
-  e.cache.clear()
-  e.post(exp({ submissionId: 'exp-3' }))
-  assert.equal(rows[1][11], 'Pediu contacto comercial')
-  assert.equal(e.mails.length, 1)
+  assert.equal(rows.length, 2); assert.equal(e.mails.length, 1)
+  // nova simulação legítima, mesmo email, logo a seguir: aceite e registada na mesma linha
+  const r = e.post(exp({ submissionId: 'exp-2', fields: { ...exp().fields, scenario: 'clients', horizon: '3' } }))
+  assert.equal(r.ok, true); assert.equal(r.duplicate, true)
+  assert.equal(rows.length, 2); assert.equal(rows[1][19], 2); assert.equal(e.mails.length, 1)
+  // passa a pedir contacto comercial: sobe a fase e avisa a equipa uma vez
+  e.post(exp({ submissionId: 'exp-3', fields: { ...exp().fields, stage: 'pediu_contacto', contact: 'sim' } }))
+  assert.equal(rows[1][11], 'Pediu contacto comercial'); assert.equal(rows[1][12], 'Sim'); assert.equal(rows[1][19], 3)
+  assert.equal(e.mails.length, 2)
+  assert.equal(e.mails[1].subject, 'Lead Explore pediu contacto — Loja Lopes | Finer One')
+  // um pedido posterior sem contacto não desce a fase nem envia mais emails
+  e.post(exp({ submissionId: 'exp-4' }))
+  assert.equal(rows[1][11], 'Pediu contacto comercial'); assert.equal(e.mails.length, 2)
+})
+
+test('explorar: email falha depois de guardar — lead mantido como "Pendente" e reenviado sem duplicar', () => {
+  const e = makeEnv({ mailFails: true })
+  const r = e.post(exp())
+  assert.equal(r.ok, true); assert.ok(r.id); assert.equal(r.notified, false)
+  const rows = e.sheets['Explorar — leads']
+  assert.equal(rows[1][21], 'Pendente')
+  e.setMail(false)
+  e.resendPending()
+  assert.match(rows[1][21], /^Enviada/)
+  assert.equal(rows.length, 2); assert.equal(e.mails.length, 1)
+  assert.equal(e.mails[0].subject, 'Novo Lead Explore — Loja Lopes | Finer One')
+  assert.ok(e.mails[0].body.includes('Simulação: Tesouraria'))
 })
 
 test('explorar: sem empresa, país ou horizonte válido é recusado sem guardar', () => {
