@@ -11,8 +11,12 @@
  *           só então confirma; a notificação interna por email (notify.ts) corre
  *           depois e é repetida pelo acionador agendado se falhar.
  *
- * Não regista dados pessoais nos logs. A Lista de Espera e o Finer Pioneers não
- * geram email. A consulta faz-se no painel autenticado da Cloudflare.
+ * Lista de Espera e Finer Pioneers: depois de a linha estar gravada (e só para uma
+ * linha nova), a notificação interna por email corre fora da resposta, com o mesmo
+ * mecanismo e as mesmas novas tentativas do Explorar; só para inscrições feitas com
+ * uma versão do aviso de privacidade que o preveja (ver notify.ts).
+ *
+ * Não regista dados pessoais nos logs. A consulta faz-se no painel autenticado da Cloudflare.
  *
  * Proteções: Turnstile validado no servidor; campo-armadilha e tempo mínimo;
  * identificador de submissão (repetições não duplicam); lista de espera sem
@@ -22,7 +26,7 @@
  */
 import { KINDS, type Kind, clean, json, list, logError, text, validate } from './shared'
 import { cleanLead, cleanSimulation, referenceMonth, simHash, summarize } from './explore'
-import { type NotifyEnv, notifyLead, retryPending } from './notify'
+import { type NotifyEnv, notifyLead, notifySubmission, retryPending } from './notify'
 
 export interface Env extends NotifyEnv {
   DB: D1Database
@@ -170,8 +174,13 @@ async function submit(request: Request, env: Env, cors: Record<string, string>, 
     )
     .run()
 
-  // Corrida entre dois pedidos iguais: o outro já gravou.
+  // Corrida entre dois pedidos iguais: o outro já gravou (e notifica ele).
   if (!result.meta.changes) return json({ ok: true, duplicate: true }, 200, cors)
+
+  // A inscrição já está gravada: a notificação nunca altera a resposta ao visitante.
+  const sending = notifySubmission(env, id)
+  if (ctx) ctx.waitUntil(sending)
+  else await sending
   return json({ ok: true, id }, 200, cors)
 }
 

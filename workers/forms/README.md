@@ -33,8 +33,9 @@ fundadores ──(login no painel da Cloudflare)──> D1 → Console / Explore
   não tem nenhuma rota de leitura. A área de administração (`src/admin.ts`) é outro
   Worker, para o Cloudflare Access poder proteger todas as suas rotas sem bloquear o
   recetor.
-- **Sem email.** Nenhum dado pessoal sai por email; os fundadores consultam a D1 no
-  painel da Cloudflare. (Notificações por email da Cloudflare exigiriam DNS na Cloudflare.)
+- **Email interno só para a equipa.** Os três formulários notificam `NOTIFY_TO` pelo Resend
+  depois de gravar (ver as secções do Explorar e da Lista de Espera / Finer Pioneers); a
+  consulta completa continua a ser na D1, no painel da Cloudflare.
 - **Nunca há falso sucesso.** O recetor só responde `ok` com `id` (registo guardado) ou
   `duplicate` (já existia). Campo-armadilha preenchido ou envio com menos de 3 s recebem a
   mesma resposta de um Turnstile recusado (`403 verification`), dada depois da verificação
@@ -189,6 +190,33 @@ UPDATE explore_leads SET notify_status = 'pending', notify_attempts = 0 WHERE id
 DELETE FROM explore_leads WHERE email IN (
   SELECT email FROM explore_leads GROUP BY email HAVING MAX(created_at) < 'AAAA-MM-DD'
 ) AND status NOT IN ('contactada', 'oportunidade');
+```
+
+## Lista de Espera e Finer Pioneers — notificação por email (branch `dev/notificacoes-formularios`)
+
+Mesmo mecanismo do Explorar (`src/notify.ts`): a linha é gravada em `submissions`, a resposta
+ao visitante não muda, e só depois corre o envio (`ctx.waitUntil`). As colunas `notify_*` vêm
+da `migrations/0003_submissions_notify.sql` (só `ADD COLUMN`; as linhas existentes ficam
+`skipped`, sem email retroativo). Chaves de idempotência `waitlist-<id>` e `pioneers-<id>`.
+
+- **Assuntos:** `Novo lead Lista de Espera | Finer One` e `Nova candidatura Finer Pioneers | Finer One`.
+- **Conteúdo:** Lista de Espera — nome, email, data (hora de Lisboa), origem, identificador.
+  Finer Pioneers — nome, email, empresa, setor, desafio, data, identificador. Reply-To validado.
+- **Aviso de privacidade:** só envia para inscrições com uma versão listada em
+  `SUBMISSION_NOTIFY_CONSENTS` (`2026-11-v4`). O v3 diz que estes formulários não geram email,
+  por isso as inscrições v3 ficam `skipped` (`notify_error = 'consent_version'`).
+- **Sem linha nova, sem email:** envio repetido, email já na Lista de Espera ou Pioneers
+  recusado em 10 min não notificam.
+- **Ordem de publicação:** migração 0003 → deploy do Worker → aviso v4 no site. Sem a 0003, a
+  gravação continua a funcionar (só a notificação falha e fica registada no log).
+
+```sql
+-- Notificações por enviar ou falhadas (Lista de Espera / Pioneers)
+SELECT id, kind, created_at, notify_status, notify_attempts, notify_error
+FROM submissions WHERE notify_status IN ('pending', 'failed') ORDER BY created_at;
+
+-- Voltar a tentar uma notificação falhada (o acionador envia nos 15 min seguintes)
+UPDATE submissions SET notify_status = 'pending', notify_attempts = 0 WHERE id = 'ID';
 ```
 
 ## Desenvolvimento e testes
