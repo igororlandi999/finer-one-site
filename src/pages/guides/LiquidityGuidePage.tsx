@@ -279,6 +279,13 @@ export function LiquidityGuidePage() {
                     ]}
                   />
                 </div>
+                <P>
+                  Para ver o efeito dos atrasos antes de montar a sua previsão, pode experimentar o{' '}
+                  <a href="/explorar/" className="font-semibold text-accent-deep underline decoration-accent-deep/30 underline-offset-4 hover:decoration-accent-deep">
+                    Explorar, o simulador de tesouraria da Finer One
+                  </a>
+                  : indica o saldo, os recebimentos e os pagamentos previstos para os próximos 3 ou 6 meses e vê, mês a mês, como recebimentos mais tardios mudam o saldo. É gratuito e não pede ligação ao banco.
+                </P>
                 <Callout title="Calendário a ter presente">
                   IVA: a periodicidade é mensal se o volume de negócios do ano anterior foi igual ou superior a 650 000 €, e trimestral abaixo disso. Em ambos os casos, o imposto paga-se até ao dia 25 do 2.º mês seguinte ao mês ou trimestre, com exceção de junho e do 2.º trimestre, que vão até 25 de setembro.<Ref n={2} /> Segurança Social: as contribuições das entidades empregadoras pagam-se até ao dia 25 do mês seguinte.<Ref n={4} /> IRC: para empresas com período de tributação igual ao ano civil, os pagamentos por conta, quando devidos, vencem em julho, setembro e 15 de dezembro.<Ref n={5} /> Os prazos dependem do enquadramento de cada empresa: confirme-os com o contabilista.
                 </Callout>

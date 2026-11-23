@@ -89,6 +89,13 @@ export function Sources({ t, lang }: { t: ExploreText; lang: Lang }) {
             )
           })}
         </motion.ul>
+
+        <p className="mt-12 max-w-[640px] text-[15.5px] leading-[1.6] text-[#0B1030]/65">
+          {t.guideLead}{' '}
+          <a href="/guias/falta-de-liquidez/" className="font-semibold text-[#070D2B] underline decoration-[#0B1030]/20 underline-offset-4 hover:decoration-[#070D2B]">
+            {t.guideLink}
+          </a>
+        </p>
       </div>
     </section>
   )
