@@ -25,15 +25,17 @@ import { devFlags } from '@/lib/devFlags'
 type Col = { title: string; links: { label: string; href: string; external?: boolean }[] }
 
 const LINKEDIN = 'https://www.linkedin.com/company/finerone/'
+const CONTACT_EMAIL = 'geral.finerone@gmail.com'
 
-const copy: Record<Lang, { signature: string; tagline: [string, string]; cta: string; cols: Col[]; nav: string; copyright: string; top: string; lang: string; privacy: string }> = {
+const copy: Record<Lang, { signature: string; tagline: [string, string]; cta: string; contact: string; cols: Col[]; nav: string; copyright: string; top: string; lang: string; privacy: string }> = {
   pt: {
     signature: 'Where Finance Meets Strategy',
     // Os pilares da marca (em vez de repetir "decisões mais claras", já usado no CTA logo acima).
     tagline: ['Compreender hoje. Antecipar amanhã. ', 'Decidir melhor.'],
     cta: 'Ser Finer Pioneer',
+    contact: 'Contacto',
     cols: [
-      { title: 'Produto', links: [{ label: 'Explorar', href: '/explorar/' }, { label: 'Experimentar', href: '/#experimentar-finer' }, { label: 'Como funciona', href: '/#funcionamento' }, { label: 'Planos', href: '/#precos' }] },
+      { title: 'Produto', links: [{ label: 'Explorar', href: '/explorar/' }, { label: 'Como funciona', href: '/#funcionamento' }, { label: 'Planos', href: '/#precos' }] },
       { title: 'Descobrir', links: [{ label: 'Sobre nós', href: '/sobre/' }, { label: 'Para quem é', href: '/#para-quem' }, { label: 'Segurança', href: '/#seguranca' }, { label: 'Perguntas frequentes', href: '/#faq' }, { label: 'Privacidade', href: '/privacidade/' }] },
       { title: 'Começar', links: [{ label: 'Finer Pioneers', href: '/pioneers/' }, { label: 'Lista de espera', href: '/lista-espera/' }, { label: 'LinkedIn', href: LINKEDIN, external: true }] },
     ],
@@ -47,8 +49,9 @@ const copy: Record<Lang, { signature: string; tagline: [string, string]; cta: st
     signature: 'Where Finance Meets Strategy',
     tagline: ['Understand today. Anticipate tomorrow. ', 'Decide better.'],
     cta: 'Become a Finer Pioneer',
+    contact: 'Contact',
     cols: [
-      { title: 'Product', links: [{ label: 'Explore', href: '/explorar/' }, { label: 'Try it', href: '/#experimentar-finer' }, { label: 'How it works', href: '/#funcionamento' }, { label: 'Plans', href: '/#precos' }] },
+      { title: 'Product', links: [{ label: 'Explore', href: '/explorar/' }, { label: 'How it works', href: '/#funcionamento' }, { label: 'Plans', href: '/#precos' }] },
       { title: 'Discover', links: [{ label: 'About us', href: '/sobre/' }, { label: 'Who it’s for', href: '/#para-quem' }, { label: 'Security', href: '/#seguranca' }, { label: 'FAQ', href: '/#faq' }, { label: 'Privacy', href: '/privacidade/' }] },
       { title: 'Get started', links: [{ label: 'Finer Pioneers', href: '/pioneers/' }, { label: 'Waitlist', href: '/lista-espera/' }, { label: 'LinkedIn', href: LINKEDIN, external: true }] },
     ],
@@ -141,6 +144,16 @@ function RevealFooter() {
                 <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true" />
               </span>
             </a>
+            {/* Contacto: mesmo estilo dos títulos e ligações das colunas */}
+            <div className="mt-8">
+              <p className="text-[13px] font-medium text-white/40">{t.contact}</p>
+              <a
+                href={`mailto:${CONTACT_EMAIL}`}
+                className="mt-2 inline-block text-[16px] text-white/80 transition-colors duration-200 hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
+              >
+                {CONTACT_EMAIL}
+              </a>
+            </div>
           </div>
 
           {/* Ligações */}

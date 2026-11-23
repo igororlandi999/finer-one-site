@@ -64,7 +64,7 @@ function getCopy(lang: Lang) {
         },
       ]
   return {
-    eyebrow: pt ? 'Experimente a Finer One' : 'Try Finer One',
+    eyebrow: pt ? 'As respostas começam por aqui' : 'Answers start here',
     title: pt ? ['E se pudesse perguntar tudo sobre ', 'a sua empresa?'] : ['What if you could ask anything about ', 'your company?'],
     sub: pt ? 'Faça uma pergunta e veja como a Finer One ajuda a interpretar dados financeiros.' : 'Ask a question and see how Finer One helps you make sense of financial data.',
     note: pt ? 'Demonstração com dados fictícios' : 'Demo with fictitious data',
