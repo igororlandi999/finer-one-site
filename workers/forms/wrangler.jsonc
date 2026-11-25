@@ -12,7 +12,13 @@
     "ALLOWED_HOSTNAMES": "www.finer-one.com,finer-one.com",
     // Notificação do Explorar (Resend, plano gratuito, sem domínio): só entrega no email da conta Resend.
     "NOTIFY_TO": "geral.finerone@gmail.com",
-    "NOTIFY_FROM": "Finer One <onboarding@resend.dev>"
+    "NOTIFY_FROM": "Finer One <onboarding@resend.dev>",
+    // Finer Pioneers — email de confirmação ao candidato (src/verify.ts). Fica INATIVO enquanto
+    // CONFIRM_FROM não existir: o Resend só envia para terceiros a partir de um domínio verificado.
+    // Ativar só depois de finer-one.com estar verificado no Resend e de a caixa info@ receber e enviar:
+    //   "CONFIRM_FROM": "Finer One <info@finer-one.com>",
+    //   "CONFIRM_REPLY_TO": "info@finer-one.com",
+    "CONFIRM_BASE_URL": "https://www.finer-one.com"
   },
   // Reenvio das notificações do Explorar que falharam (gratuito no plano Workers Free).
   "triggers": { "crons": ["*/15 * * * *"] },
@@ -29,7 +35,10 @@
         "TURNSTILE_SECRET": "1x0000000000000000000000000000000AA",
         // Sem RESEND_API_KEY em dev: os pedidos ficam "pending" e nenhum email sai.
         "NOTIFY_TO": "geral.finerone@gmail.com",
-        "NOTIFY_FROM": "Finer One <onboarding@resend.dev>"
+        "NOTIFY_FROM": "Finer One <onboarding@resend.dev>",
+        // Sem RESEND_API_KEY em dev, o email de confirmação também não sai (a candidatura fica "not_requested").
+        "CONFIRM_FROM": "Finer One <info@finer-one.com>",
+        "CONFIRM_BASE_URL": "http://localhost:5173"
       },
       "d1_databases": [{ "binding": "DB", "database_name": "finer-one-forms-dev", "database_id": "local-dev", "migrations_dir": "migrations" }]
     }

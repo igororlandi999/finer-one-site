@@ -11,6 +11,9 @@ declare global {
       NOTIFY_TO: string
       NOTIFY_FROM: string
       RESEND_API_KEY?: string
+      CONFIRM_FROM?: string
+      CONFIRM_REPLY_TO?: string
+      CONFIRM_BASE_URL?: string
     }
   }
 }

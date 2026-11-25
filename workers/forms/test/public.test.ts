@@ -239,14 +239,20 @@ describe('duplicações e abuso', () => {
     expect(await r.json()).toEqual({ ok: true, duplicate: true })
     expect(await rows()).toHaveLength(1)
   })
-  it('pioneers: mesmo email em 10 minutos é recusado com aviso; depois é aceite', async () => {
-    await post(pio())
-    const r = await post(pio())
-    expect(r.status).toBe(409)
-    expect(await r.json()).toEqual({ ok: false, error: 'duplicate' })
+  it('pioneers: mesmo email em 10 minutos recebe a resposta de uma candidatura nova; fica gravada e marcada como repetida', async () => {
+    const first = pio()
+    await post(first)
+    const second = pio()
+    const r = await post(second)
+    expect(r.status).toBe(200)
+    expect(await r.json()).toEqual({ ok: true, id: second.submissionId })
+    const saved = await rows()
+    expect(saved).toHaveLength(2)
+    expect(saved.map((s) => s.duplicate_of).sort()).toEqual([first.submissionId, null].sort())
     await env.DB.prepare('UPDATE submissions SET created_at = ?').bind(new Date(Date.now() - 11 * 60 * 1000).toISOString()).run()
-    expect((await post(pio())).status).toBe(200)
-    expect(await rows()).toHaveLength(2)
+    const third = pio()
+    expect((await post(third)).status).toBe(200)
+    expect((await rows()).find((s) => s.id === third.submissionId)!.duplicate_of).toBeNull() // fora da janela: candidatura normal
   })
   it('limite global por minuto', async () => {
     const now = new Date().toISOString()

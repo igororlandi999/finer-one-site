@@ -52,7 +52,7 @@ fundadores ──(login no painel da Cloudflare)──> D1 → Console / Explore
 | Corpo até 16 KB (413), JSON objeto, mesmas regras de validação do Apps Script | `shared.ts` |
 | Turnstile validado no servidor (segredo, IP, hostname esperado) | `public.ts` |
 | SQL sempre parametrizado (`prepare().bind()`) | ambos |
-| Duplicados: ID de submissão, email único na lista de espera, 10 min nos Pioneers | `public.ts` + índice único |
+| Duplicados: ID de submissão, email único na lista de espera; Pioneers repetido em 10 min fica gravado com `duplicate_of`, sem aviso à equipa e com resposta igual à de uma candidatura nova (sem `409`) | `public.ts` + índice único |
 | Limite global de 30 envios/minuto | `public.ts` |
 | Logs sem dados pessoais (só o tipo de erro) | `logError` |
 | Erros genéricos para o visitante (`invalid`, `verification`, `rate`, `server`) | `public.ts` |
@@ -219,13 +219,25 @@ FROM submissions WHERE notify_status IN ('pending', 'failed') ORDER BY created_a
 UPDATE submissions SET notify_status = 'pending', notify_attempts = 0 WHERE id = 'ID';
 ```
 
+## Finer Pioneers — telefone, website e verificação do email (24/11/2026, por publicar)
+
+Proposta completa, fluxo, DNS/Resend, privacidade e plano de deploy/rollback: `docs/PIONEERS-VERIFICACAO.md`.
+
+- `migrations/0004_pioneers_verification.sql` (só acrescenta; aplicar **antes** do deploy do Worker).
+- `src/pioneers.ts` (telefone e website), `src/verify.ts` (token, email de confirmação, `POST /verify`,
+  `POST /resend`, repetição pelo acionador agendado).
+- Três estados independentes: `status` (avaliação comercial), `email_status` (not_requested | pending |
+  verified) e `confirm_status` (none | pending | sent | failed). "sent" não é "verified".
+- **Dormente** enquanto `CONFIRM_FROM` não existir (exige `finer-one.com` verificado no Resend).
+  `NOTIFY_TO` e `NOTIFY_FROM` não mudam.
+
 ## Desenvolvimento e testes
 
 ```
 cd workers/forms
 npm install            # .npmrc usa legacy-peer-deps (bug do npm 10 com o vitest 4)
 npm run typecheck
-npm test               # 78 testes (Miniflare: Worker + D1 reais em memória)
+npm test               # 163 testes (Miniflare: Worker + D1 reais em memória)
 npm run db:migrate:local
 npm run dev            # recetor em http://localhost:8787 (chaves de teste do Turnstile)
 npm run dev:admin      # admin em http://localhost:8788 (ADMIN_TOKEN em .dev.vars)

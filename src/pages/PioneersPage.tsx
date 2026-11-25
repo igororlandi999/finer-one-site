@@ -2,10 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { AnimatePresence, MotionConfig, motion, useMotionValueEvent, useReducedMotion, useScroll, useSpring } from 'motion/react'
 import type { Variants } from 'motion/react'
-import { ArrowLeft, ArrowRight, ArrowUp, Lock } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ArrowUp, CheckCircle2, Clock, Lock } from 'lucide-react'
 import { ConsentCheckbox, Field, Honeypot, SelectInput, TextArea, TextInput } from '@/components/forms/fields'
 import { buttonClasses } from '@/components/ui/Button'
+import { DIAL_CODES } from '@/components/explore/content'
+import { CONTACT_EMAIL } from '@/config/contact'
 import { useLanguage } from '@/i18n/LanguageContext'
+import { internationalPhone, isValidCompanyUrl } from '@/lib/contactFields'
 import { isPreviewMode, isValidEmail, submitForm } from '@/lib/forms'
 import { cn, focusLater } from '@/lib/utils'
 import { FormSuccess } from '@/pages/FormSuccess'
@@ -68,6 +71,12 @@ const copy = {
     sectors: ['Agência / consultoria', 'Comércio', 'Construção', 'E-commerce', 'Indústria', 'Recrutamento / trabalho temporário', 'Restauração e hotelaria', 'Saúde', 'Serviços profissionais', 'Tecnologia', 'Transportes e logística', 'Outro'],
     email: 'Email profissional',
     emailPh: 'nome@empresa.pt',
+    phone: 'Contacto telefónico',
+    phonePh: '912 345 678',
+    dial: 'Indicativo internacional',
+    website: 'Website da empresa',
+    websitePh: 'www.empresa.pt',
+    optional: 'Opcional',
     challenge: 'Principal desafio financeiro',
     challengeHint: 'Escolha um tema para começar ou escreva livremente.',
     challengeChips: ['Recebimentos em atraso', 'Pressão de tesouraria', 'Custos a subir', 'Falta de previsão', 'Informação dispersa'],
@@ -81,17 +90,24 @@ const copy = {
       company: 'Indique o nome da empresa.',
       sector: 'Selecione o setor de atividade.',
       email: 'Indique um email válido.',
+      phone: 'Indique um número de telefone válido, com o indicativo do país.',
+      companyUrl: 'Indique um endereço válido (por exemplo, www.empresa.pt) ou deixe em branco.',
       challenge: 'Descreva o desafio em pelo menos 10 caracteres.',
       consent: 'É necessário aceitar para enviar a candidatura.',
       rate: 'Recebemos vários envios deste dispositivo. Tente novamente mais tarde.',
       network: 'Não foi possível enviar. Verifique a ligação e tente novamente.',
       server: 'Ocorreu um erro ao enviar. Tente novamente dentro de alguns minutos.',
-      unavailable: 'O formulário está temporariamente indisponível. Escreva-nos para geral.finerone@gmail.com.',
+      unavailable: `O formulário está temporariamente indisponível. Escreva-nos para ${CONTACT_EMAIL}.`,
       verification: 'Não foi possível confirmar o envio. Atualize a página e tente novamente.',
-      duplicate: 'Já recebemos uma candidatura com este email há poucos minutos. Se precisar de corrigir algo, escreva para geral.finerone@gmail.com.',
+      duplicate: `Já recebemos uma candidatura com este email há poucos minutos. Se precisar de corrigir algo, escreva para ${CONTACT_EMAIL}.`,
     },
     successTitle: 'Candidatura recebida.',
     successBody: 'Obrigado pelo interesse em construir a Finer One connosco. A equipa vai analisar a sua candidatura e entrará em contacto com os empresários selecionados.',
+    pendingBody: (email: string) => `Obrigado pelo interesse em construir a Finer One connosco. Enviámos um email para ${email} com uma ligação para confirmar o seu endereço, válida durante 48 horas.`,
+    statusApplication: ['Candidatura', 'Recebida'],
+    statusEmail: ['Email', 'Confirmação pendente'],
+    pendingHint: 'Não encontra o email? Veja a pasta de spam ou ',
+    pendingLink: 'peça uma nova ligação',
     previewNote: 'Versão de pré-visualização: o formulário funciona, mas nenhum dado foi enviado ou guardado.',
     backHome: 'Voltar à página inicial',
   },
@@ -142,6 +158,12 @@ const copy = {
     sectors: ['Agency / consulting', 'Retail', 'Construction', 'E-commerce', 'Manufacturing', 'Staffing / recruitment', 'Hospitality', 'Health', 'Professional services', 'Technology', 'Transport and logistics', 'Other'],
     email: 'Work email',
     emailPh: 'name@company.com',
+    phone: 'Phone number',
+    phonePh: '912 345 678',
+    dial: 'Country calling code',
+    website: 'Company website',
+    websitePh: 'www.company.com',
+    optional: 'Optional',
     challenge: 'Main financial challenge',
     challengeHint: 'Pick a topic to start or write freely.',
     challengeChips: ['Late payments', 'Cash pressure', 'Rising costs', 'No forecasting', 'Scattered information'],
@@ -155,27 +177,34 @@ const copy = {
       company: 'Please enter the company name.',
       sector: 'Please select the industry.',
       email: 'Please enter a valid email.',
+      phone: 'Please enter a valid phone number, with the country code.',
+      companyUrl: 'Please enter a valid address (for example, www.company.com) or leave it blank.',
       challenge: 'Describe the challenge in at least 10 characters.',
       consent: 'You need to agree to send the application.',
       rate: 'We received several submissions from this device. Please try again later.',
       network: 'Could not send. Check your connection and try again.',
       server: 'Something went wrong. Please try again in a few minutes.',
-      unavailable: 'This form is temporarily unavailable. Please email us at geral.finerone@gmail.com.',
+      unavailable: `This form is temporarily unavailable. Please email us at ${CONTACT_EMAIL}.`,
       verification: 'We could not verify this submission. Please refresh the page and try again.',
-      duplicate: 'We received an application with this email a few minutes ago. If you need to change anything, email geral.finerone@gmail.com.',
+      duplicate: `We received an application with this email a few minutes ago. If you need to change anything, email ${CONTACT_EMAIL}.`,
     },
     successTitle: 'Application received.',
     successBody: 'Thank you for your interest in building Finer One with us. The team will review your application and contact the selected business owners.',
+    pendingBody: (email: string) => `Thank you for your interest in building Finer One with us. We sent an email to ${email} with a link to confirm your address, valid for 48 hours.`,
+    statusApplication: ['Application', 'Received'],
+    statusEmail: ['Email', 'Confirmation pending'],
+    pendingHint: 'Cannot find the email? Check your spam folder or ',
+    pendingLink: 'request a new link',
     previewNote: 'Preview version: the form works, but no data was sent or stored.',
     backHome: 'Back to homepage',
   },
 }
 
 type T = (typeof copy)['pt']
-type Key = 'name' | 'company' | 'sector' | 'email' | 'challenge' | 'consent'
+type Key = 'name' | 'company' | 'sector' | 'email' | 'phone' | 'companyUrl' | 'challenge' | 'consent'
 type Errors = Partial<Record<Key | 'form', string>>
 /** Que campos pertencem a cada passo. */
-const STEP_FIELDS: Key[][] = [['name', 'email'], ['company', 'sector'], ['challenge', 'consent']]
+const STEP_FIELDS: Key[][] = [['name', 'email', 'phone'], ['company', 'sector', 'companyUrl'], ['challenge', 'consent']]
 
 const EASE = [0.22, 1, 0.36, 1] as const
 const group: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } }
@@ -356,22 +385,26 @@ function ApplicationCard({ t }: { t: T }) {
   const startedAt = useRef(Date.now())
   const [step, setStep] = useState(0)
   const [dir, setDir] = useState(1)
-  const [values, setValues] = useState({ name: '', company: '', sector: '', email: '', challenge: '' })
+  const [values, setValues] = useState({ name: '', company: '', sector: '', email: '', dial: '+351', phone: '', companyUrl: '', challenge: '' })
   const [consent, setConsent] = useState(false)
   const [honeypot, setHoneypot] = useState('')
   const [errors, setErrors] = useState<Errors>({})
   const [status, setStatus] = useState<'idle' | 'sending' | 'done'>('idle')
   const [preview, setPreview] = useState(isPreviewMode)
+  /** O recetor pôs em fila o email de confirmação (não quer dizer que já foi entregue). */
+  const [verification, setVerification] = useState(false)
 
   const set = (key: keyof typeof values) => (value: string) => {
     setValues((v) => ({ ...v, [key]: value }))
-    setErrors((e) => ({ ...e, [key]: undefined, form: undefined }))
+    setErrors((e) => ({ ...e, [key === 'dial' ? 'phone' : key]: undefined, form: undefined }))
   }
 
   const check = (keys: Key[]): Errors => {
     const e: Errors = {}
     if (keys.includes('name') && values.name.trim().length < 2) e.name = t.errors.name
     if (keys.includes('email') && !isValidEmail(values.email)) e.email = t.errors.email
+    if (keys.includes('phone') && !internationalPhone(values.dial, values.phone)) e.phone = t.errors.phone
+    if (keys.includes('companyUrl') && !isValidCompanyUrl(values.companyUrl)) e.companyUrl = t.errors.companyUrl
     if (keys.includes('company') && values.company.trim().length < 2) e.company = t.errors.company
     if (keys.includes('sector') && !values.sector) e.sector = t.errors.sector
     if (keys.includes('challenge') && values.challenge.trim().length < 10) e.challenge = t.errors.challenge
@@ -400,7 +433,7 @@ function ApplicationCard({ t }: { t: T }) {
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault()
     if (step < 2) return next()
-    const e = check(['name', 'email', 'company', 'sector', 'challenge', 'consent'])
+    const e = check(['name', 'email', 'phone', 'company', 'sector', 'companyUrl', 'challenge', 'consent'])
     setErrors(e)
     if (Object.keys(e).length) {
       const firstStep = STEP_FIELDS.findIndex((keys) => keys.some((k) => e[k]))
@@ -409,9 +442,12 @@ function ApplicationCard({ t }: { t: T }) {
     }
     if (status === 'sending') return
     setStatus('sending')
-    const result = await submitForm('pioneers', { ...values }, { honeypot, startedAt: startedAt.current })
+    const { dial, phone, ...rest } = values
+    const result = await submitForm('pioneers', { ...rest, phone: internationalPhone(dial, phone) ?? '' }, { honeypot, startedAt: startedAt.current })
     if (result.ok) {
       setPreview(result.preview)
+      // Em desenvolvimento, ?estado=pendente mostra o estado "confirmação pendente" na pré-visualização.
+      setVerification(result.verification === true || (result.preview && devFlags.get('estado') === 'pendente'))
       setStatus('done')
     } else {
       setErrors({ form: t.errors[result.reason === 'bot' ? 'server' : result.reason] })
@@ -439,7 +475,35 @@ function ApplicationCard({ t }: { t: T }) {
         <div>
           {status === 'done' ? (
             <div className="pt-6">
-              <FormSuccess title={t.successTitle} body={t.successBody} preview={preview} previewNote={t.previewNote}>
+              <FormSuccess title={t.successTitle} body={verification ? t.pendingBody(values.email.trim()) : t.successBody} preview={preview} previewNote={t.previewNote}>
+                {verification && (
+                  <>
+                    {/* Dois estados distintos: a candidatura está recebida; o email ainda está por confirmar. */}
+                    <dl className="mx-auto mt-6 max-w-md divide-y divide-[#0B1030]/[0.07] rounded-2xl border border-[#0B1030]/[0.08] bg-[#F7F9FE] text-left text-[13.5px]">
+                      <div className="flex items-center justify-between gap-4 px-4 py-3">
+                        <dt className="text-[#0B1030]/60">{t.statusApplication[0]}</dt>
+                        <dd className="inline-flex items-center gap-1.5 font-semibold text-[#070D2B]">
+                          <CheckCircle2 className="h-4 w-4 text-accent" aria-hidden="true" />
+                          {t.statusApplication[1]}
+                        </dd>
+                      </div>
+                      <div className="flex items-center justify-between gap-4 px-4 py-3">
+                        <dt className="text-[#0B1030]/60">{t.statusEmail[0]}</dt>
+                        <dd className="inline-flex items-center gap-1.5 font-semibold text-[#070D2B]">
+                          <Clock className="h-4 w-4 text-[#0B1030]/45" aria-hidden="true" />
+                          {t.statusEmail[1]}
+                        </dd>
+                      </div>
+                    </dl>
+                    <p className="mx-auto mt-4 max-w-md text-[12.5px] leading-relaxed text-navy/65">
+                      {t.pendingHint}
+                      <a href="/pioneers/confirmar/" className="font-semibold text-accent-deep underline decoration-accent-deep/30 underline-offset-4">
+                        {t.pendingLink}
+                      </a>
+                      .
+                    </p>
+                  </>
+                )}
                 <a href="/" className={buttonClasses({ variant: 'outline', size: 'md', className: 'mt-7 border-navy/15 bg-white text-navy hover:bg-ice' })}>
                   {t.backHome}
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -485,6 +549,16 @@ function ApplicationCard({ t }: { t: T }) {
                         <Field id="pio-email" label={t.email} error={errors.email}>
                           <TextInput className="rounded-full px-5" id="pio-email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder={t.emailPh} value={values.email} onChange={(e) => set('email')(e.target.value)} error={errors.email} />
                         </Field>
+                        <Field id="pio-phone" label={t.phone} error={errors.phone}>
+                          <div className="flex gap-2">
+                            <SelectInput className="w-[124px] shrink-0 rounded-full pl-5 pr-9" id="pio-dial" aria-label={t.dial} autoComplete="tel-country-code" value={values.dial} onChange={(e) => set('dial')(e.target.value)}>
+                              {DIAL_CODES.map((c) => (
+                                <option key={c.code} value={c.dial}>{`${c.code} ${c.dial}`}</option>
+                              ))}
+                            </SelectInput>
+                            <TextInput className="rounded-full px-5" id="pio-phone" type="tel" inputMode="tel" autoComplete="tel-national" maxLength={20} placeholder={t.phonePh} value={values.phone} onChange={(e) => set('phone')(e.target.value.replace(/[^\d ]/g, ''))} error={errors.phone} />
+                          </div>
+                        </Field>
                       </>
                     )}
                     {step === 1 && (
@@ -501,6 +575,9 @@ function ApplicationCard({ t }: { t: T }) {
                               </option>
                             ))}
                           </SelectInput>
+                        </Field>
+                        <Field id="pio-companyUrl" label={t.website} optional={t.optional} error={errors.companyUrl}>
+                          <TextInput className="rounded-full px-5" id="pio-companyUrl" type="url" inputMode="url" autoComplete="url" maxLength={200} placeholder={t.websitePh} value={values.companyUrl} onChange={(e) => set('companyUrl')(e.target.value)} error={errors.companyUrl} />
                         </Field>
                       </>
                     )}

@@ -137,11 +137,13 @@ describe('3. Cadastro repetido não duplica a notificação', () => {
     expect(await count()).toBe(1)
     expect(resendCalls).toHaveLength(1)
   })
-  it('Pioneers: mesmo email em 10 minutos é recusado sem email', async () => {
+  it('Pioneers: mesmo email em 10 minutos não gera segundo email à equipa (fica gravada como repetida)', async () => {
     await post(pio())
-    const again = await post(pio())
-    expect(again.status).toBe(409)
+    const b = pio()
+    const again = await post(b)
+    expect(await again.json()).toEqual({ ok: true, id: b.submissionId })
     expect(resendCalls).toHaveLength(1)
+    expect(await row(b.submissionId)).toMatchObject({ notify_status: 'skipped', notify_error: 'duplicate' })
   })
   it('linha já notificada: nova chamada ou cron não reenviam', async () => {
     const b = wl()
@@ -244,10 +246,11 @@ describe('6. Explorar preservado', () => {
 })
 
 describe('7. Aviso de privacidade, migrações e cadastros existentes', () => {
-  it('a versão do aviso que o site envia é a que o Worker notifica (v4)', () => {
+  it('a versão do aviso que o site envia é a que o Worker notifica (v5; a v4 continua aceite)', () => {
     const site = /export const PRIVACY_VERSION = '([^']+)'/.exec(formsSource)?.[1]
-    expect(site).toBe(V4)
+    expect(site).toBe('2026-11-v5')
     expect(SUBMISSION_NOTIFY_CONSENTS).toContain(site)
+    expect(SUBMISSION_NOTIFY_CONSENTS).toContain(V4) // páginas ainda em cache enviam a v4
   })
 
   it('inscrições com o aviso v3 (que diz que não há email) ficam skipped e nunca enviam', async () => {
