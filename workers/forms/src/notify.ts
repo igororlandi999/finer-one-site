@@ -229,7 +229,7 @@ const EXPLORE: Source<ExploreRow> = {
  * formulários NÃO geram email: as inscrições feitas com ele (ou anteriores) ficam 'skipped'.
  * Acrescentar aqui a versão aprovada que passar a prever a notificação (ver proposta v4).
  */
-export const SUBMISSION_NOTIFY_CONSENTS: readonly string[] = ['2026-11-v4', '2026-11-v5']
+export const SUBMISSION_NOTIFY_CONSENTS: readonly string[] = ['2026-11-v4', '2026-11-v5', '2026-11-v6']
 
 const SUBMISSION_COLUMNS = 'id, kind, created_at, name, email, company, sector, challenge, phone, company_url, consent_version, notify_status, notify_attempts, notify_last_attempt_at'
 type SubmissionRow = Base & {

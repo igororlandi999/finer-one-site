@@ -246,9 +246,10 @@ describe('6. Explorar preservado', () => {
 })
 
 describe('7. Aviso de privacidade, migrações e cadastros existentes', () => {
-  it('a versão do aviso que o site envia é a que o Worker notifica (v5; a v4 continua aceite)', () => {
+  it('a versão do aviso que o site envia é a que o Worker notifica (v6; v4 e v5 continuam aceites)', () => {
     const site = /export const PRIVACY_VERSION = '([^']+)'/.exec(formsSource)?.[1]
-    expect(site).toBe('2026-11-v5')
+    expect(site).toBe('2026-11-v6')
+    expect(SUBMISSION_NOTIFY_CONSENTS).toContain('2026-11-v5') // páginas publicadas antes da v6
     expect(SUBMISSION_NOTIFY_CONSENTS).toContain(site)
     expect(SUBMISSION_NOTIFY_CONSENTS).toContain(V4) // páginas ainda em cache enviam a v4
   })

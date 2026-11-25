@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { ArrowRight, Loader2 } from 'lucide-react'
 import { isValidEmail, resetSubmission, submitForm } from '@/lib/forms'
+import { internationalPhone } from '@/lib/contactFields'
 import { track } from '@/lib/analytics'
 import { cn } from '@/lib/utils'
 import { CURRENCIES, DIAL_CODES } from './content'
@@ -49,7 +50,7 @@ function snapshot(scenario: ScenarioKind, inp: MonthlyInputs, currency: string) 
 
 /**
  * Formulário curto do Explorar, aberto por "Ver a minha análise completa".
- * Obrigatórios: nome, email, empresa e a confirmação do pedido. Telefone opcional.
+ * Obrigatórios: nome, email, empresa, telefone (com indicativo) e a confirmação do pedido.
  * Os valores da simulação seguem automaticamente com o pedido (não se repetem) e os
  * resultados são recalculados no recetor. A análise só abre com a confirmação do
  * recetor (id ou duplicate); comunicações comerciais são uma opção separada, desmarcada.
@@ -72,11 +73,12 @@ export function LeadForm({ t, lead, setLead, scenario, inputs, onBack, onSuccess
     if (inFlight.current) return
     const err: typeof errors = {}
     const phoneDigits = lead.phone.replace(/\D/g, '')
-    const totalDigits = lead.dial.replace(/\D/g, '').length + phoneDigits.length
     if (lead.name.trim().length < 2) err.name = t.errors.name
     if (!isValidEmail(lead.email)) err.email = t.errors.email
     if (lead.company.trim().length < 2) err.company = t.errors.company
-    if (phoneDigits && (totalDigits < 7 || totalDigits > 15)) err.phone = t.errors.phone
+    // Telefone obrigatório (aviso 2026-11-v6), com as mesmas regras do Finer Pioneers e do recetor.
+    if (!phoneDigits) err.phone = t.errors.phoneRequired
+    else if (!internationalPhone(lead.dial, lead.phone)) err.phone = t.errors.phone
     if (!lead.request) err.request = t.errors.request
     setErrors(err)
     if (Object.keys(err).length) {
@@ -102,7 +104,7 @@ export function LeadForm({ t, lead, setLead, scenario, inputs, onBack, onSuccess
         name: lead.name.trim(),
         email: lead.email.trim(),
         company: lead.company.trim(),
-        phone: phoneDigits ? `${lead.dial} ${phoneDigits}` : '',
+        phone: `${lead.dial} ${phoneDigits}`,
         contact: lead.contact ? '1' : '0',
         marketing: lead.marketing ? '1' : '0',
         privacy: '1',
@@ -122,7 +124,7 @@ export function LeadForm({ t, lead, setLead, scenario, inputs, onBack, onSuccess
   }
 
   const input = 'h-11 w-full rounded-xl border border-[#0B1030]/12 bg-white px-3.5 text-[14.5px] text-[#070D2B] placeholder:text-[#0B1030]/35 outline-none transition-[border-color,box-shadow] focus:border-[#070D2B] focus:ring-2 focus:ring-[#070D2B]/10'
-  const opt = <span className="font-normal text-[#0B1030]/40"> · {t.optional}</span>
+  const req = <span className="font-normal text-[#0B1030]/40"> · {t.required}</span>
 
   return (
     <form onSubmit={submit} noValidate className="border-t border-[#0B1030]/10 pt-7 text-left">
@@ -147,14 +149,14 @@ export function LeadForm({ t, lead, setLead, scenario, inputs, onBack, onSuccess
         <Field id="lf-company" label={t.company} error={errors.company}>
           <input id="lf-company" className={input} autoComplete="organization" value={lead.company} onChange={(e) => set('company', e.target.value)} maxLength={120} aria-invalid={!!errors.company} />
         </Field>
-        <Field id="lf-phone" label={<>{t.phone}{opt}</>} error={errors.phone}>
+        <Field id="lf-phone" label={<>{t.phone}{req}</>} error={errors.phone}>
           <div className="flex gap-2">
             <select aria-label={t.dial} className={cn(input, 'w-[108px] shrink-0 appearance-none px-3 [&>option]:text-[#070D2B]')} value={lead.dial} onChange={(e) => set('dial', e.target.value)}>
               {DIAL_CODES.map((c) => (
                 <option key={c.code} value={c.dial}>{`${c.code} ${c.dial}`}</option>
               ))}
             </select>
-            <input id="lf-phone" type="tel" inputMode="tel" className={input} autoComplete="tel-national" value={lead.phone} onChange={(e) => set('phone', e.target.value.replace(/[^\d ]/g, ''))} maxLength={20} aria-invalid={!!errors.phone} />
+            <input id="lf-phone" type="tel" inputMode="tel" className={input} autoComplete="tel-national" value={lead.phone} onChange={(e) => set('phone', e.target.value.replace(/[^\d ]/g, ''))} maxLength={20} required aria-required="true" aria-invalid={!!errors.phone} aria-describedby={errors.phone ? 'lf-phone-error' : undefined} />
           </div>
         </Field>
         <Field id="lf-currency" label={t.currency}>
@@ -217,7 +219,7 @@ function Field({ id, label, error, children }: { id: string; label: React.ReactN
         {label}
       </label>
       {children}
-      {error && <p className="text-[12px] text-[#C62D33]">{error}</p>}
+      {error && <p id={`${id}-error`} className="text-[12px] text-[#C62D33]">{error}</p>}
     </div>
   )
 }

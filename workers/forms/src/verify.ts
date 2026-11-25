@@ -48,7 +48,7 @@ export interface VerifyEnv {
 }
 
 /** Versões do aviso de privacidade que preveem o email de confirmação ao candidato. */
-export const VERIFY_CONSENTS: readonly string[] = ['2026-11-v5']
+export const VERIFY_CONSENTS: readonly string[] = ['2026-11-v5', '2026-11-v6']
 export const TOKEN_TTL_MS = 48 * 60 * 60 * 1000
 export const MAX_RESENDS = 3
 export const RESEND_INTERVAL_MS = 10 * 60 * 1000

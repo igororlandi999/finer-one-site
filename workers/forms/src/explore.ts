@@ -63,17 +63,33 @@ export function phone(value: unknown): string | null | false {
   return '+' + digits
 }
 
+/**
+ * Versões do aviso de privacidade em que o telefone do Explorar é obrigatório. Uma página
+ * publicada antes (ou ainda em cache) envia uma versão anterior, em que o telefone é opcional:
+ * esse pedido continua a ser aceite como antes. Assim o Worker pode ser publicado antes do site.
+ */
+export const EXPLORE_PHONE_REQUIRED_CONSENTS: readonly string[] = ['2026-11-v6']
+
+/** Telefone com a regra de Portugal (+351: 9 dígitos começados por 2, 3 ou 9), como no Finer Pioneers. */
+export function phoneStrict(value: unknown): string | null | false {
+  const p = phone(value)
+  if (!p) return p
+  if (p.startsWith('+351') && !/^\+351[239]\d{8}$/.test(p)) return false
+  return p
+}
+
 /** Devolve o lead limpo, ou o nome do primeiro campo inválido. */
-export function cleanLead(fields: unknown): ExploreLead | string {
+export function cleanLead(fields: unknown, consent = ''): ExploreLead | string {
   const f = (fields && typeof fields === 'object' ? fields : {}) as Record<string, unknown>
   const name = text(f.name, LIMITS.name)
   const email = text(f.email, LIMITS.email).toLowerCase()
   const company = text(f.company, LIMITS.company)
-  const tel = phone(f.phone)
+  const required = EXPLORE_PHONE_REQUIRED_CONSENTS.includes(consent)
+  const tel = required ? phoneStrict(f.phone) : phone(f.phone)
   if (name.length < 2) return 'name'
   if (!EMAIL_RE.test(email)) return 'email'
   if (company.length < 2) return 'company'
-  if (tel === false) return 'phone'
+  if (tel === false || (required && !tel)) return 'phone'
   // Pedido da análise e tratamento para esse fim: obrigatório e separado das novidades.
   if (!flag(f.privacy)) return 'privacy'
   return { name, email, company, phone: tel, contact: flag(f.contact), marketing: flag(f.marketing) }

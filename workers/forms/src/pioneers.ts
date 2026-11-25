@@ -10,7 +10,7 @@ import { phone } from './explore'
 import { text } from './shared'
 
 /** Versões do aviso de privacidade em que o formulário pede telefone (obrigatório) e website. */
-export const PIONEERS_EXTRA_CONSENTS: readonly string[] = ['2026-11-v5']
+export const PIONEERS_EXTRA_CONSENTS: readonly string[] = ['2026-11-v5', '2026-11-v6']
 
 export const URL_MAX = 200
 const HOST_RE = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+(?:[a-z]{2,63}|xn--[a-z0-9-]{2,59})$/

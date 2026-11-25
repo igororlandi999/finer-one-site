@@ -239,7 +239,7 @@ async function submit(request: Request, env: Env, cors: Record<string, string>, 
  * corre a seguir, fora da resposta, e nunca impede a gravação nem a confirmação.
  */
 async function explore(body: Record<string, unknown>, request: Request, env: Env, cors: Record<string, string>, ctx?: ExecutionContext): Promise<Response> {
-  const lead = cleanLead(body.fields)
+  const lead = cleanLead(body.fields, text(body.consentVersion, 40))
   if (typeof lead === 'string') return json({ ok: false, error: 'invalid', field: lead }, 400, cors)
   const sim = cleanSimulation(body.simulation)
   if (typeof sim === 'string') return json({ ok: false, error: 'invalid', field: sim }, 400, cors)
