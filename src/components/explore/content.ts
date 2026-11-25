@@ -318,6 +318,8 @@ const pt = {
   sourceDef: 'O que mede',
   sourceLink: 'Abrir a fonte oficial',
   sourcesCta: 'Simular o efeito na minha empresa',
+  guideLead: 'Clientes que pagam cada vez mais tarde são um dos sinais de falta de liquidez, mesmo em empresas que vendem bem.',
+  guideLink: 'Veja os 7 sinais de alerta e os indicadores a acompanhar no nosso guia.',
 
   bridgeEyebrow: 'Na plataforma',
   bridgeTitle: ['Da simulação ', 'para o dia a dia.'],
@@ -441,6 +443,8 @@ const en: ExploreText = {
   sourceDef: 'What it measures',
   sourceLink: 'Open the official source',
   sourcesCta: 'Simulate the effect on my company',
+  guideLead: 'Customers paying later and later are one of the warning signs of a cash shortage, even in companies that sell well.',
+  guideLink: 'Read our guide to the 7 warning signs and the indicators to track (in Portuguese).',
 
   bridgeEyebrow: 'In the platform',
   bridgeTitle: ['From simulation ', 'to everyday use.'],
