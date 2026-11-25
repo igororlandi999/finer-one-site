@@ -30,11 +30,11 @@ import { cn } from '@/lib/utils'
 // passa a incluir telefone e website. A verificação do email do candidato é descrita como condicional ("quando
 // estiver ativa"): está desligada (sem CONFIRM_FROM no Worker). Publicada em conjunto com PRIVACY_VERSION
 // '2026-11-v5' em src/lib/forms.ts.
-// v6 (2026-11-v6) — PROPOSTA de 25/11/2026, POR APROVAR (por isso APPROVED = false: a página mostra "Rascunho em
-// revisão" e o build de publicação falha). Explorar: telefone obrigatório, para a equipa contactar o requerente
-// sobre o pedido da análise; o consentimento do pedido passa a incluir esse contacto. Ao aprovar: APPROVED = true,
-// NOTICE_DATE e registo de quem aprovou. Versões anteriores (v3-v5) continuam a descrever o telefone como opcional.
-const APPROVED = false
+// v6 (2026-11-v6) — aprovada para publicação por Igor Orlandi Barros a 25/11/2026 (não há registo, neste
+// repositório, da aprovação de Henrique Santos Bértolo e Sebastião Andrade). Explorar: telefone obrigatório, só
+// para a equipa contactar o requerente sobre a análise pedida; conversas comerciais adicionais e novidades
+// continuam opcionais, cada uma com a sua opção própria. Versões anteriores (v3-v5) descrevem o telefone como opcional.
+const APPROVED = true
 const NOTICE_DATE = { pt: '25 de novembro de 2026', en: '25 November 2026' }
 const CONTACT = 'geral.finerone@gmail.com'
 const CF = FORMS_PROVIDER === 'cloudflare'
