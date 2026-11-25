@@ -9,11 +9,17 @@ import { fileURLToPath, URL } from 'node:url'
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const verification = (process.env.VITE_PIONEERS_EMAIL_VERIFICATION ?? env.VITE_PIONEERS_EMAIL_VERIFICATION) === 'on'
+  // Mês do build (AAAA-MM, UTC): o simulador do Explorar usa-o no HTML pré-renderizado e na
+  // hidratação, e passa ao mês atual do visitante logo a seguir (src/hooks/useCurrentMonth.ts).
+  // A pré-renderização reutiliza o valor do build do site (scripts/prerender.mjs).
+  const buildMonth = process.env.FO_BUILD_MONTH || new Date().toISOString().slice(0, 7)
 
   return {
   base: '/',
 
   plugins: [react()],
+
+  define: { __FO_BUILD_MONTH__: JSON.stringify(buildMonth) },
 
   // Várias páginas: cada uma com o seu index.html (funciona no GitHub Pages).
   build: {

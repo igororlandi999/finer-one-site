@@ -1,5 +1,5 @@
 import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { createRoot, hydrateRoot } from 'react-dom/client'
 import App from '@/App'
 import { LanguageProvider } from '@/i18n/LanguageContext'
 import '@fontsource-variable/inter'
@@ -18,12 +18,17 @@ if (!container) {
   throw new Error('Elemento #root não encontrado no index.html')
 }
 
-createRoot(container).render(
+const tree = (
   <StrictMode>
     <LanguageProvider>
       <App />
     </LanguageProvider>
-  </StrictMode>,
+  </StrictMode>
 )
+// HTML pré-renderizado: hidratar. __foHydrating faz o primeiro render coincidir com esse HTML
+// (idioma predefinido; ver LanguageProvider). Uma recuperação do React (reconstrução) fica registada.
+window.__foHydrating = container.hasChildNodes()
+if (window.__foHydrating) hydrateRoot(container, tree, { onRecoverableError: (e) => console.warn('[hydrate]', e) })
+else createRoot(container).render(tree)
 
 initTitleSweep()

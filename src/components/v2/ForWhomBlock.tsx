@@ -1,5 +1,6 @@
 import { useRef } from 'react'
-import { MotionConfig, motion, useReducedMotion, useScroll, useSpring, useTransform } from 'motion/react'
+import { MotionConfig, motion, useScroll, useSpring, useTransform } from 'motion/react'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 import type { MotionValue, Variants } from 'motion/react'
 import { useLanguage } from '@/i18n/LanguageContext'
 import type { Lang } from '@/i18n/LanguageContext'

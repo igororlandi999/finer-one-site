@@ -1,5 +1,7 @@
 import { useRef } from 'react'
-import { MotionConfig, motion, useReducedMotion, useScroll, useSpring } from 'motion/react'
+import type { CSSProperties } from 'react'
+import { MotionConfig, motion, useScroll, useSpring } from 'motion/react'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 import type { Variants } from 'motion/react'
 import { ArrowRight } from 'lucide-react'
 import { useLanguage } from '@/i18n/LanguageContext'
@@ -97,14 +99,9 @@ type T = (typeof copy)['pt']
 const EASE = [0.22, 1, 0.36, 1] as const
 const group: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.09 } } }
 const rise: Variants = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE } } }
+/** Entrada em CSS (fo-enter) com os valores do "rise" desta página. */
+const enter = (delay: number) => ({ '--fo-y': '20px', '--fo-dur': '0.7s', '--fo-delay': `${delay}s` }) as CSSProperties
 const inView = { initial: 'hidden', whileInView: 'show', viewport: { once: true, margin: '0px 0px -12% 0px' } } as const
-
-const Eyebrow = ({ children, center }: { children: string; center?: boolean }) => (
-  <motion.p variants={rise} className={cn('inline-flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep', center && 'justify-center')}>
-    <span aria-hidden="true" className="h-px w-8 bg-accent-deep/60" />
-    {children}
-  </motion.p>
-)
 
 export function AboutPage() {
   const { lang } = useLanguage()
@@ -130,24 +127,32 @@ function Hero({ t }: { t: T }) {
   ]
   return (
     <section aria-labelledby="sobre-titulo" className="bg-white pb-16 pt-36 text-navy sm:pt-40">
-      <motion.div variants={group} initial="hidden" animate="show" className="mx-auto max-w-content px-5 sm:px-6 lg:px-8">
-        <Eyebrow>{t.eyebrow}</Eyebrow>
-        <motion.h1 variants={rise} id="sobre-titulo" className="mt-6 max-w-[900px] text-balance font-display text-[40px] font-bold leading-[1.02] tracking-[-0.04em] text-[#070D2B] sm:text-[58px] lg:text-[68px]">
-          {t.title[0]}
-          <span className="text-accent-deep">{t.title[1]}</span>
-        </motion.h1>
-        <motion.p variants={rise} className="mt-6 max-w-[600px] text-[17px] leading-[1.6] text-[#0B1030]/65 sm:text-[18.5px]">
+      {/* Entrada em CSS (fo-enter), igual ao "rise" anterior (0,7 s, 20 px, escalonamento 0,09 s):
+          começa na primeira pintura do HTML pré-renderizado, sem esperar pelo JavaScript. O fade do
+          título fica num invólucro, para não colidir com a revelação dos títulos (titleSweep). */}
+      <div className="mx-auto max-w-content px-5 sm:px-6 lg:px-8">
+        <p className="fo-enter inline-flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.26em] text-accent-deep" style={enter(0)}>
+          <span aria-hidden="true" className="h-px w-8 bg-accent-deep/60" />
+          {t.eyebrow}
+        </p>
+        <div className="fo-enter mt-6" style={enter(0.09)}>
+          <h1 id="sobre-titulo" className="max-w-[900px] text-balance font-display text-[40px] font-bold leading-[1.02] tracking-[-0.04em] text-[#070D2B] sm:text-[58px] lg:text-[68px]">
+            {t.title[0]}
+            <span className="text-accent-deep">{t.title[1]}</span>
+          </h1>
+        </div>
+        <p className="fo-enter mt-6 max-w-[600px] text-[17px] leading-[1.6] text-[#0B1030]/65 sm:text-[18.5px]" style={enter(0.18)}>
           {t.sub}
-        </motion.p>
-      </motion.div>
+        </p>
+      </div>
 
-      <motion.div variants={group} initial="hidden" animate="show" aria-label={t.gallery} role="img" className="mx-auto mt-14 grid max-w-[1400px] grid-cols-2 gap-3 px-3 sm:px-4 lg:h-[460px] lg:grid-cols-[1.6fr_0.9fr_1.3fr]">
+      <div aria-label={t.gallery} role="img" className="mx-auto mt-14 grid max-w-[1400px] grid-cols-2 gap-3 px-3 sm:px-4 lg:h-[460px] lg:grid-cols-[1.6fr_0.9fr_1.3fr]">
         {imgs.map((im, i) => (
-          <motion.div key={im.src} variants={{ hidden: { opacity: 0, y: 30, scale: 0.97 }, show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.9, ease: EASE, delay: 0.25 + i * 0.1 } } }} className={cn('group relative overflow-hidden rounded-[22px]', im.cls)}>
+          <div key={im.src} className={cn('fo-enter group relative overflow-hidden rounded-[22px]', im.cls)} style={{ '--fo-y': '30px', '--fo-scale': '0.97', '--fo-dur': '0.9s', '--fo-delay': `${0.25 + i * 0.1}s` } as CSSProperties}>
             <img src={im.src} alt="" className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1.4s] ease-out group-hover:scale-[1.04]" style={{ objectPosition: im.pos }} />
-          </motion.div>
+          </div>
         ))}
-      </motion.div>
+      </div>
     </section>
   )
 }

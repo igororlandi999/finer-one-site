@@ -1,0 +1,35 @@
+name: CI
+
+# Verificações das PRs e das branches de trabalho (não publica nada).
+on:
+  pull_request:
+  push:
+    branches: ['dev/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # Build com um recetor de teste fictício: o teste de hidratação envia os três formulários
+      # contra esse endereço, intercetado no navegador (nada sai da máquina do CI).
+      - run: npm run build
+        env:
+          VITE_FORMS_ENDPOINT: https://forms.example.test/
+      - run: npm run test:prerender
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:hydration
+      - run: npm run test:forms

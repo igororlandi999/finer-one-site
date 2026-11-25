@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { MotionConfig, motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
+import { MotionConfig, motion, useScroll, useTransform } from 'motion/react'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 import type { Variants } from 'motion/react'
 import { ArrowRight, Check } from 'lucide-react'
 import { useLanguage } from '@/i18n/LanguageContext'
@@ -96,7 +97,7 @@ function SimCard({ className, children }: { className: string; children: React.R
   const inset = useTransform(scrollYProgress, [0, 1], [5, 0])
   const clipPath = useTransform(inset, (v) => `inset(0 ${v}% 0 ${v}% round 32px)`)
   return (
-    <motion.div ref={ref} initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: EASE, delay: 0.25 }} style={reduced ? undefined : { clipPath }} className={className}>
+    <motion.div ref={ref} initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: EASE, delay: 0.25 }} style={{ clipPath: reduced ? 'none' : clipPath }} className={className}>
       {children}
     </motion.div>
   )

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { KeyboardEvent, ReactNode } from 'react'
-import { AnimatePresence, MotionConfig, animate, motion, useMotionValue, useReducedMotion, useScroll, useTransform } from 'motion/react'
+import { AnimatePresence, MotionConfig, animate, motion, useMotionValue, useScroll, useTransform } from 'motion/react'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 import type { Variants } from 'motion/react'
 import { CalendarDays, FileText } from 'lucide-react'
 import { useLanguage } from '@/i18n/LanguageContext'
@@ -158,7 +159,7 @@ export function PlatformShowcaseV1() {
           <motion.div variants={item} className="mt-5">
             <motion.div
               ref={frameRef}
-              style={reduced ? undefined : { clipPath }}
+              style={{ clipPath: reduced ? 'none' : clipPath }}
               className="overflow-clip rounded-[20px] bg-white shadow-[0_40px_90px_-60px_rgba(11,16,48,0.5),0_0_0_1px_rgba(11,16,48,0.08)]"
             >
               <AppShell view={tab as View} onNavigate={(v) => TABS.includes(v as Tab) && setTab(v as Tab)} navigable={TABS as View[]} className="lg:h-[680px]">

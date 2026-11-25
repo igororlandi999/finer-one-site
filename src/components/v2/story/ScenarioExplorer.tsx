@@ -187,7 +187,11 @@ function useGrow() {
   const reduced = usePrefersReducedMotion()
   const [on, setOn] = useState(reduced)
   useEffect(() => {
-    if (reduced) return
+    // Movimento reduzido (conhecido só depois da hidratação): barras logo no estado final.
+    if (reduced) {
+      setOn(true)
+      return
+    }
     const id = requestAnimationFrame(() => requestAnimationFrame(() => setOn(true)))
     return () => cancelAnimationFrame(id)
   }, [reduced])

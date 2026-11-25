@@ -4,6 +4,7 @@ import { Logo } from '@/components/brand/Logo'
 import { buttonClasses } from '@/components/ui/Button'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
+import { currentPath } from '@/lib/currentPath'
 
 /**
  * v2: "Produto" → #demo (demonstração interativa). Texto abaixo é da v1:
@@ -34,8 +35,8 @@ const links = {
 
 /** Página atual: só links para páginas (não âncoras) podem ficar ativos. */
 function isCurrent(href: string) {
-  if (typeof window === 'undefined' || href.includes('#')) return false
-  return window.location.pathname.replace(/\/?$/, '/') === href
+  if (href.includes('#')) return false
+  return currentPath() === href
 }
 
 const copy = {
@@ -100,13 +101,16 @@ export function Navbar() {
   const t = copy[lang]
   // Faixa de anúncio no topo (como na Ramp e na Lovable): a oferta real dos Finer Pioneers.
   // Só no topo da página; desaparece com o scroll; pode ser fechada; não aparece na própria página Pioneers.
-  const [barClosed, setBarClosed] = useState(() => {
+  // O caminho é igual no build e no navegador; a escolha guardada na sessão só se lê depois de
+  // montar, para o HTML pré-renderizado coincidir com o primeiro render (hidratação).
+  const [barClosed, setBarClosed] = useState(() => currentPath().startsWith('/pioneers'))
+  useEffect(() => {
     try {
-      return window.location.pathname.startsWith('/pioneers') || window.sessionStorage.getItem('fo-bar') === '0'
+      if (window.sessionStorage.getItem('fo-bar') === '0') setBarClosed(true)
     } catch {
-      return false
+      /* sem armazenamento: a faixa fica como está */
     }
-  })
+  }, [])
   const closeBar = () => {
     setBarClosed(true)
     try {

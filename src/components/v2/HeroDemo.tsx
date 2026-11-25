@@ -8,7 +8,7 @@ import { FinerHomeView } from '@/components/v2/finer-ui/FinerHomeView'
 import { ScaledCanvas } from '@/components/v2/finer-ui/ScaledCanvas'
 import { HERO_BACKGROUND, demoVideoFor } from '@/config/demo'
 import type { DemoVideoSource } from '@/config/demo'
-import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { useMediaQuery, useMediaQueryState } from '@/hooks/useMediaQuery'
 import { useInView } from '@/hooks/useInView'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 import { useLanguage } from '@/i18n/LanguageContext'
@@ -185,14 +185,16 @@ function Backdrop() {
 }
 
 /** Moldura de aplicação 16:9 — a mesma para o vídeo final e para o poster. */
-function Frame({ children, controls, portrait }: { t: T; children: ReactNode; controls?: ReactNode; portrait?: boolean }) {
+function Frame({ children, controls, portrait, responsive }: { t: T; children: ReactNode; controls?: ReactNode; portrait?: boolean; responsive?: boolean }) {
   return (
     // Moldura de vidro: aro translúcido, orla superior com a linha azul da marca,
     // sombra longa e um contorno interior fino para separar o ecrã do fundo.
     <div className="relative rounded-[18px] border border-white/[0.11] bg-[linear-gradient(180deg,rgba(255,255,255,0.09),rgba(255,255,255,0.03))] p-[6px] shadow-[0_50px_110px_-40px_rgba(0,0,0,0.95),0_0_70px_-24px_rgba(30,144,255,0.4),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-md sm:p-[7px]">
       <span aria-hidden="true" className="pointer-events-none absolute -top-px left-[14%] right-[14%] h-px bg-[linear-gradient(90deg,transparent,rgba(90,180,255,0.9),transparent)]" />
       <div className="relative overflow-hidden rounded-[12px] bg-white ring-1 ring-black/10">
-        <div className={portrait ? 'relative aspect-[4/5] bg-[#F7F9FE]' : 'relative aspect-video bg-[#F7F9FE]'}>{children}</div>
+        {/* responsive: antes de o React saber o tamanho do ecrã (HTML pré-renderizado), o CSS
+            escolhe a forma — vertical no telemóvel, horizontal a partir de 768 px. */}
+        <div className={responsive ? 'relative aspect-[4/5] bg-[#F7F9FE] md:aspect-video' : portrait ? 'relative aspect-[4/5] bg-[#F7F9FE]' : 'relative aspect-video bg-[#F7F9FE]'}>{children}</div>
         {controls}
       </div>
     </div>
@@ -230,8 +232,11 @@ function DemoVideo({ t, video: source }: { t: T; video: DemoVideoSource }) {
   const [userStarted, setUserStarted] = useState(false)
   const allowed = !reduced || userStarted
   // No telemóvel, a versão vertical (interface em formato de telemóvel), se existir.
-  const small = !useMediaQuery('(min-width: 768px)')
-  const portrait = small && !!source.portrait
+  // null no HTML pré-renderizado e na hidratação: a forma fica a cargo do CSS e o vídeo só é
+  // escolhido depois de o React montar (evita deslocar a hero no desktop).
+  const wide = useMediaQueryState('(min-width: 768px)')
+  const pending = wide === null
+  const portrait = !pending && !wide && !!source.portrait
 
   // Só reproduz quando visível, sem pausa do visitante e (com movimento reduzido) só por pedido.
   useEffect(() => {
@@ -259,6 +264,7 @@ function DemoVideo({ t, video: source }: { t: T; video: DemoVideoSource }) {
       <Frame
         t={t}
         portrait={portrait}
+        responsive={pending && !!source.portrait}
         controls={
           <>
             {/* Movimento reduzido: imagem estática com um botão claro para ver a demonstração */}
@@ -286,19 +292,19 @@ function DemoVideo({ t, video: source }: { t: T; video: DemoVideoSource }) {
         }
       >
         <video
-          key={(portrait ? 'vertical' : 'horizontal') + source.src}
+          key={(pending ? 'pending' : portrait ? 'vertical' : 'horizontal') + source.src}
           ref={video}
           className="absolute inset-0 h-full w-full object-cover"
           muted
           loop
           playsInline
-          preload={reduced && !userStarted ? 'none' : 'metadata'}
-          poster={portrait ? source.portraitPoster : source.poster}
+          preload={pending || (reduced && !userStarted) ? 'none' : 'metadata'}
+          poster={pending ? undefined : portrait ? source.portraitPoster : source.poster}
           aria-label={t.videoLabel}
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
         >
-          {portrait ? (
+          {pending ? null : portrait ? (
             <source src={source.portrait} type="video/mp4" />
           ) : (
             <>
