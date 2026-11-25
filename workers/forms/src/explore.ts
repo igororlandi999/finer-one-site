@@ -68,7 +68,7 @@ export function phone(value: unknown): string | null | false {
  * publicada antes (ou ainda em cache) envia uma versão anterior, em que o telefone é opcional:
  * esse pedido continua a ser aceite como antes. Assim o Worker pode ser publicado antes do site.
  */
-export const EXPLORE_PHONE_REQUIRED_CONSENTS: readonly string[] = ['2026-11-v6']
+export const EXPLORE_PHONE_REQUIRED_CONSENTS: readonly string[] = ['2026-11-v6', '2026-11-v7']
 
 /** Telefone com a regra de Portugal (+351: 9 dígitos começados por 2, 3 ou 9), como no Finer Pioneers. */
 export function phoneStrict(value: unknown): string | null | false {

@@ -220,7 +220,8 @@ const EXPLORE: Source<ExploreRow> = {
 
 // ---------- Lista de Espera e Finer Pioneers ----------
 // Notificação operacional para a equipa, não inscrição em campanhas. Só os campos pedidos:
-// Lista de Espera — nome, email, data, origem e identificador (sem dimensão nem temas);
+// Lista de Espera — nome, email, data, origem e identificador (sem dimensão nem temas); a partir
+// do aviso v7, também o telefone;
 // Finer Pioneers — nome, email, empresa, setor, desafio, data e identificador; a partir do
 // aviso v5, também o telefone e o website indicados na candidatura.
 
@@ -229,7 +230,7 @@ const EXPLORE: Source<ExploreRow> = {
  * formulários NÃO geram email: as inscrições feitas com ele (ou anteriores) ficam 'skipped'.
  * Acrescentar aqui a versão aprovada que passar a prever a notificação (ver proposta v4).
  */
-export const SUBMISSION_NOTIFY_CONSENTS: readonly string[] = ['2026-11-v4', '2026-11-v5', '2026-11-v6']
+export const SUBMISSION_NOTIFY_CONSENTS: readonly string[] = ['2026-11-v4', '2026-11-v5', '2026-11-v6', '2026-11-v7']
 
 const SUBMISSION_COLUMNS = 'id, kind, created_at, name, email, company, sector, challenge, phone, company_url, consent_version, notify_status, notify_attempts, notify_last_attempt_at'
 type SubmissionRow = Base & {
@@ -266,11 +267,14 @@ function submissionBody(row: SubmissionRow, reply: string | null): string {
       '',
       `Nome: ${row.name}`,
       `Email: ${row.email}`,
+      // Telefone: só existe nas inscrições feitas com o aviso que o pede (v7).
+      ...(row.phone ? [`Telefone: ${row.phone}`] : []),
       `Data da inscrição: ${lisbonDate(row.created_at)}`,
       'Origem: Lista de Espera',
       `Identificador interno: ${row.id}`,
       '',
       'Pelo aviso de privacidade, a Lista de Espera só recebe comunicações de lançamento (sem newsletters nem promoções).',
+      ...(row.phone ? ['O telefone serve só para contactar sobre o interesse na Finer One e o acesso futuro à plataforma — não para campanhas de marketing.'] : []),
       where,
       replyLine(reply),
     ].join('\n')

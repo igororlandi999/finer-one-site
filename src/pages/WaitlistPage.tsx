@@ -3,10 +3,12 @@ import type { FormEvent, ReactNode } from 'react'
 import { AnimatePresence, MotionConfig, motion, useReducedMotion, useScroll, useSpring, useTransform } from 'motion/react'
 import type { Variants } from 'motion/react'
 import { ArrowLeft, ArrowRight, Check, Lock } from 'lucide-react'
+import { DIAL_CODES } from '@/components/explore/content'
 import { ConsentCheckbox, Honeypot } from '@/components/forms/fields'
 import { demoVideoFor } from '@/config/demo'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useLanguage } from '@/i18n/LanguageContext'
+import { internationalPhone } from '@/lib/contactFields'
 import { isPreviewMode, isValidEmail, submitForm } from '@/lib/forms'
 import { cn, focusLater } from '@/lib/utils'
 import { FormSuccess } from '@/pages/FormSuccess'
@@ -33,17 +35,23 @@ const copy = {
     namePh: 'O seu nome',
     email: 'Email profissional',
     emailPh: 'nome@empresa.pt',
+    phone: 'Telefone',
+    phonePh: '912 345 678',
+    dial: 'Indicativo internacional',
+    requiredNote: 'Campos obrigatórios',
     sizes: ['Só eu', '2 a 9 pessoas', '10 a 49 pessoas', '50 a 249 pessoas', '250 ou mais'],
     interests: ['Tesouraria', 'Recebimentos', 'Custos e despesas', 'Previsões', 'Tudo num só lugar'],
     next: 'Continuar',
     back: 'Voltar',
-    consent: ['Li o ', 'aviso de privacidade', ' e aceito receber emails da Finer One sobre o lançamento e a abertura do acesso à plataforma. Posso cancelar a qualquer momento.'],
+    consent: ['Li o ', 'aviso de privacidade', ' e aceito receber emails da Finer One sobre o lançamento e a abertura do acesso à plataforma, e ser contactado sobre o meu interesse na Finer One e o acesso à plataforma. Posso cancelar a qualquer momento.'],
     submit: 'Entrar na lista',
     sending: 'A enviar…',
     fine: 'A inscrição não exige ligação bancária nem partilha de dados financeiros.',
     errors: {
       name: 'Indique o seu nome.',
       email: 'Indique um email válido.',
+      phoneRequired: 'Indique o seu telefone, com o indicativo do país.',
+      phone: 'Indique um número válido para o indicativo escolhido (só algarismos, sem o indicativo).',
       size: 'Escolha a dimensão da empresa.',
       interests: 'Escolha pelo menos uma opção.',
       consent: 'É necessário aceitar para se inscrever.',
@@ -79,17 +87,23 @@ const copy = {
     namePh: 'Your name',
     email: 'Work email',
     emailPh: 'name@company.com',
+    phone: 'Phone',
+    phonePh: '912 345 678',
+    dial: 'Country calling code',
+    requiredNote: 'Required fields',
     sizes: ['Just me', '2 to 9 people', '10 to 49 people', '50 to 249 people', '250 or more'],
     interests: ['Cash position', 'Receivables', 'Costs and expenses', 'Forecasts', 'Everything in one place'],
     next: 'Continue',
     back: 'Back',
-    consent: ['I have read the ', 'privacy notice', ' and agree to receive emails from Finer One about the launch and the opening of access to the platform. I can unsubscribe at any time.'],
+    consent: ['I have read the ', 'privacy notice', ' and agree to receive emails from Finer One about the launch and the opening of access to the platform, and to be contacted about my interest in Finer One and access to the platform. I can unsubscribe at any time.'],
     submit: 'Join the list',
     sending: 'Sending…',
     fine: 'Signing up does not require a bank connection or sharing financial data.',
     errors: {
       name: 'Please enter your name.',
       email: 'Please enter a valid email.',
+      phoneRequired: 'Enter your phone number, with the country code.',
+      phone: 'Enter a valid number for the selected country code (digits only, without the code).',
       size: 'Choose your company size.',
       interests: 'Choose at least one option.',
       consent: 'You need to agree to sign up.',
@@ -179,7 +193,7 @@ function Waitlist() {
 
 /* Inscrição: 3 perguntas, uma de cada vez */
 
-type Err = Partial<Record<'name' | 'email' | 'size' | 'interests' | 'consent' | 'form', string>>
+type Err = Partial<Record<'name' | 'email' | 'phone' | 'size' | 'interests' | 'consent' | 'form', string>>
 
 function SignupBox({ t }: { t: T }) {
   const reduced = useReducedMotion() ?? false
@@ -188,6 +202,8 @@ function SignupBox({ t }: { t: T }) {
   const [dir, setDir] = useState(1)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [dial, setDial] = useState('+351')
+  const [phone, setPhone] = useState('')
   const [size, setSize] = useState('')
   const [interests, setInterests] = useState<string[]>([])
   const [consent, setConsent] = useState(false)
@@ -207,6 +223,8 @@ function SignupBox({ t }: { t: T }) {
     if (s === 0) {
       if (name.trim().length < 2) e.name = t.errors.name
       if (!isValidEmail(email)) e.email = t.errors.email
+      if (!phone.replace(/\D/g, '')) e.phone = t.errors.phoneRequired
+      else if (!internationalPhone(dial, phone)) e.phone = t.errors.phone
     }
     if (s === 1 && !size) e.size = t.errors.size
     if (s === 2) {
@@ -228,7 +246,7 @@ function SignupBox({ t }: { t: T }) {
     if (step < 2) return go(step + 1)
     if (status === 'sending') return
     setStatus('sending')
-    const result = await submitForm('waitlist', { name, email, size, interests: interests.join(', ') }, { honeypot, startedAt: startedAt.current })
+    const result = await submitForm('waitlist', { name, email, phone: internationalPhone(dial, phone) ?? '', size, interests: interests.join(', ') }, { honeypot, startedAt: startedAt.current })
     if (result.ok) {
       setPreview(result.preview)
       setStatus('done')
@@ -250,15 +268,23 @@ function SignupBox({ t }: { t: T }) {
   }
 
   const inputCls = 'mt-0.5 w-full bg-transparent text-[16px] text-[#070D2B] outline-none placeholder:text-[#0B1030]/35'
+  // Asterisco nos campos obrigatórios, como no Explorar (o leitor de ecrã usa aria-required).
+  const req = <span aria-hidden="true" className="ml-0.5 font-normal text-[#0B1030]/40">*</span>
+  const boxCls = (id: 'name' | 'email' | 'phone') => cn('block rounded-2xl px-4 py-3 transition-colors focus-within:bg-[#F3F7FF]', errors[id] && 'bg-red-50')
+  const fieldError = (id: 'name' | 'email' | 'phone') =>
+    errors[id] && (
+      <span id={`wl-${id}-error`} role="alert" className="mt-1 block text-[12px] font-medium text-red-700">
+        {errors[id]}
+      </span>
+    )
   const field = (id: 'name' | 'email', label: string, input: ReactNode) => (
-    <label htmlFor={`wl-${id}`} className={cn('block rounded-2xl px-4 py-3 transition-colors focus-within:bg-[#F3F7FF]', errors[id] && 'bg-red-50')}>
-      <span className="block text-[12px] font-semibold text-[#0B1030]/55">{label}</span>
+    <label htmlFor={`wl-${id}`} className={boxCls(id)}>
+      <span className="block text-[12px] font-semibold text-[#0B1030]/55">
+        {label}
+        {req}
+      </span>
       {input}
-      {errors[id] && (
-        <span id={`wl-${id}-error`} role="alert" className="mt-1 block text-[12px] font-medium text-red-700">
-          {errors[id]}
-        </span>
-      )}
+      {fieldError(id)}
     </label>
   )
 
@@ -318,13 +344,33 @@ function SignupBox({ t }: { t: T }) {
                   {t.qHints[step] && <p className="px-4 text-[13px] text-[#0B1030]/55">{t.qHints[step]}</p>}
 
                   {step === 0 && (
-                    <div className="mt-1 grid gap-1 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)_auto] sm:items-center">
-                      {field('name', t.name, <input id="wl-name" name="wl-name" autoComplete="name" maxLength={100} placeholder={t.namePh} value={name} aria-invalid={errors.name ? true : undefined} aria-describedby={errors.name ? 'wl-name-error' : undefined} onChange={(e) => { setName(e.target.value); setErrors((x) => ({ ...x, name: undefined, form: undefined })) }} className={inputCls} />)}
-                      {field('email', t.email, <input id="wl-email" name="wl-email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder={t.emailPh} value={email} aria-invalid={errors.email ? true : undefined} aria-describedby={errors.email ? 'wl-email-error' : undefined} onChange={(e) => { setEmail(e.target.value); setErrors((x) => ({ ...x, email: undefined, form: undefined })) }} className={inputCls} />)}
-                      <button type="submit" className="group m-1 inline-flex h-14 items-center justify-center gap-2 whitespace-nowrap rounded-[20px] bg-[#070D2B] px-6 text-[15px] font-semibold text-white shadow-[0_12px_30px_-12px_rgba(7,13,43,0.8)] transition-colors hover:bg-[#0E1A4D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2">
+                    <div className="mt-1 grid gap-1 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] sm:items-end">
+                      {field('name', t.name, <input id="wl-name" name="wl-name" autoComplete="name" maxLength={100} placeholder={t.namePh} value={name} aria-required="true" aria-invalid={errors.name ? true : undefined} aria-describedby={errors.name ? 'wl-name-error' : undefined} onChange={(e) => { setName(e.target.value); setErrors((x) => ({ ...x, name: undefined, form: undefined })) }} className={inputCls} />)}
+                      {field('email', t.email, <input id="wl-email" name="wl-email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder={t.emailPh} value={email} aria-required="true" aria-invalid={errors.email ? true : undefined} aria-describedby={errors.email ? 'wl-email-error' : undefined} onChange={(e) => { setEmail(e.target.value); setErrors((x) => ({ ...x, email: undefined, form: undefined })) }} className={inputCls} />)}
+                      <div className={boxCls('phone')}>
+                        <label htmlFor="wl-phone" className="block text-[12px] font-semibold text-[#0B1030]/55">
+                          {t.phone}
+                          {req}
+                        </label>
+                        <div className="mt-0.5 flex items-center gap-2">
+                          <select id="wl-dial" name="wl-dial" aria-label={t.dial} autoComplete="tel-country-code" value={dial} onChange={(e) => { setDial(e.target.value); setErrors((x) => ({ ...x, phone: undefined, form: undefined })) }} className="w-[96px] shrink-0 cursor-pointer bg-transparent text-[16px] text-[#070D2B] outline-none">
+                            {DIAL_CODES.map((c) => (
+                              <option key={c.code} value={c.dial}>{`${c.code} ${c.dial}`}</option>
+                            ))}
+                          </select>
+                          <span aria-hidden="true" className="h-5 w-px shrink-0 bg-[#0B1030]/15" />
+                          <input id="wl-phone" name="wl-phone" type="tel" inputMode="tel" autoComplete="tel-national" maxLength={20} placeholder={t.phonePh} value={phone} aria-required="true" aria-invalid={errors.phone ? true : undefined} aria-describedby={errors.phone ? 'wl-phone-error' : undefined} onChange={(e) => { setPhone(e.target.value.replace(/[^\d ]/g, '')); setErrors((x) => ({ ...x, phone: undefined, form: undefined })) }} className={cn(inputCls, 'mt-0 min-w-0')} />
+                        </div>
+                        {fieldError('phone')}
+                      </div>
+                      <button type="submit" className="group m-1 inline-flex h-14 items-center sm:mb-1.5 sm:justify-self-end justify-center gap-2 whitespace-nowrap rounded-[20px] bg-[#070D2B] px-6 text-[15px] font-semibold text-white shadow-[0_12px_30px_-12px_rgba(7,13,43,0.8)] transition-colors hover:bg-[#0E1A4D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2">
                         {t.next}
                         <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true" />
                       </button>
+                      <p className="px-4 pb-1 text-[12px] text-[#0B1030]/45 sm:col-span-2">
+                        <span aria-hidden="true">* </span>
+                        {t.requiredNote}
+                      </p>
                     </div>
                   )}
 

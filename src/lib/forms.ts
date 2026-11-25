@@ -36,7 +36,10 @@ export type FormKind = 'pioneers' | 'waitlist' | 'explore'
 // obrigatório e website opcional; verificação do email do candidato descrita como condicional (desligada).
 // 2026-11-v6: aprovada para publicação por Igor Orlandi Barros a 25/11/2026 — Explorar com telefone
 // obrigatório (contacto sobre a análise pedida); conversas comerciais e novidades continuam opcionais.
-export const PRIVACY_VERSION = '2026-11-v6'
+// 2026-11-v7: PROPOSTA de 25/11/2026, por aprovar — Lista de Espera com telefone obrigatório (contacto sobre o
+// interesse na Finer One e o acesso futuro à plataforma; não é consentimento para marketing). Publicar só com o
+// aviso v7 aprovado (a trava do build bloqueia antes disso).
+export const PRIVACY_VERSION = '2026-11-v7'
 const MIN_FILL_MS = 3000
 const LOCAL_LIMIT = 5
 const LOCAL_WINDOW_MS = 60 * 60 * 1000
