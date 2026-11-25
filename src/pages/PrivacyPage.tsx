@@ -34,14 +34,14 @@ import { cn } from '@/lib/utils'
 // repositório, da aprovação de Henrique Santos Bértolo e Sebastião Andrade). Explorar: telefone obrigatório, só
 // para a equipa contactar o requerente sobre a análise pedida; conversas comerciais adicionais e novidades
 // continuam opcionais, cada uma com a sua opção própria. Versões anteriores (v3-v5) descrevem o telefone como opcional.
-// v7 (2026-11-v7) — PROPOSTA de 25/11/2026, POR APROVAR (por isso APPROVED = false: a página mostra "Rascunho em
-// revisão" e o build de publicação falha). Lista de Espera: telefone obrigatório, só para a equipa contactar o
+// v7 (2026-11-v7) — aprovada para publicação por Igor Orlandi Barros a 25/11/2026 (não há registo, neste
+// repositório, da aprovação de Henrique Santos Bértolo e Sebastião Andrade). Lista de Espera: telefone obrigatório, só para a equipa contactar o
 // inscrito sobre o interesse na Finer One e o acesso futuro à plataforma — não é consentimento para campanhas de
 // marketing; a notificação interna da Lista de Espera passa a incluir o telefone. Mantém o resto da v6: telefone
 // obrigatório no Explorar, telefone obrigatório e website opcional no Finer Pioneers, notificações internas dos três
 // formulários e verificação do email do Finer Pioneers descrita como condicional (desligada, sem CONFIRM_FROM).
-// Ao aprovar: APPROVED = true, NOTICE_DATE e registo de quem aprovou.
-const APPROVED = false
+// Publicada em conjunto com PRIVACY_VERSION '2026-11-v7' em src/lib/forms.ts.
+const APPROVED = true
 const NOTICE_DATE = { pt: '25 de novembro de 2026', en: '25 November 2026' }
 const CONTACT = 'geral.finerone@gmail.com'
 const CF = FORMS_PROVIDER === 'cloudflare'
