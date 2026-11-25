@@ -24,10 +24,10 @@ import { cn } from '@/lib/utils'
 // v4 (2026-11-v4), autorizada pelos fundadores a 22/11/2026: a Lista de Espera e o Finer Pioneers
 // passam a gerar o mesmo email interno (Resend) que o Explorar, só com os dados aqui descritos
 // (workers/forms/src/notify.ts). O Worker só envia para inscrições feitas com esta versão.
-// v5 (2026-11-v5) — PROPOSTA de 24/11/2026, POR APROVAR pelos três fundadores (por isso APPROVED = false:
-// a página mostra "Rascunho em revisão"). Finer Pioneers: telefone (obrigatório) e website (opcional);
-// email de confirmação enviado ao candidato pelo Resend, com ligação de 48 h e uso único; estado de
-// verificação do email; a notificação interna passa a incluir telefone e website. Ao aprovar: APPROVED = true,
+// v5 (2026-11-v5) — PROPOSTA de 24/11/2026, revista a 25/11/2026, POR APROVAR pelos três fundadores (por isso
+// APPROVED = false: a página mostra "Rascunho em revisão"). Finer Pioneers: telefone obrigatório (programa de
+// seleção) e website opcional; a notificação interna passa a incluir telefone e website. A verificação do email
+// do candidato é descrita como condicional ("quando estiver ativa"): hoje está desligada (sem CONFIRM_FROM). Ao aprovar: APPROVED = true,
 // atualizar NOTICE_DATE e só então publicar (em conjunto com PRIVACY_VERSION em src/lib/forms.ts).
 const APPROVED = false
 const NOTICE_DATE = { pt: '22 de novembro de 2026', en: '22 November 2026' }
@@ -60,9 +60,9 @@ const sectionsPt: Section[] = [
       ],
       { h: 'b) Programa Finer Pioneers' },
       [
-        'Dados: nome, email, contacto telefónico, empresa, setor de atividade e a descrição do principal desafio financeiro que decidir partilhar; opcionalmente, o website da empresa. Registamos também se o seu endereço de email foi confirmado e em que data.',
-        'Finalidade: avaliar a sua candidatura, avisar a equipa Finer One dela por email interno, confirmar que o endereço de email indicado é seu e contactá-lo sobre o programa, por email ou telefone. Não é usada para outras comunicações.',
-        'Confirmação do email: depois de enviar a candidatura, enviamos-lhe um email de serviço com uma ligação pessoal, de uso único e válida durante 48 horas, para confirmar o endereço; pode pedir o reenvio um número limitado de vezes. Esse email não contém os dados da candidatura e não o inscreve em nenhuma lista. Da ligação guardamos apenas um código irreversível (hash), eliminado até 30 dias depois de expirar. Confirmar o email não é uma decisão sobre a candidatura.',
+        'Dados: nome, email, contacto telefónico, empresa, setor de atividade e a descrição do principal desafio financeiro que decidir partilhar; opcionalmente, o website da empresa.',
+        'Finalidade: avaliar a sua candidatura, avisar a equipa Finer One dela por email interno e contactá-lo sobre o programa, por email ou telefone. O contacto telefónico é obrigatório porque o Finer Pioneers é um programa de seleção de empresas: usamo-lo só para falar consigo durante a avaliação e, se for selecionado, durante o programa. Não é usada para outras comunicações.',
+        'Verificação do email (quando estiver ativa): poderemos enviar-lhe, depois da candidatura, um email de serviço com uma ligação pessoal, de uso único e válida durante 48 horas, para confirmar que o endereço é seu; poderá pedir o reenvio um número limitado de vezes. Esse email não contém os dados da candidatura e não o inscreve em nenhuma lista. Nesse caso registamos se e quando confirmou o endereço e, da ligação, guardamos apenas um código irreversível (hash), eliminado até 30 dias depois de expirar. Confirmar o email não é uma decisão sobre a candidatura. Enquanto esta verificação não estiver ativa, não é enviado nenhum email automático ao candidato.',
         'Fundamento: o seu consentimento (artigo 6.º, n.º 1, alínea a), do RGPD), dado ao enviar a candidatura.',
         'Conservação: candidaturas não selecionadas são eliminadas até 6 meses após o fim do processo de seleção; candidaturas selecionadas são conservadas enquanto durar a participação no programa e eliminadas até 6 meses depois do seu fim.',
       ],
@@ -78,7 +78,7 @@ const sectionsPt: Section[] = [
         ? [
             { h: 'd) Verificação contra envios automáticos (Cloudflare Turnstile)' },
             [
-              'Dados: no momento do envio de um formulário ou de um pedido de nova ligação de confirmação, o seu endereço IP e sinais técnicos do navegador (como o agente do utilizador) são transmitidos à Cloudflare. Não guardamos o endereço IP na nossa base de dados.',
+              'Dados: no momento do envio de um formulário (ou, quando a verificação do email do Finer Pioneers estiver ativa, de um pedido de nova ligação de confirmação), o seu endereço IP e sinais técnicos do navegador (como o agente do utilizador) são transmitidos à Cloudflare. Não guardamos o endereço IP na nossa base de dados.',
               'Finalidade: proteger os formulários contra abuso e envios em massa.',
               'Fundamento: o nosso interesse legítimo na segurança dos formulários (artigo 6.º, n.º 1, alínea f), do RGPD). Pode opor-se, escrevendo-nos.',
               'A Cloudflare usa também estes sinais, como responsável pelo tratamento, para melhorar a deteção de envios automáticos, nos termos do seu Aviso de Privacidade do Turnstile (Turnstile Privacy Addendum), e conserva-os de acordo com esse aviso.',
@@ -103,7 +103,7 @@ const sectionsPt: Section[] = [
         ? [
             'Cada envio é recebido por um serviço da Finer One na Cloudflare (Cloudflare Workers) e guardado numa base de dados no Cloudflare D1, configurada para armazenar os dados na União Europeia. A Cloudflare, Inc. trata estes dados como subcontratante, ao abrigo do seu Acordo de Tratamento de Dados (Data Processing Addendum).',
             'O acesso está restrito aos fundadores, através do painel da Cloudflare, com acesso autenticado à conta da Finer One.',
-            `Cada envio gera um email interno para a caixa da equipa (${CONTACT}), só para nos avisar dele: na Lista de Espera, com o seu nome, email, a data e o identificador da inscrição; no Finer Pioneers, com o seu nome, email, telefone, empresa, website (se o indicou), setor, o desafio que partilhou, a data e o identificador da candidatura; no Explorar, com o seu nome, email, empresa, telefone (se o indicou), se pediu contacto da equipa, o tipo de simulação e o identificador da simulação. Os valores e resultados da simulação do Explorar não seguem no email: ficam só na base de dados. O seu email fica como endereço de resposta, para lhe podermos responder a partir desse aviso. Estes emails são enviados através do Resend (Plus Five Five, Inc., EUA), como subcontratante, ao abrigo do seu Acordo de Tratamento de Dados, e não o inscrevem em nenhuma lista de envio nem campanha. No Finer Pioneers, o email de confirmação do endereço é enviado ao candidato pelo mesmo serviço, nas mesmas condições.`,
+            `Cada envio gera um email interno para a caixa da equipa (${CONTACT}), só para nos avisar dele: na Lista de Espera, com o seu nome, email, a data e o identificador da inscrição; no Finer Pioneers, com o seu nome, email, telefone, empresa, website (se o indicou), setor, o desafio que partilhou, a data e o identificador da candidatura; no Explorar, com o seu nome, email, empresa, telefone (se o indicou), se pediu contacto da equipa, o tipo de simulação e o identificador da simulação. Os valores e resultados da simulação do Explorar não seguem no email: ficam só na base de dados. O seu email fica como endereço de resposta, para lhe podermos responder a partir desse aviso. Estes emails são enviados através do Resend (Plus Five Five, Inc., EUA), como subcontratante, ao abrigo do seu Acordo de Tratamento de Dados, e não o inscrevem em nenhuma lista de envio nem campanha. Quando a verificação do email do Finer Pioneers estiver ativa, o email de confirmação do endereço será enviado ao candidato pelo mesmo serviço, nas mesmas condições.`,
           ]
         : [
             'Cada envio é registado numa folha de cálculo Google (Google Sheets) da conta Google da Finer One, através de um script (Google Apps Script) dessa mesma conta, que também envia uma notificação por email (Gmail) para a caixa da equipa com os dados enviados. Só os fundadores têm acesso a esta conta.',
@@ -119,7 +119,7 @@ const sectionsPt: Section[] = [
           'A base de dados fica na União Europeia, mas parte do processamento pode ocorrer fora do Espaço Económico Europeu, incluindo nos Estados Unidos:',
           [
             'Cloudflare (Workers e Turnstile, como subcontratante): o pedido é processado no centro de dados da Cloudflare mais próximo de quem o envia. Para as transferências, o acordo da Cloudflare recorre ao Quadro de Privacidade de Dados UE-EUA (decisão de adequação da Comissão Europeia de 10 de julho de 2023) e, quando este não se aplica, às cláusulas contratuais-tipo aprovadas pela Comissão Europeia.',
-            'Resend (emails internos dos formulários e email de confirmação do Finer Pioneers, como subcontratante): o processamento ocorre principalmente nos Estados Unidos. Para as transferências, o acordo do Resend recorre ao Quadro de Privacidade de Dados UE-EUA e às cláusulas contratuais-tipo aprovadas pela Comissão Europeia.',
+            'Resend (emails internos dos formulários e, quando ativa, email de confirmação do Finer Pioneers, como subcontratante): o processamento ocorre principalmente nos Estados Unidos. Para as transferências, o acordo do Resend recorre ao Quadro de Privacidade de Dados UE-EUA e às cláusulas contratuais-tipo aprovadas pela Comissão Europeia.',
             'Cloudflare (Turnstile, como responsável) e Google (Gmail): cada uma trata os dados ao abrigo das suas próprias políticas e mecanismos de transferência.',
           ],
           'Pode pedir-nos mais informação sobre estas garantias.',
@@ -133,7 +133,7 @@ const sectionsPt: Section[] = [
     title: 'Eliminação e cópias de recuperação',
     body: [
       CF
-        ? 'Revemos os dados pelo menos de três em três meses e eliminamos o que atingiu os prazos acima, incluindo os emails relacionados. Depois de eliminados da base de dados, os registos podem permanecer até 7 dias nas cópias automáticas de recuperação (Cloudflare D1 Time Travel), após o que deixam de poder ser recuperados. O Resend conserva os emails internos e os emails de confirmação (incluindo o conteúdo) durante 30 dias, após o que os elimina.'
+        ? 'Revemos os dados pelo menos de três em três meses e eliminamos o que atingiu os prazos acima, incluindo os emails relacionados. Depois de eliminados da base de dados, os registos podem permanecer até 7 dias nas cópias automáticas de recuperação (Cloudflare D1 Time Travel), após o que deixam de poder ser recuperados. O Resend conserva os emails internos e, se existirem, os emails de confirmação (incluindo o conteúdo) durante 30 dias, após o que os elimina.'
         : 'Revemos os dados pelo menos de três em três meses e eliminamos o que atingiu os prazos acima, da folha, das notificações e dos emails relacionados.',
     ],
   },
@@ -188,9 +188,9 @@ const sectionsEn: Section[] = [
       ],
       { h: 'b) Finer Pioneers programme' },
       [
-        'Data: name, email, phone number, company, sector and the description of your main financial challenge that you choose to share; optionally, the company website. We also record whether your email address has been confirmed and on what date.',
-        'Purpose: to assess your application, notify the Finer One team of it by internal email, confirm that the email address given is yours and contact you about the programme, by email or phone. It is not used for other communications.',
-        'Email confirmation: after you submit the application, we send you a service email with a personal, single-use link, valid for 48 hours, to confirm the address; you can ask for it to be resent a limited number of times. That email does not contain your application data and does not sign you up to any list. Of the link we keep only an irreversible code (hash), deleted within 30 days after it expires. Confirming your email is not a decision on your application.',
+        'Data: name, email, phone number, company, sector and the description of your main financial challenge that you choose to share; optionally, the company website.',
+        'Purpose: to assess your application, notify the Finer One team of it by internal email and contact you about the programme, by email or phone. The phone number is required because Finer Pioneers is a selection programme for companies: we use it only to talk to you during the review and, if you are selected, during the programme. It is not used for other communications.',
+        'Email verification (when enabled): after you apply, we may send you a service email with a personal, single-use link, valid for 48 hours, to confirm that the address is yours; you will be able to ask for it to be resent a limited number of times. That email does not contain your application data and does not sign you up to any list. In that case we record whether and when you confirmed the address and, of the link, we keep only an irreversible code (hash), deleted within 30 days after it expires. Confirming your email is not a decision on your application. While this verification is not enabled, no automatic email is sent to applicants.',
         'Legal basis: your consent (Article 6(1)(a) GDPR), given when you submit the application.',
         'Retention: applications not selected are deleted within 6 months after the end of the selection process; selected applications are kept for as long as you take part in the programme and deleted within 6 months after it ends.',
       ],
@@ -206,7 +206,7 @@ const sectionsEn: Section[] = [
         ? [
             { h: 'd) Automated-submission check (Cloudflare Turnstile)' },
             [
-              'Data: when you submit a form or request a new confirmation link, your IP address and technical browser signals (such as the user agent) are sent to Cloudflare. We do not store your IP address in our database.',
+              'Data: when you submit a form (or, once Finer Pioneers email verification is enabled, request a new confirmation link), your IP address and technical browser signals (such as the user agent) are sent to Cloudflare. We do not store your IP address in our database.',
               'Purpose: to protect the forms against abuse and mass submissions.',
               'Legal basis: our legitimate interest in keeping the forms secure (Article 6(1)(f) GDPR). You can object by writing to us.',
               'Cloudflare also uses these signals, as a controller, to improve its detection of automated submissions, under its Turnstile Privacy Addendum, and keeps them in accordance with that notice.',
@@ -231,7 +231,7 @@ const sectionsEn: Section[] = [
         ? [
             'Each submission is received by a Finer One service on Cloudflare (Cloudflare Workers) and stored in a Cloudflare D1 database configured to store data in the European Union. Cloudflare, Inc. processes this data as a processor under its Data Processing Addendum.',
             'Access is restricted to the founders, through the Cloudflare dashboard, with authenticated access to Finer One’s account.',
-            `Each submission generates an internal email to the team’s inbox (${CONTACT}), only to let us know about it: for the Waitlist, with your name, email, and the date and identifier of the sign-up; for Finer Pioneers, with your name, email, phone number, company, website (if given), sector, the challenge you shared, and the date and identifier of the application; for Explore, with your name, email, company, phone number (if given), whether you asked to be contacted by the team, the simulation type and the simulation identifier. Explore simulation values and results are not included in the email: they stay only in the database. Your email is set as the reply-to address, so that we can reply to you from that notice. These emails are sent through Resend (Plus Five Five, Inc., USA), as processor, under its Data Processing Addendum, and do not add you to any mailing list or campaign. For Finer Pioneers, the email confirming your address is sent to the applicant through the same service, on the same terms.`,
+            `Each submission generates an internal email to the team’s inbox (${CONTACT}), only to let us know about it: for the Waitlist, with your name, email, and the date and identifier of the sign-up; for Finer Pioneers, with your name, email, phone number, company, website (if given), sector, the challenge you shared, and the date and identifier of the application; for Explore, with your name, email, company, phone number (if given), whether you asked to be contacted by the team, the simulation type and the simulation identifier. Explore simulation values and results are not included in the email: they stay only in the database. Your email is set as the reply-to address, so that we can reply to you from that notice. These emails are sent through Resend (Plus Five Five, Inc., USA), as processor, under its Data Processing Addendum, and do not add you to any mailing list or campaign. Once Finer Pioneers email verification is enabled, the email confirming your address will be sent to the applicant through the same service, on the same terms.`,
           ]
         : [
             'Each submission is recorded in a Google spreadsheet (Google Sheets) in Finer One’s Google account, through a script (Google Apps Script) in that same account, which also sends an email notification (Gmail) with the submitted data to the team’s inbox. Only the founders have access to this account.',
@@ -247,7 +247,7 @@ const sectionsEn: Section[] = [
           'The database is in the European Union, but some processing may take place outside the European Economic Area, including in the United States:',
           [
             'Cloudflare (Workers and Turnstile, as processor): requests are handled in the Cloudflare data centre closest to the sender. For transfers, Cloudflare’s agreement relies on the EU-US Data Privacy Framework (European Commission adequacy decision of 10 July 2023) and, where that does not apply, on the standard contractual clauses approved by the European Commission.',
-            'Resend (internal emails from the forms and the Finer Pioneers confirmation email, as processor): processing takes place mainly in the United States. For transfers, Resend’s agreement relies on the EU-US Data Privacy Framework and on the standard contractual clauses approved by the European Commission.',
+            'Resend (internal emails from the forms and, when enabled, the Finer Pioneers confirmation email, as processor): processing takes place mainly in the United States. For transfers, Resend’s agreement relies on the EU-US Data Privacy Framework and on the standard contractual clauses approved by the European Commission.',
             'Cloudflare (Turnstile, as controller) and Google (Gmail): each processes data under its own policies and transfer mechanisms.',
           ],
           'You can ask us for more information about these safeguards.',
@@ -261,7 +261,7 @@ const sectionsEn: Section[] = [
     title: 'Deletion and recovery copies',
     body: [
       CF
-        ? 'We review the data at least every three months and delete whatever has reached the periods above, including related emails. Once deleted from the database, records may remain for up to 7 days in automatic recovery copies (Cloudflare D1 Time Travel), after which they can no longer be recovered. Resend keeps internal emails and confirmation emails (including their content) for 30 days and then deletes them.'
+        ? 'We review the data at least every three months and delete whatever has reached the periods above, including related emails. Once deleted from the database, records may remain for up to 7 days in automatic recovery copies (Cloudflare D1 Time Travel), after which they can no longer be recovered. Resend keeps internal emails and, if any, confirmation emails (including their content) for 30 days and then deletes them.'
         : 'We review the data at least every three months and delete whatever has reached the periods above from the spreadsheet, the notifications and related emails.',
     ],
   },

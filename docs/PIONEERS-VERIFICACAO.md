@@ -140,7 +140,8 @@ Variáveis novas (não são segredos): `CONFIRM_BASE_URL` (já no `wrangler.json
 - `src/pages/PioneersPage.tsx`: passo 1 com **contacto telefónico** (indicativo + número); passo 2 com
   **website** opcional; ecrã final com "Candidatura: recebida" e "Email: confirmação pendente" quando o
   recetor confirma que pôs o email em fila. Sem essa indicação, mostra a mensagem de sempre.
-- `src/pages/PioneersConfirmPage.tsx` + `pioneers/confirmar/index.html` (`noindex`, `no-referrer`):
+- `src/pages/PioneersConfirmPage.tsx` + `pioneers/confirmar/index.html` (`noindex`, `no-referrer`), só gerada com
+  `VITE_PIONEERS_EMAIL_VERIFICATION=on` (desligada por omissão: a página não é publicada):
   confirmação pendente, a confirmar, email confirmado, já confirmado, ligação expirada, ligação inválida,
   erro, pedir nova ligação, reenvio solicitado, indisponível. PT-PT e EN.
 - `src/lib/forms.ts`: `verifyEmail`, `requestConfirmationLink`, `PRIVACY_VERSION = 2026-11-v5`.
@@ -296,7 +297,9 @@ Pré-requisitos: aviso v5 aprovado pelos três fundadores; para o passo 6, domí
 5. Site: só depois da aprovação do aviso (`APPROVED = true`, `NOTICE_DATE`), PR → `main`. Com o aviso em
    rascunho o build do GitHub Actions falha de propósito e nada é publicado. O telefone passa a ser pedido;
    ainda sem email ao candidato.
-6. Ativar a verificação: descomentar `CONFIRM_FROM` / `CONFIRM_REPLY_TO`, `npx wrangler deploy`,
+6. Ativar a verificação (nesta ordem): variável `VITE_PIONEERS_EMAIL_VERIFICATION=on` no GitHub e publicar
+   o site (passa a existir `/pioneers/confirmar/`); rever a v5 (o texto da verificação está no condicional);
+   só depois descomentar `CONFIRM_FROM` / `CONFIRM_REPLY_TO`, `npx wrangler deploy`,
    candidatura de teste com um email dos fundadores, confirmar a ligação, apagar a linha.
 7. Mais tarde, em separado: `NOTIFY_FROM` / `NOTIFY_TO` e as referências públicas ao email.
 

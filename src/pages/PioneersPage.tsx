@@ -73,6 +73,7 @@ const copy = {
     emailPh: 'nome@empresa.pt',
     phone: 'Contacto telefónico',
     phonePh: '912 345 678',
+    phoneHint: 'Obrigatório: o Finer Pioneers é um programa de seleção e a equipa pode contactá-lo por telefone durante a avaliação.',
     dial: 'Indicativo internacional',
     website: 'Website da empresa',
     websitePh: 'www.empresa.pt',
@@ -160,6 +161,7 @@ const copy = {
     emailPh: 'name@company.com',
     phone: 'Phone number',
     phonePh: '912 345 678',
+    phoneHint: 'Required: Finer Pioneers is a selection programme and the team may contact you by phone during the review.',
     dial: 'Country calling code',
     website: 'Company website',
     websitePh: 'www.company.com',
@@ -549,14 +551,14 @@ function ApplicationCard({ t }: { t: T }) {
                         <Field id="pio-email" label={t.email} error={errors.email}>
                           <TextInput className="rounded-full px-5" id="pio-email" type="email" inputMode="email" autoComplete="email" maxLength={254} placeholder={t.emailPh} value={values.email} onChange={(e) => set('email')(e.target.value)} error={errors.email} />
                         </Field>
-                        <Field id="pio-phone" label={t.phone} error={errors.phone}>
+                        <Field id="pio-phone" label={t.phone} hint={t.phoneHint} error={errors.phone}>
                           <div className="flex gap-2">
                             <SelectInput className="w-[124px] shrink-0 rounded-full pl-5 pr-9" id="pio-dial" aria-label={t.dial} autoComplete="tel-country-code" value={values.dial} onChange={(e) => set('dial')(e.target.value)}>
                               {DIAL_CODES.map((c) => (
                                 <option key={c.code} value={c.dial}>{`${c.code} ${c.dial}`}</option>
                               ))}
                             </SelectInput>
-                            <TextInput className="rounded-full px-5" id="pio-phone" type="tel" inputMode="tel" autoComplete="tel-national" maxLength={20} placeholder={t.phonePh} value={values.phone} onChange={(e) => set('phone')(e.target.value.replace(/[^\d ]/g, ''))} error={errors.phone} />
+                            <TextInput className="rounded-full px-5" id="pio-phone" type="tel" inputMode="tel" autoComplete="tel-national" maxLength={20} placeholder={t.phonePh} value={values.phone} onChange={(e) => set('phone')(e.target.value.replace(/[^\d ]/g, ''))} error={errors.phone} hasHint />
                           </div>
                         </Field>
                       </>
