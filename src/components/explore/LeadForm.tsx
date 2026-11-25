@@ -124,7 +124,8 @@ export function LeadForm({ t, lead, setLead, scenario, inputs, onBack, onSuccess
   }
 
   const input = 'h-11 w-full rounded-xl border border-[#0B1030]/12 bg-white px-3.5 text-[14.5px] text-[#070D2B] placeholder:text-[#0B1030]/35 outline-none transition-[border-color,box-shadow] focus:border-[#070D2B] focus:ring-2 focus:ring-[#070D2B]/10'
-  const req = <span className="font-normal text-[#0B1030]/40"> · {t.required}</span>
+  // Asterisco discreto nos campos obrigatórios (só visual: a obrigatoriedade é anunciada por aria-required).
+  const req = <span aria-hidden="true" className="ml-0.5 font-normal text-[#0B1030]/40">*</span>
 
   return (
     <form onSubmit={submit} noValidate className="border-t border-[#0B1030]/10 pt-7 text-left">
@@ -140,14 +141,14 @@ export function LeadForm({ t, lead, setLead, scenario, inputs, onBack, onSuccess
       </div>
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
-        <Field id="lf-name" label={t.name} error={errors.name}>
-          <input id="lf-name" className={input} autoComplete="name" value={lead.name} onChange={(e) => set('name', e.target.value)} maxLength={100} aria-invalid={!!errors.name} />
+        <Field id="lf-name" label={<>{t.name}{req}</>} error={errors.name}>
+          <input id="lf-name" className={input} autoComplete="name" value={lead.name} onChange={(e) => set('name', e.target.value)} maxLength={100} aria-required="true" aria-invalid={!!errors.name} />
         </Field>
-        <Field id="lf-email" label={t.email} error={errors.email}>
-          <input id="lf-email" type="email" className={input} autoComplete="email" value={lead.email} onChange={(e) => set('email', e.target.value)} maxLength={254} aria-invalid={!!errors.email} />
+        <Field id="lf-email" label={<>{t.email}{req}</>} error={errors.email}>
+          <input id="lf-email" type="email" className={input} autoComplete="email" value={lead.email} onChange={(e) => set('email', e.target.value)} maxLength={254} aria-required="true" aria-invalid={!!errors.email} />
         </Field>
-        <Field id="lf-company" label={t.company} error={errors.company}>
-          <input id="lf-company" className={input} autoComplete="organization" value={lead.company} onChange={(e) => set('company', e.target.value)} maxLength={120} aria-invalid={!!errors.company} />
+        <Field id="lf-company" label={<>{t.company}{req}</>} error={errors.company}>
+          <input id="lf-company" className={input} autoComplete="organization" value={lead.company} onChange={(e) => set('company', e.target.value)} maxLength={120} aria-required="true" aria-invalid={!!errors.company} />
         </Field>
         <Field id="lf-phone" label={<>{t.phone}{req}</>} error={errors.phone}>
           <div className="flex gap-2">
@@ -167,6 +168,10 @@ export function LeadForm({ t, lead, setLead, scenario, inputs, onBack, onSuccess
           </select>
         </Field>
       </div>
+      <p className="mt-3 text-[12px] text-[#0B1030]/45">
+        <span aria-hidden="true">* </span>
+        {t.requiredNote}
+      </p>
 
       <div className="mt-5 space-y-3">
         <Check id="lf-request" checked={lead.request} onChange={(v) => set('request', v)} invalid={!!errors.request}>
