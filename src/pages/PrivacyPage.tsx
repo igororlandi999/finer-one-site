@@ -24,13 +24,14 @@ import { cn } from '@/lib/utils'
 // v4 (2026-11-v4), autorizada pelos fundadores a 22/11/2026: a Lista de Espera e o Finer Pioneers
 // passam a gerar o mesmo email interno (Resend) que o Explorar, só com os dados aqui descritos
 // (workers/forms/src/notify.ts). O Worker só envia para inscrições feitas com esta versão.
-// v5 (2026-11-v5) — PROPOSTA de 24/11/2026, revista a 25/11/2026, POR APROVAR pelos três fundadores (por isso
-// APPROVED = false: a página mostra "Rascunho em revisão"). Finer Pioneers: telefone obrigatório (programa de
-// seleção) e website opcional; a notificação interna passa a incluir telefone e website. A verificação do email
-// do candidato é descrita como condicional ("quando estiver ativa"): hoje está desligada (sem CONFIRM_FROM). Ao aprovar: APPROVED = true,
-// atualizar NOTICE_DATE e só então publicar (em conjunto com PRIVACY_VERSION em src/lib/forms.ts).
-const APPROVED = false
-const NOTICE_DATE = { pt: '22 de novembro de 2026', en: '22 November 2026' }
+// v5 (2026-11-v5) — proposta de 24/11/2026, revista a 25/11/2026 e aprovada para publicação por Igor Orlandi
+// Barros a 25/11/2026 (não há registo, neste repositório, da aprovação de Henrique Santos Bértolo e Sebastião
+// Andrade). Finer Pioneers: telefone obrigatório (programa de seleção) e website opcional; a notificação interna
+// passa a incluir telefone e website. A verificação do email do candidato é descrita como condicional ("quando
+// estiver ativa"): está desligada (sem CONFIRM_FROM no Worker). Publicada em conjunto com PRIVACY_VERSION
+// '2026-11-v5' em src/lib/forms.ts.
+const APPROVED = true
+const NOTICE_DATE = { pt: '25 de novembro de 2026', en: '25 November 2026' }
 const CONTACT = 'geral.finerone@gmail.com'
 const CF = FORMS_PROVIDER === 'cloudflare'
 

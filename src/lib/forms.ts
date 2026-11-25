@@ -32,8 +32,8 @@ export type FormKind = 'pioneers' | 'waitlist' | 'explore'
 
 // 2026-11-v3: aviso aprovado pelos três fundadores a 22/11/2026 (inclui o Explorar).
 // 2026-11-v4: autorizada a 22/11/2026 — email interno também na Lista de Espera e no Finer Pioneers.
-// 2026-11-v5: PROPOSTA (24/11/2026), por aprovar pelos três fundadores — Finer Pioneers com telefone,
-// website e email de confirmação ao candidato. Publicar só em conjunto com o aviso v5 aprovado.
+// 2026-11-v5: aprovada para publicação por Igor Orlandi Barros a 25/11/2026 — Finer Pioneers com telefone
+// obrigatório e website opcional; verificação do email do candidato descrita como condicional (desligada).
 export const PRIVACY_VERSION = '2026-11-v5'
 const MIN_FILL_MS = 3000
 const LOCAL_LIMIT = 5
