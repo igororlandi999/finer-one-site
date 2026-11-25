@@ -351,3 +351,68 @@ describe('Explorar — notificação por email', () => {
     expect(resendCalls).toHaveLength(MAX_ATTEMPTS)
   })
 })
+
+describe('Explorar — telefone obrigatório a partir do aviso 2026-11-v6', () => {
+  const V6 = '2026-11-v6'
+  const v6 = (phone: unknown, extra: Body = {}) => ex({ consentVersion: V6, ...extra }, {}, { phone })
+
+  it.each([
+    ['vazio', ''],
+    ['só espaços', '   '],
+    ['ausente', undefined],
+    ['sem indicativo', '912 000 000'],
+    ['curto demais', '+351 12'],
+    ['Portugal com 8 dígitos', '+351 912 000 00'],
+    ['Portugal a começar por 8', '+351 812 000 000'],
+    ['longo demais', '+351 912 000 000 000 000'],
+    ['letras', '+351 91A 000 000'],
+  ])('recusa telefone %s com 400 phone e não grava nada', async (_n, phone) => {
+    const r = await post(v6(phone), withKey())
+    expect(r.status).toBe(400)
+    expect(await r.json()).toEqual({ ok: false, error: 'invalid', field: 'phone' })
+    expect(await leads()).toHaveLength(0)
+    expect(resendCalls).toHaveLength(0)
+  })
+
+  it.each([
+    ['Portugal (móvel)', '+351 912 000 000', '+351912000000'],
+    ['Portugal (fixo)', '+351 21 234 5678', '+351212345678'],
+    ['Espanha', '+34 612 345 678', '+34612345678'],
+    ['Reino Unido', '+44 20 7946 0958', '+442079460958'],
+    ['Brasil', '+55 11 91234 5678', '+5511912345678'],
+  ])('aceita telefone válido de %s, grava normalizado e avisa a equipa com ele', async (_n, phone, saved) => {
+    const b = v6(phone)
+    const r = await post(b, withKey())
+    expect(await r.json()).toEqual({ ok: true, id: b.submissionId })
+    const [row] = await leads()
+    expect(row).toMatchObject({ phone: saved, consent_version: V6, notify_status: 'sent' })
+    expect(resendCalls).toHaveLength(1)
+    expect(String(resendCalls[0].body.text)).toContain(saved)
+    expect(resendCalls[0].body.to).toEqual(['geral.finerone@gmail.com'])
+  })
+
+  it.each(['2026-11-v3', '2026-11-v4', '2026-11-v5'])('página publicada antes da v6 (%s): sem telefone continua a ser aceite', async (consentVersion) => {
+    const b = ex({ consentVersion }, {}, { phone: '' })
+    expect(await (await post(b, withKey())).json()).toEqual({ ok: true, id: b.submissionId })
+    expect((await leads())[0]).toMatchObject({ phone: null, consent_version: consentVersion, notify_status: 'sent' })
+  })
+
+  it('a validação do telefone acontece antes do Turnstile e de qualquer leitura de duplicados', async () => {
+    const r = await post(v6('', { turnstileToken: 'tok-mau' }), withKey())
+    expect(await r.json()).toEqual({ ok: false, error: 'invalid', field: 'phone' })
+  })
+
+  it('Lista de Espera e Finer Pioneers com v6 mantêm o comportamento da v5 (telefone dos Pioneers obrigatório, avisos à equipa)', async () => {
+    const wl = { kind: 'waitlist', fields: { name: 'Teste', email: 'lista-v6@exemplo-sintetico.pt', size: '2 a 9 pessoas', interests: 'Tesouraria' }, submissionId: crypto.randomUUID(), website: '', elapsedMs: 9000, consentVersion: V6, lang: 'pt', turnstileToken: 'tok-ok' }
+    expect(await (await post(wl, withKey())).json()).toEqual({ ok: true, id: wl.submissionId })
+    const pio = (phone?: string) => ({ kind: 'pioneers', fields: { name: 'Teste', email: `pio-${phone ? 'com' : 'sem'}@exemplo-sintetico.pt`, company: 'Empresa', sector: 'Comércio', challenge: 'Desafio de tesouraria.', ...(phone ? { phone } : {}) }, submissionId: crypto.randomUUID(), website: '', elapsedMs: 9000, consentVersion: V6, lang: 'pt', turnstileToken: 'tok-ok' })
+    expect(await (await post(pio(), withKey())).json()).toEqual({ ok: false, error: 'invalid', field: 'phone' })
+    const ok = pio('+351 912 345 678')
+    expect(await (await post(ok, withKey())).json()).toEqual({ ok: true, id: ok.submissionId })
+    const rows = (await env.DB.prepare('SELECT kind, phone, notify_status, email_status FROM submissions ORDER BY kind').all()).results
+    expect(rows).toEqual([
+      { kind: 'pioneers', phone: '+351912345678', notify_status: 'sent', email_status: 'not_requested' },
+      { kind: 'waitlist', phone: null, notify_status: 'sent', email_status: 'not_requested' },
+    ])
+  })
+})
