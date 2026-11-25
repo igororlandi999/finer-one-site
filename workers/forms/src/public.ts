@@ -33,6 +33,7 @@ import { KINDS, type Kind, clean, json, list, logError, text, validate } from '.
 import { cleanLead, cleanSimulation, referenceMonth, simHash, summarize } from './explore'
 import { type NotifyEnv, notifyLead, notifySubmission, retryPending } from './notify'
 import { pioneerExtras } from './pioneers'
+import { waitlistExtras } from './waitlist'
 import { type VerifyEnv, handleResend, handleVerify, retryConfirmations, sendConfirmation, wantsVerification } from './verify'
 
 export interface Env extends NotifyEnv, VerifyEnv {
@@ -136,8 +137,9 @@ async function submit(request: Request, env: Env, cors: Record<string, string>, 
   if (invalid) return json({ ok: false, error: 'invalid', field: invalid }, 400, cors)
 
   // Finer Pioneers: telefone e website, só pedidos a partir do aviso que os prevê (pioneers.ts).
+  // Lista de Espera: telefone, só pedido a partir do aviso v7 (waitlist.ts).
   const consent = text(body.consentVersion, 40)
-  const extras = kind === 'pioneers' ? pioneerExtras(body.fields, consent) : { phone: null, companyUrl: null }
+  const extras = kind === 'pioneers' ? pioneerExtras(body.fields, consent) : waitlistExtras(body.fields, consent)
   if (typeof extras === 'string') return json({ ok: false, error: 'invalid', field: extras }, 400, cors)
 
   const id = text(body.submissionId, 64).replace(/[^A-Za-z0-9-]/g, '') || crypto.randomUUID()

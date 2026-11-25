@@ -34,6 +34,13 @@ import { cn } from '@/lib/utils'
 // repositório, da aprovação de Henrique Santos Bértolo e Sebastião Andrade). Explorar: telefone obrigatório, só
 // para a equipa contactar o requerente sobre a análise pedida; conversas comerciais adicionais e novidades
 // continuam opcionais, cada uma com a sua opção própria. Versões anteriores (v3-v5) descrevem o telefone como opcional.
+// v7 (2026-11-v7) — aprovada para publicação por Igor Orlandi Barros a 25/11/2026 (não há registo, neste
+// repositório, da aprovação de Henrique Santos Bértolo e Sebastião Andrade). Lista de Espera: telefone obrigatório, só para a equipa contactar o
+// inscrito sobre o interesse na Finer One e o acesso futuro à plataforma — não é consentimento para campanhas de
+// marketing; a notificação interna da Lista de Espera passa a incluir o telefone. Mantém o resto da v6: telefone
+// obrigatório no Explorar, telefone obrigatório e website opcional no Finer Pioneers, notificações internas dos três
+// formulários e verificação do email do Finer Pioneers descrita como condicional (desligada, sem CONFIRM_FROM).
+// Publicada em conjunto com PRIVACY_VERSION '2026-11-v7' em src/lib/forms.ts.
 const APPROVED = true
 const NOTICE_DATE = { pt: '25 de novembro de 2026', en: '25 November 2026' }
 const CONTACT = 'geral.finerone@gmail.com'
@@ -58,8 +65,9 @@ const sectionsPt: Section[] = [
       'Cada formulário é um tratamento separado. Inscrever-se num não o inscreve nos outros.',
       { h: 'a) Lista de espera' },
       [
-        'Dados: nome, email, dimensão da empresa e os temas que quer acompanhar.',
+        'Dados: nome, email, telefone, dimensão da empresa e os temas que quer acompanhar.',
         'Finalidade: enviar-lhe comunicações de lançamento — o aviso de que a plataforma está disponível, a abertura do acesso e as respetivas condições de adesão. Não inclui newsletters, promoções, convites para eventos nem ofertas de terceiros. Avisamos também a equipa Finer One da sua inscrição por email interno; esse aviso não o inscreve em nenhuma outra comunicação.',
+        'Telefone: é obrigatório para que a equipa o possa contactar sobre o seu interesse na Finer One e sobre o acesso futuro à plataforma. Não é usado para campanhas de marketing nem para outras comunicações, e indicá-lo não equivale a aceitar receber comunicações de marketing.',
         'Fundamento: o seu consentimento (artigo 6.º, n.º 1, alínea a), do RGPD), dado ao inscrever-se.',
         'Conservação: até 12 meses após o lançamento comercial da plataforma e, em qualquer caso, não mais de 24 meses após a inscrição; ou até pedir para sair, se isso acontecer antes.',
       ],
@@ -108,7 +116,7 @@ const sectionsPt: Section[] = [
         ? [
             'Cada envio é recebido por um serviço da Finer One na Cloudflare (Cloudflare Workers) e guardado numa base de dados no Cloudflare D1, configurada para armazenar os dados na União Europeia. A Cloudflare, Inc. trata estes dados como subcontratante, ao abrigo do seu Acordo de Tratamento de Dados (Data Processing Addendum).',
             'O acesso está restrito aos fundadores, através do painel da Cloudflare, com acesso autenticado à conta da Finer One.',
-            `Cada envio gera um email interno para a caixa da equipa (${CONTACT}), só para nos avisar dele: na Lista de Espera, com o seu nome, email, a data e o identificador da inscrição; no Finer Pioneers, com o seu nome, email, telefone, empresa, website (se o indicou), setor, o desafio que partilhou, a data e o identificador da candidatura; no Explorar, com o seu nome, email, empresa, telefone, se pediu contacto da equipa, o tipo de simulação e o identificador da simulação. Os valores e resultados da simulação do Explorar não seguem no email: ficam só na base de dados. O seu email fica como endereço de resposta, para lhe podermos responder a partir desse aviso. Estes emails são enviados através do Resend (Plus Five Five, Inc., EUA), como subcontratante, ao abrigo do seu Acordo de Tratamento de Dados, e não o inscrevem em nenhuma lista de envio nem campanha. Quando a verificação do email do Finer Pioneers estiver ativa, o email de confirmação do endereço será enviado ao candidato pelo mesmo serviço, nas mesmas condições.`,
+            `Cada envio gera um email interno para a caixa da equipa (${CONTACT}), só para nos avisar dele: na Lista de Espera, com o seu nome, email, telefone, a data e o identificador da inscrição; no Finer Pioneers, com o seu nome, email, telefone, empresa, website (se o indicou), setor, o desafio que partilhou, a data e o identificador da candidatura; no Explorar, com o seu nome, email, empresa, telefone, se pediu contacto da equipa, o tipo de simulação e o identificador da simulação. Os valores e resultados da simulação do Explorar não seguem no email: ficam só na base de dados. O seu email fica como endereço de resposta, para lhe podermos responder a partir desse aviso. Estes emails são enviados através do Resend (Plus Five Five, Inc., EUA), como subcontratante, ao abrigo do seu Acordo de Tratamento de Dados, e não o inscrevem em nenhuma lista de envio nem campanha. Quando a verificação do email do Finer Pioneers estiver ativa, o email de confirmação do endereço será enviado ao candidato pelo mesmo serviço, nas mesmas condições.`,
           ]
         : [
             'Cada envio é registado numa folha de cálculo Google (Google Sheets) da conta Google da Finer One, através de um script (Google Apps Script) dessa mesma conta, que também envia uma notificação por email (Gmail) para a caixa da equipa com os dados enviados. Só os fundadores têm acesso a esta conta.',
@@ -186,8 +194,9 @@ const sectionsEn: Section[] = [
       'Each form is a separate processing activity. Signing up for one does not sign you up for the others.',
       { h: 'a) Waitlist' },
       [
-        'Data: name, email, company size and the topics you want to follow.',
+        'Data: name, email, phone number, company size and the topics you want to follow.',
         'Purpose: to send you launch communications — notice that the platform is available, the opening of access and the related sign-up terms. It does not include newsletters, promotions, event invitations or third-party offers. We also notify the Finer One team of your sign-up by internal email; that notice does not sign you up for any other communication.',
+        'Phone number: it is required so that the team can contact you about your interest in Finer One and about future access to the platform. It is not used for marketing campaigns or other communications, and providing it does not mean you agree to receive marketing communications.',
         'Legal basis: your consent (Article 6(1)(a) GDPR), given when you sign up.',
         'Retention: up to 12 months after the platform’s commercial launch and, in any case, no more than 24 months after sign-up; or until you ask to leave, if earlier.',
       ],
@@ -236,7 +245,7 @@ const sectionsEn: Section[] = [
         ? [
             'Each submission is received by a Finer One service on Cloudflare (Cloudflare Workers) and stored in a Cloudflare D1 database configured to store data in the European Union. Cloudflare, Inc. processes this data as a processor under its Data Processing Addendum.',
             'Access is restricted to the founders, through the Cloudflare dashboard, with authenticated access to Finer One’s account.',
-            `Each submission generates an internal email to the team’s inbox (${CONTACT}), only to let us know about it: for the Waitlist, with your name, email, and the date and identifier of the sign-up; for Finer Pioneers, with your name, email, phone number, company, website (if given), sector, the challenge you shared, and the date and identifier of the application; for Explore, with your name, email, company, phone number, whether you asked to be contacted by the team, the simulation type and the simulation identifier. Explore simulation values and results are not included in the email: they stay only in the database. Your email is set as the reply-to address, so that we can reply to you from that notice. These emails are sent through Resend (Plus Five Five, Inc., USA), as processor, under its Data Processing Addendum, and do not add you to any mailing list or campaign. Once Finer Pioneers email verification is enabled, the email confirming your address will be sent to the applicant through the same service, on the same terms.`,
+            `Each submission generates an internal email to the team’s inbox (${CONTACT}), only to let us know about it: for the Waitlist, with your name, email, phone number, and the date and identifier of the sign-up; for Finer Pioneers, with your name, email, phone number, company, website (if given), sector, the challenge you shared, and the date and identifier of the application; for Explore, with your name, email, company, phone number, whether you asked to be contacted by the team, the simulation type and the simulation identifier. Explore simulation values and results are not included in the email: they stay only in the database. Your email is set as the reply-to address, so that we can reply to you from that notice. These emails are sent through Resend (Plus Five Five, Inc., USA), as processor, under its Data Processing Addendum, and do not add you to any mailing list or campaign. Once Finer Pioneers email verification is enabled, the email confirming your address will be sent to the applicant through the same service, on the same terms.`,
           ]
         : [
             'Each submission is recorded in a Google spreadsheet (Google Sheets) in Finer One’s Google account, through a script (Google Apps Script) in that same account, which also sends an email notification (Gmail) with the submitted data to the team’s inbox. Only the founders have access to this account.',
