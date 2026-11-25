@@ -32,7 +32,9 @@ export type FormKind = 'pioneers' | 'waitlist' | 'explore'
 
 // 2026-11-v3: aviso aprovado pelos três fundadores a 22/11/2026 (inclui o Explorar).
 // 2026-11-v4: autorizada a 22/11/2026 — email interno também na Lista de Espera e no Finer Pioneers.
-export const PRIVACY_VERSION = '2026-11-v4'
+// 2026-11-v5: aprovada para publicação por Igor Orlandi Barros a 25/11/2026 — Finer Pioneers com telefone
+// obrigatório e website opcional; verificação do email do candidato descrita como condicional (desligada).
+export const PRIVACY_VERSION = '2026-11-v5'
 const MIN_FILL_MS = 3000
 const LOCAL_LIMIT = 5
 const LOCAL_WINDOW_MS = 60 * 60 * 1000
@@ -44,7 +46,8 @@ export const FORMS_PROVIDER: 'google' | 'cloudflare' = import.meta.env.VITE_FORM
 const turnstileSiteKey: string | undefined = import.meta.env.VITE_TURNSTILE_SITEKEY || undefined
 
 export type SubmitFailure = 'bot' | 'rate' | 'network' | 'server' | 'unavailable' | 'duplicate' | 'verification'
-export type SubmitResult = { ok: true; preview: boolean } | { ok: false; reason: SubmitFailure }
+/** `verification`: o recetor pôs em fila um email de confirmação para o candidato (só Finer Pioneers). */
+export type SubmitResult = { ok: true; preview: boolean; verification?: boolean } | { ok: false; reason: SubmitFailure }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
@@ -149,7 +152,7 @@ export async function submitForm(
       }),
       signal: controller.signal,
     })
-    const data = (await response.json().catch(() => null)) as { ok?: boolean; error?: string; id?: unknown; duplicate?: unknown } | null
+    const data = (await response.json().catch(() => null)) as { ok?: boolean; error?: string; id?: unknown; duplicate?: unknown; verification?: unknown } | null
     // Sucesso só com registo guardado (id) ou já existente (duplicate). Um "ok" sem um
     // dos dois (ex.: recetor antigo a descartar um envio suspeito) não é confirmação.
     const confirmed = response.ok && data?.ok === true && ((typeof data.id === 'string' && data.id !== '') || data.duplicate === true)
@@ -161,11 +164,74 @@ export async function submitForm(
     }
     delete pendingIds[kind]
     rememberSubmission()
-    return { ok: true, preview: false }
+    return { ok: true, preview: false, verification: data.verification === 'pending' }
   } catch {
     return { ok: false, reason: 'network' }
   } finally {
     window.clearTimeout(timer)
     inFlight[kind] = false
+  }
+}
+
+// ---------- Finer Pioneers: confirmação do email (workers/forms/src/verify.ts) ----------
+// Só existe no recetor Cloudflare. O token da ligação segue no corpo de um POST: nunca num
+// endereço (não fica em registos de servidores, no histórico nem em cabeçalhos Referer).
+
+export type VerifyOutcome = 'verified' | 'already' | 'expired' | 'invalid' | 'rate' | 'network' | 'unavailable'
+export type ResendOutcome = 'requested' | 'invalid' | 'verification' | 'rate' | 'network' | 'unavailable'
+
+const route = (path: string) => (endpoint && FORMS_PROVIDER === 'cloudflare' ? new URL(path, endpoint).href : null)
+
+async function post(url: string, body: Record<string, unknown>) {
+  const controller = new AbortController()
+  const timer = window.setTimeout(() => controller.abort(), TIMEOUT_MS)
+  try {
+    const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body), signal: controller.signal, referrerPolicy: 'no-referrer' })
+    return { response, data: (await response.json().catch(() => null)) as { ok?: boolean; error?: string; status?: string; already?: boolean } | null }
+  } finally {
+    window.clearTimeout(timer)
+  }
+}
+
+/** Confirma o email no servidor. Só devolve o resultado — nunca dados da candidatura. */
+export async function verifyEmail(token: string): Promise<VerifyOutcome> {
+  const url = route('verify')
+  if (!url) return 'unavailable'
+  try {
+    const { response, data } = await post(url, { token })
+    if (response.ok && data?.ok === true && data.status === 'verified') return data.already ? 'already' : 'verified'
+    if (data?.error === 'expired') return 'expired'
+    if (data?.error === 'rate') return 'rate'
+    return response.status === 404 ? 'invalid' : 'network'
+  } catch {
+    return 'network'
+  }
+}
+
+/**
+ * Pede uma nova ligação de confirmação: com o token de uma ligação expirada, ou com o email
+ * (exige Turnstile). O recetor responde o mesmo exista ou não candidatura com esse email.
+ */
+export async function requestConfirmationLink(by: { token: string } | { email: string }): Promise<ResendOutcome> {
+  const url = route('resend')
+  if (!url) return 'unavailable'
+  try {
+    let body: Record<string, unknown> = by
+    if ('email' in by) {
+      if (!turnstileSiteKey) return 'unavailable'
+      const { getTurnstileToken } = await import('@/lib/turnstile')
+      const turnstileToken = await getTurnstileToken(turnstileSiteKey)
+      if (!turnstileToken) return 'verification'
+      body = { email: by.email.trim(), turnstileToken }
+    }
+    const { response, data } = await post(url, body)
+    if (response.ok && data?.ok === true) return 'requested'
+    if (data?.error === 'unavailable') return 'unavailable'
+    if (data?.error === 'rate') return 'rate'
+    if (data?.error === 'verification') return 'verification'
+    if (data?.error === 'invalid') return 'invalid'
+    return 'network'
+  } catch {
+    return 'network'
   }
 }

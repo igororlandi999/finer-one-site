@@ -25,7 +25,7 @@ import { devFlags } from '@/lib/devFlags'
 type Col = { title: string; links: { label: string; href: string; external?: boolean }[] }
 
 const LINKEDIN = 'https://www.linkedin.com/company/finerone/'
-const CONTACT_EMAIL = 'geral.finerone@gmail.com'
+const CONTACT_EMAIL = 'info@finer-one.com'
 
 const copy: Record<Lang, { signature: string; tagline: [string, string]; cta: string; contact: string; cols: Col[]; nav: string; copyright: string; top: string; lang: string; privacy: string }> = {
   pt: {

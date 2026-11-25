@@ -16,19 +16,26 @@
  * mecanismo e as mesmas novas tentativas do Explorar; só para inscrições feitas com
  * uma versão do aviso de privacidade que o preveja (ver notify.ts).
  *
+ * POST /verify e POST /resend — verificação do email do candidato ao Finer Pioneers
+ *           (ver verify.ts). Não alteram o POST / dos três formulários.
+ *
  * Não regista dados pessoais nos logs. A consulta faz-se no painel autenticado da Cloudflare.
  *
  * Proteções: Turnstile validado no servidor; campo-armadilha e tempo mínimo;
  * identificador de submissão (repetições não duplicam); lista de espera sem
- * emails repetidos; o mesmo email só 1 candidatura Pioneers a cada 10 minutos;
+ * emails repetidos; candidatura Pioneers repetida pelo mesmo email em 10 minutos fica
+ * gravada e marcada (duplicate_of), sem novo aviso à equipa e com a mesma resposta de uma
+ * candidatura nova — a resposta pública não revela que o email já se candidatou;
  * limite global por minuto; validação e limites de tamanho; corpo até 16 KB;
  * CORS e Origin restritos ao site (não é autenticação — só reduz abuso).
  */
 import { KINDS, type Kind, clean, json, list, logError, text, validate } from './shared'
 import { cleanLead, cleanSimulation, referenceMonth, simHash, summarize } from './explore'
 import { type NotifyEnv, notifyLead, notifySubmission, retryPending } from './notify'
+import { pioneerExtras } from './pioneers'
+import { type VerifyEnv, handleResend, handleVerify, retryConfirmations, sendConfirmation, wantsVerification } from './verify'
 
-export interface Env extends NotifyEnv {
+export interface Env extends NotifyEnv, VerifyEnv {
   DB: D1Database
   /** Segredo do widget Turnstile (wrangler secret put TURNSTILE_SECRET). */
   TURNSTILE_SECRET: string
@@ -67,6 +74,13 @@ export default {
     if (!allowed) return json({ ok: false, error: 'forbidden' }, 403, cors)
 
     try {
+      const path = new URL(request.url).pathname
+      if (path === '/verify' || path === '/resend') {
+        const body = await readJson(request, cors)
+        if (body instanceof Response) return body
+        if (path === '/verify') return await handleVerify(body, env, cors)
+        return await handleResend(body, env, cors, (token) => verifyTurnstile(token, env, request.headers.get('CF-Connecting-IP')), ctx)
+      }
       return await submit(request, env, cors, ctx)
     } catch (err) {
       logError('submit_failed', err)
@@ -74,13 +88,16 @@ export default {
     }
   },
 
-  /** De 15 em 15 minutos: reenvia as notificações do Explorar que ainda não saíram. */
+  /** De 15 em 15 minutos: reenvia as notificações internas e os emails de confirmação que ainda não saíram. */
   async scheduled(_controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
     ctx.waitUntil(
-      retryPending(env).then(
-        () => undefined,
-        (err) => logError('retry_failed', err),
-      ),
+      retryPending(env)
+        .catch((err) => logError('retry_failed', err))
+        .then(() => retryConfirmations(env))
+        .then(
+          () => undefined,
+          (err) => logError('retry_failed', err),
+        ),
     )
   },
 } satisfies ExportedHandler<Env>
@@ -92,18 +109,22 @@ async function readBody(request: Request): Promise<string | null> {
   return raw.length > MAX_BODY ? null : raw
 }
 
-async function submit(request: Request, env: Env, cors: Record<string, string>, ctx?: ExecutionContext): Promise<Response> {
+/** Corpo do pedido como objeto JSON, ou a resposta de erro (413 demasiado grande, 400 inválido). */
+async function readJson(request: Request, cors: Record<string, string>): Promise<Record<string, unknown> | Response> {
   const raw = await readBody(request)
   if (raw === null) return json({ ok: false, error: 'invalid' }, 413, cors)
-
-  let body: Record<string, unknown>
   try {
     const parsed = JSON.parse(raw || '{}')
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('shape')
-    body = parsed as Record<string, unknown>
+    return parsed as Record<string, unknown>
   } catch {
     return json({ ok: false, error: 'invalid' }, 400, cors)
   }
+}
+
+async function submit(request: Request, env: Env, cors: Record<string, string>, ctx?: ExecutionContext): Promise<Response> {
+  const body = await readJson(request, cors)
+  if (body instanceof Response) return body
 
   if (body.kind === 'explore') return explore(body, request, env, cors, ctx)
 
@@ -113,6 +134,11 @@ async function submit(request: Request, env: Env, cors: Record<string, string>, 
   const c = clean(body.fields)
   const invalid = validate(kind, c)
   if (invalid) return json({ ok: false, error: 'invalid', field: invalid }, 400, cors)
+
+  // Finer Pioneers: telefone e website, só pedidos a partir do aviso que os prevê (pioneers.ts).
+  const consent = text(body.consentVersion, 40)
+  const extras = kind === 'pioneers' ? pioneerExtras(body.fields, consent) : { phone: null, companyUrl: null }
+  if (typeof extras === 'string') return json({ ok: false, error: 'invalid', field: extras }, 400, cors)
 
   const id = text(body.submissionId, 64).replace(/[^A-Za-z0-9-]/g, '') || crypto.randomUUID()
 
@@ -144,44 +170,67 @@ async function submit(request: Request, env: Env, cors: Record<string, string>, 
     if (await env.DB.prepare("SELECT 1 FROM submissions WHERE kind = 'waitlist' AND email = ?").bind(c.email).first()) {
       return json({ ok: true, duplicate: true }, 200, cors)
     }
-  } else if (
-    await env.DB.prepare("SELECT 1 FROM submissions WHERE kind = 'pioneers' AND email = ? AND created_at > ?")
-      .bind(c.email, new Date(now - PIONEERS_EMAIL_WINDOW_MS).toISOString())
-      .first()
-  ) {
-    return json({ ok: false, error: 'duplicate' }, 409, cors)
   }
+  // Finer Pioneers: o mesmo email voltou a candidatar-se em menos de 10 minutos. A resposta
+  // pública é a de uma candidatura nova (quem chama o recetor não fica a saber que o email já
+  // se candidatou). A repetição fica gravada e ligada à primeira (duplicate_of), sem novo aviso
+  // à equipa — nada do que o candidato enviou se perde e a duplicação continua identificável.
+  const earlier =
+    kind === 'pioneers'
+      ? await env.DB.prepare("SELECT id FROM submissions WHERE kind = 'pioneers' AND email = ? AND created_at > ? ORDER BY created_at LIMIT 1")
+          .bind(c.email, new Date(now - PIONEERS_EMAIL_WINDOW_MS).toISOString())
+          .first<{ id: string }>()
+      : null
 
   const lang = body.lang === 'en' ? 'en' : 'pt'
-  const consent = text(body.consentVersion, 40)
-  const result = await env.DB.prepare(
-    `INSERT INTO submissions (id, kind, created_at, name, email, company, sector, challenge, size, interests, lang, consent_version)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING`,
-  )
-    .bind(
-      id,
-      kind,
-      new Date(now).toISOString(),
-      c.name,
-      c.email,
-      kind === 'pioneers' ? c.company : null,
-      kind === 'pioneers' ? c.sector : null,
-      kind === 'pioneers' ? c.challenge : null,
-      kind === 'waitlist' ? c.size : null,
-      kind === 'waitlist' ? c.interests : null,
-      lang,
-      consent,
+  // Email de confirmação ao candidato: só no Finer Pioneers, com o aviso que o prevê e com o
+  // remetente configurado (verify.ts). Caso contrário a candidatura fica como sempre ficou.
+  const verification = wantsVerification(env, kind, consent)
+  const base = [
+    id,
+    kind,
+    new Date(now).toISOString(),
+    c.name,
+    c.email,
+    kind === 'pioneers' ? c.company : null,
+    kind === 'pioneers' ? c.sector : null,
+    kind === 'pioneers' ? c.challenge : null,
+    kind === 'waitlist' ? c.size : null,
+    kind === 'waitlist' ? c.interests : null,
+    lang,
+    consent,
+  ]
+  const columns = 'id, kind, created_at, name, email, company, sector, challenge, size, interests, lang, consent_version'
+  let result: D1Result
+  let verifying = verification
+  try {
+    result = await env.DB.prepare(
+      `INSERT INTO submissions (${columns}, phone, company_url, email_status, confirm_status, duplicate_of, notify_status, notify_error)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING`,
     )
-    .run()
+      .bind(...base, extras.phone, extras.companyUrl, verification ? 'pending' : 'not_requested', verification ? 'pending' : 'none', earlier?.id ?? null, earlier ? 'skipped' : 'pending', earlier ? 'duplicate' : null)
+      .run()
+  } catch (err) {
+    // Migração 0004 ainda por aplicar: nunca se perde a inscrição por causa das colunas novas.
+    // Grava-se com as colunas de sempre (sem telefone, website nem verificação) e fica o aviso no log.
+    if (!/no column named|no such column/i.test(err instanceof Error ? err.message : '')) throw err
+    logError('migration_0004_missing', err)
+    verifying = false
+    result = await env.DB.prepare(`INSERT INTO submissions (${columns}) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING`)
+      .bind(...base)
+      .run()
+  }
 
   // Corrida entre dois pedidos iguais: o outro já gravou (e notifica ele).
   if (!result.meta.changes) return json({ ok: true, duplicate: true }, 200, cors)
 
-  // A inscrição já está gravada: a notificação nunca altera a resposta ao visitante.
-  const sending = notifySubmission(env, id)
+  // A inscrição já está gravada: nem a notificação interna nem o email de confirmação alteram
+  // o resultado. "verification: pending" só diz ao site que um email de confirmação foi posto em
+  // fila — não que foi entregue, e nada sobre a avaliação da candidatura.
+  const sending = Promise.all([notifySubmission(env, id), verifying ? sendConfirmation(env, id) : null])
   if (ctx) ctx.waitUntil(sending)
   else await sending
-  return json({ ok: true, id }, 200, cors)
+  return json({ ok: true, id, ...(verifying ? { verification: 'pending' } : {}) }, 200, cors)
 }
 
 /**

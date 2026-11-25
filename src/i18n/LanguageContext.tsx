@@ -19,6 +19,7 @@ const EN_META: Record<string, { title: string; description: string }> = {
   '/': { title: 'Finer One — Financial intelligence for clear decisions', description: 'Finer One turns your company’s financial data into analysis, forecasts, alerts and clear decisions, before problems become urgent.' },
   '/sobre/': { title: 'About us | Finer One', description: 'Finer One is building the financial operating system for Portuguese SMEs. Read our story, meet the founders and see what we believe in.' },
   '/pioneers/': { title: 'Finer Pioneers — Apply | Finer One', description: 'We are looking for business owners to try Finer One first-hand and help shape how the platform evolves.' },
+  '/pioneers/confirmar/': { title: 'Confirm your email — Finer Pioneers | Finer One', description: 'Confirm the email address of your Finer Pioneers application.' },
   '/lista-espera/': { title: 'Waitlist | Finer One', description: 'Be among the first to hear about access to Finer One. Signing up does not require a bank connection.' },
   '/privacidade/': { title: 'Privacy notice | Finer One', description: 'How Finer One handles the data collected through the Waitlist, Finer Pioneers and Explore forms.' },
 }

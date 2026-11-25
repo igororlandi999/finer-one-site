@@ -221,16 +221,17 @@ const EXPLORE: Source<ExploreRow> = {
 // ---------- Lista de Espera e Finer Pioneers ----------
 // Notificação operacional para a equipa, não inscrição em campanhas. Só os campos pedidos:
 // Lista de Espera — nome, email, data, origem e identificador (sem dimensão nem temas);
-// Finer Pioneers — nome, email, empresa, setor, desafio, data e identificador.
+// Finer Pioneers — nome, email, empresa, setor, desafio, data e identificador; a partir do
+// aviso v5, também o telefone e o website indicados na candidatura.
 
 /**
  * Versões do aviso de privacidade que preveem este email interno. O aviso v3 diz que estes
  * formulários NÃO geram email: as inscrições feitas com ele (ou anteriores) ficam 'skipped'.
  * Acrescentar aqui a versão aprovada que passar a prever a notificação (ver proposta v4).
  */
-export const SUBMISSION_NOTIFY_CONSENTS: readonly string[] = ['2026-11-v4']
+export const SUBMISSION_NOTIFY_CONSENTS: readonly string[] = ['2026-11-v4', '2026-11-v5']
 
-const SUBMISSION_COLUMNS = 'id, kind, created_at, name, email, company, sector, challenge, consent_version, notify_status, notify_attempts, notify_last_attempt_at'
+const SUBMISSION_COLUMNS = 'id, kind, created_at, name, email, company, sector, challenge, phone, company_url, consent_version, notify_status, notify_attempts, notify_last_attempt_at'
 type SubmissionRow = Base & {
   kind: 'waitlist' | 'pioneers'
   created_at: string
@@ -238,6 +239,8 @@ type SubmissionRow = Base & {
   company: string | null
   sector: string | null
   challenge: string | null
+  phone: string | null
+  company_url: string | null
   consent_version: string
 }
 
@@ -278,6 +281,9 @@ function submissionBody(row: SubmissionRow, reply: string | null): string {
     `Nome: ${row.name}`,
     `Email: ${row.email}`,
     `Empresa: ${dash(row.company)}`,
+    // Telefone e website: só existem nas candidaturas feitas com o aviso que os prevê (v5).
+    ...(row.phone ? [`Telefone: ${row.phone}`] : []),
+    ...(row.company_url ? [`Website: ${row.company_url}`] : []),
     `Setor: ${dash(row.sector)}`,
     `Principal desafio financeiro: ${dash(row.challenge)}`,
     `Data da candidatura: ${lisbonDate(row.created_at)}`,

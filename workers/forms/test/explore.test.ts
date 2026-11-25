@@ -58,6 +58,16 @@ beforeEach(async () => {
 afterEach(() => vi.restoreAllMocks())
 
 describe('Explorar — gravação', () => {
+  it('aviso v5 (por aprovar): o Explorar grava e notifica exatamente como com a v3/v4', async () => {
+    for (const consentVersion of ['2026-11-v4', '2026-11-v5']) {
+      const b = ex({ consentVersion }, {}, { email: `explorar-${consentVersion}@exemplo-sintetico.pt` })
+      const r = await post(b, withKey())
+      expect(await r.json()).toEqual({ ok: true, id: b.submissionId })
+      const lead = (await leads()).find((l) => l.id === b.submissionId)!
+      expect(lead).toMatchObject({ consent_version: consentVersion, notify_status: 'sent' })
+    }
+    expect(resendCalls.map((c) => c.body.to)).toEqual([['geral.finerone@gmail.com'], ['geral.finerone@gmail.com']])
+  })
   it('grava o lead com o contexto da simulação e confirma com id', async () => {
     const b = ex()
     const r = await post(b)

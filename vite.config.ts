@@ -1,8 +1,16 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { fileURLToPath, URL } from 'node:url'
 
-export default defineConfig({
+// Finer Pioneers — página /pioneers/confirmar/ (verificação do email do candidato).
+// Só é gerada com VITE_PIONEERS_EMAIL_VERIFICATION=on. Enquanto a verificação estiver desligada
+// (sem CONFIRM_FROM no Worker), a página não existe no site publicado: nada de exposto nem prometido.
+// Ordem ao ativar: 1) esta variável no GitHub + publicar o site; 2) só depois CONFIRM_FROM no Worker.
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  const verification = (process.env.VITE_PIONEERS_EMAIL_VERIFICATION ?? env.VITE_PIONEERS_EMAIL_VERIFICATION) === 'on'
+
+  return {
   base: '/',
 
   plugins: [react()],
@@ -13,6 +21,7 @@ export default defineConfig({
       input: {
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
         pioneers: fileURLToPath(new URL('./pioneers/index.html', import.meta.url)),
+        ...(verification ? { pioneersConfirmar: fileURLToPath(new URL('./pioneers/confirmar/index.html', import.meta.url)) } : {}),
         listaEspera: fileURLToPath(new URL('./lista-espera/index.html', import.meta.url)),
         privacidade: fileURLToPath(new URL('./privacidade/index.html', import.meta.url)),
         sobre: fileURLToPath(new URL('./sobre/index.html', import.meta.url)),
@@ -27,4 +36,5 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  }
 })
