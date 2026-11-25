@@ -45,11 +45,27 @@ function readStoredLang(): Lang {
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>(readStoredLang)
+  // Ao hidratar o HTML pré-renderizado (sempre em português), o primeiro render tem de ser em
+  // português para coincidir; o idioma guardado aplica-se logo a seguir (efeito abaixo). Sem HTML
+  // pré-renderizado (npm run dev, páginas não geradas no build), usa-se logo o idioma guardado.
+  const [lang, setLangState] = useState<Lang>(() => (typeof window !== 'undefined' && window.__foHydrating ? 'pt' : readStoredLang()))
+
+  // Fim da hidratação: aplica o idioma guardado e liberta os formulários (guarda em
+  // scripts/prerender.mjs, que impede escrever e enviar antes de o React estar pronto).
+  useEffect(() => {
+    const stored = readStoredLang()
+    if (stored !== lang) setLangState(stored)
+    window.__foHydrating = false
+    document.documentElement.classList.remove('fo-prehydrate')
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- só ao montar
+  }, [])
 
   useEffect(() => {
     document.documentElement.lang = lang === 'en' ? 'en' : 'pt-PT'
     applyPageMeta(lang)
+    // Visitante com inglês guardado: a página fica invisível até o inglês estar aplicado (como
+    // antes da pré-renderização, nunca vê o português). Ver scripts/prerender.mjs.
+    if (lang === readStoredLang()) document.documentElement.classList.remove('fo-lang-wait')
   }, [lang])
 
   const setLang = (next: Lang) => {

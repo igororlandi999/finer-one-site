@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { ArrowRight, ArrowUp, ArrowUpRight } from 'lucide-react'
-import { MotionConfig, motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'motion/react'
+import { MotionConfig, motion, useMotionValue, useSpring, useTransform } from 'motion/react'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { useLanguage } from '@/i18n/LanguageContext'
 import type { Lang } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
@@ -82,7 +83,11 @@ function RevealFooter() {
   // Só fica "por baixo da página" quando cabe inteiro no ecrã (desktop).
   useEffect(() => {
     const el = ref.current
-    if (!el || reduced) return
+    // Movimento reduzido (pode ser conhecido só depois da hidratação): rodapé normal, não preso.
+    if (!el || reduced) {
+      setPinned(false)
+      return
+    }
     const check = () => setPinned(window.innerWidth >= 1024 && el.offsetHeight <= window.innerHeight)
     check()
     const ro = new ResizeObserver(check)

@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { ArrowRight } from 'lucide-react'
-import { MotionConfig, motion, useReducedMotion, useScroll, useSpring, useTransform } from 'motion/react'
+import { MotionConfig, motion, useScroll, useSpring, useTransform } from 'motion/react'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 import type { Variants } from 'motion/react'
 import { buttonClasses } from '@/components/ui/Button'
 import { useLanguage } from '@/i18n/LanguageContext'

@@ -32,7 +32,10 @@ export function renderPage(page: ReactNode) {
       </LanguageProvider>
     </StrictMode>
   )
-  if (container.hasChildNodes()) hydrateRoot(container, tree, { onRecoverableError: (e) => console.warn('[hydrate]', e) })
+  // HTML pré-renderizado: hidratar. __foHydrating faz o primeiro render coincidir com esse HTML
+  // (idioma predefinido; ver LanguageProvider). Uma recuperação do React (reconstrução) fica registada.
+  window.__foHydrating = container.hasChildNodes()
+  if (window.__foHydrating) hydrateRoot(container, tree, { onRecoverableError: (e) => console.warn('[hydrate]', e) })
   else createRoot(container).render(tree)
   initTitleSweep()
 }

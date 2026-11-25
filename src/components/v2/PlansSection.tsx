@@ -1,10 +1,12 @@
 import { useLayoutEffect, useRef, useState } from 'react'
-import { AnimatePresence, MotionConfig, motion, useReducedMotion, useScroll, useSpring, useTransform } from 'motion/react'
+import { AnimatePresence, MotionConfig, motion, useScroll, useSpring, useTransform } from 'motion/react'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 import type { MotionValue, Variants } from 'motion/react'
 import { ArrowRight, Lock } from 'lucide-react'
 import { useLanguage } from '@/i18n/LanguageContext'
 import type { Lang } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -123,7 +125,9 @@ export function PlansSection() {
   const { lang } = useLanguage()
   const t = copy[lang]
   const reducedPref = useReducedMotion() ?? false
-  const wide = typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches
+  // Hidratação: false no HTML pré-renderizado e na hidratação, depois o valor real (só desktop
+  // anima a distribuição dos cartões; a secção fica abaixo da dobra).
+  const wide = useMediaQuery('(min-width: 1024px)')
   const reduced = reducedPref || !wide
   const grid = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: grid, offset: ['start 0.92', 'start 0.5'] })

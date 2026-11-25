@@ -17,7 +17,12 @@ npm run dev      # servidor de desenvolvimento
 npm run build    # verificação de tipos + build de produção + pré-renderização das páginas
 npm run preview  # servir o build
 npm run lint     # apenas verificação de tipos
+npm run test:prerender  # depois do build: HTML gerado (h1, texto, links, canonical, metadados, sem dados privados)
+npm run test:hydration  # depois do build: hidratação no navegador (PT/EN, mobile/desktop, movimento reduzido…)
 ```
+
+O workflow `CI` (`.github/workflows/ci.yml`) corre estes testes em cada PR e nas branches `dev/**`;
+o de publicação corre `test:prerender` antes de publicar.
 
 ## Stack
 
@@ -159,8 +164,12 @@ de busca e para a primeira pintura. No navegador, o React hidrata esse HTML (`hy
 para novos componentes: o primeiro render não pode depender do navegador (`window`, `localStorage`,
 tamanho do ecrã, movimento reduzido); usar `useMediaQuery` / `useMediaQueryState`,
 `usePrefersReducedMotion` e `currentPath()`, que dão o mesmo valor no build e na hidratação e só
-depois o valor real. Uma página nova tem de ser acrescentada às rotas de `src/ssr/entry-server.tsx`
-e ao `public/sitemap.xml`.
+depois o valor real. O mesmo vale para o motion: usar `useReducedMotion` de `@/hooks/useReducedMotion`
+(não o de `motion/react`), e um estado inicial que dependa dele tem de ser corrigido num efeito quando
+ele muda. Datas mostradas: `useCurrentMonth`. Uma página nova tem de ser acrescentada às rotas de
+`src/ssr/entry-server.tsx`, a `scripts/test-prerender.mjs`, a `scripts/test-hydration.mjs` e ao
+`public/sitemap.xml`. Antes de o React hidratar, uma guarda no `<head>` impede escrever e enviar nos
+formulários; quem tem o inglês guardado só vê a página depois de o inglês estar aplicado.
 
 **Logótipo.** Apenas o ícone "F" foi fornecido em ficheiro. Foi vetorizado para
 SVG (`currentColor`) e combinado com o wordmark em texto. Quando o logótipo

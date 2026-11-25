@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties, FormEvent } from 'react'
-import { AnimatePresence, MotionConfig, motion, useMotionValueEvent, useReducedMotion, useScroll, useSpring } from 'motion/react'
+import { AnimatePresence, MotionConfig, motion, useMotionValueEvent, useScroll, useSpring } from 'motion/react'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 import type { Variants } from 'motion/react'
 import { ArrowLeft, ArrowRight, ArrowUp, CheckCircle2, Clock, Lock } from 'lucide-react'
 import { ConsentCheckbox, Field, Honeypot, SelectInput, TextArea, TextInput } from '@/components/forms/fields'
@@ -320,6 +321,10 @@ function StepsTimeline({ steps }: { steps: { title: string; text: string }[] }) 
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.75', 'end 0.5'] })
   const fill = useSpring(scrollYProgress, { stiffness: 140, damping: 30, mass: 0.4 })
   const [active, setActive] = useState(reduced ? steps.length - 1 : -1)
+  // Movimento reduzido conhecido só depois da hidratação: passa logo ao estado final.
+  useEffect(() => {
+    if (reduced) setActive(steps.length - 1)
+  }, [reduced, steps.length])
   useMotionValueEvent(scrollYProgress, 'change', (v) => {
     if (reduced) return
     const n = steps.length - 1

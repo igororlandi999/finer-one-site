@@ -34,6 +34,9 @@ jobs:
           VITE_FORMS_PROVIDER: ${{ vars.VITE_FORMS_PROVIDER }}
           # Chave PÚBLICA do widget Turnstile (o segredo fica só no Worker).
           VITE_TURNSTILE_SITEKEY: ${{ vars.VITE_TURNSTILE_SITEKEY }}
+      # HTML pré-renderizado: um h1, conteúdo, links, canonical, title/description, sem dados
+      # privados e sitemap certo. Se falhar, nada é publicado (o site atual mantém-se).
+      - run: npm run test:prerender
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

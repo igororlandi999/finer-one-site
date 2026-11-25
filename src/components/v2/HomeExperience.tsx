@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
-import { AnimatePresence, MotionConfig, motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
+import { AnimatePresence, MotionConfig, motion, useScroll, useTransform } from 'motion/react'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 import type { Variants } from 'motion/react'
 import { ArrowRight, ArrowUp, Sparkles } from 'lucide-react'
 import { useLanguage } from '@/i18n/LanguageContext'
@@ -146,10 +147,10 @@ export function HomeExperience() {
           <motion.div variants={item} className="min-w-0">
             <motion.div
               ref={stageRef}
-              style={reduced ? undefined : { clipPath }}
+              style={{ clipPath: reduced ? 'none' : clipPath }}
               className="relative isolate overflow-hidden rounded-[32px] px-4 pb-5 pt-16 shadow-[0_40px_90px_-50px_rgba(0,82,255,0.55)] sm:px-10 sm:pb-10 sm:pt-24 lg:px-12"
             >
-              <motion.div aria-hidden="true" className="absolute inset-x-0 -inset-y-[8%] -z-10" style={reduced ? undefined : { y: skyY }}>
+              <motion.div aria-hidden="true" className="absolute inset-x-0 -inset-y-[8%] -z-10" style={{ y: reduced ? 0 : skyY }}>
                 <FinerSky />
               </motion.div>
 

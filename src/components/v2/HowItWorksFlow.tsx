@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
-import { AnimatePresence, MotionConfig, animate, motion, useInView, useMotionValue, useReducedMotion } from 'motion/react'
+import { AnimatePresence, MotionConfig, animate, motion, useInView, useMotionValue } from 'motion/react'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 import type { MotionValue, Variants } from 'motion/react'
 import { useLanguage } from '@/i18n/LanguageContext'
 import type { Lang } from '@/i18n/LanguageContext'

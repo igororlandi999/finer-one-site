@@ -1,5 +1,6 @@
 import { useId } from 'react'
-import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
+import { motion, useScroll, useTransform } from 'motion/react'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 import type { RefObject } from 'react'
 
 /**

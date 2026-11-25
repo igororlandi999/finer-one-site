@@ -1,5 +1,6 @@
 import { useEffect, useId, useMemo, useRef } from 'react'
-import { AnimatePresence, LayoutGroup, motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
+import { AnimatePresence, LayoutGroup, motion, useScroll, useTransform } from 'motion/react'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { ArrowRight, RotateCcw } from 'lucide-react'
 import { SAMPLE, simulate } from '@/lib/explore/monthly'
 import type { Horizon, MonthlyInputs, Result, ScenarioKind } from '@/lib/explore/monthly'
@@ -7,6 +8,7 @@ import { track } from '@/lib/analytics'
 import { cn } from '@/lib/utils'
 import { MonthlyChart } from './MonthlyChart'
 import type { ExploreText, Lang } from './content'
+import { useCurrentMonth } from '@/hooks/useCurrentMonth'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -22,14 +24,14 @@ export type Fmt = {
 }
 
 export function useFmt(currency: string, lang: Lang): Fmt {
+  const { year, month } = useCurrentMonth()
   return useMemo(() => {
     const loc = lang === 'pt' ? 'pt-PT' : 'en-GB'
     const nf = new Intl.NumberFormat(loc, { style: 'currency', currency, maximumFractionDigits: 0 })
     const cf = new Intl.NumberFormat(loc, { style: 'currency', currency, notation: 'compact', maximumFractionDigits: 0 })
     const plain = new Intl.NumberFormat(loc, { maximumFractionDigits: 0 })
     const symbol = nf.formatToParts(0).find((p) => p.type === 'currency')?.value ?? currency
-    const now = new Date()
-    const at = (m: number) => new Date(now.getFullYear(), now.getMonth() + 1 + m, 1)
+    const at = (m: number) => new Date(year, month + 1 + m, 1)
     const short = (l: Lang) => new Intl.DateTimeFormat(l === 'pt' ? 'pt-PT' : 'en-GB', { month: 'short' })
     const long = (l: Lang) => new Intl.DateTimeFormat(l === 'pt' ? 'pt-PT' : 'en-GB', { month: 'long', year: 'numeric' })
     return {
@@ -40,7 +42,7 @@ export function useFmt(currency: string, lang: Lang): Fmt {
       monthLong: (m, l = lang) => long(l).format(at(m)),
       symbol,
     }
-  }, [currency, lang])
+  }, [currency, lang, year, month])
 }
 
 // ---------- Estado da simulação ----------
@@ -274,8 +276,8 @@ function SkyStage({ refEl, children }: { refEl: React.RefObject<HTMLDivElement |
   const { scrollYProgress: pass } = useScroll({ target: refEl, offset: ['start end', 'end start'] })
   const skyY = useTransform(pass, [0, 1], ['-6%', '6%'])
   return (
-    <motion.div ref={refEl} style={reduced ? undefined : { clipPath }} className="relative isolate mt-12 overflow-hidden rounded-[28px] px-4 py-10 sm:px-10 sm:py-16">
-      <motion.div aria-hidden="true" className="absolute inset-x-0 -inset-y-[8%] -z-10" style={reduced ? undefined : { y: skyY }}>
+    <motion.div ref={refEl} style={{ clipPath: reduced ? 'none' : clipPath }} className="relative isolate mt-12 overflow-hidden rounded-[28px] px-4 py-10 sm:px-10 sm:py-16">
+      <motion.div aria-hidden="true" className="absolute inset-x-0 -inset-y-[8%] -z-10" style={{ y: reduced ? 0 : skyY }}>
         <img src="/images/finer-sky.webp" alt="" decoding="async" loading="lazy" draggable={false} className="h-full w-full select-none object-cover" />
       </motion.div>
       {children}

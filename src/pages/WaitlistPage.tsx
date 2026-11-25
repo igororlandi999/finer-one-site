@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
-import { AnimatePresence, MotionConfig, motion, useReducedMotion, useScroll, useSpring, useTransform } from 'motion/react'
+import { AnimatePresence, MotionConfig, motion, useScroll, useSpring, useTransform } from 'motion/react'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 import type { Variants } from 'motion/react'
 import { ArrowLeft, ArrowRight, Check, Lock } from 'lucide-react'
 import { DIAL_CODES } from '@/components/explore/content'
@@ -460,7 +461,12 @@ function FirstLook({ t }: { t: T }) {
   // Só reproduz quando está à vista (e nunca sozinho com movimento reduzido).
   useEffect(() => {
     const v = video.current
-    if (!v || reduced) return
+    if (!v) return
+    // Movimento reduzido (pode ser conhecido só depois da hidratação): parado.
+    if (reduced) {
+      v.pause()
+      return
+    }
     const io = new IntersectionObserver(([e]) => (e.isIntersecting ? v.play().catch(() => undefined) : v.pause()), { threshold: 0.3 })
     io.observe(v)
     return () => io.disconnect()

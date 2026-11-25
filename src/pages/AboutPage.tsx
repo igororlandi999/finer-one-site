@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import type { CSSProperties } from 'react'
-import { MotionConfig, motion, useReducedMotion, useScroll, useSpring } from 'motion/react'
+import { MotionConfig, motion, useScroll, useSpring } from 'motion/react'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 import type { Variants } from 'motion/react'
 import { ArrowRight } from 'lucide-react'
 import { useLanguage } from '@/i18n/LanguageContext'

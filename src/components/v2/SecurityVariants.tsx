@@ -1,5 +1,6 @@
-import { useRef, useState } from 'react'
-import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from 'motion/react'
+import { useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion, useMotionValueEvent, useScroll, useTransform } from 'motion/react'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 import type { MotionValue, Variants } from 'motion/react'
 import type { Lang } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
@@ -65,6 +66,10 @@ export function SecurityAtmosphere({ lang }: { lang: Lang }) {
   const card = useRef<HTMLDivElement>(null)
   const { scrollYProgress: auth } = useScroll({ target: card, offset: ['start 0.7', 'end 0.25'] })
   const [stage, setStage] = useState(reduced ? 2 : 0)
+  // Movimento reduzido conhecido só depois da hidratação: passa logo ao estado final.
+  useEffect(() => {
+    if (reduced) setStage(2)
+  }, [reduced])
   useMotionValueEvent(auth, 'change', (p) => { if (!reduced) setStage(p < 0.25 ? 0 : p < 0.6 ? 1 : 2) })
   const stages = [
     { state: pt ? 'Não ligada' : 'Not connected', sub: pt ? 'Banco Exemplo' : 'Example Bank', tone: 'text-[#0B1030]/40', name: 'text-[#070D2B]/55' },

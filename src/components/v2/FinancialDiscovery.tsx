@@ -1,6 +1,7 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { ReactNode, RefObject } from 'react'
-import { MotionConfig, motion, useMotionValueEvent, useReducedMotion, useScroll, useSpring } from 'motion/react'
+import { MotionConfig, motion, useMotionValueEvent, useScroll, useSpring } from 'motion/react'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 import type { Variants } from 'motion/react'
 import { useLanguage } from '@/i18n/LanguageContext'
 import type { Lang } from '@/i18n/LanguageContext'
@@ -150,6 +151,10 @@ export function FinancialDiscovery() {
   const { scrollYProgress } = useScroll({ target: wrap, offset: ['start 0.75', 'end 0.55'] })
   const draw = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.4 })
   const [reached, setReached] = useState(reduced ? 3 : 0)
+  // Movimento reduzido conhecido só depois da hidratação: passa logo ao estado final.
+  useEffect(() => {
+    if (reduced) setReached(3)
+  }, [reduced])
   useMotionValueEvent(draw, 'change', (v) => {
     if (reduced) return
     const n = geo.marks.filter((m) => v >= m.at - 0.02).length
