@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import type { ReactNode } from 'react'
-import { MotionConfig, motion } from 'motion/react'
+import type { CSSProperties, ReactNode } from 'react'
+import { MotionConfig } from 'motion/react'
 import { ArrowRight, ArrowUpRight, ChevronDown } from 'lucide-react'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
@@ -108,7 +108,6 @@ const SOURCES = [
   { label: 'Banco de Portugal — Quadros do Setor e Quadros da Empresa e do Setor: metodologia e acesso (junho de 2024)', href: 'https://www.bportugal.pt/sites/default/files/anexos/QS_QES_metologia_apuramento_resultados.pdf' },
 ]
 
-const EASE = [0.22, 1, 0.36, 1] as const
 
 export function LiquidityGuidePage() {
   const { lang } = useLanguage()
@@ -125,7 +124,9 @@ export function LiquidityGuidePage() {
           )}
 
           {/* Cabeçalho editorial */}
-          <motion.header initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: EASE }} className="border-b border-[#0B1030]/[0.08] pb-10">
+          {/* Entrada em CSS (fo-enter), igual à anterior (0,7 s, 18 px): começa na primeira pintura
+              do HTML pré-renderizado, sem esperar pelo JavaScript. */}
+          <header className="fo-enter border-b border-[#0B1030]/[0.08] pb-10" style={{ '--fo-dur': '0.7s' } as CSSProperties}>
             <nav aria-label="Localização" className="text-[13px] text-[#0B1030]/50">
               <ol className="flex flex-wrap items-center gap-2">
                 <li><a href="/" className="hover:text-[#070D2B]">Início</a></li>
@@ -159,7 +160,7 @@ export function LiquidityGuidePage() {
                 <dd className="mt-1 font-semibold text-[#070D2B]">Empresários e gestores de PME</dd>
               </div>
             </dl>
-          </motion.header>
+          </header>
 
           <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-20">
             <div className="min-w-0 max-w-[720px] [overflow-wrap:anywhere]">

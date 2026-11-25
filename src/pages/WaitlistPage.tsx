@@ -6,7 +6,7 @@ import { ArrowLeft, ArrowRight, Check, Lock } from 'lucide-react'
 import { DIAL_CODES } from '@/components/explore/content'
 import { ConsentCheckbox, Honeypot } from '@/components/forms/fields'
 import { demoVideoFor } from '@/config/demo'
-import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { useMediaQueryState } from '@/hooks/useMediaQuery'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { internationalPhone } from '@/lib/contactFields'
 import { isPreviewMode, isValidEmail, submitForm } from '@/lib/forms'
@@ -445,7 +445,10 @@ function FirstLook({ t }: { t: T }) {
   const { lang } = useLanguage()
   const DEMO_VIDEO = demoVideoFor(lang)
   const reduced = useReducedMotion() ?? false
-  const small = !useMediaQuery('(min-width: 768px)')
+  // null no HTML pré-renderizado e na hidratação: a forma do vídeo fica a cargo do CSS.
+  const wide = useMediaQueryState('(min-width: 768px)')
+  const pending = wide === null
+  const small = !pending && !wide
   const ref = useRef<HTMLDivElement>(null)
   const video = useRef<HTMLVideoElement>(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'center center'] })
@@ -482,19 +485,19 @@ function FirstLook({ t }: { t: T }) {
 
       <div ref={ref} className="mx-auto mt-12 max-w-[1100px] [perspective:1400px]">
         <motion.div style={{ scale, borderRadius: radius, rotateX: tilt }} className="relative overflow-hidden border border-[#0B1030]/[0.08] bg-[#070D2B] p-1.5 shadow-[0_60px_120px_-50px_rgba(7,13,43,0.6)] will-change-transform">
-          <div className={cn('relative overflow-hidden rounded-[18px] bg-white', portrait ? 'mx-auto aspect-[4/5] max-w-[420px]' : 'aspect-video')}>
+          <div className={cn('relative overflow-hidden rounded-[18px] bg-white', pending && DEMO_VIDEO.portrait ? 'mx-auto aspect-[4/5] max-w-[420px] md:aspect-video md:max-w-none' : portrait ? 'mx-auto aspect-[4/5] max-w-[420px]' : 'aspect-video')}>
             <video
-              key={(portrait ? 'v' : 'h') + lang}
+              key={(pending ? 'p' : portrait ? 'v' : 'h') + lang}
               ref={video}
               className="absolute inset-0 h-full w-full object-cover"
               muted
               loop
               playsInline
-              preload="metadata"
-              poster={portrait ? DEMO_VIDEO.portraitPoster : DEMO_VIDEO.poster}
+              preload={pending ? 'none' : 'metadata'}
+              poster={pending ? undefined : portrait ? DEMO_VIDEO.portraitPoster : DEMO_VIDEO.poster}
               aria-label={t.videoLabel}
             >
-              <source src={portrait ? DEMO_VIDEO.portrait : DEMO_VIDEO.src} type="video/mp4" />
+              {!pending && <source src={portrait ? DEMO_VIDEO.portrait : DEMO_VIDEO.src} type="video/mp4" />}
             </video>
           </div>
         </motion.div>

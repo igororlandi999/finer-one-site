@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import type { FormEvent } from 'react'
+import type { CSSProperties, FormEvent } from 'react'
 import { AnimatePresence, MotionConfig, motion, useMotionValueEvent, useReducedMotion, useScroll, useSpring } from 'motion/react'
 import type { Variants } from 'motion/react'
 import { ArrowLeft, ArrowRight, ArrowUp, CheckCircle2, Clock, Lock } from 'lucide-react'
@@ -211,6 +211,8 @@ const STEP_FIELDS: Key[][] = [['name', 'email', 'phone'], ['company', 'sector', 
 const EASE = [0.22, 1, 0.36, 1] as const
 const group: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } }
 const rise: Variants = { hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE } } }
+/** Atraso da entrada em CSS (fo-enter), com o mesmo escalonamento do grupo (0,08 s). */
+const enter = (delay: number) => ({ '--fo-delay': `${delay}s` }) as CSSProperties
 
 export function PioneersPage() {
   if (typeof window !== 'undefined' && devFlags.get('versao') === 'anterior') return <PioneersPageClassic />
@@ -230,20 +232,25 @@ function PioneersStory() {
           candidatura em 3 passos; à direita a atmosfera Finer com uma pergunta a ser escrita. */}
       <section className="bg-white pt-[72px] text-navy">
         <div className="mx-auto grid max-w-[1440px] gap-4 px-3 pb-3 sm:px-4 sm:pb-4 lg:min-h-[calc(100svh-72px)] lg:grid-cols-2">
-          <motion.div variants={group} initial="hidden" animate="show" className="flex flex-col justify-center px-3 py-12 sm:px-8 lg:px-14 xl:px-24">
-            <motion.p variants={rise} className="inline-flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.24em] text-accent-deep">
+          {/* Entrada em CSS (fo-enter), igual ao "rise" anterior: começa na primeira pintura do HTML
+              pré-renderizado, sem esperar pelo JavaScript. O fade do título fica num invólucro, para
+              não colidir com a revelação dos títulos (titleSweep) no próprio h1. */}
+          <div className="flex flex-col justify-center px-3 py-12 sm:px-8 lg:px-14 xl:px-24">
+            <p className="fo-enter inline-flex items-center gap-3 text-[11.5px] font-semibold uppercase tracking-[0.24em] text-accent-deep">
               <span aria-hidden="true" className="h-px w-8 bg-accent-deep/60" />
               {t.kicker}
-            </motion.p>
-            <motion.h1 variants={rise} className="mt-5 font-display text-[38px] font-bold leading-[1.02] tracking-[-0.035em] text-[#070D2B] sm:text-[46px]">
-              {t.joinTitle[0]}
-              <span className="text-accent-deep">{t.joinTitle[1]}</span>
-            </motion.h1>
-            <motion.p variants={rise} className="mt-4 max-w-[460px] text-[15.5px] leading-[1.6] text-[#0B1030]/65">
+            </p>
+            <div className="fo-enter mt-5" style={enter(0.08)}>
+              <h1 className="font-display text-[38px] font-bold leading-[1.02] tracking-[-0.035em] text-[#070D2B] sm:text-[46px]">
+                {t.joinTitle[0]}
+                <span className="text-accent-deep">{t.joinTitle[1]}</span>
+              </h1>
+            </div>
+            <p className="fo-enter mt-4 max-w-[460px] text-[15.5px] leading-[1.6] text-[#0B1030]/65" style={enter(0.16)}>
               {t.sub}
-            </motion.p>
+            </p>
             <ApplicationCard t={t} />
-          </motion.div>
+          </div>
           <PioneersVisual t={t} />
         </div>
       </section>

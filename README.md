@@ -14,7 +14,7 @@ testemunhos, FAQ, rodapé completo) ainda não foi construído.
 ```bash
 npm install
 npm run dev      # servidor de desenvolvimento
-npm run build    # verificação de tipos + build de produção
+npm run build    # verificação de tipos + build de produção + pré-renderização das páginas
 npm run preview  # servir o build
 npm run lint     # apenas verificação de tipos
 ```
@@ -152,6 +152,15 @@ Coerência interna dos dados:
 - a variação de -7,8% no KPI Margem é o mesmo valor do alerta.
 
 ## Notas de implementação
+
+**Pré-renderização (SEO).** O `npm run build` gera, com `scripts/prerender.mjs`, o HTML de cada
+página pública a partir dos mesmos componentes React (`src/ssr/entry-server.tsx`), para os motores
+de busca e para a primeira pintura. No navegador, o React hidrata esse HTML (`hydrateRoot`). Regra
+para novos componentes: o primeiro render não pode depender do navegador (`window`, `localStorage`,
+tamanho do ecrã, movimento reduzido); usar `useMediaQuery` / `useMediaQueryState`,
+`usePrefersReducedMotion` e `currentPath()`, que dão o mesmo valor no build e na hidratação e só
+depois o valor real. Uma página nova tem de ser acrescentada às rotas de `src/ssr/entry-server.tsx`
+e ao `public/sitemap.xml`.
 
 **Logótipo.** Apenas o ícone "F" foi fornecido em ficheiro. Foi vetorizado para
 SVG (`currentColor`) e combinado com o wordmark em texto. Quando o logótipo

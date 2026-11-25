@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/check-release.mjs && tsc --noEmit && vite build",
+    "build": "node scripts/check-release.mjs && tsc --noEmit && vite build && node scripts/prerender.mjs",
     "preview": "vite preview",
     "lint": "tsc --noEmit",
     "test:forms": "node backend/google-apps-script/test/receiver.test.mjs",
