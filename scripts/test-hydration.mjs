@@ -122,7 +122,9 @@ const SNAPSHOT = () => {
   const out = []
   const norm = (v) => v.replace(/_[rR]_[0-9a-z]+_/g, '_id_')
   // Declarações visualmente neutras que o motion deixa (ou não) em linha conforme o percurso.
-  const neutralStyle = (css) => css.split(';').map((d) => d.trim()).filter((d) => d && !/^(opacity: 1|transform: none|transform-origin: .*|will-change: .*)$/.test(d)).join('; ')
+  // O clip-path ligado ao scroll (cartões do Explorar e da homepage) muda de frame para frame:
+  // compara-se se existe e de que tipo é ("none" vs "inset"), não o valor do momento.
+  const neutralStyle = (css) => css.split(';').map((d) => d.trim()).filter((d) => d && !/^(opacity: 1|transform: none|transform-origin: .*|will-change: .*)$/.test(d)).map((d) => d.replace(/^clip-path: inset\(.*\)$/, 'clip-path: inset(…)')).join('; ')
   // Progresso da revelação dos títulos (depende do momento em que o título entra no ecrã).
   const neutralClass = (c) => c.replace(/\s*\bfo-title-(in|done)\b/g, '')
   const walk = (n, d) => {
