@@ -16,7 +16,7 @@ type LanguageContextValue = {
  * versão PT (a que os motores de busca indexam); em EN trocamos no browser.
  */
 const EN_META: Record<string, { title: string; description: string }> = {
-  '/': { title: 'Finer One — Financial intelligence for clear decisions', description: 'Finer One turns your company’s financial data into analysis, forecasts, alerts and clear decisions, before problems become urgent.' },
+  '/': { title: 'Finer One | Financial intelligence and cash management for SMEs', description: 'Financial intelligence for SMEs: Finer One helps you follow your cash and make sense of your company’s financial data, so you can decide with more clarity.' },
   '/sobre/': { title: 'About us | Finer One', description: 'Finer One is building the financial operating system for Portuguese SMEs. Read our story, meet the founders and see what we believe in.' },
   '/pioneers/': { title: 'Finer Pioneers — Apply | Finer One', description: 'We are looking for business owners to try Finer One first-hand and help shape how the platform evolves.' },
   '/pioneers/confirmar/': { title: 'Confirm your email — Finer Pioneers | Finer One', description: 'Confirm the email address of your Finer Pioneers application.' },

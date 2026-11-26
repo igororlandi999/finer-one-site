@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils'
  * por receber, pagamentos em atraso, alertas) — a previsão está anunciada como "brevemente"
  * no plano Pro, por isso não é apresentada como disponível.
  */
-export const GUIDE_UPDATED = { iso: '2026-11-16', label: '16 de novembro de 2026' }
+export const GUIDE_UPDATED = { iso: '2026-11-25', label: '25 de novembro de 2026' }
 
 const SECTIONS = [
   { id: 'resumo', title: 'Em resumo' },
@@ -45,7 +45,15 @@ const SIGNALS: Signal[] = [
     happening: 'As faturas vencidas acumulam-se e a equipa passa mais tempo a lembrar pagamentos. Muitas vezes, um ou dois clientes concentram a maior parte do valor.',
     indicator: 'Antiguidade dos saldos de clientes (por vencer, vencido até 30, 31 a 60 e mais de 60 dias) e peso dos maiores clientes no total por receber.',
     meaning: 'Atrasos crescentes ou muito concentrados tornam a tesouraria dependente da decisão de pagamento de poucos clientes.',
-    decision: 'Definir um processo de cobrança com datas fixas, contactar antes do vencimento e rever o limite de crédito por cliente. Soluções como o factoring podem ser avaliadas com o banco, comparando o custo.',
+    decision: (
+      <>
+        Definir um processo de cobrança com datas fixas, contactar antes do vencimento e rever o limite de crédito por cliente. Soluções como o factoring podem ser avaliadas com o banco, comparando o custo. Para ver quanto um atraso pesa no saldo dos próximos meses, pode{' '}
+        <a href="/explorar/" className="font-semibold text-accent-deep underline decoration-accent-deep/30 underline-offset-4 hover:decoration-accent-deep">
+          simulá-lo no Explorar
+        </a>
+        .
+      </>
+    ),
   },
   {
     title: 'O dinheiro aperta sempre nos mesmos dias do mês',
@@ -186,6 +194,9 @@ export function LiquidityGuidePage() {
 
               {/* Lucro vs liquidez */}
               <Section id="lucro-liquidez" title="Lucro não é liquidez">
+                <P>
+                  Há falta de liquidez quando a empresa não tem dinheiro disponível suficiente para pagar os compromissos na data em que vencem — salários, impostos, fornecedores ou prestações ao banco — mesmo que tenha vendas, lucro ou património. Muitas vezes, o problema não é falta de negócio: é o dinheiro entrar depois de ter de sair.
+                </P>
                 <P>
                   O lucro diz se a empresa ganha dinheiro com o que vende: é a diferença entre o que fatura e o que custa produzir e vender, num período. A liquidez diz se a empresa tem dinheiro disponível para pagar o que deve, quando deve.
                 </P>
@@ -376,9 +387,9 @@ export function LiquidityGuidePage() {
                   <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#0B1030]/45">Continue a explorar</p>
                   <ul className="mt-4 grid gap-3 sm:grid-cols-3">
                     {[
+                      ['Simular a tesouraria no Explorar', '/explorar/'],
                       ['Como funciona a Finer One', '/#funcionamento'],
                       ['Segurança dos dados', '/#seguranca'],
-                      ['Sobre nós', '/sobre/'],
                     ].map(([label, href]) => (
                       <li key={href}>
                         <a href={href} className="group flex h-full items-center justify-between rounded-xl border border-[#0B1030]/[0.08] px-4 py-3.5 text-[14.5px] font-medium text-[#070D2B] transition-colors hover:border-accent-deep/40">
