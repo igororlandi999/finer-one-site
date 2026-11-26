@@ -388,6 +388,12 @@ if (testEndpoint) {
     const logs = []
     watch(page, logs)
     const sent = []
+    // Turnstile simulado (build com VITE_FORMS_PROVIDER=cloudflare): devolve um token de teste.
+    await page.route('https://challenges.cloudflare.com/**', (route) => route.fulfill({
+      status: 200,
+      contentType: 'text/javascript',
+      body: "window.turnstile={render:function(el,o){setTimeout(function(){o.callback('token-teste')},50);return 'w1'},remove:function(){}}",
+    }))
     await page.route('https://forms.example.test/**', async (route) => {
       sent.push(JSON.parse(route.request().postData()))
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, id: 'teste-local' }) })
@@ -430,6 +436,7 @@ if (testEndpoint) {
     if (b && b.kind !== kind) problems.push(`kind=${b.kind}`)
     if (b && !/^\+351 ?912345678$/.test(String(b.fields?.phone))) problems.push(`telefone=${b.fields?.phone}`)
     if (b && b.consentVersion !== '2026-11-v7') problems.push(`aviso=${b.consentVersion}`)
+    if (b && process.env.VITE_FORMS_PROVIDER === 'cloudflare' && b.turnstileToken !== 'token-teste') problems.push(`turnstile=${b.turnstileToken}`)
     if (b && kind === 'explore' && (b.fields.contact !== '0' || b.fields.marketing !== '0' || b.fields.privacy !== '1')) problems.push(`consentimentos=${JSON.stringify([b.fields.contact, b.fields.marketing, b.fields.privacy])}`)
     for (const l of logs) problems.push(l)
     for (const pr of problems) fail(`envio ${path}: ${pr}`)
