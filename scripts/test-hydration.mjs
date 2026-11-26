@@ -17,7 +17,7 @@ import { fileURLToPath } from 'node:url'
 import { chromium } from 'playwright'
 
 const dist = resolve(fileURLToPath(new URL('.', import.meta.url)), '..', 'dist')
-const PAGES = ['/', '/explorar/', '/sobre/', '/lista-espera/', '/pioneers/', '/guias/falta-de-liquidez/', '/privacidade/']
+const PAGES = ['/', '/explorar/', '/sobre/', '/lista-espera/', '/pioneers/', '/guias/falta-de-liquidez/', '/guias/prazo-medio-recebimentos/', '/privacidade/']
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.mp4': 'video/mp4', '.woff2': 'font/woff2', '.xml': 'application/xml', '.txt': 'text/plain', '.json': 'application/json' }
 const MIN_REUSED = 0.9 // fração mínima de elementos pré-renderizados que têm de continuar na página
 

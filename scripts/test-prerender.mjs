@@ -20,6 +20,7 @@ const PAGES = {
   '/lista-espera/': 'lista-espera/index.html',
   '/privacidade/': 'privacidade/index.html',
   '/guias/falta-de-liquidez/': 'guias/falta-de-liquidez/index.html',
+  '/guias/prazo-medio-recebimentos/': 'guias/prazo-medio-recebimentos/index.html',
 }
 // Links que a navegação e o rodapé têm de levar em todas as páginas.
 const NAV_LINKS = ['/explorar/', '/sobre/', '/lista-espera/', '/pioneers/', '/privacidade/']

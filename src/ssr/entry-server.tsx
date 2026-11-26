@@ -22,6 +22,7 @@ import { PioneersPage } from '@/pages/PioneersPage'
 import { PrivacyPage } from '@/pages/PrivacyPage'
 import { WaitlistPage } from '@/pages/WaitlistPage'
 import { LiquidityGuidePage } from '@/pages/guides/LiquidityGuidePage'
+import { ReceivablesGuidePage } from '@/pages/guides/ReceivablesGuidePage'
 
 const page = (el: ReactElement) => <PageShell>{el}</PageShell>
 
@@ -34,6 +35,7 @@ export const routes: Record<string, { file: string; render: () => ReactElement }
   '/lista-espera/': { file: 'lista-espera/index.html', render: () => page(<WaitlistPage />) },
   '/privacidade/': { file: 'privacidade/index.html', render: () => page(<PrivacyPage />) },
   '/guias/falta-de-liquidez/': { file: 'guias/falta-de-liquidez/index.html', render: () => page(<LiquidityGuidePage />) },
+  '/guias/prazo-medio-recebimentos/': { file: 'guias/prazo-medio-recebimentos/index.html', render: () => page(<ReceivablesGuidePage />) },
 }
 
 export function render(path: string): string {

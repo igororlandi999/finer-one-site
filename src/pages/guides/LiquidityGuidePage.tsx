@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 import { MotionConfig } from 'motion/react'
-import { ArrowRight, ArrowUpRight, ChevronDown } from 'lucide-react'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
+import { A, ActionList, Callout, GuideToc, MobileToc, P, PioneersCta, Ref, Section, SourcesBlock, Summary } from './GuideKit'
 
 /**
  * Guia editorial "Falta de liquidez" (16/11/2026) — primeiro de uma série de guias SEO.
@@ -36,7 +35,11 @@ const SIGNALS: Signal[] = [
   {
     title: 'As vendas sobem, mas o saldo bancário não acompanha',
     happening: 'A faturação cresce mês após mês, mas o dinheiro disponível fica igual ou desce. O crescimento está a ser pago antes de ser recebido.',
-    indicator: 'Prazo médio de recebimentos (PMR) e o total em dívida de clientes, mês a mês.',
+    indicator: (
+      <>
+        <A href="/guias/prazo-medio-recebimentos/">Prazo médio de recebimentos (PMR)</A> e o total em dívida de clientes, mês a mês.
+      </>
+    ),
     meaning: 'Se o PMR e o valor por receber crescem mais depressa do que as vendas, a empresa está a financiar os clientes com a sua própria tesouraria.',
     decision: 'Rever as condições de pagamento dos novos clientes, faturar logo que o trabalho é entregue e, em projetos longos, negociar adiantamentos ou faturação por fases.',
   },
@@ -48,9 +51,7 @@ const SIGNALS: Signal[] = [
     decision: (
       <>
         Definir um processo de cobrança com datas fixas, contactar antes do vencimento e rever o limite de crédito por cliente. Soluções como o factoring podem ser avaliadas com o banco, comparando o custo. Para ver quanto um atraso pesa no saldo dos próximos meses, pode{' '}
-        <a href="/explorar/" className="font-semibold text-accent-deep underline decoration-accent-deep/30 underline-offset-4 hover:decoration-accent-deep">
-          simulá-lo no Explorar
-        </a>
+        <A href="/explorar/">simulá-lo no Explorar</A>
         .
       </>
     ),
@@ -119,7 +120,6 @@ const SOURCES = [
 
 export function LiquidityGuidePage() {
   const { lang } = useLanguage()
-  const active = useActiveSection(SECTIONS.map((s) => s.id))
 
   return (
     <MotionConfig reducedMotion="user">
@@ -172,25 +172,17 @@ export function LiquidityGuidePage() {
 
           <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-20">
             <div className="min-w-0 max-w-[720px] [overflow-wrap:anywhere]">
-              <MobileToc />
+              <MobileToc sections={SECTIONS} />
 
               {/* Em resumo */}
-              <section id="resumo" aria-labelledby="h-resumo" className="scroll-mt-36 lg:scroll-mt-28 rounded-2xl border border-[#0B1030]/[0.08] bg-ice p-6 sm:p-7">
-                <h2 id="h-resumo" className="font-display text-[20px] font-bold tracking-[-0.02em] text-[#070D2B]">Em resumo</h2>
-                <ul className="mt-4 space-y-3">
-                  {[
-                    'Lucro e liquidez medem coisas diferentes: uma empresa pode dar lucro e, ainda assim, não ter dinheiro para pagar na data certa.',
-                    'Crescer exige tesouraria: se os clientes pagam mais tarde do que a empresa paga, cada venda nova prende dinheiro.',
-                    'Este guia reúne sete sinais frequentes de pressão sobre a tesouraria, cada um com um indicador que ajuda a confirmá-lo ou afastá-lo.',
-                    'Detetar cedo dá mais opções e mais baratas do que reagir na semana dos salários ou do IVA.',
-                  ].map((item) => (
-                    <li key={item} className="relative pl-5 text-[15.5px] leading-[1.65] text-[#0B1030]/80">
-                      <span aria-hidden="true" className="absolute left-0 top-[10px] h-1.5 w-1.5 rounded-full bg-accent" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </section>
+              <Summary
+                items={[
+                  'Lucro e liquidez medem coisas diferentes: uma empresa pode dar lucro e, ainda assim, não ter dinheiro para pagar na data certa.',
+                  'Crescer exige tesouraria: se os clientes pagam mais tarde do que a empresa paga, cada venda nova prende dinheiro.',
+                  'Este guia reúne sete sinais frequentes de pressão sobre a tesouraria, cada um com um indicador que ajuda a confirmá-lo ou afastá-lo.',
+                  'Detetar cedo dá mais opções e mais baratas do que reagir na semana dos salários ou do IVA.',
+                ]}
+              />
 
               {/* Lucro vs liquidez */}
               <Section id="lucro-liquidez" title="Lucro não é liquidez">
@@ -256,7 +248,7 @@ export function LiquidityGuidePage() {
                 </P>
                 <IndicatorTable />
                 <Callout title="Exemplo demonstrativo: cada dia conta">
-                  No exemplo acima, o PMR passa de cerca de 30 para cerca de 39 dias. Com vendas de 55 000 € por mês sem IVA (660 000 € por ano), um dia de vendas vale cerca de 1 800 €. Por isso, receber 10 dias mais cedo reduz o saldo de clientes em cerca de 18 000 €, sem vender mais nada.
+                  No exemplo acima, o PMR passa de cerca de 30 para cerca de 39 dias. Com vendas de 55 000 € por mês sem IVA (660 000 € por ano), um dia de vendas vale cerca de 1 800 €. Por isso, receber 10 dias mais cedo reduz o saldo de clientes em cerca de 18 000 €, sem vender mais nada. O guia sobre o <A href="/guias/prazo-medio-recebimentos/">prazo médio de recebimentos</A> explica como o calcular com rigor e como o reduzir.
                 </Callout>
                 <P>
                   Nenhum destes números é, sozinho, um diagnóstico. Um PMR de 60 dias pode ser normal num setor e preocupante noutro; uma liquidez geral acima de 1 pode esconder stock difícil de vender ou clientes que não pagam. Leia-os em conjunto, ao longo do tempo e face ao setor.
@@ -293,9 +285,7 @@ export function LiquidityGuidePage() {
                 </div>
                 <P>
                   Para ver o efeito dos atrasos antes de montar a sua previsão, pode experimentar o{' '}
-                  <a href="/explorar/" className="font-semibold text-accent-deep underline decoration-accent-deep/30 underline-offset-4 hover:decoration-accent-deep">
-                    Explorar, o simulador de tesouraria da Finer One
-                  </a>
+                  <A href="/explorar/">Explorar, o simulador de tesouraria da Finer One</A>
                   : indica o saldo, os recebimentos e os pagamentos previstos para os próximos 3 ou 6 meses e vê, mês a mês, como recebimentos mais tardios mudam o saldo. É gratuito e não pede ligação ao banco.
                 </P>
                 <Callout title="Calendário a ter presente">
@@ -342,93 +332,25 @@ export function LiquidityGuidePage() {
                   A Finer One não substitui o ERP, o banco, o software de faturação, a contabilidade nem o contabilista: é uma camada de inteligência financeira que trabalha sobre esses dados para apoiar decisões. Não garante resultados — ajuda a ver mais cedo.
                 </P>
 
-                {/* CTA */}
-                <div className="relative mt-10 overflow-hidden rounded-[24px] bg-[#070D2B] p-7 text-white sm:p-9">
-                  <img src="/images/sobre-linha.webp" alt="" aria-hidden="true" className="absolute inset-x-0 bottom-[-6%] h-[50%] w-full object-cover object-[80%_50%] opacity-70 mix-blend-screen" style={{ maskImage: 'linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent)' }} />
-                  <div className="relative">
-                    <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#3D86FF]">Finer Pioneers</p>
-                    <p className="mt-3 font-display text-[26px] font-bold leading-[1.15] tracking-[-0.02em] sm:text-[30px]">
-                      Quer conhecer a Finer One <span className="text-[#3D86FF]">em primeira mão?</span>
-                    </p>
-                    <p className="mt-3 max-w-[500px] text-[15px] leading-[1.6] text-white/70">
-                      Procuramos empresários que queiram usar a plataforma em primeira mão e ajudar a definir a sua evolução.
-                    </p>
-                    <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-4">
-                      <a href="/pioneers/" className="group inline-flex h-12 items-center gap-2 rounded-full bg-accent px-6 text-[15px] font-semibold text-white transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-glow">
-                        Candidatar-me a Finer Pioneer
-                        <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true" />
-                      </a>
-                      <a href="/lista-espera/" className="text-[14.5px] font-medium text-white/75 underline decoration-white/30 underline-offset-4 hover:text-white hover:decoration-white/70">
-                        Prefere só acompanhar? Entre na lista de espera
-                      </a>
-                    </div>
-                  </div>
-                </div>
+                <PioneersCta />
               </Section>
 
               {/* Fontes */}
               <Section id="fontes" title="Fontes">
-                <p className="mt-4 text-[13.5px] text-[#0B1030]/55">Fontes consultadas a {SOURCES_CHECKED}.</p>
-                <ol className="mt-5 space-y-3">
-                  {SOURCES.map((s, i) => (
-                    <li key={s.href} id={`fonte-${i + 1}`} className="scroll-mt-24 text-[14.5px] leading-[1.6] text-[#0B1030]/70">
-                      <span className="mr-2 font-semibold tabular-nums text-[#070D2B]">[{i + 1}]</span>
-                      <a href={s.href} target="_blank" rel="noopener noreferrer" className="inline underline decoration-[#0B1030]/20 underline-offset-4 hover:text-[#070D2B] hover:decoration-accent-deep">
-                        {s.label}
-                        <ArrowUpRight className="ml-1 inline h-3.5 w-3.5" aria-hidden="true" />
-                      </a>
-                    </li>
-                  ))}
-                </ol>
-                <p className="mt-8 rounded-xl border border-[#0B1030]/[0.08] bg-[#F7F9FE] p-5 text-[13.5px] leading-[1.6] text-[#0B1030]/60">
-                  Este guia é informativo e não constitui aconselhamento financeiro, fiscal ou jurídico. Os valores em euros são demonstrativos. Para decisões sobre a sua empresa, fale com o seu contabilista ou com um especialista.
-                </p>
-                <div className="mt-10 border-t border-[#0B1030]/[0.08] pt-8">
-                  <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#0B1030]/45">Continue a explorar</p>
-                  <ul className="mt-4 grid gap-3 sm:grid-cols-3">
-                    {[
-                      ['Simular a tesouraria no Explorar', '/explorar/'],
-                      ['Como funciona a Finer One', '/#funcionamento'],
-                      ['Segurança dos dados', '/#seguranca'],
-                    ].map(([label, href]) => (
-                      <li key={href}>
-                        <a href={href} className="group flex h-full items-center justify-between rounded-xl border border-[#0B1030]/[0.08] px-4 py-3.5 text-[14.5px] font-medium text-[#070D2B] transition-colors hover:border-accent-deep/40">
-                          {label}
-                          <ArrowRight className="h-4 w-4 text-accent-deep transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true" />
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                <SourcesBlock
+                  sources={SOURCES}
+                  checked={SOURCES_CHECKED}
+                  next={[
+                    ['Simular a tesouraria no Explorar', '/explorar/'],
+                    ['Guia: prazo médio de recebimentos', '/guias/prazo-medio-recebimentos/'],
+                    ['Como funciona a Finer One', '/#funcionamento'],
+                  ]}
+                />
               </Section>
             </div>
 
             {/* Índice fixo */}
-            <nav aria-label="Neste guia" className="hidden lg:block">
-              <div className="sticky top-28">
-                <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#0B1030]/45">Neste guia</p>
-                <ol className="relative mt-5 border-l border-[#0B1030]/10">
-                  {SECTIONS.map((s) => (
-                    <li key={s.id}>
-                      <a
-                        href={`#${s.id}`}
-                        aria-current={active === s.id ? 'location' : undefined}
-                        className={cn(
-                          '-ml-px block border-l-2 py-2 pl-4 text-[14px] leading-snug transition-colors',
-                          active === s.id ? 'border-accent font-semibold text-[#070D2B]' : 'border-transparent text-[#0B1030]/55 hover:text-[#070D2B]',
-                        )}
-                      >
-                        {s.title}
-                      </a>
-                    </li>
-                  ))}
-                </ol>
-                <a href="/pioneers/" className="mt-8 inline-flex items-center gap-2 text-[13.5px] font-semibold text-accent-deep hover:text-[#070D2B]">
-                  Ser Finer Pioneer
-                  <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-                </a>
-              </div>
-            </nav>
+            <GuideToc sections={SECTIONS} />
           </div>
         </div>
       </article>
@@ -436,39 +358,7 @@ export function LiquidityGuidePage() {
   )
 }
 
-/* ---------- Blocos reutilizáveis do modelo editorial ---------- */
-
-function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
-  return (
-    <section id={id} aria-labelledby={`h-${id}`} className="scroll-mt-36 pt-14 lg:scroll-mt-28">
-      <h2 id={`h-${id}`} className="font-display text-[26px] font-bold leading-[1.15] tracking-[-0.025em] text-[#070D2B] sm:text-[32px]">
-        {title}
-      </h2>
-      {children}
-    </section>
-  )
-}
-
-function P({ children }: { children: ReactNode }) {
-  return <p className="mt-5 text-[16.5px] leading-[1.75] text-[#0B1030]/80">{children}</p>
-}
-
-function Ref({ n }: { n: number }) {
-  return (
-    <sup className="ml-0.5">
-      <a href={`#fonte-${n}`} aria-label={`Fonte ${n}`} className="font-semibold text-accent-deep no-underline hover:underline">[{n}]</a>
-    </sup>
-  )
-}
-
-function Callout({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <aside className="mt-7 rounded-2xl border-l-[3px] border-accent bg-[#F3F6FD] px-5 py-5 sm:px-6">
-      <p className="text-[12.5px] font-semibold uppercase tracking-[0.16em] text-accent-deep">{title}</p>
-      <p className="mt-2 text-[15.5px] leading-[1.7] text-[#0B1030]/80">{children}</p>
-    </aside>
-  )
-}
+/* ---------- Blocos próprios deste guia ---------- */
 
 function Example() {
   const rows = [
@@ -583,58 +473,4 @@ function IndicatorTable() {
       </div>
     </div>
   )
-}
-
-function ActionList({ title, items }: { title: string; items: string[] }) {
-  return (
-    <div className="rounded-2xl border border-[#0B1030]/[0.08] p-6">
-      <h3 className="font-display text-[18px] font-bold text-[#070D2B]">{title}</h3>
-      <ul className="mt-4 space-y-3">
-        {items.map((it) => (
-          <li key={it} className="relative pl-5 text-[15px] leading-[1.6] text-[#0B1030]/80">
-            <span aria-hidden="true" className="absolute left-0 top-[9px] h-1.5 w-1.5 rounded-full bg-accent" />
-            {it}
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
-}
-
-function MobileToc() {
-  return (
-    <details className="group mb-8 rounded-2xl border border-[#0B1030]/[0.08] lg:hidden">
-      <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 text-[14px] font-semibold text-[#070D2B] [&::-webkit-details-marker]:hidden">
-        Neste guia
-        <ChevronDown className="h-4 w-4 transition-transform duration-300 group-open:rotate-180" aria-hidden="true" />
-      </summary>
-      <ol className="border-t border-[#0B1030]/[0.08] px-5 py-3">
-        {SECTIONS.map((s) => (
-          <li key={s.id}>
-            <a href={`#${s.id}`} className="block py-2 text-[14.5px] text-[#0B1030]/70 hover:text-[#070D2B]">{s.title}</a>
-          </li>
-        ))}
-      </ol>
-    </details>
-  )
-}
-
-/** Secção visível no momento (para destacar no índice). */
-function useActiveSection(ids: string[]) {
-  const [active, setActive] = useState(ids[0])
-  useEffect(() => {
-    const onScroll = () => {
-      let current = ids[0]
-      for (const id of ids) {
-        const el = document.getElementById(id)
-        if (el && el.getBoundingClientRect().top < window.innerHeight * 0.35) current = id
-      }
-      setActive(current)
-    }
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-  return active
 }
