@@ -20,6 +20,7 @@ const PAGES = {
   '/lista-espera/': 'lista-espera/index.html',
   '/privacidade/': 'privacidade/index.html',
   '/guias/falta-de-liquidez/': 'guias/falta-de-liquidez/index.html',
+  '/guias/prazo-medio-recebimentos/': 'guias/prazo-medio-recebimentos/index.html',
 }
 // Links que a navegação e o rodapé têm de levar em todas as páginas.
 const NAV_LINKS = ['/explorar/', '/sobre/', '/lista-espera/', '/pioneers/', '/privacidade/']
@@ -92,6 +93,31 @@ const sitemap = readFileSync(join(dist, 'sitemap.xml'), 'utf8')
 const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]).sort()
 const expected = Object.keys(PAGES).map((p) => SITE + p).sort()
 if (JSON.stringify(locs) !== JSON.stringify(expected)) failures.push(`sitemap: ${JSON.stringify(locs)} (esperado ${JSON.stringify(expected)})`)
+// Guias: datas sincronizadas e nunca futuras (data de Lisboa).
+// - data visível (<time datetime>) = dateModified (Article) = article:modified_time = lastmod do sitemap;
+// - datePublished (Article) = article:published_time; publicação ≤ modificação ≤ hoje.
+const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Lisbon' }).format(new Date())
+for (const [path, file] of Object.entries(PAGES)) {
+  if (!path.startsWith('/guias/') || !existsSync(join(dist, file))) continue
+  const html = readFileSync(join(dist, file), 'utf8')
+  const pick = (re) => (html.match(re) || [])[1]
+  const d = {
+    visivel: pick(/<time datetime="([^"]+)"/i),
+    datePublished: pick(/"datePublished":\s*"([^"]+)"/),
+    dateModified: pick(/"dateModified":\s*"([^"]+)"/),
+    ogPublished: pick(/property="article:published_time" content="([^"]+)"/),
+    ogModified: pick(/property="article:modified_time" content="([^"]+)"/),
+    sitemap: (sitemap.match(new RegExp(`<loc>${SITE}${path}</loc>\\s*<lastmod>([^<]+)</lastmod>`)) || [])[1],
+  }
+  const missing = Object.entries(d).filter(([, v]) => !v).map(([k]) => k)
+  if (missing.length) { fail(path, `datas em falta: ${missing.join(', ')}`); continue }
+  if (new Set([d.visivel, d.dateModified, d.ogModified, d.sitemap]).size !== 1) fail(path, `datas de atualização diferentes: ${JSON.stringify(d)}`)
+  if (d.datePublished !== d.ogPublished) fail(path, `datas de publicação diferentes: ${JSON.stringify(d)}`)
+  if (d.datePublished > d.dateModified) fail(path, `publicação depois da modificação: ${JSON.stringify(d)}`)
+  if (d.dateModified > today) fail(path, `data futura (${d.dateModified}; hoje em Lisboa: ${today})`)
+  console.log(`${path.padEnd(27)} publicado=${d.datePublished} atualizado=${d.dateModified} (visível, Article, Open Graph e sitemap coincidem)`)
+}
+
 const robots = readFileSync(join(dist, 'robots.txt'), 'utf8')
 if (!robots.includes(`Sitemap: ${SITE}/sitemap.xml`) || /Disallow:\s*\/\s*$/m.test(robots)) failures.push('robots.txt: sitemap em falta ou site bloqueado')
 
