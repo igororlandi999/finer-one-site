@@ -2,13 +2,14 @@ import { useRef } from 'react'
 import { MotionConfig, motion, useScroll, useTransform } from 'motion/react'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import type { MotionValue, Variants } from 'motion/react'
+import { ArrowRight } from 'lucide-react'
 import { useLanguage } from '@/i18n/LanguageContext'
 import type { Lang } from '@/i18n/LanguageContext'
 import { cn } from '@/lib/utils'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
-type Context = { segment: string; title: string; question: string; text: string; message: string }
+type Context = { segment: string; title: string; question: string; text: string; message: string; link?: { href: string; label: string } }
 
 /** Imagens de identidade Finer One, versões sem texto enviadas pelo fundador (1254×1254). */
 const IMAGES = [
@@ -34,6 +35,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string, string]; sub
         question: 'Vendo bastante. Porque é que o dinheiro demora a entrar?',
         text: 'Acompanhe os valores por receber, os prazos e os pagamentos em atraso para compreender melhor a sua tesouraria.',
         message: 'Faturar não é o mesmo que receber.',
+        link: { href: '/explorar/', label: 'Simule o efeito de um atraso na sua tesouraria' },
       },
       {
         segment: 'Empresas de serviços',
@@ -48,6 +50,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string, string]; sub
         question: 'Estou a vender mais. Porque é que a tesouraria continua apertada?',
         text: 'Explore a diferença entre faturação, recebimentos e pagamentos para compreender possíveis pressões de caixa.',
         message: 'Crescimento e liquidez nem sempre avançam ao mesmo ritmo.',
+        link: { href: '/guias/falta-de-liquidez/', label: 'Guia: 7 sinais de falta de liquidez' },
       },
     ],
   },
@@ -63,6 +66,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string, string]; sub
         question: 'I sell a lot. Why does the money take so long to come in?',
         text: 'Follow receivables, due dates and late payments to better understand your cash.',
         message: 'Invoicing is not the same as getting paid.',
+        link: { href: '/explorar/', label: 'Simulate the effect of a delay on your cash' },
       },
       {
         segment: 'Service companies',
@@ -77,6 +81,7 @@ const copy: Record<Lang, { eyebrow: string; title: [string, string, string]; sub
         question: 'I’m selling more. Why is cash still tight?',
         text: 'Explore the difference between invoicing, collections and payments to understand possible cash pressure.',
         message: 'Growth and liquidity don’t always move at the same pace.',
+        link: { href: '/guias/falta-de-liquidez/', label: 'Guide (in Portuguese): 7 signs of a cash shortage' },
       },
     ],
   },
@@ -168,6 +173,14 @@ function Story({ c, i, n, progress, reduced }: { c: Context; i: number; n: numbe
           </motion.blockquote>
           <motion.p variants={item} className="mt-5 text-[15px] leading-[1.6] text-[#0B1030]/65 lg:max-w-[460px]">{c.text}</motion.p>
           <motion.p variants={item} className="mt-3 text-[15px] font-semibold leading-snug text-accent-deep">{c.message}</motion.p>
+          {c.link && (
+            <motion.p variants={item} className="mt-4">
+              <a href={c.link.href} className="group inline-flex items-center gap-1.5 text-[14px] font-medium text-[#070D2B] underline decoration-[#0B1030]/20 underline-offset-4 transition-colors hover:decoration-accent-deep">
+                {c.link.label}
+                <ArrowRight className="h-3.5 w-3.5 text-accent-deep transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true" />
+              </a>
+            </motion.p>
+          )}
         </motion.div>
 
         {/* Fotografia da identidade (limpa, sem nada por cima) */}
