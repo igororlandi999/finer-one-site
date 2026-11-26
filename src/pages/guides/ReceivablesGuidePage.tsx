@@ -16,7 +16,10 @@ import type { GuideSection, GuideSource } from './GuideKit'
  * de recebimentos com atraso (0–100%), atraso adicional (0–90 dias), horizonte de 3 ou 6 meses e
  * saldo projetado mês a mês com e sem atrasos. Não calcula o PMR da empresa.
  */
-export const GUIDE_PUBLISHED = { iso: '2026-11-25', label: '25 de novembro de 2026' }
+// Data de publicação efetiva: tem de coincidir com o HTML (Article e Open Graph) e com o
+// lastmod do sitemap — scripts/test-prerender.mjs verifica-o e recusa datas futuras.
+// Depois de publicado, esta data não muda; uma revisão de conteúdo atualiza só dateModified.
+export const GUIDE_PUBLISHED = { iso: '2026-11-26', label: '26 de novembro de 2026' }
 
 const SECTIONS: GuideSection[] = [
   { id: 'resumo', title: 'Em resumo' },
@@ -37,7 +40,7 @@ const SECTIONS: GuideSection[] = [
 export const SOURCES_CHECKED = '25/11/2026'
 const SOURCES: GuideSource[] = [
   { label: 'Banco de Portugal — Empresas não financeiras da Central de Balanços (definição de prazo médio de recebimentos)', href: 'https://www.bportugal.pt/sites/default/files/anexos/19-empresas_nao_financeiras_cb.pdf' },
-  { label: 'Banco de Portugal, BPstat — Prazo médio de recebimentos das empresas não financeiras privadas de pequena e média dimensão (série trimestral)', href: 'https://bpstat.bportugal.pt/serie/12587255' },
+  { label: 'Banco de Portugal, BPstat — Prazo médio de recebimentos das empresas não financeiras privadas de pequena e média dimensão (exc. agricultura), série trimestral', href: 'https://bpstat.bportugal.pt/serie/12587255' },
   { label: 'Banco de Portugal — Quadros do Setor e Quadros da Empresa e do Setor: metodologia e acesso (junho de 2024)', href: 'https://www.bportugal.pt/sites/default/files/anexos/QS_QES_metologia_apuramento_resultados.pdf' },
   { label: 'Diário da República — Decreto-Lei n.º 62/2013, de 10 de maio (atrasos de pagamento nas transações comerciais)', href: 'https://diariodarepublica.pt/dr/detalhe/decreto-lei/62-2013-261160' },
 ]
@@ -208,7 +211,7 @@ export function ReceivablesGuidePage() {
                   ))}
                 </ul>
                 <Callout title="Referência nacional">
-                  Segundo o Banco de Portugal, o prazo médio de recebimentos das micro, pequenas e médias empresas não financeiras privadas foi de 52 dias no 2.º trimestre de 2026.<Ref n={2} /> É uma média de todos os setores e da metodologia do Banco de Portugal: serve de contexto, não de meta para a sua empresa.
+                  Na série do Banco de Portugal para as empresas não financeiras privadas de micro, pequena e média dimensão — em todas as atividades, exceto agricultura, silvicultura e pesca e atividades das sedes sociais —, o prazo médio de recebimentos foi de 52 dias no 2.º trimestre de 2026.<Ref n={2} /> É uma média de vários setores, calculada com a metodologia do Banco de Portugal: serve de contexto, não de meta para a sua empresa.
                 </Callout>
                 <P>
                   Um PMR elevado não significa, sozinho, que a empresa está em dificuldades. Mas, combinado com um prazo de pagamento a fornecedores mais curto, quer dizer que a empresa paga antes de receber — e financia essa diferença com a própria tesouraria ou com crédito.
@@ -273,7 +276,7 @@ export function ReceivablesGuidePage() {
                   />
                 </div>
                 <Callout title="Antes de oferecer descontos, faça a conta">
-                  Um desconto de pronto pagamento ou o factoring podem encurtar o prazo, mas têm custo. Numa conta simples, um desconto de 2% para receber 30 dias mais cedo equivale a cerca de 24% ao ano (2% × 12). Compare sempre com o custo do crédito de curto prazo que a empresa já paga.
+                  Um desconto de pronto pagamento ou o factoring podem encurtar o prazo, mas têm custo. Um desconto de 2% para receber 30 dias mais cedo corresponde a cerca de 24% ao ano numa anualização simples (2% × 12 meses). É só uma ordem de grandeza: não é uma taxa efetiva anual, que, com capitalização, seria mais alta. Para decidir, peça ao contabilista ou ao banco a comparação com o custo efetivo do crédito que a empresa já usa.
                 </Callout>
               </Section>
 
@@ -446,24 +449,24 @@ function EstimateExample() {
 }
 
 const INVOICES = [
-  { n: 'Fatura 1', value: '10 000 €', issued: '2 set.', paid: '2 out.', days: 30 },
-  { n: 'Fatura 2', value: '25 000 €', issued: '5 set.', paid: '4 nov.', days: 60 },
-  { n: 'Fatura 3', value: '5 000 €', issued: '15 set.', paid: '15 out.', days: 30 },
-  { n: 'Fatura 4', value: '10 000 €', issued: '20 set.', paid: '19 dez.', days: 90 },
+  { n: 'Fatura 1', value: '10 000 €', issued: '2 set. 2025', paid: '2 out. 2025', days: 30 },
+  { n: 'Fatura 2', value: '25 000 €', issued: '5 set. 2025', paid: '4 nov. 2025', days: 60 },
+  { n: 'Fatura 3', value: '5 000 €', issued: '15 set. 2025', paid: '15 out. 2025', days: 30 },
+  { n: 'Fatura 4', value: '10 000 €', issued: '20 set. 2025', paid: '19 dez. 2025', days: 90 },
 ]
 
 function InvoiceExample() {
   return (
-    <figure className="mt-7" aria-label="Exemplo com quatro faturas, todas com prazo de 30 dias. Média ponderada pelo valor: 57 dias. Média simples: 52,5 dias. Atraso médio ponderado face ao vencimento: 27 dias.">
+    <figure className="mt-7" aria-label="Exemplo com quatro faturas de 2025, todas com prazo de 30 dias. Média ponderada pelo valor: 57 dias. Média simples: 52,5 dias. Atraso médio ponderado face ao vencimento: 27 dias.">
       {/* Mobile: cartões */}
       <ul className="space-y-3 md:hidden">
         {INVOICES.map((r) => (
-          <li key={r.n} className="flex items-center justify-between rounded-xl border border-[#0B1030]/[0.08] p-4">
+          <li key={r.n} className="flex items-center justify-between gap-4 rounded-xl border border-[#0B1030]/[0.08] p-4">
             <div>
               <p className="font-semibold text-[#070D2B]">{r.n} · {r.value}</p>
-              <p className="mt-1 text-[13px] text-[#0B1030]/60">Emitida a {r.issued} · recebida a {r.paid}</p>
+              <p className="mt-1 text-[13px] leading-[1.5] text-[#0B1030]/60"><span className="block">Emitida a {r.issued}</span><span className="block">Recebida a {r.paid}</span></p>
             </div>
-            <span className="font-display text-[18px] font-bold tabular-nums text-[#070D2B]">{r.days} dias</span>
+            <span className="shrink-0 whitespace-nowrap font-display text-[18px] font-bold tabular-nums text-[#070D2B]">{r.days} dias</span>
           </li>
         ))}
       </ul>
@@ -506,7 +509,7 @@ function InvoiceExample() {
           </div>
         ))}
       </div>
-      <figcaption className="mt-3 text-[12.5px] leading-[1.6] text-[#0B1030]/50">Exemplo · valores demonstrativos · todas as faturas com prazo de 30 dias</figcaption>
+      <figcaption className="mt-3 text-[12.5px] leading-[1.6] text-[#0B1030]/50">Exemplo · valores demonstrativos · faturas de 2025, todas com prazo de 30 dias</figcaption>
     </figure>
   )
 }
