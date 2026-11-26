@@ -32,4 +32,13 @@ jobs:
       - run: npm run test:prerender
       - run: npx playwright install --with-deps chromium
       - run: npm run test:hydration
+      # Segunda passagem com o recetor usado em produção (Cloudflare + Turnstile simulado).
+      - run: npm run build
+        env:
+          VITE_FORMS_ENDPOINT: https://forms.example.test/
+          VITE_FORMS_PROVIDER: cloudflare
+          VITE_TURNSTILE_SITEKEY: 1x00000000000000000000AA
+      - run: npm run test:hydration
+        env:
+          VITE_FORMS_PROVIDER: cloudflare
       - run: npm run test:forms
